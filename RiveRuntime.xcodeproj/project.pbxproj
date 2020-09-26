@@ -643,7 +643,7 @@
 			children = (
 				C9C7406C24FC4EF400EF9516 /* Rive */,
 				C9C73ED324FC478800EF9516 /* Source */,
-				C9C73EDE24FC478900EF9516 /* RiveRuntimeTests */,
+				C9C73EDE24FC478900EF9516 /* Tests */,
 				C9C73ED224FC478800EF9516 /* Products */,
 				C9D60DA62512AFE900AAA3A6 /* Frameworks */,
 			);
@@ -668,13 +668,13 @@
 			path = Source;
 			sourceTree = "<group>";
 		};
-		C9C73EDE24FC478900EF9516 /* RiveRuntimeTests */ = {
+		C9C73EDE24FC478900EF9516 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.m */,
 				C9C73EE124FC478900EF9516 /* Info.plist */,
 			);
-			path = RiveRuntimeTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		C9C7406C24FC4EF400EF9516 /* Rive */ = {
@@ -1574,7 +1574,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = RiveRuntimeTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1590,7 +1590,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = RiveRuntimeTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
