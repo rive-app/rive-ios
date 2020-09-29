@@ -10,15 +10,6 @@
 #include "RiveRenderer.hpp"
 #include "renderer.hpp"
 
-// Creates a UIColor from an RGBA int value
-#define UIColorFromRGB(rgbValue) \
-[UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/0xFF \
-         green:((float)((rgbValue & 0xFF00) >> 8))/0xFF \
-         blue:((float)(rgbValue & 0xFF))/0xFF \
-         alpha:((float)((rgbValue & 0xFF000000) >> 24))/0xFF]
-
-#define opacityFromARGB(rgbValue) ((float)((rgbValue & 0xFF000000) >> 24))/0xFF
-
 using namespace rive;
 
 // Base color space used by the renderer
@@ -182,11 +173,11 @@ void RiveRenderPaint::addStop(unsigned int color, float stop) {
 }
 void RiveRenderPaint::completeGradient() {
 //    NSLog(@" --- RenderPaint::completeGradient");
+    // release the previously cached gradient, if any
     if (gradient != NULL) {
         CGGradientRelease(gradient);
     }
     gradient = CGGradientCreateWithColorComponents(baseSpace, &colorStops[0], &stops[0], stops.size());
-    
     // clear out the stops
     stops.clear();
     colorStops.clear();
@@ -219,7 +210,7 @@ void RiveRenderPath::reset() {
 
 void RiveRenderPath::addPath(CommandPath* path, const Mat2D& transform) {
 //    NSLog(@" --- RenderPath::addPath");
-    CGMutablePathRef pathToAdd = static_cast<RiveRenderPath *>(path)->getPath();
+    CGMutablePathRef pathToAdd = reinterpret_cast<RiveRenderPath *>(path)->getPath();
     CGAffineTransform affineTransform = CGAffineTransformMake(transform.xx(),
                                                               transform.xy(),
                                                               transform.yx(),
@@ -242,7 +233,7 @@ void RiveRenderPath::moveTo(float x, float y) {
 void RiveRenderPath::lineTo(float x, float y) {
 //    NSLog(@" --- RenderPath::lineTo x %.1f, y %.1f", x, y);
     if (isnan(x) || isnan(y)) {
-        NSLog(@"Received NaN in lineTo!!!!");
+//        NSLog(@"Received NaN in lineTo!!!!");
         return;
     }
     CGPathAddLineToPoint(path, NULL, x, y);
@@ -270,8 +261,8 @@ void RiveRenderer::restore() {
 
 void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
 //        NSLog(@" --- Renderer::drawPath path for type %d", rivePaint->paintStyle);
-    RiveRenderPaint *rivePaint = static_cast<RiveRenderPaint *>(paint);
-    RiveRenderPath *rivePath = static_cast<RiveRenderPath *>(path);
+    RiveRenderPaint *rivePaint = reinterpret_cast<RiveRenderPaint *>(paint);
+    RiveRenderPath *rivePath = reinterpret_cast<RiveRenderPath *>(path);
     
     // Apply the stroke join
     if (rivePaint->strokeJoin != RiveStrokeJoin::None) {
@@ -416,7 +407,7 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
 
 void RiveRenderer::clipPath(RenderPath* path) {
 //        NSLog(@" --- Renderer::clipPath %@", clipPath);
-    const CGPath *clipPath = static_cast<RiveRenderPath *>(path)->getPath();
+    const CGPath *clipPath = reinterpret_cast<RiveRenderPath *>(path)->getPath();
     CGContextAddPath(ctx, clipPath);
     CGContextClip(ctx);
 }
