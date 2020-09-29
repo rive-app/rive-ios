@@ -159,6 +159,10 @@ void RiveRenderPaint::linearGradient(float sx, float sy, float ex, float ey) {
     gradientStart = CGPointMake(sx, sy);
     gradientEnd = CGPointMake(ex, ey);
     
+    // clear out the stops
+    stops.clear();
+    colorStops.clear();
+    
 }
 void RiveRenderPaint::radialGradient(float sx, float sy, float ex, float ey) {
 //    NSLog(@" --- RenderPaint::radialGradient");
@@ -166,7 +170,11 @@ void RiveRenderPaint::radialGradient(float sx, float sy, float ex, float ey) {
     gradientStart = CGPointMake(sx, sy);
     gradientEnd = CGPointMake(ex, ey);
     
+    // clear out the stops
+    stops.clear();
+    colorStops.clear();
 }
+
 void RiveRenderPaint::addStop(unsigned int color, float stop) {
 //    NSLog(@" --- RenderPaint::addStop - color %i at %.01f", color, stop);
     colorStops.emplace_back(((float)((color & 0xFF0000) >> 16))/0xFF);
@@ -403,10 +411,8 @@ void NewRiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
             float endRadius = sqrt(dx*dx + dy*dy);
             CGContextDrawRadialGradient(ctx, gradient, rivePaint->gradientStart, 0, rivePaint->gradientStart, endRadius, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
         }
-        // Clear out the stops
+        // Gradient is no longer needed
         CGGradientRelease(gradient); gradient = NULL;
-        rivePaint->colorStops.clear();
-        rivePaint->stops.clear();
         
         if (rivePaint->paintStyle == RivePaintStyle::Fill) {
             CGContextDrawPath(ctx, kCGPathFill);
