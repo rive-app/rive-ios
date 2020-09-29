@@ -43,7 +43,7 @@ CGContextRef ctx;
 -(instancetype) initWithContext:(CGContextRef) context {
     if (self = [super init]) {
         ctx = context;
-        _renderer = new rive::NewRiveRenderer(context);
+        _renderer = new rive::RiveRenderer(context);
         return self;
     } else {
         return nil;

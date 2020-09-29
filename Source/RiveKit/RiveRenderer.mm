@@ -258,19 +258,19 @@ void RiveRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, fl
 // Renderer
 
 // Implement save by creating a sublayer
-void NewRiveRenderer::save() {
+void RiveRenderer::save() {
 //    NSLog(@" --- Renderer::save");
     CGContextSaveGState(ctx);
 }
 
 // Implement restore by moving back up to the parent layer. If the parent
 // layer is ctx, then there's been a restore without a save
-void NewRiveRenderer::restore() {
+void RiveRenderer::restore() {
 //    NSLog(@" -- Renderer::restore");
     CGContextRestoreGState(ctx);
 }
 
-void NewRiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
+void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
 
     RiveRenderPaint *rivePaint = reinterpret_cast<RiveRenderPaint *>(paint);
     RiveRenderPath *rivePath = reinterpret_cast<RiveRenderPath *>(path);
@@ -424,7 +424,7 @@ void NewRiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
     }
 }
 
-void NewRiveRenderer::clipPath(RenderPath* path) {
+void RiveRenderer::clipPath(RenderPath* path) {
     const CGPath *clipPath = reinterpret_cast<RiveRenderPath *>(path)->getBezierPath().CGPath;
 //    NSLog(@" --- Renderer::clipPath %@", clipPath);
     
@@ -432,7 +432,7 @@ void NewRiveRenderer::clipPath(RenderPath* path) {
     CGContextClip(ctx);
 }
 
-void NewRiveRenderer::transform(const Mat2D& transform) {
+void RiveRenderer::transform(const Mat2D& transform) {
 //    NSLog(@" --- Renderer::transform %.1f, %.1f, %.1f, %.1f, %.1f, %.1f",
 //        transform.xx(),
 //        transform.xy(),

@@ -144,13 +144,13 @@ namespace rive
         void close() override;
     };
 
-    class NewRiveRenderer : public Renderer
+    class RiveRenderer : public Renderer
     {
     private:
         CGContextRef ctx;
 
     public:
-        NewRiveRenderer(CGContextRef context) : ctx(context) {}
+        RiveRenderer(CGContextRef context) : ctx(context) {}
 
         void save() override;
         void restore() override;
