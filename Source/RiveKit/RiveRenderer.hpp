@@ -9,10 +9,9 @@
 #ifndef rive_renderer_hpp
 #define rive_renderer_hpp
 
-#import <UIKit/UIKit.h>
-
+#import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 #import <vector>
-
 #import "renderer.hpp"
 
 namespace rive
@@ -127,12 +126,12 @@ namespace rive
     class RiveRenderPath : public RenderPath
     {
     private:
-        UIBezierPath *path;
+        CGMutablePathRef path;
         FillRule m_FillRule;
         
     public:
         RiveRenderPath();
-        UIBezierPath *getBezierPath() { return path; }
+        CGMutablePathRef getPath() { return path; }
         FillRule getFillRule() { return m_FillRule; }
         
         void reset() override;

@@ -191,32 +191,31 @@ void RiveRenderPaint::completeGradient() {
  */
 
 RiveRenderPath::RiveRenderPath() {
-    path = [[UIBezierPath alloc] init];
 //    NSLog(@"INITIALIZING A NEW RENDER PATH");
+    path = CGPathCreateMutable();
 }
 
 void RiveRenderPath::close() {
     // NSLog(@" --- RenderPath::close");
-    [path closePath];
+    CGPathCloseSubpath(path);
 }
 
 void RiveRenderPath::reset() {
 //    NSLog(@" --- RenderPath::reset");
-    path = [[UIBezierPath alloc] init];
+    CGPathRelease(path);
+    path = CGPathCreateMutable();
 }
 
 void RiveRenderPath::addPath(CommandPath* path, const Mat2D& transform) {
 //    NSLog(@" --- RenderPath::addPath");
-    UIBezierPath *addPath = static_cast<RiveRenderPath *>(path)->getBezierPath();
+    CGMutablePathRef pathToAdd = static_cast<RiveRenderPath *>(path)->getPath();
     CGAffineTransform affineTransform = CGAffineTransformMake(transform.xx(),
                                                               transform.xy(),
                                                               transform.yx(),
                                                               transform.yy(),
                                                               transform.tx(),
                                                               transform.ty());
-    UIBezierPath *clonePath = [addPath copy];
-    [clonePath applyTransform:affineTransform];
-    [this->path appendPath:clonePath];
+    CGPathAddPath(this->path, &affineTransform, pathToAdd);
 }
     
 void RiveRenderPath::fillRule(FillRule value) {
@@ -226,7 +225,7 @@ void RiveRenderPath::fillRule(FillRule value) {
     
 void RiveRenderPath::moveTo(float x, float y) {
 //    NSLog(@" --- RenderPath::moveTo x %.1f, y %.1f", x, y);
-    [path moveToPoint:CGPointMake(x, y)];
+    CGPathMoveToPoint(path, NULL, x, y);
 }
 
 void RiveRenderPath::lineTo(float x, float y) {
@@ -235,15 +234,12 @@ void RiveRenderPath::lineTo(float x, float y) {
         NSLog(@"Received NaN in lineTo!!!!");
         return;
     }
-    [path addLineToPoint:CGPointMake(x, y)];
+    CGPathAddLineToPoint(path, NULL, x, y);
 }
     
 void RiveRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, float y) {
 //    NSLog(@" --- call to RenderPath::cubicTo %.1f, %.1f, %.1f, %.1f, %.1f, %.1f, ", ox, oy, ix, iy, x, y);
-    [path addCurveToPoint:CGPointMake(x, y)
-          controlPoint1:CGPointMake(ox, oy)
-          controlPoint2:CGPointMake(ix, iy)
-    ];
+    CGPathAddCurveToPoint(path, NULL, ox, oy, ix, iy, x, y);
 }
 
 // Renderer
@@ -357,7 +353,7 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
     }
         
     // Add the path and paint it
-    CGPathRef cgPath = rivePath->getBezierPath().CGPath;
+    CGPathRef cgPath = rivePath->getPath();
     CGContextAddPath(ctx, cgPath);
     
     // If fill or stroke set, draw appropriately
@@ -409,7 +405,7 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
 
 void RiveRenderer::clipPath(RenderPath* path) {
 //        NSLog(@" --- Renderer::clipPath %@", clipPath);
-    const CGPath *clipPath = static_cast<RiveRenderPath *>(path)->getBezierPath().CGPath;
+    const CGPath *clipPath = static_cast<RiveRenderPath *>(path)->getPath();
     CGContextAddPath(ctx, clipPath);
     CGContextClip(ctx);
 }
