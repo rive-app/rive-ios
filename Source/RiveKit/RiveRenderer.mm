@@ -32,6 +32,12 @@ RiveRenderPaint::RiveRenderPaint() {
     // NSLog(@"INITIALIZING A NEW RENDER PAINT");
 }
 
+RiveRenderPaint::~RiveRenderPaint() {
+    NSLog(@"Releasing paint resources");
+    CGColorRelease(cgColor);
+    CGGradientRelease(gradient);
+}
+
 void RiveRenderPaint::style(RenderPaintStyle value) {
 //    NSLog(@" --- RenderPaint::style");
     switch(value) {
@@ -193,6 +199,11 @@ void RiveRenderPaint::completeGradient() {
 RiveRenderPath::RiveRenderPath() {
 //    NSLog(@"INITIALIZING A NEW RENDER PATH");
     path = CGPathCreateMutable();
+}
+
+RiveRenderPath::~RiveRenderPath() {
+    NSLog(@"Releasing path resources");
+    CGPathRelease(path);
 }
 
 void RiveRenderPath::close() {

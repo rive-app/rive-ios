@@ -88,8 +88,8 @@ namespace rive
         std::vector<CGFloat> colorStops;
         std::vector<CGFloat> stops; 
         
-        
         RiveRenderPaint();
+        ~RiveRenderPaint();
 
         void color(unsigned int value) override;
         void style(RenderPaintStyle value) override;
@@ -131,6 +131,8 @@ namespace rive
         
     public:
         RiveRenderPath();
+        ~RiveRenderPath();
+    
         CGMutablePathRef getPath() { return path; }
         FillRule getFillRule() { return m_FillRule; }
         
