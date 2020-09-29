@@ -155,7 +155,7 @@ void RiveRenderPaint::blendMode(BlendMode value) {
 
 void RiveRenderPaint::linearGradient(float sx, float sy, float ex, float ey) {
 //    NSLog(@" --- RenderPaint::linearGradient (%.1f,%.1f), (%.1f,%.1f)", sx, sy, ex, ey);
-    gradient = RiveGradient::Linear;
+    gradientType = RiveGradient::Linear;
     gradientStart = CGPointMake(sx, sy);
     gradientEnd = CGPointMake(ex, ey);
     
@@ -166,7 +166,7 @@ void RiveRenderPaint::linearGradient(float sx, float sy, float ex, float ey) {
 }
 void RiveRenderPaint::radialGradient(float sx, float sy, float ex, float ey) {
 //    NSLog(@" --- RenderPaint::radialGradient");
-    gradient = RiveGradient::Radial;
+    gradientType = RiveGradient::Radial;
     gradientStart = CGPointMake(sx, sy);
     gradientEnd = CGPointMake(ex, ey);
     
@@ -185,6 +185,10 @@ void RiveRenderPaint::addStop(unsigned int color, float stop) {
 }
 void RiveRenderPaint::completeGradient() {
 //    NSLog(@" --- RenderPaint::completeGradient");
+    if (gradient != NULL) {
+        CGGradientRelease(gradient); gradient = NULL;
+    }
+    gradient = CGGradientCreateWithColorComponents(baseSpace, &colorStops[0], &stops[0], stops.size());
 }
 
 /*
@@ -391,9 +395,9 @@ void NewRiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
     }
     
     // Draw gradient
-    if (rivePaint->gradient != RiveGradient::None) {
+    if (rivePaint->gradientType != RiveGradient::None) {
 //        NSLog(@"Drawing a gradient");
-        CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, &rivePaint->colorStops[0], &rivePaint->stops[0], rivePaint->stops.size());
+//        CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, &rivePaint->colorStops[0], &rivePaint->stops[0], rivePaint->stops.size());
         
         // If the path is a stroke, then convert the path to a stroked path to prevent the gradient from filling the path
         if (rivePaint->paintStyle == RivePaintStyle::Stroke) {
@@ -402,18 +406,16 @@ void NewRiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
         }
         CGContextClip(ctx);
             
-        if (rivePaint->gradient == RiveGradient::Linear) {
-            CGContextDrawLinearGradient(ctx, gradient, rivePaint->gradientStart, rivePaint->gradientEnd,  0x3);
-        } else if (rivePaint->gradient == RiveGradient:: Radial) {
+        if (rivePaint->gradientType == RiveGradient::Linear) {
+            CGContextDrawLinearGradient(ctx, rivePaint->gradient, rivePaint->gradientStart, rivePaint->gradientEnd,  0x3);
+        } else if (rivePaint->gradientType == RiveGradient:: Radial) {
             // Calculate the end radius
             float dx = rivePaint->gradientEnd.x - rivePaint->gradientStart.x;
             float dy = rivePaint->gradientEnd.y - rivePaint->gradientStart.y;
             float endRadius = sqrt(dx*dx + dy*dy);
-            CGContextDrawRadialGradient(ctx, gradient, rivePaint->gradientStart, 0, rivePaint->gradientStart, endRadius, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
+            CGContextDrawRadialGradient(ctx, rivePaint->gradient, rivePaint->gradientStart, 0, rivePaint->gradientStart, endRadius, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
         }
-        // Gradient is no longer needed
-        CGGradientRelease(gradient); gradient = NULL;
-        
+
         if (rivePaint->paintStyle == RivePaintStyle::Fill) {
             CGContextDrawPath(ctx, kCGPathFill);
         } else if (rivePaint->paintStyle == RivePaintStyle::Stroke) {

@@ -81,8 +81,9 @@ namespace rive
         RiveBlendMode currentBlendMode;
         float paintThickness;
         
-        // Gradient
-        RiveGradient gradient = RiveGradient::None;
+        // Gradient data
+        RiveGradient gradientType = RiveGradient::None;
+        CGGradientRef gradient = NULL;
         CGPoint gradientStart;
         CGPoint gradientEnd;
         std::vector<CGFloat> colorStops;
