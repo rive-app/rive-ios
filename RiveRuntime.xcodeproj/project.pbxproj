@@ -523,21 +523,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C9601F20250C13D40032AA07 /* RiveKit */ = {
-			isa = PBXGroup;
-			children = (
-				C9C741F224FC510200EF9516 /* Rive.h */,
-				C9C741F324FC510200EF9516 /* Rive.mm */,
-				C9601F29250C25830032AA07 /* RiveRenderer.hpp */,
-				C9601F2A250C25930032AA07 /* RiveRenderer.mm */,
-				C9601F25250C14560032AA07 /* RiveView.h */,
-				C9601F26250C14560032AA07 /* RiveView.mm */,
-				C9601F21250C143A0032AA07 /* RiveViewController.h */,
-				C9601F22250C143A0032AA07 /* RiveViewController.mm */,
-			);
-			path = RiveKit;
-			sourceTree = "<group>";
-		};
 		C9601F2C251004770032AA07 /* math */ = {
 			isa = PBXGroup;
 			children = (
@@ -661,7 +646,14 @@
 		C9C73ED324FC478800EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				C9601F20250C13D40032AA07 /* RiveKit */,
+				C9C741F224FC510200EF9516 /* Rive.h */,
+				C9C741F324FC510200EF9516 /* Rive.mm */,
+				C9601F29250C25830032AA07 /* RiveRenderer.hpp */,
+				C9601F2A250C25930032AA07 /* RiveRenderer.mm */,
+				C9601F25250C14560032AA07 /* RiveView.h */,
+				C9601F26250C14560032AA07 /* RiveView.mm */,
+				C9601F21250C143A0032AA07 /* RiveViewController.h */,
+				C9601F22250C143A0032AA07 /* RiveViewController.mm */,
 				C9C73ED424FC478800EF9516 /* RiveRuntime.h */,
 				C9C73ED524FC478800EF9516 /* Info.plist */,
 			);

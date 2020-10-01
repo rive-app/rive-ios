@@ -9,14 +9,17 @@
 #ifndef rive_renderer_hpp
 #define rive_renderer_hpp
 
-#import <UIKit/UIKit.h>
-
+#import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 #import <vector>
-
 #import "renderer.hpp"
 
 namespace rive
 {
+
+    /*
+     * RenderPaint
+     */
 
     enum class RiveGradient
     {
@@ -69,7 +72,6 @@ namespace rive
         Luminosity = static_cast<int>(BlendMode::luminosity)
     };
 
-
     class RiveRenderPaint : public RenderPaint
     {
     private:
@@ -81,15 +83,16 @@ namespace rive
         RiveBlendMode currentBlendMode;
         float paintThickness;
         
-        // Gradient
-        RiveGradient gradient = RiveGradient::None;
+        // Gradient data
+        RiveGradient gradientType = RiveGradient::None;
+        CGGradientRef gradient = NULL;
         CGPoint gradientStart;
         CGPoint gradientEnd;
         std::vector<CGFloat> colorStops;
         std::vector<CGFloat> stops; 
         
-        
         RiveRenderPaint();
+        ~RiveRenderPaint();
 
         void color(unsigned int value) override;
         void style(RenderPaintStyle value) override;
@@ -102,6 +105,10 @@ namespace rive
         void addStop(unsigned int color, float stop) override;
         void completeGradient() override;
     };
+
+    /*
+     * RenderPath
+     */
 
     enum class RivePathCommandType
     {
@@ -126,12 +133,14 @@ namespace rive
     class RiveRenderPath : public RenderPath
     {
     private:
-        UIBezierPath *path;
+        CGMutablePathRef path;
         FillRule m_FillRule;
         
     public:
         RiveRenderPath();
-        UIBezierPath *getBezierPath() { return path; }
+        ~RiveRenderPath();
+    
+        CGMutablePathRef getPath() { return path; }
         FillRule getFillRule() { return m_FillRule; }
         
         void reset() override;
@@ -143,14 +152,19 @@ namespace rive
         void close() override;
     };
 
-    class NewRiveRenderer : public Renderer
+    /*
+     * Renderer
+     */
+
+    class RiveRenderer : public Renderer
     {
     private:
         CGContextRef ctx;
 
     public:
-        NewRiveRenderer(CGContextRef context) : ctx(context) {}
-
+        RiveRenderer(CGContextRef context) : ctx(context) {}
+        ~RiveRenderer();
+        
         void save() override;
         void restore() override;
         void transform(const Mat2D &transform) override;

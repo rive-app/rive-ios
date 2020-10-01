@@ -10,18 +10,9 @@
 #include "RiveRenderer.hpp"
 #include "renderer.hpp"
 
-// Creates a UIColor from an RGBA int value
-#define UIColorFromRGB(rgbValue) \
-[UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/0xFF \
-         green:((float)((rgbValue & 0xFF00) >> 8))/0xFF \
-         blue:((float)(rgbValue & 0xFF))/0xFF \
-         alpha:((float)((rgbValue & 0xFF000000) >> 24))/0xFF]
-
-#define opacityFromARGB(rgbValue) ((float)((rgbValue & 0xFF000000) >> 24))/0xFF
-
 using namespace rive;
 
-// Base color space used throughout the renderer
+// Base color space used by the renderer
 const CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
 
 /*
@@ -32,6 +23,12 @@ RiveRenderPaint::RiveRenderPaint() {
     // NSLog(@"INITIALIZING A NEW RENDER PAINT");
 }
 
+RiveRenderPaint::~RiveRenderPaint() {
+//    NSLog(@"Releasing paint resources");
+    CGColorRelease(cgColor);
+    CGGradientRelease(gradient);
+}
+
 void RiveRenderPaint::style(RenderPaintStyle value) {
 //    NSLog(@" --- RenderPaint::style");
     switch(value) {
@@ -39,20 +36,20 @@ void RiveRenderPaint::style(RenderPaintStyle value) {
             paintStyle = RivePaintStyle::Fill;
             break;
         case RenderPaintStyle::stroke:
-//            NSLog(@"Ask for stroke");
             paintStyle = RivePaintStyle::Stroke;
             break;
     }
 }
 
 void RiveRenderPaint::color(unsigned int value) {
-    // NSLog(@" --- RenderPaint::color -> %u", value);
+//     NSLog(@" --- RenderPaint::color -> %u", value);
     CGFloat color [] = {
         ((float)((value & 0xFF0000) >> 16))/0xFF,
         ((float)((value & 0xFF00) >> 8))/0xFF,
         ((float)(value & 0xFF))/0xFF,
         ((float)((value & 0xFF000000) >> 24))/0xFF
     };
+    CGColorRelease(cgColor);
     cgColor = CGColorCreate(baseSpace, color);
 }
 
@@ -155,24 +152,16 @@ void RiveRenderPaint::blendMode(BlendMode value) {
 
 void RiveRenderPaint::linearGradient(float sx, float sy, float ex, float ey) {
 //    NSLog(@" --- RenderPaint::linearGradient (%.1f,%.1f), (%.1f,%.1f)", sx, sy, ex, ey);
-    gradient = RiveGradient::Linear;
+    gradientType = RiveGradient::Linear;
     gradientStart = CGPointMake(sx, sy);
     gradientEnd = CGPointMake(ex, ey);
-    
-    // clear out the stops
-    stops.clear();
-    colorStops.clear();
-    
 }
+
 void RiveRenderPaint::radialGradient(float sx, float sy, float ex, float ey) {
 //    NSLog(@" --- RenderPaint::radialGradient");
-    gradient = RiveGradient::Radial;
+    gradientType = RiveGradient::Radial;
     gradientStart = CGPointMake(sx, sy);
     gradientEnd = CGPointMake(ex, ey);
-    
-    // clear out the stops
-    stops.clear();
-    colorStops.clear();
 }
 
 void RiveRenderPaint::addStop(unsigned int color, float stop) {
@@ -185,6 +174,14 @@ void RiveRenderPaint::addStop(unsigned int color, float stop) {
 }
 void RiveRenderPaint::completeGradient() {
 //    NSLog(@" --- RenderPaint::completeGradient");
+    // release the previously cached gradient, if any
+    if (gradient != NULL) {
+        CGGradientRelease(gradient);
+    }
+    gradient = CGGradientCreateWithColorComponents(baseSpace, &colorStops[0], &stops[0], stops.size());
+    // clear out the stops
+    stops.clear();
+    colorStops.clear();
 }
 
 /*
@@ -192,36 +189,36 @@ void RiveRenderPaint::completeGradient() {
  */
 
 RiveRenderPath::RiveRenderPath() {
-    path = [[UIBezierPath alloc] init];
 //    NSLog(@"INITIALIZING A NEW RENDER PATH");
+    path = CGPathCreateMutable();
+}
+
+RiveRenderPath::~RiveRenderPath() {
+//    NSLog(@"Releasing path resources");
+    CGPathRelease(path);
 }
 
 void RiveRenderPath::close() {
     // NSLog(@" --- RenderPath::close");
-    [path closePath];
+    CGPathCloseSubpath(path);
 }
 
 void RiveRenderPath::reset() {
 //    NSLog(@" --- RenderPath::reset");
-    path = [[UIBezierPath alloc] init];
-    // [path removeAllPoints];
+    CGPathRelease(path);
+    path = CGPathCreateMutable();
 }
 
 void RiveRenderPath::addPath(CommandPath* path, const Mat2D& transform) {
 //    NSLog(@" --- RenderPath::addPath");
-    UIBezierPath *addPath = reinterpret_cast<RiveRenderPath *>(path)->getBezierPath();
-    
+    CGMutablePathRef pathToAdd = reinterpret_cast<RiveRenderPath *>(path)->getPath();
     CGAffineTransform affineTransform = CGAffineTransformMake(transform.xx(),
                                                               transform.xy(),
                                                               transform.yx(),
                                                               transform.yy(),
                                                               transform.tx(),
                                                               transform.ty());
-    
-    UIBezierPath *clonePath = [addPath copy];
-    
-    [clonePath applyTransform:affineTransform];
-    [this->path appendPath:clonePath];
+    CGPathAddPath(this->path, &affineTransform, pathToAdd);
 }
     
 void RiveRenderPath::fillRule(FillRule value) {
@@ -231,47 +228,45 @@ void RiveRenderPath::fillRule(FillRule value) {
     
 void RiveRenderPath::moveTo(float x, float y) {
 //    NSLog(@" --- RenderPath::moveTo x %.1f, y %.1f", x, y);
-    [path moveToPoint:CGPointMake(x, y)];
+    CGPathMoveToPoint(path, NULL, x, y);
 }
 
 void RiveRenderPath::lineTo(float x, float y) {
 //    NSLog(@" --- RenderPath::lineTo x %.1f, y %.1f", x, y);
     if (isnan(x) || isnan(y)) {
-        NSLog(@"Received NaN in lineTo!!!!");
+//        NSLog(@"Received NaN in lineTo!!!!");
         return;
     }
-    [path addLineToPoint:CGPointMake(x, y)];
+    CGPathAddLineToPoint(path, NULL, x, y);
 }
     
 void RiveRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, float y) {
 //    NSLog(@" --- call to RenderPath::cubicTo %.1f, %.1f, %.1f, %.1f, %.1f, %.1f, ", ox, oy, ix, iy, x, y);
-    [path addCurveToPoint:CGPointMake(x, y)
-                controlPoint1:CGPointMake(ox, oy)
-                controlPoint2:CGPointMake(ix, iy)
-    ];
+    CGPathAddCurveToPoint(path, NULL, ox, oy, ix, iy, x, y);
 }
 
-// Renderer
+/*
+ * Renderer
+ */
 
-// Implement save by creating a sublayer
-void NewRiveRenderer::save() {
+RiveRenderer::~RiveRenderer() {
+    // NSLog(@"Releasing renderer c++");
+}
+
+void RiveRenderer::save() {
 //    NSLog(@" --- Renderer::save");
     CGContextSaveGState(ctx);
 }
 
-// Implement restore by moving back up to the parent layer. If the parent
-// layer is ctx, then there's been a restore without a save
-void NewRiveRenderer::restore() {
+void RiveRenderer::restore() {
 //    NSLog(@" -- Renderer::restore");
     CGContextRestoreGState(ctx);
 }
 
-void NewRiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
-
+void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
+//        NSLog(@" --- Renderer::drawPath path for type %d", rivePaint->paintStyle);
     RiveRenderPaint *rivePaint = reinterpret_cast<RiveRenderPaint *>(paint);
     RiveRenderPath *rivePath = reinterpret_cast<RiveRenderPath *>(path);
-    
-//    NSLog(@" --- Renderer::drawPath path for type %d", rivePaint->paintStyle);
     
     // Apply the stroke join
     if (rivePaint->strokeJoin != RiveStrokeJoin::None) {
@@ -363,57 +358,49 @@ void NewRiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
         }
     }
         
-    // Add the path and then paint it appropriately
-    CGPathRef cgPath = rivePath->getBezierPath().CGPath;
+    // Add the path and paint it
+    CGPathRef cgPath = rivePath->getPath();
     CGContextAddPath(ctx, cgPath);
     
     // If fill or stroke set, draw appropriately
     if (rivePaint->cgColor != NULL) {
         switch (rivePaint->paintStyle) {
             case RivePaintStyle::Stroke:
-//                NSLog(@"Painting stroke");
                 CGContextSetStrokeColorWithColor(ctx, rivePaint->cgColor);
                 CGContextSetLineWidth(ctx, rivePaint->paintThickness);
                 CGContextDrawPath(ctx, kCGPathStroke);
                 break;
             case RivePaintStyle::Fill:
-//                NSLog(@"Painting fill");
                 CGContextSetFillColorWithColor(ctx, rivePaint->cgColor);
                 CGContextDrawPath(ctx, kCGPathFill);
                 break;
             case RivePaintStyle::None:
                 break;
-            default:
-                break;
         }
-    } else {
-//        NSLog(@"Color is null!!!");
     }
     
     // Draw gradient
-    if (rivePaint->gradient != RiveGradient::None) {
-//        NSLog(@"Drawing a gradient");
-        CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, &rivePaint->colorStops[0], &rivePaint->stops[0], rivePaint->stops.size());
-        
+    if (rivePaint->gradientType != RiveGradient::None) {
         // If the path is a stroke, then convert the path to a stroked path to prevent the gradient from filling the path
         if (rivePaint->paintStyle == RivePaintStyle::Stroke) {
             CGContextSetLineWidth(ctx, rivePaint->paintThickness);
             CGContextReplacePathWithStrokedPath(ctx);
         }
+        
+        // Clip the gradient
         CGContextClip(ctx);
             
-        if (rivePaint->gradient == RiveGradient::Linear) {
-            CGContextDrawLinearGradient(ctx, gradient, rivePaint->gradientStart, rivePaint->gradientEnd,  0x3);
-        } else if (rivePaint->gradient == RiveGradient:: Radial) {
+        if (rivePaint->gradientType == RiveGradient::Linear) {
+            CGContextDrawLinearGradient(ctx, rivePaint->gradient, rivePaint->gradientStart, rivePaint->gradientEnd,  0x3);
+        } else if (rivePaint->gradientType == RiveGradient:: Radial) {
             // Calculate the end radius
             float dx = rivePaint->gradientEnd.x - rivePaint->gradientStart.x;
             float dy = rivePaint->gradientEnd.y - rivePaint->gradientStart.y;
             float endRadius = sqrt(dx*dx + dy*dy);
-            CGContextDrawRadialGradient(ctx, gradient, rivePaint->gradientStart, 0, rivePaint->gradientStart, endRadius, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
+            CGContextDrawRadialGradient(ctx, rivePaint->gradient, rivePaint->gradientStart, 0, rivePaint->gradientStart, endRadius, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
         }
-        // Gradient is no longer needed
-        CGGradientRelease(gradient); gradient = NULL;
-        
+
+        // Now draw the path, clipping the gradient
         if (rivePaint->paintStyle == RivePaintStyle::Fill) {
             CGContextDrawPath(ctx, kCGPathFill);
         } else if (rivePaint->paintStyle == RivePaintStyle::Stroke) {
@@ -422,15 +409,14 @@ void NewRiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
     }
 }
 
-void NewRiveRenderer::clipPath(RenderPath* path) {
-    const CGPath *clipPath = reinterpret_cast<RiveRenderPath *>(path)->getBezierPath().CGPath;
-//    NSLog(@" --- Renderer::clipPath %@", clipPath);
-    
+void RiveRenderer::clipPath(RenderPath* path) {
+//        NSLog(@" --- Renderer::clipPath %@", clipPath);
+    const CGPath *clipPath = reinterpret_cast<RiveRenderPath *>(path)->getPath();
     CGContextAddPath(ctx, clipPath);
     CGContextClip(ctx);
 }
 
-void NewRiveRenderer::transform(const Mat2D& transform) {
+void RiveRenderer::transform(const Mat2D& transform) {
 //    NSLog(@" --- Renderer::transform %.1f, %.1f, %.1f, %.1f, %.1f, %.1f",
 //        transform.xx(),
 //        transform.xy(),
@@ -453,6 +439,5 @@ void NewRiveRenderer::transform(const Mat2D& transform) {
 
 namespace rive {
     RenderPaint* makeRenderPaint() { return new RiveRenderPaint(); }
-
     RenderPath* makeRenderPath() { return new RiveRenderPath(); }
 }
