@@ -24,7 +24,7 @@ RiveRenderPaint::RiveRenderPaint() {
 }
 
 RiveRenderPaint::~RiveRenderPaint() {
-    NSLog(@"Releasing paint resources");
+//    NSLog(@"Releasing paint resources");
     CGColorRelease(cgColor);
     CGGradientRelease(gradient);
 }
@@ -49,6 +49,7 @@ void RiveRenderPaint::color(unsigned int value) {
         ((float)(value & 0xFF))/0xFF,
         ((float)((value & 0xFF000000) >> 24))/0xFF
     };
+    CGColorRelease(cgColor);
     cgColor = CGColorCreate(baseSpace, color);
 }
 
@@ -193,7 +194,7 @@ RiveRenderPath::RiveRenderPath() {
 }
 
 RiveRenderPath::~RiveRenderPath() {
-    NSLog(@"Releasing path resources");
+//    NSLog(@"Releasing path resources");
     CGPathRelease(path);
 }
 
@@ -244,16 +245,19 @@ void RiveRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, fl
     CGPathAddCurveToPoint(path, NULL, ox, oy, ix, iy, x, y);
 }
 
-// Renderer
+/*
+ * Renderer
+ */
 
-// Implement save by creating a sublayer
+RiveRenderer::~RiveRenderer() {
+    // NSLog(@"Releasing renderer c++");
+}
+
 void RiveRenderer::save() {
 //    NSLog(@" --- Renderer::save");
     CGContextSaveGState(ctx);
 }
 
-// Implement restore by moving back up to the parent layer. If the parent
-// layer is ctx, then there's been a restore without a save
 void RiveRenderer::restore() {
 //    NSLog(@" -- Renderer::restore");
     CGContextRestoreGState(ctx);
@@ -435,6 +439,5 @@ void RiveRenderer::transform(const Mat2D& transform) {
 
 namespace rive {
     RenderPaint* makeRenderPaint() { return new RiveRenderPaint(); }
-
     RenderPath* makeRenderPath() { return new RiveRenderPath(); }
 }

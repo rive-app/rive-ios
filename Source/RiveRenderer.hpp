@@ -17,6 +17,10 @@
 namespace rive
 {
 
+    /*
+     * RenderPaint
+     */
+
     enum class RiveGradient
     {
         None,
@@ -68,7 +72,6 @@ namespace rive
         Luminosity = static_cast<int>(BlendMode::luminosity)
     };
 
-
     class RiveRenderPaint : public RenderPaint
     {
     private:
@@ -102,6 +105,10 @@ namespace rive
         void addStop(unsigned int color, float stop) override;
         void completeGradient() override;
     };
+
+    /*
+     * RenderPath
+     */
 
     enum class RivePathCommandType
     {
@@ -145,6 +152,10 @@ namespace rive
         void close() override;
     };
 
+    /*
+     * Renderer
+     */
+
     class RiveRenderer : public Renderer
     {
     private:
@@ -152,7 +163,8 @@ namespace rive
 
     public:
         RiveRenderer(CGContextRef context) : ctx(context) {}
-
+        ~RiveRenderer();
+        
         void save() override;
         void restore() override;
         void transform(const Mat2D &transform) override;

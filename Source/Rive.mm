@@ -50,6 +50,10 @@ CGContextRef ctx;
     }
 }
 
+-(void) dealloc {
+    delete _renderer;
+}
+
 -(void) alignWithRect:(CGRect)rect withContentRect:(CGRect)contentRect withAlignment:(Alignment)alignment withFit:(Fit)fit {
 //    NSLog(@"Rect in align %@", NSStringFromCGRect(rect));
     
