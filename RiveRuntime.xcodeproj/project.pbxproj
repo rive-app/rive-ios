@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C9601F23250C143A0032AA07 /* RiveViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C9601F21250C143A0032AA07 /* RiveViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C9601F24250C143A0032AA07 /* RiveViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F22250C143A0032AA07 /* RiveViewController.mm */; };
-		C9601F27250C14560032AA07 /* RiveView.h in Headers */ = {isa = PBXBuildFile; fileRef = C9601F25250C14560032AA07 /* RiveView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C9601F28250C14560032AA07 /* RiveView.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F26250C14560032AA07 /* RiveView.mm */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
 		C9601F69251004780032AA07 /* vec2d.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9601F2D251004770032AA07 /* vec2d.hpp */; };
 		C9601F6C251004780032AA07 /* color.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9601F30251004770032AA07 /* color.hpp */; };
@@ -50,7 +46,6 @@
 		C9601FB6251004950032AA07 /* color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9601FAA251004950032AA07 /* color.cpp */; };
 		C9601FB9251004950032AA07 /* gradient_stop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9601FAD251004950032AA07 /* gradient_stop.cpp */; };
 		C9601FBA251004950032AA07 /* stroke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9601FAE251004950032AA07 /* stroke.cpp */; };
-		C960285B251FD59800704818 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C960285A251FD59800704818 /* UIKit.framework */; };
 		C98F296F2513FA8B0076E802 /* keyframe_id.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C98F296E2513FA8B0076E802 /* keyframe_id.hpp */; };
 		C98F29782513FAAE0076E802 /* draw_rules.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C98F29722513FAAE0076E802 /* draw_rules.hpp */; };
 		C98F29792513FAAE0076E802 /* draw_target_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C98F29732513FAAE0076E802 /* draw_target_base.hpp */; };
@@ -226,10 +221,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		C9601F21250C143A0032AA07 /* RiveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveViewController.h; sourceTree = "<group>"; };
-		C9601F22250C143A0032AA07 /* RiveViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveViewController.mm; sourceTree = "<group>"; };
-		C9601F25250C14560032AA07 /* RiveView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveView.h; sourceTree = "<group>"; };
-		C9601F26250C14560032AA07 /* RiveView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveView.mm; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
 		C9601F2D251004770032AA07 /* vec2d.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec2d.hpp; sourceTree = "<group>"; };
@@ -301,7 +292,6 @@
 		C9601FAC251004950032AA07 /* shape_paint_mutator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shape_paint_mutator.cpp; sourceTree = "<group>"; };
 		C9601FAD251004950032AA07 /* gradient_stop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gradient_stop.cpp; sourceTree = "<group>"; };
 		C9601FAE251004950032AA07 /* stroke.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stroke.cpp; sourceTree = "<group>"; };
-		C960285A251FD59800704818 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C98F296E2513FA8B0076E802 /* keyframe_id.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = keyframe_id.hpp; sourceTree = "<group>"; };
 		C98F29722513FAAE0076E802 /* draw_rules.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = draw_rules.hpp; sourceTree = "<group>"; };
 		C98F29732513FAAE0076E802 /* draw_target_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = draw_target_base.hpp; path = generated/draw_target_base.hpp; sourceTree = "<group>"; };
@@ -507,7 +497,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C960285B251FD59800704818 /* UIKit.framework in Frameworks */,
 				C9D60DAC2512B04B00AAA3A6 /* QuartzCore.framework in Frameworks */,
 				C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */,
 			);
@@ -650,10 +639,6 @@
 				C9C741F324FC510200EF9516 /* Rive.mm */,
 				C9601F29250C25830032AA07 /* RiveRenderer.hpp */,
 				C9601F2A250C25930032AA07 /* RiveRenderer.mm */,
-				C9601F25250C14560032AA07 /* RiveView.h */,
-				C9601F26250C14560032AA07 /* RiveView.mm */,
-				C9601F21250C143A0032AA07 /* RiveViewController.h */,
-				C9601F22250C143A0032AA07 /* RiveViewController.mm */,
 				C9C73ED424FC478800EF9516 /* RiveRuntime.h */,
 				C9C73ED524FC478800EF9516 /* Info.plist */,
 			);
@@ -1048,7 +1033,6 @@
 		C9D60DA62512AFE900AAA3A6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C960285A251FD59800704818 /* UIKit.framework */,
 				C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */,
 				C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */,
 			);
@@ -1066,8 +1050,6 @@
 				C9C741D224FC4F0500EF9516 /* points_path.hpp in Headers */,
 				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
 				C9601F8E251004780032AA07 /* solid_color.hpp in Headers */,
-				C9601F27250C14560032AA07 /* RiveView.h in Headers */,
-				C9601F23250C143A0032AA07 /* RiveViewController.h in Headers */,
 				C9C741DF24FC4F0500EF9516 /* artboard.hpp in Headers */,
 				C9601F7F251004780032AA07 /* linear_gradient.hpp in Headers */,
 				C9C741B324FC4F0500EF9516 /* linear_animation.hpp in Headers */,
@@ -1332,7 +1314,6 @@
 				C9C7415524FC4F0500EF9516 /* cubic_asymmetric_vertex.cpp in Sources */,
 				C98F29842513FAC30076E802 /* keyframe_id.cpp in Sources */,
 				C9C7416824FC4F0500EF9516 /* file.cpp in Sources */,
-				C9601F28250C14560032AA07 /* RiveView.mm in Sources */,
 				C9C7415F24FC4F0500EF9516 /* shape_paint_container.cpp in Sources */,
 				C9C7413C24FC4F0500EF9516 /* binary_reader.cpp in Sources */,
 				C9C7416D24FC4F0500EF9516 /* skin.cpp in Sources */,
@@ -1344,7 +1325,6 @@
 				C98F29832513FAC30076E802 /* draw_target.cpp in Sources */,
 				C9C7414524FC4F0500EF9516 /* keyframe_double.cpp in Sources */,
 				C9C7415C24FC4F0500EF9516 /* rectangle.cpp in Sources */,
-				C9601F24250C143A0032AA07 /* RiveViewController.mm in Sources */,
 				C9C7413D24FC4F0500EF9516 /* transform_component.cpp in Sources */,
 				C9C7414224FC4F0500EF9516 /* keyed_object.cpp in Sources */,
 				C9C7416C24FC4F0500EF9516 /* weight.cpp in Sources */,
