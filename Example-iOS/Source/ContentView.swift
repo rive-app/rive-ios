@@ -16,9 +16,9 @@ struct ContentView: View {
 }
 
 struct MyRive: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> RiveViewController {
-        return RiveViewController(resource: "truck", withExtension: "riv")
+    func makeUIViewController(context: Context) -> MyRiveViewController {
+        return MyRiveViewController(withResource: "truck", withExtension: "riv")
     }
-    
-    func updateUIViewController(_ uiViewController: RiveViewController, context: Context) {}
+
+    func updateUIViewController(_ uiViewController: MyRiveViewController, context: Context) {}
 }
