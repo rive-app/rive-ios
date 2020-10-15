@@ -59,7 +59,7 @@ CGContextRef ctx;
     
     // Calculate the AABBs
     rive::AABB frame = rive::AABB(rect.origin.x, rect.origin.y, rect.size.width + rect.origin.x, rect.size.height + rect.origin.y);
-    rive::AABB content = rive::AABB(contentRect.origin.x, contentRect.origin.y, contentRect.size.width + contentRect.origin.x, rect.size.height + rect.origin.y);
+    rive::AABB content = rive::AABB(contentRect.origin.x, contentRect.origin.y, contentRect.size.width + contentRect.origin.x, contentRect.size.height + contentRect.origin.y);
 
     // Work out the fit
     rive::Fit riveFit;
