@@ -55,8 +55,14 @@ class MyRiveViewController: UIViewController {
         // Import the data into a RiveFile
         let riveFile = RiveFile()
         let bytes = [UInt8](data)
-        data.withUnsafeMutableBytes {(mutableBytes: UnsafeMutablePointer<UInt8>) in
-            let importResult = RiveFile.import(mutableBytes, bytesLength: UInt64(bytes.count), to: riveFile)
+        
+        data.withUnsafeMutableBytes{(riveBytes:UnsafeMutableRawBufferPointer) in
+            guard let rawPointer = riveBytes.baseAddress else {
+                fatalError("File pointer is messed up")
+            }
+            let pointer = rawPointer.bindMemory(to: UInt8.self, capacity: bytes.count)
+            let importResult = RiveFile.import(pointer, bytesLength: UInt64(bytes.count), to: riveFile)
+
             if (importResult != ImportResult.success) {
                 fatalError("Failed to import \(url).")
             }
