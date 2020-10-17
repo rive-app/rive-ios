@@ -126,25 +126,26 @@
 
 // RIVE FILE
 
-@implementation RiveFile
-
-    rive::File *file;
+@implementation RiveFile {
+    rive::File* riveFile;
+}
 
 + (uint) majorVersion { return UInt8(rive::File::majorVersion); }
 + (uint) minorVersion { return UInt8(rive::File::minorVersion); }
 
-// Imports a Rive file, through a parameter reference
-+ (ImportResult) import:(nonnull UInt8 *)bytes bytesLength:(UInt64)length toFile:(nonnull RiveFile *)riveFile {
-    rive::BinaryReader reader = rive::BinaryReader(bytes, length);
-    rive::ImportResult result = rive::File::import(reader, &file);
-    if (result == rive::ImportResult::success) {
-        return success;
+-(nullable instancetype) initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length {
+    if (self = [super init]) {
+        rive::BinaryReader reader = rive::BinaryReader(bytes, length);
+        rive::ImportResult result = rive::File::import(reader, &riveFile);
+        if (result == rive::ImportResult::success) {
+            return self;
+        }
     }
-    return malformed;
+    return nil;
 }
 
 - (RiveArtboard *) artboard {
-    return [[RiveArtboard alloc] initWithArtboard: file->artboard()];
+    return [[RiveArtboard alloc] initWithArtboard: riveFile->artboard()];
 }
 
 @end

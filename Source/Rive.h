@@ -55,7 +55,7 @@ typedef NS_ENUM(NSInteger, ImportResult) {
 // Animation wrapper
 @interface RiveAnimation : NSObject
 
-- (NSString *) name;
+-(NSString *) name;
 -(RiveLinearAnimationInstance *) instance;
 
 @end
@@ -86,11 +86,10 @@ typedef NS_ENUM(NSInteger, ImportResult) {
 @property (class, readonly) uint majorVersion;
 @property (class, readonly) uint minorVersion;
 
-+ (ImportResult) import:(nonnull UInt8*)bytes bytesLength:(UInt64)length toFile:(nonnull RiveFile*)riveFile;
+-(nullable instancetype) initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length;
 
 // Wraps: Artboard* artboard() const;
-- (RiveArtboard *) artboard;
-
+-(RiveArtboard *) artboard;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -14,7 +14,8 @@ class MyRiveViewController: UIViewController {
     var resourceName: String?
     var resourceExt: String?
     var artboard: RiveArtboard?
-    var instance: RiveLinearAnimationInstance?
+    var instance0: RiveLinearAnimationInstance?
+    var instance1: RiveLinearAnimationInstance?
     var displayLink: CADisplayLink?
     var lastTime: CFTimeInterval = 0
     
@@ -53,7 +54,6 @@ class MyRiveViewController: UIViewController {
         }
         
         // Import the data into a RiveFile
-        let riveFile = RiveFile()
         let bytes = [UInt8](data)
         
         data.withUnsafeMutableBytes{(riveBytes:UnsafeMutableRawBufferPointer) in
@@ -61,12 +61,13 @@ class MyRiveViewController: UIViewController {
                 fatalError("File pointer is messed up")
             }
             let pointer = rawPointer.bindMemory(to: UInt8.self, capacity: bytes.count)
-            let importResult = RiveFile.import(pointer, bytesLength: UInt64(bytes.count), to: riveFile)
-
-            if (importResult != ImportResult.success) {
+            
+            guard let riveFile = RiveFile(bytes:pointer, byteLength: UInt64(bytes.count)) else {
                 fatalError("Failed to import \(url).")
             }
+            
             let artboard = riveFile.artboard()
+            
             self.artboard = artboard
             // update the artboard in the view
             (self.view as! MyRiveView).updateArtboard(artboard)
@@ -76,16 +77,23 @@ class MyRiveViewController: UIViewController {
             }
 
             // Fetch the animation and draw a first frame
-            let animation = artboard.animation(at: 0)
-            let instance = animation.instance()
-            self.instance = instance
-            instance.advance(by: 0)
-            instance.apply(to: artboard)
+//            let animation = artboard.animation(at: 0)
+//            self.instance = animation.instance()
+//            instance.advance(by: 0)
+//            instance.apply(to: artboard)
+//            artboard.advance(by: 0)
+                        
+            // Fetch two animations and advance the artboard
+            let animation0 = artboard.animation(at: 0)
+            self.instance0 = animation0.instance()
+            
+            let animation1 = artboard.animation(at: 1)
+            self.instance1 = animation1.instance()
+
             artboard.advance(by: 0)
             
             // Run the looping timer
             runTimer()
-            
         }
     }
     
@@ -118,8 +126,12 @@ class MyRiveViewController: UIViewController {
         lastTime = timestamp;
         
         // Advance the animation instance and the artboard
-        instance?.advance(by: elapsedTime) // advance the animation
-        instance?.apply(to: artboard)      // apply to the artboard
+        instance0!.advance(by: elapsedTime) // advance the animation
+        instance0!.apply(to: artboard)      // apply to the artboard
+        
+        instance1!.advance(by: elapsedTime)
+        instance1!.apply(to: artboard)
+        
         artboard.advance(by: elapsedTime) // advance the artboard
         
         // Trigger a redraw
