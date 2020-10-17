@@ -36,9 +36,9 @@
 
 // RIVE RENDERER
 
-@implementation RiveRenderer
-
-CGContextRef ctx;
+@implementation RiveRenderer {
+    CGContextRef ctx;
+}
 
 -(instancetype) initWithContext:(CGContextRef) context {
     if (self = [super init]) {
@@ -128,7 +128,7 @@ CGContextRef ctx;
 
 @implementation RiveFile
 
-rive::File *file;
+    rive::File *file;
 
 + (uint) majorVersion { return UInt8(rive::File::majorVersion); }
 + (uint) minorVersion { return UInt8(rive::File::minorVersion); }
@@ -152,8 +152,6 @@ rive::File *file;
 // RIVE ARTBOARD
 
 @implementation RiveArtboard
-
-// rive::Artboard *artboard;
 
 -(instancetype) initWithArtboard:(rive::Artboard *) riveArtboard {
     if (self = [super init]) {
@@ -196,10 +194,10 @@ rive::File *file;
 
 // RIVE ANIMATION
 
-@implementation RiveAnimation
-
-rive::Animation *animation;
-
+@implementation RiveAnimation {
+    rive::Animation *animation;
+}
+    
 -(instancetype) initWithAnimation:(rive::Animation *) riveAnimation {
     if (self = [super init]) {
         animation = riveAnimation;
@@ -222,9 +220,9 @@ rive::Animation *animation;
 
 // RIVE LINEAR ANIMATION INSTANCE
 
-@implementation RiveLinearAnimationInstance
-
-rive::LinearAnimationInstance *instance;
+@implementation RiveLinearAnimationInstance {
+    rive::LinearAnimationInstance *instance;
+}
 
 -(instancetype) initWithAnimation:(rive::Animation *) riveAnimation {
     if (self = [super init]) {
