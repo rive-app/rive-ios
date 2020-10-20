@@ -171,6 +171,7 @@
     if (index >= [self animationCount]) {
         return nil;
     }
+    
     return [[RiveAnimation alloc] initWithAnimation: _artboard->animation(index)];
 }
 
@@ -219,6 +220,43 @@
 
 @end
 
+// LINEAR ANIMATION
+
+@implementation LinearAnimation {
+    rive::LinearAnimation *animation;
+}
+
+-(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation {
+    if (self = [super init]) {
+        animation = riveAnimation;
+        return self;
+    } else {
+        return nil;
+    }
+}
+
+-(NSInteger) workStart {
+    return animation->workStart();
+}
+
+-(NSInteger) workEnd {
+    return animation->workEnd();
+}
+
+-(NSInteger) duration {
+    return animation->duration();
+}
+
+-(NSInteger) fps {
+    return animation->fps();
+}
+
+-(void) apply:(float) time to:(RiveArtboard *) artboard {
+    animation->apply(artboard.artboard, time);
+}
+
+@end
+
 // RIVE LINEAR ANIMATION INSTANCE
 
 @implementation RiveLinearAnimationInstance {
@@ -233,6 +271,19 @@
     } else {
         return nil;
     }
+}
+
+-(LinearAnimation *) animation {
+    rive::LinearAnimation *linearAnimation = instance->animation();
+    return [[LinearAnimation alloc] initWithAnimation: linearAnimation];
+}
+
+-(float) time {
+    return instance->time();
+}
+
+-(void) setTime:(float) time {
+    instance->time(time);
 }
 
 -(void) applyTo:(RiveArtboard*) artboard {

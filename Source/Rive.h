@@ -44,9 +44,23 @@ typedef NS_ENUM(NSInteger, ImportResult) {
 
 @class RiveArtboard;
 
+// Linear animation wrapper
+@interface LinearAnimation : NSObject
+
+-(NSInteger) workStart;
+-(NSInteger) workEnd;
+-(NSInteger) duration;
+-(NSInteger) fps;
+-(void) apply:(float) time to:(RiveArtboard *) artboard;
+
+@end
+
 // Linear animation instance wrapper
 @interface RiveLinearAnimationInstance : NSObject
 
+-(float) time;
+-(void) setTime:(float) time;
+-(LinearAnimation *) animation;
 -(void) applyTo:(RiveArtboard*) artboard;
 -(void) advanceBy:(double)elapsedSeconds;
 
