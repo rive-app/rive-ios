@@ -43,34 +43,29 @@ typedef NS_ENUM(NSInteger, ImportResult) {
 };
 
 @class RiveArtboard;
-
-// Linear animation wrapper
-@interface LinearAnimation : NSObject
-
--(NSInteger) workStart;
--(NSInteger) workEnd;
--(NSInteger) duration;
--(NSInteger) fps;
--(void) apply:(float) time to:(RiveArtboard *) artboard;
-
-@end
+@class RiveLinearAnimation;
 
 // Linear animation instance wrapper
 @interface RiveLinearAnimationInstance : NSObject
 
 -(float) time;
 -(void) setTime:(float) time;
--(LinearAnimation *) animation;
+-(RiveLinearAnimation *) animation;
 -(void) applyTo:(RiveArtboard*) artboard;
 -(void) advanceBy:(double)elapsedSeconds;
 
 @end
 
-// Animation wrapper
-@interface RiveAnimation : NSObject
+// Linear animation wrapper
+@interface RiveLinearAnimation : NSObject
 
 -(NSString *) name;
 -(RiveLinearAnimationInstance *) instance;
+-(NSInteger) workStart;
+-(NSInteger) workEnd;
+-(NSInteger) duration;
+-(NSInteger) fps;
+-(void) apply:(float) time to:(RiveArtboard *) artboard;
 
 @end
 
@@ -88,7 +83,7 @@ typedef NS_ENUM(NSInteger, ImportResult) {
 -(NSString *) name;
 -(CGRect) bounds;
 -(NSInteger) animationCount;
--(RiveAnimation *) animationAt:(NSInteger)index;
+-(RiveLinearAnimation *) animationAt:(NSInteger)index;
 -(void) advanceBy:(double)elapsedSeconds;
 -(void) draw:(RiveRenderer *)renderer;
 
