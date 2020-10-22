@@ -17,11 +17,11 @@
 
 
 @interface RiveLinearAnimationInstance()
--(instancetype) initWithAnimation:(rive::Animation *) riveAnimation;
+-(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation;
 @end
 
-@interface RiveAnimation ()
- -(instancetype) initWithAnimation:(rive::Animation *) riveAnimation;
+@interface RiveLinearAnimation ()
+ -(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation;
 @end
 
 @interface RiveArtboard ()
@@ -167,11 +167,12 @@
     return _artboard->animationCount();
 }
 
--(RiveAnimation *) animationAt:(NSInteger) index {
+-(RiveLinearAnimation *) animationAt:(NSInteger) index {
     if (index >= [self animationCount]) {
         return nil;
     }
-    return [[RiveAnimation alloc] initWithAnimation: _artboard->animation(index)];
+    
+    return [[RiveLinearAnimation alloc] initWithAnimation: reinterpret_cast<rive::LinearAnimation *>(_artboard->animation(index))];
 }
 
 -(void) advanceBy:(double) elapsedSeconds {
@@ -193,13 +194,13 @@
 
 @end
 
-// RIVE ANIMATION
+// RIVE LINEAR ANIMATION
 
-@implementation RiveAnimation {
-    rive::Animation *animation;
+@implementation RiveLinearAnimation {
+    rive::LinearAnimation *animation;
 }
-    
--(instancetype) initWithAnimation:(rive::Animation *) riveAnimation {
+
+-(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation {
     if (self = [super init]) {
         animation = riveAnimation;
         return self;
@@ -217,6 +218,26 @@
     return [[RiveLinearAnimationInstance alloc] initWithAnimation: animation];
 }
 
+-(NSInteger) workStart {
+    return animation->workStart();
+}
+
+-(NSInteger) workEnd {
+    return animation->workEnd();
+}
+
+-(NSInteger) duration {
+    return animation->duration();
+}
+
+-(NSInteger) fps {
+    return animation->fps();
+}
+
+-(void) apply:(float) time to:(RiveArtboard *) artboard {
+    animation->apply(artboard.artboard, time);
+}
+
 @end
 
 // RIVE LINEAR ANIMATION INSTANCE
@@ -225,14 +246,27 @@
     rive::LinearAnimationInstance *instance;
 }
 
--(instancetype) initWithAnimation:(rive::Animation *) riveAnimation {
+-(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation {
     if (self = [super init]) {
         
-        instance = new rive::LinearAnimationInstance(reinterpret_cast<rive::LinearAnimation *>(riveAnimation));
+        instance = new rive::LinearAnimationInstance(riveAnimation);
         return self;
     } else {
         return nil;
     }
+}
+
+-(RiveLinearAnimation *) animation {
+    rive::LinearAnimation *linearAnimation = instance->animation();
+    return [[RiveLinearAnimation alloc] initWithAnimation: linearAnimation];
+}
+
+-(float) time {
+    return instance->time();
+}
+
+-(void) setTime:(float) time {
+    instance->time(time);
 }
 
 -(void) applyTo:(RiveArtboard*) artboard {

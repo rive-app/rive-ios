@@ -75,21 +75,15 @@ class MyRiveViewController: UIViewController {
             if (artboard.animationCount() == 0) {
                 fatalError("No animations in the file.")
             }
-
-            // Fetch the animation and draw a first frame
-//            let animation = artboard.animation(at: 0)
-//            self.instance = animation.instance()
-//            instance.advance(by: 0)
-//            instance.apply(to: artboard)
-//            artboard.advance(by: 0)
                         
-            // Fetch two animations and advance the artboard
+            // Fetch two animations
             let animation0 = artboard.animation(at: 0)
             self.instance0 = animation0.instance()
             
             let animation1 = artboard.animation(at: 1)
             self.instance1 = animation1.instance()
 
+            // Advance the artboard
             artboard.advance(by: 0)
             
             // Run the looping timer
