@@ -14,8 +14,7 @@ class MyRiveViewController: UIViewController {
     var resourceName: String?
     var resourceExt: String?
     var artboard: RiveArtboard?
-    var instance0: RiveLinearAnimationInstance?
-    var instance1: RiveLinearAnimationInstance?
+    var instance: RiveLinearAnimationInstance?
     var displayLink: CADisplayLink?
     var lastTime: CFTimeInterval = 0
     
@@ -76,17 +75,15 @@ class MyRiveViewController: UIViewController {
                 fatalError("No animations in the file.")
             }
                         
-            // Fetch two animations
-            let animation0 = artboard.animation(at: 0)
-            self.instance0 = animation0.instance()
+            // Fetch an animation
+            let animation = artboard.animation(at: 0)
+            self.instance = animation.instance()
             
-            let animation1 = artboard.animation(at: 1)
-            self.instance1 = animation1.instance()
-
-            // Advance the artboard
+            // Advance the artboard, this will ensure the first
+            // frame is displayed when the artboard is drawn
             artboard.advance(by: 0)
             
-            // Run the looping timer
+            // Start the animation loop
             runTimer()
         }
     }
@@ -120,12 +117,9 @@ class MyRiveViewController: UIViewController {
         lastTime = timestamp;
         
         // Advance the animation instance and the artboard
-        instance0!.advance(by: elapsedTime) // advance the animation
-        instance0!.apply(to: artboard)      // apply to the artboard
-        
-        instance1!.advance(by: elapsedTime)
-        instance1!.apply(to: artboard)
-        
+        instance!.advance(by: elapsedTime) // advance the animation
+        instance!.apply(to: artboard)      // apply to the artboard
+                
         artboard.advance(by: elapsedTime) // advance the artboard
         
         // Trigger a redraw
