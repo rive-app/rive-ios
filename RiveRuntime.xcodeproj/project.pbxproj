@@ -56,6 +56,7 @@
 		C98F29832513FAC30076E802 /* draw_target.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29802513FAC30076E802 /* draw_target.cpp */; };
 		C98F29842513FAC30076E802 /* keyframe_id.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29812513FAC30076E802 /* keyframe_id.cpp */; };
 		C98F29852513FAC30076E802 /* draw_rules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29822513FAC30076E802 /* draw_rules.cpp */; };
+		C9C3E4902565BA400051D67C /* triangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C3E48F2565BA3F0051D67C /* triangle.cpp */; };
 		C9C73EE024FC478900EF9516 /* RiveRuntimeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.m */; };
 		C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C73ED424FC478800EF9516 /* RiveRuntime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C7413724FC4F0500EF9516 /* core_bool_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C7407024FC4F0400EF9516 /* core_bool_type.cpp */; };
@@ -302,6 +303,7 @@
 		C98F29802513FAC30076E802 /* draw_target.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_target.cpp; sourceTree = "<group>"; };
 		C98F29812513FAC30076E802 /* keyframe_id.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = keyframe_id.cpp; path = animation/keyframe_id.cpp; sourceTree = "<group>"; };
 		C98F29822513FAC30076E802 /* draw_rules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_rules.cpp; sourceTree = "<group>"; };
+		C9C3E48F2565BA3F0051D67C /* triangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = triangle.cpp; sourceTree = "<group>"; };
 		C9C73ED124FC478800EF9516 /* RiveRuntime.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RiveRuntime.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C73ED424FC478800EF9516 /* RiveRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveRuntime.h; sourceTree = "<group>"; };
 		C9C73ED524FC478800EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -744,6 +746,7 @@
 				C9C7409B24FC4F0400EF9516 /* shape_paint_container.cpp */,
 				C9C7409C24FC4F0400EF9516 /* cubic_mirrored_vertex.cpp */,
 				C9C7409D24FC4F0400EF9516 /* ellipse.cpp */,
+				C9C3E48F2565BA3F0051D67C /* triangle.cpp */,
 				C9C7409E24FC4F0400EF9516 /* clipping_shape.cpp */,
 			);
 			path = shapes;
@@ -1340,6 +1343,7 @@
 				C9C7416324FC4F0500EF9516 /* aabb.cpp in Sources */,
 				C9C7414724FC4F0500EF9516 /* cubic_interpolator.cpp in Sources */,
 				C9C7415A24FC4F0500EF9516 /* parametric_path.cpp in Sources */,
+				C9C3E4902565BA400051D67C /* triangle.cpp in Sources */,
 				C9C7416224FC4F0500EF9516 /* clipping_shape.cpp in Sources */,
 				C9C7416724FC4F0500EF9516 /* artboard.cpp in Sources */,
 				C9C7415624FC4F0500EF9516 /* cubic_detached_vertex.cpp in Sources */,
@@ -1509,6 +1513,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.6.3;
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -1535,6 +1540,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.6.3;
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
