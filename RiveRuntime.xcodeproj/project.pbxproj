@@ -56,6 +56,10 @@
 		C98F29832513FAC30076E802 /* draw_target.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29802513FAC30076E802 /* draw_target.cpp */; };
 		C98F29842513FAC30076E802 /* keyframe_id.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29812513FAC30076E802 /* keyframe_id.cpp */; };
 		C98F29852513FAC30076E802 /* draw_rules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29822513FAC30076E802 /* draw_rules.cpp */; };
+		C9AEB7E825C8903C00AE9C43 /* star_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9AEB7E625C8903C00AE9C43 /* star_base.hpp */; };
+		C9AEB7E925C8903C00AE9C43 /* polygon_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9AEB7E725C8903C00AE9C43 /* polygon_base.hpp */; };
+		C9AEB7EE25C8904E00AE9C43 /* star.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9AEB7EC25C8904E00AE9C43 /* star.cpp */; };
+		C9AEB7EF25C8904E00AE9C43 /* polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9AEB7ED25C8904E00AE9C43 /* polygon.cpp */; };
 		C9C3E4902565BA400051D67C /* triangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C3E48F2565BA3F0051D67C /* triangle.cpp */; };
 		C9C73EE024FC478900EF9516 /* RiveRuntimeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.m */; };
 		C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C73ED424FC478800EF9516 /* RiveRuntime.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -303,6 +307,10 @@
 		C98F29802513FAC30076E802 /* draw_target.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_target.cpp; sourceTree = "<group>"; };
 		C98F29812513FAC30076E802 /* keyframe_id.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = keyframe_id.cpp; path = animation/keyframe_id.cpp; sourceTree = "<group>"; };
 		C98F29822513FAC30076E802 /* draw_rules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_rules.cpp; sourceTree = "<group>"; };
+		C9AEB7E625C8903C00AE9C43 /* star_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = star_base.hpp; path = generated/shapes/star_base.hpp; sourceTree = "<group>"; };
+		C9AEB7E725C8903C00AE9C43 /* polygon_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = polygon_base.hpp; path = generated/shapes/polygon_base.hpp; sourceTree = "<group>"; };
+		C9AEB7EC25C8904E00AE9C43 /* star.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = star.cpp; path = shapes/star.cpp; sourceTree = "<group>"; };
+		C9AEB7ED25C8904E00AE9C43 /* polygon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polygon.cpp; path = shapes/polygon.cpp; sourceTree = "<group>"; };
 		C9C3E48F2565BA3F0051D67C /* triangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = triangle.cpp; sourceTree = "<group>"; };
 		C9C73ED124FC478800EF9516 /* RiveRuntime.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RiveRuntime.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C73ED424FC478800EF9516 /* RiveRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveRuntime.h; sourceTree = "<group>"; };
@@ -668,6 +676,8 @@
 		C9C7406D24FC4F0400EF9516 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C9AEB7ED25C8904E00AE9C43 /* polygon.cpp */,
+				C9AEB7EC25C8904E00AE9C43 /* star.cpp */,
 				C98F29822513FAC30076E802 /* draw_rules.cpp */,
 				C98F29802513FAC30076E802 /* draw_target.cpp */,
 				C98F29812513FAC30076E802 /* keyframe_id.cpp */,
@@ -794,6 +804,8 @@
 		C9C740AD24FC4F0400EF9516 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				C9AEB7E725C8903C00AE9C43 /* polygon_base.hpp */,
+				C9AEB7E625C8903C00AE9C43 /* star_base.hpp */,
 				C98F29742513FAAE0076E802 /* draw_rules_base.hpp */,
 				C98F29722513FAAE0076E802 /* draw_rules.hpp */,
 				C98F29732513FAAE0076E802 /* draw_target_base.hpp */,
@@ -1088,6 +1100,7 @@
 				C9C741A324FC4F0500EF9516 /* core_string_type.hpp in Headers */,
 				C9C7417D24FC4F0500EF9516 /* linear_gradient_base.hpp in Headers */,
 				C9C7418424FC4F0500EF9516 /* parametric_path_base.hpp in Headers */,
+				C9AEB7E825C8903C00AE9C43 /* star_base.hpp in Headers */,
 				C9C7419B24FC4F0500EF9516 /* skeletal_component_base.hpp in Headers */,
 				C9C741D724FC4F0500EF9516 /* aabb.hpp in Headers */,
 				C9C7416F24FC4F0500EF9516 /* core_registry.hpp in Headers */,
@@ -1156,6 +1169,7 @@
 				C9C7418124FC4F0500EF9516 /* solid_color_base.hpp in Headers */,
 				C9C741DB24FC4F0500EF9516 /* component.hpp in Headers */,
 				C9C7417F24FC4F0500EF9516 /* fill_base.hpp in Headers */,
+				C9AEB7E925C8903C00AE9C43 /* polygon_base.hpp in Headers */,
 				C9C741E924FC4F0500EF9516 /* cubic_weight.hpp in Headers */,
 				C9C741A524FC4F0500EF9516 /* binary_reader.hpp in Headers */,
 				C9C7418D24FC4F0500EF9516 /* cubic_mirrored_vertex_base.hpp in Headers */,
@@ -1336,9 +1350,11 @@
 				C9C7416B24FC4F0500EF9516 /* skinnable.cpp in Sources */,
 				C9C7413824FC4F0500EF9516 /* core_uint_type.cpp in Sources */,
 				C9C7414824FC4F0500EF9516 /* keyed_property.cpp in Sources */,
+				C9AEB7EE25C8904E00AE9C43 /* star.cpp in Sources */,
 				C9C7413724FC4F0500EF9516 /* core_bool_type.cpp in Sources */,
 				C9C7415D24FC4F0500EF9516 /* straight_vertex.cpp in Sources */,
 				C9C7416024FC4F0500EF9516 /* cubic_mirrored_vertex.cpp in Sources */,
+				C9AEB7EF25C8904E00AE9C43 /* polygon.cpp in Sources */,
 				C9C7415424FC4F0500EF9516 /* points_path.cpp in Sources */,
 				C9C7416324FC4F0500EF9516 /* aabb.cpp in Sources */,
 				C9C7414724FC4F0500EF9516 /* cubic_interpolator.cpp in Sources */,
@@ -1513,7 +1529,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.3;
+				MARKETING_VERSION = 0.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -1540,7 +1556,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.3;
+				MARKETING_VERSION = 0.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
