@@ -1,6 +1,15 @@
 # rive-ios
 iOS runtime for Rive
 
+## Compiling the Source
+When pulling down this repo, you'll need to make sure to also pull down the submodule which contains the C++ runtime that our iOS runtime is built upon. The easiest way to do this is to run in the root dir:
+
+```
+git submodule update --init
+```
+
+When updating, remember to also update the submodule with the same command.
+
 ## Running the Example
 To run the example, open the project in [Example-iOS directory](https://github.com/rive-app/rive-ios/tree/master/Example-iOS). The playing animation can be changed by editing ```RiveViewController(resource: "xxx", withExtension: "riv")``` in ```ContentView.swift```.
 
