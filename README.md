@@ -1,5 +1,9 @@
 # rive-ios
-iOS runtime for Rive
+iOS runtime for [Rive](https://rive.app/)
+
+## Create and ship interactive animations to any platform
+
+[Rive](https://rive.app/) is a real-time interactive design and animation tool. Use our collaborative editor to create motion graphics that respond to different states and user inputs. Then load your animations into apps, games, and websites with our lightweight open-source runtimes. 
 
 ## Compiling the Source
 When pulling down this repo, you'll need to make sure to also pull down the submodule which contains the C++ runtime that our iOS runtime is built upon. The easiest way to do this is to run in the root dir:
