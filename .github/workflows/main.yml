@@ -7,17 +7,15 @@ on:
   #     - '*'
 
 jobs:
-  build_iphoneos:
-    name: Build release iphoneos framework
+  create_framework:
+    name: Create Rive *.xcframework
     runs-on: macos-latest
-    run: ../scripts/buildFramework.sh -t iphoneos -c Release
+    steps:
+      - name: build_iphoneos
+        run: ../scripts/buildFramework.sh -t iphoneos -c Release
 
-  build_iphonesimulator:
-    name: Build release iphonesimulator framework
-    runs-on: macos-latest
-    run: ../scripts/buildFramework.sh -t iphonesimulator -c Release
+      - name: Build release iphonesimulator framework
+        run: ../scripts/buildFramework.sh -t iphonesimulator -c Release
   
-  merge_frameworks:  
-    name: Merge created frameworks
-    runs-on: macos-latest
-    run: ../scripts/mergeFrameworks.sh -c Release
+      - name: Merge created frameworks
+        run: ../scripts/mergeFrameworks.sh -c Release
