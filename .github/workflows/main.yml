@@ -1,0 +1,23 @@
+name: Deploy
+
+on:
+  push
+  # push:
+  #   tags:
+  #     - '*'
+
+jobs:
+  build_iphoneos:
+    name: Build release iphoneos framework
+    runs-on: macos-latest
+    run: ../scripts/buildFramework.sh -t iphoneos -c Release
+
+  build_iphonesimulator:
+    name: Build release iphonesimulator framework
+    runs-on: macos-latest
+    run: ../scripts/buildFramework.sh -t iphonesimulator -c Release
+  
+  merge_frameworks:  
+    name: Merge created frameworks
+    runs-on: macos-latest
+    run: ../scripts/mergeFrameworks.sh -c Release
