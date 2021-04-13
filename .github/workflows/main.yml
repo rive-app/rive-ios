@@ -12,10 +12,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: build_iphoneos
-        run: ../scripts/buildFramework.sh -t iphoneos -c Release
+        run: ./scripts/buildFramework.sh -t iphoneos -c Release
 
       - name: Build release iphonesimulator framework
-        run: ../scripts/buildFramework.sh -t iphonesimulator -c Release
+        run: ./scripts/buildFramework.sh -t iphonesimulator -c Release
   
       - name: Merge created frameworks
-        run: ../scripts/mergeFrameworks.sh -c Release
+        run: ./scripts/mergeFrameworks.sh -c Release
