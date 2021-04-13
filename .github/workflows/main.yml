@@ -13,12 +13,11 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: scripts
     steps:
+      - name: test run
+        run: ls -alt 
       - name: build_iphoneos
-        run: |
-          ls -alt
-          ./scripts/buildFramework.sh -t iphoneos -c Release
+        run: "${GITHUB_WORKSPACE}/scripts/buildFramework.sh  -t iphoneos -c Release"
 
       - name: Build release iphonesimulator framework
         run: ./scripts/buildFramework.sh -t iphonesimulator -c Release
