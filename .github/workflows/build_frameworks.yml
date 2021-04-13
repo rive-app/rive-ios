@@ -1,4 +1,4 @@
-name: Deploy
+name: Build Rive framework
 
 on:
   push
@@ -7,7 +7,6 @@ on:
   #     - '*'
 
 jobs:
-
   build_frameworks:
     runs-on: macos-latest
     steps:
