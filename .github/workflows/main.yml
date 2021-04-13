@@ -32,7 +32,7 @@ jobs:
         run: sh ./scripts/mergeFrameworks.sh -c Release
       - name: Upload artifact
         uses: actions/upload-artifact@v2
-          with:
-            name: rive-framework
-            path: build/RiveRuntime.xcframework
+        with:
+          name: rive-framework
+          path: build/RiveRuntime.xcframework
 
