@@ -7,22 +7,27 @@ on:
   #     - '*'
 
 jobs:
-  create_framework:
-    name: Create Rive *.xcframework
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
+  checkout: 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: test run
-        run: ls -alt 
-      - name: build_iphoneos
-        run: "${GITHUB_WORKSPACE}/scripts/buildFramework.sh  -t iphoneos -c Release"
+      - name: Init submodule
+        run: git submodule update --init
 
-      - name: Build release iphonesimulator framework
-        run: ./scripts/buildFramework.sh -t iphonesimulator -c Release
-  
-      - name: Merge created frameworks
-        run: ./scripts/mergeFrameworks.sh -c Release
+  build_frameworks:
+    outputs:
+      status: ${{ steps.*.conclusion }}
+    steps:
+      - id: iphoneos
+        name: Build release iphoneos framework
+        run: sh ./scripts/buildFramework.sh  -t iphoneos -c Release
+      - id: iphonesimulator
+        name: Build release iphonesimulator framework
+        run: sh ./scripts/buildFramework.sh  -t iphonesimulator -c Release
+
+  build_framework_iphonesimulator:
+    needs: build_frameworks
+    if: !contains(needs.build_frameworks.outputs.status, 'failure')
+    steps:
+        name: Merge created frameworks
+        run: sh ./scripts/buildFramework.sh  -t iphonesimulator -c Release
