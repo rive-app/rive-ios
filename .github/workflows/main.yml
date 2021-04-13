@@ -30,7 +30,9 @@ jobs:
   merge_frameworks:
     runs-on: macos-latest
     needs: build_frameworks
-    if: !contains(needs.build_frameworks.outputs.status, 'failure')
+    # if: !contains(needs.build_frameworks.outputs.status, 'failure')
     steps:
-        - name: Merge created frameworks
-          run: sh ./scripts/mergeFrameworks.sh -c Release
+      - name: Print status
+        run: echo ${{ needs.build_frameworks.outputs.status }}
+      - name: Merge created frameworks
+        run: sh ./scripts/mergeFrameworks.sh -c Release
