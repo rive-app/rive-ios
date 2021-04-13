@@ -7,8 +7,11 @@ on:
   #     - '*'
 
 jobs:
-  checkout: 
+
+  build_frameworks:
     runs-on: macos-latest
+    outputs:
+      status: ${{ steps.*.conclusion }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -17,26 +20,19 @@ jobs:
           submodules: recursive
       - name: Init submodule
         run: git submodule update --init
-
-  build_frameworks:
-    runs-on: macos-latest
-    needs: checkout
-    outputs:
-      status: ${{ steps.*.conclusion }}
-    steps:
-      - id: iphoneos
+      - id: build_iphoneos
         name: Build release iphoneos framework
         run: sh ./scripts/buildFramework.sh  -t iphoneos -c Release
-      - id: iphonesimulator
+      - id: build_iphonesimulator
         name: Build release iphonesimulator framework
         run: sh ./scripts/buildFramework.sh  -t iphonesimulator -c Release
-
-  merge_frameworks:
-    runs-on: macos-latest
-    needs: build_frameworks
-    # if: !contains(needs.build_frameworks.outputs.status, 'failure')
-    steps:
-      - name: Print status
-        run: echo ${{ needs.build_frameworks.outputs.status }}
-      - name: Merge created frameworks
+      - id: merge_frameworks
+        if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
+        name: Merge created frameworks
         run: sh ./scripts/mergeFrameworks.sh -c Release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+          with:
+            name: rive-framework
+            path: build/RiveRuntime.xcframework
+
