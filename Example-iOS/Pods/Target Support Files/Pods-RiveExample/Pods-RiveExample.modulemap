@@ -1,0 +1,6 @@
+framework module Pods_RiveExample {
+  umbrella header "Pods-RiveExample-umbrella.h"
+
+  export *
+  module * { export * }
+}

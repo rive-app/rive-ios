@@ -1,0 +1,6 @@
+framework module RiveRuntime {
+  umbrella header "RiveRuntime.h"
+
+  export *
+  module * { export * }
+}

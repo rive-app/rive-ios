@@ -1,0 +1,21 @@
+PODS:
+  - RiveRuntime (1.0.0)
+
+DEPENDENCIES:
+  - RiveRuntime (from `https://github.com/callstack-internal/RiveFramework.git`)
+
+EXTERNAL SOURCES:
+  RiveRuntime:
+    :git: https://github.com/callstack-internal/RiveFramework.git
+
+CHECKOUT OPTIONS:
+  RiveRuntime:
+    :commit: c5adcd0bae14ffc1e7558373ef23912744412c0f
+    :git: https://github.com/callstack-internal/RiveFramework.git
+
+SPEC CHECKSUMS:
+  RiveRuntime: 3839daac057e176b716fbeed0f751f770edc96da
+
+PODFILE CHECKSUM: ca7532a832a3fb8d1bff3f4aa4d22f6baddebaa2
+
+COCOAPODS: 1.10.1
