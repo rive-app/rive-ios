@@ -31,7 +31,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: rive-framework
+          name: RiveRuntime.xcframework
           path: build/RiveRuntime.xcframework
 
   create_podspec_file:
@@ -62,7 +62,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: rive-podspec
+          name: RiveRuntime.podspec
           path: RiveRuntime.podspec
 
   upload_cocoapods:
@@ -73,12 +73,12 @@ jobs:
       - name: Download framework artifact
         uses: actions/download-artifact@v2
         with:
-          name: rive-framework
+          name: RiveRuntime.xcframework
           path: RiveRuntime.xcframework
       - name: Download podspec artifact
         uses: actions/download-artifact@v2
         with:
-          name: rive-podspec
+          name: RiveRuntime.podspec
           path: RiveRuntime.podspec
       - name: Lint pod
         run: pod lib lint --allow-warnings
