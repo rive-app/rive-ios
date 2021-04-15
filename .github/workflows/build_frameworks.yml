@@ -88,7 +88,6 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
         with:
-          source-directory: 'output'
           destination-github-username: ${{ github.actors }}
           destination-repository-username: 'callstack-internal'
           destination-repository-name: 'RiveFramework'
