@@ -67,11 +67,16 @@ jobs:
 
   upload_cocoapods:
     name: Update podspec repository
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     # container: pandoc/latex
     timeout-minutes: 10
     needs: [create_podspec_file, build_frameworks]
     steps:
+      - name: Checkout podspec repo
+        uses: actions/checkout@v2
+        with:
+          repository: callstack-internal/RiveFramework
+          token: ${{ secrets.RIVE_REPO_PAT }}
       - name: Download framework artifact
         uses: actions/download-artifact@v2
         with:
@@ -85,12 +90,19 @@ jobs:
       # - name: Lint pod
       #   run: pod lib lint --allow-warnings
       - name: Pushes pod to callstack-internal/RiveFramework repo
-        uses: cpina/github-action-push-to-another-repository@master
+        run: |
+          git status
+          git config --local user.email 'contact@callstack.com'
+          git config --local user.name ${{ github.actors }}
+          git add --all
+          git commit -am "Update podspec repo ${{ RELEASE_VERSION }}"
+          git push 
+        # uses: cpina/github-action-push-to-another-repository@master
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
-        with:
-          destination-github-username: ${{ github.actors }}
-          destination-repository-username: 'callstack-internal'
-          destination-repository-name: 'RiveFramework'
-          target-branch: 'main'
-          user-email: callstack@callstack.com
+        # with:
+        #   destination-github-username: ${{ github.actors }}
+        #   destination-repository-username: 'callstack-internal'
+        #   destination-repository-name: 'RiveFramework'
+        #   target-branch: 'main'
+        #   user-email: callstack@callstack.com
