@@ -80,8 +80,8 @@ jobs:
         with:
           name: RiveRuntime.podspec
           path: RiveRuntime.podspec
-      - name: Lint pod
-        run: pod lib lint --allow-warnings
+      # - name: Lint pod
+      #   run: pod lib lint --allow-warnings
       - name: Pushes to another repository
         uses: cpina/github-action-push-to-another-repository@master
         env:
