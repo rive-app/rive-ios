@@ -68,7 +68,6 @@ jobs:
   upload_cocoapods:
     name: Update podspec repository
     runs-on: macos-latest
-    # container: pandoc/latex
     timeout-minutes: 10
     needs: [create_podspec_file, build_frameworks]
     steps:
@@ -80,7 +79,7 @@ jobs:
       - name: Test
         run: |
           ls -alt
-          rm RiveRuntime.podspec
+          rm -rf RiveRuntime.podspec
           rm -rf RiveRuntime.xcframework
           ls -alt
           pwd
