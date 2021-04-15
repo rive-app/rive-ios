@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "RiveRuntime"
-  spec.version      = ${env.RELEASE_VERSION}
+  spec.version      = env.RELEASE_VERSION
   spec.summary      = "iOS SDK for Rive"
   spec.description  = "Rive iOS framework"
   spec.homepage     = "https://github.com/callstack-internal/RiveFramework"
@@ -32,7 +32,7 @@ Pod::Spec.new do |spec|
   spec.swift_version          = '5.0'
   spec.source       = { 
     :git => "https://github.com/callstack-internal/RiveFramework.git",
-    :tag => "v#${env.RELEASE_VERSION}"
+    :tag => "v#$env.RELEASE_VERSION"
   }
   spec.ios.vendored_frameworks = 'RiveRuntime.xcframework'
   spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
