@@ -95,7 +95,7 @@ jobs:
           git config --local user.email 'contact@callstack.com'
           git config --local user.name ${{ github.actors }}
           git add --all
-          git commit -am "Update podspec repo ${{ RELEASE_VERSION }}"
+          git commit -am "Update podspec repo ${{ env.RELEASE_VERSION }}"
           git push 
         # uses: cpina/github-action-push-to-another-repository@master
         env:
