@@ -37,7 +37,6 @@ jobs:
   create_podspec_file:
     name: Create RiveRuntime.podspec
     runs-on: macos-latest
-    needs: build_frameworks
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -68,8 +67,8 @@ jobs:
 
   upload_cocoapods:
     name: Update podspec repository
-    runs-on: maco-latest
-    needs: create_podspec_file
+    runs-on: macos-latest
+    needs: [create_podspec_file, build_frameworks]
     steps:
       - name: Download framework artifact
         uses: actions/download-artifact@v2
