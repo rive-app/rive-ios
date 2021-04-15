@@ -94,26 +94,18 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: RiveRuntime.podspec
-          path: RiveRuntime.podspec
-      # - name: Lint pod
-      #   run: pod lib lint --allow-warnings
+      - name: Lint pod
+        run: pod lib lint --allow-warnings
       - name: Get tag
         id: tag
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: echo ::set-output name=branch_tag::${GITHUB_REF#refs/tags/}
       - name: Pushes pod to callstack-internal/RiveFramework repo
         run: |
           git status
           git config --local user.email 'contact@callstack.com'
           git config --local user.name ${{ github.actor }}
           git add .
-          git commit -m "Update podspec repo tag:${{ steps.tag.outputs.tag }}"
+          git commit -m "Update podspec repo tag:${{ steps.tag.outputs.branch_tag }}"
           git push 
-        # uses: cpina/github-action-push-to-another-repository@master
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
-        # with:
-        #   destination-github-username: ${{ github.actors }}
-        #   destination-repository-username: 'callstack-internal'
-        #   destination-repository-name: 'RiveFramework'
-        #   target-branch: 'main'
-        #   user-email: callstack@callstack.com
