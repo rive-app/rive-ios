@@ -32,3 +32,25 @@ jobs:
         with:
           name: rive-framework
           path: build/RiveRuntime.xcframework
+
+# push framewrok and update podspec
+  create_podspec_file:
+    runs-on: macos-latest
+    steps:
+        - name: Read podspec.txt file
+          uses: pCYSl5EDgo/cat@master
+          id: podspec
+          with:
+            path: podspec.txt
+        - name: Create *.podspec
+          run: |
+            cat > RiveRuntime.podspec <<-EOF                      
+            ${{ steps.podspec.outputs.text }}
+            EOF
+        # just to test it...
+        - name: Upload artifact
+          uses: actions/upload-artifact@v2
+          with:
+            name: rive-framework
+            path: RiveRuntime.podspec
+
