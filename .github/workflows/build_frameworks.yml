@@ -83,6 +83,7 @@ jobs:
           rm RiveRuntime.podspec
           rm -rf RiveRuntime.xcframework
           ls -alt
+          pwd
           git status
       - name: Download framework artifact
         uses: actions/download-artifact@v2
@@ -96,13 +97,16 @@ jobs:
           path: RiveRuntime.podspec
       # - name: Lint pod
       #   run: pod lib lint --allow-warnings
+      - name: Get tag
+        id: tag
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Pushes pod to callstack-internal/RiveFramework repo
         run: |
           git status
           git config --local user.email 'contact@callstack.com'
-          git config --local user.name ${{ github.actors }}
-          git add --all
-          git commit -am "Update podspec repo ${{ env.RELEASE_VERSION }}"
+          git config --local user.name ${{ github.actor }}
+          git add .
+          git commit -m "Update podspec repo tag:${{ steps.tag.outputs.tag }}"
           git push 
         # uses: cpina/github-action-push-to-another-repository@master
         env:
