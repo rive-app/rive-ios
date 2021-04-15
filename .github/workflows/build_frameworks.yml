@@ -1,10 +1,9 @@
 name: Build Rive framework
 
 on:
-  push
-  # push:
-  #   tags:
-  # - 'v*.*.*'
+  push:
+    tags:
+      - v*
 
 jobs:
   build_frameworks:
@@ -76,14 +75,10 @@ jobs:
         with:
           repository: callstack-internal/RiveFramework
           token: ${{ secrets.RIVE_REPO_PAT }}
-      - name: Test
+      - name: Clean
         run: |
-          ls -alt
           rm -rf RiveRuntime.podspec
           rm -rf RiveRuntime.xcframework
-          ls -alt
-          pwd
-          git status
       - name: Download framework artifact
         uses: actions/download-artifact@v2
         with:
@@ -98,7 +93,7 @@ jobs:
       - name: Get tag
         id: tag
         run: echo ::set-output name=branch_tag::${GITHUB_REF#refs/tags/}
-      - name: Pushes pod to callstack-internal/RiveFramework repo
+      - name: Push pod to callstack-internal/RiveFramework repo
         run: |
           git status
           git config --local user.email 'contact@callstack.com'
