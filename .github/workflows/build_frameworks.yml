@@ -8,6 +8,7 @@ on:
 
 jobs:
   build_frameworks:
+    name: Create RiveRuntime.xcframework
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -35,6 +36,7 @@ jobs:
 
 # push framewrok and update podspec
   create_podspec_file:
+    name: Create RiveRuntime.podspec
     runs-on: macos-latest
     # needs: build_frameworks
     steps:
@@ -43,6 +45,15 @@ jobs:
           with:
             token: ${{ secrets.RIVE_REPO_PAT }}
             submodules: recursive
+        - name: Get tag
+          id: tag
+          run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        - name: Check tag
+          env:
+            RELEASE_VERSION: ${{ steps.tag.outputs.tag }}
+          run: |
+            echo $RELEASE_VERSION
+            echo ${{ steps.tag.outputs.tag }}
         - name: Read podspec.txt file
           uses: pCYSl5EDgo/cat@master
           id: podspec
