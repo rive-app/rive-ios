@@ -1,4 +1,4 @@
-Pod::Spec.new do |s|
+Pod::Spec.new do |spec|
   spec.name         = "RiveRuntime"
   spec.version      = "1.0.0"
   spec.summary      = "iOS SDK for Rive"
