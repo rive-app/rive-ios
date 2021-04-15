@@ -67,7 +67,8 @@ jobs:
 
   upload_cocoapods:
     name: Update podspec repository
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+    container: pandoc/latex
     needs: [create_podspec_file, build_frameworks]
     steps:
       - name: Download framework artifact
@@ -82,7 +83,7 @@ jobs:
           path: RiveRuntime.podspec
       # - name: Lint pod
       #   run: pod lib lint --allow-warnings
-      - name: Pushes to another repository
+      - name: Pushes pod to callstack-internal/RiveFramework repo
         uses: cpina/github-action-push-to-another-repository@master
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
