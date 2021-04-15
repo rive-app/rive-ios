@@ -7,32 +7,32 @@ on:
   #     - '*'
 
 jobs:
-  build_frameworks:
-    name: Create RiveRuntime.xcframework
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.RIVE_REPO_PAT }}
-          submodules: recursive
-      - name: Init submodule
-        run: git submodule update --init
-      - id: build_iphoneos
-        name: Build release iphoneos framework
-        run: sh ./scripts/buildFramework.sh  -t iphoneos -c Release
-      - id: build_iphonesimulator
-        name: Build release iphonesimulator framework
-        run: sh ./scripts/buildFramework.sh  -t iphonesimulator -c Release
-      - id: merge_frameworks
-        if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
-        name: Merge created frameworks
-        run: sh ./scripts/mergeFrameworks.sh -c Release
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: rive-framework
-          path: build/RiveRuntime.xcframework
+  # build_frameworks:
+  #   name: Create RiveRuntime.xcframework
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         token: ${{ secrets.RIVE_REPO_PAT }}
+  #         submodules: recursive
+  #     - name: Init submodule
+  #       run: git submodule update --init
+  #     - id: build_iphoneos
+  #       name: Build release iphoneos framework
+  #       run: sh ./scripts/buildFramework.sh  -t iphoneos -c Release
+  #     - id: build_iphonesimulator
+  #       name: Build release iphonesimulator framework
+  #       run: sh ./scripts/buildFramework.sh  -t iphonesimulator -c Release
+  #     - id: merge_frameworks
+  #       if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
+  #       name: Merge created frameworks
+  #       run: sh ./scripts/mergeFrameworks.sh -c Release
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: rive-framework
+  #         path: build/RiveRuntime.xcframework
 
 # push framewrok and update podspec
   create_podspec_file:
@@ -64,6 +64,8 @@ jobs:
             cat > RiveRuntime.podspec <<-EOF                      
             ${{ steps.podspec.outputs.text }}
             EOF
+          env:
+            GITHUB_AUTHOR: ${{ github.actor }}
         # just to test it...
         - name: Upload artifact
           uses: actions/upload-artifact@v2

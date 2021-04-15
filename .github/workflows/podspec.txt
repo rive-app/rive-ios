@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
     SOFTWARE.
     LICENSE
   }
-  spec.authors = { ${{ github.actor }} => "$(git config user.email)" }
+  spec.authors = { "$GITHUB_AUTHOR" => "$(git config user.email)" }
   spec.platform               = :ios, '11.3'
   spec.ios.deployment_target  = '11.3'
   spec.swift_version          = '5.0'
