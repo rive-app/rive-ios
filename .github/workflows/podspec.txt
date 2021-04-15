@@ -32,7 +32,7 @@ Pod::Spec.new do |spec|
   spec.swift_version          = '5.0'
   spec.source       = { 
     :git => "https://github.com/callstack-internal/RiveFramework.git",
-    :tag => "v#$RELEASE_VERSION"
+    :tag => "v#{spec.version}"
   }
   spec.ios.vendored_frameworks = 'RiveRuntime.xcframework'
   spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
