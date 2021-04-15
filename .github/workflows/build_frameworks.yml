@@ -46,7 +46,7 @@ jobs:
           uses: pCYSl5EDgo/cat@master
           id: podspec
           with:
-            path: podspec.txt
+            path: .github/workflows/podspec.txt
         - name: Create *.podspec
           run: |
             cat > RiveRuntime.podspec <<-EOF                      
