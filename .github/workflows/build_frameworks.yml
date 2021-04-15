@@ -68,7 +68,8 @@ jobs:
   upload_cocoapods:
     name: Update podspec repository
     runs-on: ubuntu-latest
-    container: pandoc/latex
+    # container: pandoc/latex
+    timeout-minutes: 10
     needs: [create_podspec_file, build_frameworks]
     steps:
       - name: Download framework artifact
