@@ -77,6 +77,13 @@ jobs:
         with:
           repository: callstack-internal/RiveFramework
           token: ${{ secrets.RIVE_REPO_PAT }}
+      - name: Test
+        run: |
+          ls -alt
+          rm RiveRuntime.podspec
+          rm -rf RiveRuntime.xcframework
+          ls -alt
+          git status
       - name: Download framework artifact
         uses: actions/download-artifact@v2
         with:
