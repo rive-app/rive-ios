@@ -48,9 +48,6 @@ jobs:
         run: |
           echo ::set-output name=RELEASE_VERSION::${GITHUB_REF/refs\/tags\//}
           echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
-      # - name: Get tag
-      #   id: tag
       - name: Read podspec.txt file
         uses: pCYSl5EDgo/cat@master
         id: podspec
@@ -65,7 +62,7 @@ jobs:
           EOF
         env:
           GITHUB_AUTHOR: ${{ github.actor }}
-          RELEASE_VERSION: ${{ steps.tag.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.output.RELEASE_VERSION }}
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
