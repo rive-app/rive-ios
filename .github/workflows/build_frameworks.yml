@@ -45,8 +45,9 @@ jobs:
           submodules: recursive
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=RELEASE_VERSION::${GITHUB_REF/refs\/tags\//}
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        run: |
+          echo ::set-output name=RELEASE_VERSION::${GITHUB_REF/refs\/tags\//}
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       # - name: Get tag
       #   id: tag
