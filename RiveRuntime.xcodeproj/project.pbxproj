@@ -312,11 +312,9 @@
 		C9AEB7EC25C8904E00AE9C43 /* star.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = star.cpp; path = shapes/star.cpp; sourceTree = "<group>"; };
 		C9AEB7ED25C8904E00AE9C43 /* polygon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polygon.cpp; path = shapes/polygon.cpp; sourceTree = "<group>"; };
 		C9C3E48F2565BA3F0051D67C /* triangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = triangle.cpp; sourceTree = "<group>"; };
-		C9C73ED124FC478800EF9516 /* RiveRuntime.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RiveRuntime.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9C73ED424FC478800EF9516 /* RiveRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveRuntime.h; sourceTree = "<group>"; };
+		C9C73ED124FC478800EF9516 /* RiveRuntime.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RiveRuntime.framework; sourceTree = BUILT_PRODUCTS_DIR; };		C9C73ED424FC478800EF9516 /* RiveRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveRuntime.h; sourceTree = "<group>"; };
 		C9C73ED524FC478800EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C9C73EDA24FC478900EF9516 /* RiveRuntimeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RiveRuntimeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RiveRuntimeTests.m; sourceTree = "<group>"; };
+		C9C73EDA24FC478900EF9516 /* RiveRuntimeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RiveRuntimeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };		C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RiveRuntimeTests.m; sourceTree = "<group>"; };
 		C9C73EE124FC478900EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9C7407024FC4F0400EF9516 /* core_bool_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core_bool_type.cpp; sourceTree = "<group>"; };
 		C9C7407124FC4F0400EF9516 /* core_uint_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core_uint_type.cpp; sourceTree = "<group>"; };
@@ -628,18 +626,8 @@
 				C9C7406C24FC4EF400EF9516 /* Rive */,
 				C9C73ED324FC478800EF9516 /* Source */,
 				C9C73EDE24FC478900EF9516 /* Tests */,
-				C9C73ED224FC478800EF9516 /* Products */,
 				C9D60DA62512AFE900AAA3A6 /* Frameworks */,
 			);
-			sourceTree = "<group>";
-		};
-		C9C73ED224FC478800EF9516 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				C9C73ED124FC478800EF9516 /* RiveRuntime.framework */,
-				C9C73EDA24FC478900EF9516 /* RiveRuntimeTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		C9C73ED324FC478800EF9516 /* Source */ = {
@@ -1267,7 +1255,7 @@
 				Base,
 			);
 			mainGroup = C9C73EC724FC478800EF9516;
-			productRefGroup = C9C73ED224FC478800EF9516 /* Products */;
+			productRefGroup = C9C73EC724FC478800EF9516;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -1548,7 +1536,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
-				"HEADER_SEARCH_PATHS[arch=*]" = Rive/include;
+				"HEADER_SEARCH_PATHS[arch=*]" = "submodules/rive-cpp/include";
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (

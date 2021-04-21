@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -21,43 +21,30 @@
 		C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C73E9D24FC471E00EF9516 /* Assets.xcassets */; };
 		C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C73EA024FC471E00EF9516 /* Preview Assets.xcassets */; };
 		C9C73EA424FC471E00EF9516 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C73EA224FC471E00EF9516 /* LaunchScreen.storyboard */; };
-		C9E1AA45251E957F00BD52EC /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9E1AA3E251E94CC00BD52EC /* RiveRuntime.framework */; };
-		C9E1AA46251E957F00BD52EC /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C9E1AA3E251E94CC00BD52EC /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C9EEA13125268E48001BB768 /* teeny.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9EEA12E25268E48001BB768 /* teeny.riv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C9E1AA3D251E94CC00BD52EC /* PBXContainerItemProxy */ = {
+		66942E4C2627327A0049D94B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C9E1AA38251E94CC00BD52EC /* RiveRuntime.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = C9C73ED124FC478800EF9516;
+			remoteGlobalIDString = 66942E46262731670049D94B;
 			remoteInfo = RiveRuntime;
 		};
-		C9E1AA3F251E94CC00BD52EC /* PBXContainerItemProxy */ = {
+		66942E4E2627327A0049D94B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C9E1AA38251E94CC00BD52EC /* RiveRuntime.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = C9C73EDA24FC478900EF9516;
+			remoteGlobalIDString = 66942E47262731670049D94B;
 			remoteInfo = RiveRuntimeTests;
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		C9C7420224FC53CF00EF9516 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				C9E1AA46251E957F00BD52EC /* RiveRuntime.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
+		13137E421946A4B47D94AED4 /* Pods_RiveExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RiveExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1623CF7D8FCB57EAF771B8F1 /* Pods-RiveExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RiveExample.debug.xcconfig"; path = "Target Support Files/Pods-RiveExample/Pods-RiveExample.debug.xcconfig"; sourceTree = "<group>"; };
+		2DA1820ACCADACB8A7BA2800 /* Pods-RiveExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RiveExample.release.xcconfig"; path = "Target Support Files/Pods-RiveExample/Pods-RiveExample.release.xcconfig"; sourceTree = "<group>"; };
 		C9696B1124FC704A0041502A /* juice.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = juice.riv; sourceTree = "<group>"; };
 		C9927C18250986BF009F17F5 /* truck.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck.riv; sourceTree = "<group>"; };
 		C99E2FE0251E8DB4009227CA /* van.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = van.riv; sourceTree = "<group>"; };
@@ -83,13 +70,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9E1AA45251E957F00BD52EC /* RiveRuntime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4032BD898435F4CC5C3CEBC0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1623CF7D8FCB57EAF771B8F1 /* Pods-RiveExample.debug.xcconfig */,
+				2DA1820ACCADACB8A7BA2800 /* Pods-RiveExample.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -112,6 +107,7 @@
 				C9C73E9624FC471E00EF9516 /* Source */,
 				C9C73E9524FC471E00EF9516 /* Products */,
 				C9C741FF24FC53CF00EF9516 /* Frameworks */,
+				4032BD898435F4CC5C3CEBC0 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -150,6 +146,7 @@
 		C9C741FF24FC53CF00EF9516 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				13137E421946A4B47D94AED4 /* Pods_RiveExample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -157,8 +154,8 @@
 		C9E1AA39251E94CC00BD52EC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C9E1AA3E251E94CC00BD52EC /* RiveRuntime.framework */,
-				C9E1AA40251E94CC00BD52EC /* RiveRuntimeTests.xctest */,
+				66942E4D2627327A0049D94B /* RiveRuntime.framework */,
+				66942E4F2627327A0049D94B /* RiveRuntimeTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -170,10 +167,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9C73EBE24FC471E00EF9516 /* Build configuration list for PBXNativeTarget "RiveExample" */;
 			buildPhases = (
+				12D8D1FBBEFE0456C02B86F2 /* [CP] Check Pods Manifest.lock */,
 				C9C73E9024FC471E00EF9516 /* Sources */,
 				C9C73E9124FC471E00EF9516 /* Frameworks */,
 				C9C73E9224FC471E00EF9516 /* Resources */,
-				C9C7420224FC53CF00EF9516 /* Embed Frameworks */,
+				46F726AFE8D0A61F2FF14CE2 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -224,18 +222,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		C9E1AA3E251E94CC00BD52EC /* RiveRuntime.framework */ = {
+		66942E4D2627327A0049D94B /* RiveRuntime.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = RiveRuntime.framework;
-			remoteRef = C9E1AA3D251E94CC00BD52EC /* PBXContainerItemProxy */;
+			remoteRef = 66942E4C2627327A0049D94B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C9E1AA40251E94CC00BD52EC /* RiveRuntimeTests.xctest */ = {
+		66942E4F2627327A0049D94B /* RiveRuntimeTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RiveRuntimeTests.xctest;
-			remoteRef = C9E1AA3F251E94CC00BD52EC /* PBXContainerItemProxy */;
+			remoteRef = 66942E4E2627327A0049D94B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -259,6 +257,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		12D8D1FBBEFE0456C02B86F2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RiveExample-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		46F726AFE8D0A61F2FF14CE2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RiveExample/Pods-RiveExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RiveExample/Pods-RiveExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RiveExample/Pods-RiveExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C9C73E9024FC471E00EF9516 /* Sources */ = {
@@ -405,6 +445,7 @@
 		};
 		C9C73EBF24FC471E00EF9516 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1623CF7D8FCB57EAF771B8F1 /* Pods-RiveExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -424,6 +465,7 @@
 		};
 		C9C73EC024FC471E00EF9516 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DA1820ACCADACB8A7BA2800 /* Pods-RiveExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

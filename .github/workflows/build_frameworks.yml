@@ -1,0 +1,114 @@
+name: Build Rive framework
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  build_frameworks:
+    name: Create RiveRuntime.xcframework
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.RIVE_REPO_PAT }}
+          submodules: recursive
+      - name: Init submodule
+        run: git submodule update --init
+      - id: build_iphoneos
+        name: Build release iphoneos framework
+        run: sh ./scripts/buildFramework.sh  -t iphoneos -c Release
+      - id: build_iphonesimulator
+        name: Build release iphonesimulator framework
+        run: sh ./scripts/buildFramework.sh  -t iphonesimulator -c Release
+      - id: merge_frameworks
+        if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
+        name: Merge created frameworks
+        run: sh ./scripts/mergeFrameworks.sh -c Release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: RiveRuntime.xcframework
+          path: build/RiveRuntime.xcframework
+
+  create_podspec_file:
+    name: Create RiveRuntime.podspec
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.RIVE_REPO_PAT }}
+          submodules: recursive
+      - name: Dump env
+        run: env | sort
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      # - name: Get the version
+      #   id: get_version
+      #   run: |
+      #     echo ::set-output name=RELEASE_VERSION::${GITHUB_REF/refs\/tags\//}
+      #     echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Read podspec.txt file
+        uses: pCYSl5EDgo/cat@master
+        id: podspec
+        with:
+          path: .github/workflows/podspec.txt
+      - name: Create *.podspec
+        run: |
+          cat > RiveRuntime.podspec <<-EOF                      
+          ${{ steps.podspec.outputs.text }}
+          EOF
+        env:
+          GITHUB_AUTHOR: ${{ github.actor }}
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: RiveRuntime.podspec
+          path: RiveRuntime.podspec
+
+  upload_cocoapods:
+    name: Update podspec repository
+    runs-on: macos-latest
+    timeout-minutes: 10
+    needs: [create_podspec_file, build_frameworks]
+    steps:
+      - name: Checkout podspec repo
+        uses: actions/checkout@v2
+        with:
+          repository: callstack-internal/RiveFramework
+          token: ${{ secrets.RIVE_REPO_PAT }}
+      - name: Clean
+        run: |
+          rm -rf RiveRuntime.podspec
+          rm -rf RiveRuntime.xcframework
+      - name: Download framework artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: RiveRuntime.xcframework
+          path: RiveRuntime.xcframework
+      - name: Download podspec artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: RiveRuntime.podspec
+      - name: Lint pod
+        run: pod lib lint --allow-warnings
+      # - name: Get the version
+      #   id: get_version
+      #   run: |
+      #     echo ::set-output name=RELEASE_VERSION::${GITHUB_REF/refs\/tags\//}
+      #     echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      - name: Push pod to callstack-internal/RiveFramework repo
+        run: |
+          git status
+          git config --local user.email 'contact@callstack.com'
+          git config --local user.name ${{ github.actor }}
+          git add .
+          git commit -m "Update podspec repo tag:${{ github.event.release.tag_name }}"
+          git push 
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
