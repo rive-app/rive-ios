@@ -17,11 +17,11 @@
 
 
 @interface RiveLinearAnimationInstance()
--(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation;
+-(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation;
 @end
 
 @interface RiveLinearAnimation ()
- -(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation;
+ -(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation;
 @end
 
 @interface RiveArtboard ()
@@ -197,10 +197,10 @@
 // RIVE LINEAR ANIMATION
 
 @implementation RiveLinearAnimation {
-    rive::LinearAnimation *animation;
+    const rive::LinearAnimation *animation;
 }
 
--(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation {
+-(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation {
     if (self = [super init]) {
         animation = riveAnimation;
         return self;
@@ -246,7 +246,7 @@
     rive::LinearAnimationInstance *instance;
 }
 
--(instancetype) initWithAnimation:(rive::LinearAnimation *) riveAnimation {
+-(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation {
     if (self = [super init]) {
         
         instance = new rive::LinearAnimationInstance(riveAnimation);
@@ -257,7 +257,7 @@
 }
 
 -(RiveLinearAnimation *) animation {
-    rive::LinearAnimation *linearAnimation = instance->animation();
+    const rive::LinearAnimation *linearAnimation = instance->animation();
     return [[RiveLinearAnimation alloc] initWithAnimation: linearAnimation];
 }
 

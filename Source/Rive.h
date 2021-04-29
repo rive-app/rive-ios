@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, ImportResult) {
 
 -(float) time;
 -(void) setTime:(float) time;
--(RiveLinearAnimation *) animation;
+-(const RiveLinearAnimation *) animation;
 -(void) applyTo:(RiveArtboard*) artboard;
 -(void) advanceBy:(double)elapsedSeconds;
 

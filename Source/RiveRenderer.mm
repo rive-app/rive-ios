@@ -209,7 +209,7 @@ void RiveRenderPath::reset() {
     path = CGPathCreateMutable();
 }
 
-void RiveRenderPath::addPath(CommandPath* path, const Mat2D& transform) {
+void RiveRenderPath::addRenderPath(RenderPath* path, const Mat2D& transform) {
 //    NSLog(@" --- RenderPath::addPath");
     CGMutablePathRef pathToAdd = reinterpret_cast<RiveRenderPath *>(path)->getPath();
     CGAffineTransform affineTransform = CGAffineTransformMake(transform.xx(),

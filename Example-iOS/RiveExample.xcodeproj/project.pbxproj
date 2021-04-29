@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		C9696B1224FC704A0041502A /* juice.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9696B1124FC704A0041502A /* juice.riv */; };
-		C9927C1B250986BF009F17F5 /* truck.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9927C18250986BF009F17F5 /* truck.riv */; };
 		C99E2FE3251E8DB4009227CA /* van.riv in Resources */ = {isa = PBXBuildFile; fileRef = C99E2FE0251E8DB4009227CA /* van.riv */; };
 		C99E2FE8251E8E35009227CA /* bird.riv in Resources */ = {isa = PBXBuildFile; fileRef = C99E2FE6251E8E35009227CA /* bird.riv */; };
 		C99E2FE9251E8E35009227CA /* funtime.riv in Resources */ = {isa = PBXBuildFile; fileRef = C99E2FE7251E8E35009227CA /* funtime.riv */; };
 		C9A7D7F52523C1D900AFB875 /* sheep.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9A7D7F22523C1D900AFB875 /* sheep.riv */; };
+		C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9BD3925263B5FC700696C37 /* truck_v7.riv */; };
 		C9C1DF7F252BA5EF00B0A444 /* MyRiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C1DF7E252BA5EF00B0A444 /* MyRiveView.swift */; };
 		C9C1DF83252BA62800B0A444 /* MyRiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C1DF82252BA62800B0A444 /* MyRiveViewController.swift */; };
 		C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9724FC471E00EF9516 /* AppDelegate.swift */; };
@@ -59,11 +59,11 @@
 
 /* Begin PBXFileReference section */
 		C9696B1124FC704A0041502A /* juice.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = juice.riv; sourceTree = "<group>"; };
-		C9927C18250986BF009F17F5 /* truck.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck.riv; sourceTree = "<group>"; };
 		C99E2FE0251E8DB4009227CA /* van.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = van.riv; sourceTree = "<group>"; };
 		C99E2FE6251E8E35009227CA /* bird.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = bird.riv; sourceTree = "<group>"; };
 		C99E2FE7251E8E35009227CA /* funtime.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = funtime.riv; sourceTree = "<group>"; };
 		C9A7D7F22523C1D900AFB875 /* sheep.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = sheep.riv; sourceTree = "<group>"; };
+		C9BD3925263B5FC700696C37 /* truck_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck_v7.riv; sourceTree = "<group>"; };
 		C9C1DF7E252BA5EF00B0A444 /* MyRiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRiveView.swift; sourceTree = "<group>"; };
 		C9C1DF82252BA62800B0A444 /* MyRiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRiveViewController.swift; sourceTree = "<group>"; };
 		C9C73E9424FC471E00EF9516 /* RiveExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiveExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,12 +93,12 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				C9BD3925263B5FC700696C37 /* truck_v7.riv */,
 				C9EEA12E25268E48001BB768 /* teeny.riv */,
 				C9A7D7F22523C1D900AFB875 /* sheep.riv */,
 				C99E2FE6251E8E35009227CA /* bird.riv */,
 				C99E2FE7251E8E35009227CA /* funtime.riv */,
 				C99E2FE0251E8DB4009227CA /* van.riv */,
-				C9927C18250986BF009F17F5 /* truck.riv */,
 				C9696B1124FC704A0041502A /* juice.riv */,
 			);
 			path = Assets;
@@ -245,6 +245,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */,
 				C99E2FE9251E8E35009227CA /* funtime.riv in Resources */,
 				C9696B1224FC704A0041502A /* juice.riv in Resources */,
 				C9C73EA424FC471E00EF9516 /* LaunchScreen.storyboard in Resources */,
@@ -253,7 +254,6 @@
 				C99E2FE8251E8E35009227CA /* bird.riv in Resources */,
 				C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */,
 				C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */,
-				C9927C1B250986BF009F17F5 /* truck.riv in Resources */,
 				C9A7D7F52523C1D900AFB875 /* sheep.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
