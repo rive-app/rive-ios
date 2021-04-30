@@ -10,14 +10,23 @@ import SwiftUI
 
 public struct UIRiveView: UIViewControllerRepresentable {
     let resource: String
+    let fit: Fit
+    let alignment: RiveRuntime.Alignment
+    
     
     // This is needed to expose the view outside the framework
-    public init(fromResource resource: String) {
+    public init(
+        fromResource resource: String,
+        fromFit fit: Fit = Fit.Contain,
+        fromAlignment alignment: RiveRuntime.Alignment = RiveRuntime.Alignment.Center
+    ) {
         self.resource = resource
+        self.fit = fit
+        self.alignment = alignment
     }
     
     public func makeUIViewController(context: Context) -> RiveViewController {
-        return RiveViewController(withResource: resource, withExtension: "riv")
+        return RiveViewController(withResource: resource, withFit: fit, withAlignment: alignment)
     }
 
     public func updateUIViewController(_ uiViewController: RiveViewController, context: Context) {}

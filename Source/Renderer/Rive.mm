@@ -88,7 +88,7 @@
     }
 
     // Work out the alignment
-    rive::Alignment riveAlignment = rive::Alignment(.0, .0);
+    rive::Alignment riveAlignment = rive::Alignment::center;
     switch(alignment) {
         case TopLeft:
             riveAlignment = rive::Alignment::topLeft;

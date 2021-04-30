@@ -12,14 +12,23 @@ public class RiveViewController: UIViewController {
 
     var resourceName: String?
     var resourceExt: String?
+    var fit: Fit = Fit.Contain
+    var alignment: Alignment = Alignment.Center
     var artboard: RiveArtboard?
     var instance: RiveLinearAnimationInstance?
     var displayLink: CADisplayLink?
     var lastTime: CFTimeInterval = 0
     
-    public init(withResource name: String, withExtension: String) {
+    public init(
+        withResource name: String,
+        withExtension ext: String = ".riv",
+        withFit fit: Fit = Fit.Contain,
+        withAlignment alignment: Alignment = Alignment.Center
+    ) {
         resourceName = name
-        resourceExt = withExtension
+        resourceExt = ext
+        self.fit = fit
+        self.alignment = alignment
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -68,7 +77,10 @@ public class RiveViewController: UIViewController {
             
             self.artboard = artboard
             // update the artboard in the view
-            (self.view as! RiveView).updateArtboard(artboard)
+            (self.view as! RiveView).updateArtboard(
+                withArtboard: artboard,
+                withFit: fit,
+                withAlignment: alignment)
             
             if (artboard.animationCount() == 0) {
                 fatalError("No animations in the file.")

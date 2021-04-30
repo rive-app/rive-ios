@@ -12,7 +12,9 @@ import RiveRuntime
 struct ContentView: View {
     var body: some View {
         UIRiveView(
-            fromResource: "juice_v7"
+            fromResource: "juice_v7",
+            fromFit: Fit.Cover,
+            fromAlignment: Alignment.TopRight
         )
     }
 }
