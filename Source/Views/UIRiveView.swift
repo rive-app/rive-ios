@@ -17,7 +17,7 @@ public struct UIRiveView: UIViewControllerRepresentable {
     }
     
     public func makeUIViewController(context: Context) -> RiveViewController {
-        return RiveViewController(resource: resource, withExtension: "riv")
+        return RiveViewController(withResource: resource, withExtension: "riv")
     }
 
     public func updateUIViewController(_ uiViewController: RiveViewController, context: Context) {}

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
+		C9002A22263C76170011556B /* RiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A21263C76170011556B /* RiveViewController.swift */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
 		C9601F69251004780032AA07 /* vec2d.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9601F2D251004770032AA07 /* vec2d.hpp */; };
 		C9601F6C251004780032AA07 /* color.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9601F30251004770032AA07 /* color.hpp */; };
@@ -282,11 +284,7 @@
 		C9C741EB24FC4F0500EF9516 /* transform_component.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9C7413624FC4F0500EF9516 /* transform_component.hpp */; };
 		C9C741F424FC510200EF9516 /* Rive.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C741F224FC510200EF9516 /* Rive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C741F524FC510200EF9516 /* Rive.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C741F324FC510200EF9516 /* Rive.mm */; };
-		C9CE8250263B6F9600F98DDB /* RiveView.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9CE824F263B6F9600F98DDB /* RiveView.mm */; };
 		C9CE8253263B716F00F98DDB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9CE8252263B716F00F98DDB /* UIKit.framework */; };
-		C9CE8255263B724900F98DDB /* RiveViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9CE8254263B724900F98DDB /* RiveViewController.mm */; };
-		C9CE8257263B771700F98DDB /* RiveView.h in Headers */ = {isa = PBXBuildFile; fileRef = C9CE8251263B6FA700F98DDB /* RiveView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C9CE8258263B776600F98DDB /* RiveViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C9CE8256263B725600F98DDB /* RiveViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9CE8260263B7CC200F98DDB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9CE825F263B7CC200F98DDB /* SwiftUI.framework */; };
 		C9CE8263263B806200F98DDB /* UIRiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CE8262263B806200F98DDB /* UIRiveView.swift */; };
 		C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */; };
@@ -304,6 +302,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
+		C9002A21263C76170011556B /* RiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveViewController.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
 		C9601F2D251004770032AA07 /* vec2d.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec2d.hpp; sourceTree = "<group>"; };
@@ -647,11 +647,7 @@
 		C9C7413624FC4F0500EF9516 /* transform_component.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = transform_component.hpp; sourceTree = "<group>"; };
 		C9C741F224FC510200EF9516 /* Rive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rive.h; sourceTree = "<group>"; };
 		C9C741F324FC510200EF9516 /* Rive.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Rive.mm; sourceTree = "<group>"; };
-		C9CE824F263B6F9600F98DDB /* RiveView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveView.mm; sourceTree = "<group>"; };
-		C9CE8251263B6FA700F98DDB /* RiveView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveView.h; sourceTree = "<group>"; };
 		C9CE8252263B716F00F98DDB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		C9CE8254263B724900F98DDB /* RiveViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveViewController.mm; sourceTree = "<group>"; };
-		C9CE8256263B725600F98DDB /* RiveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveViewController.h; sourceTree = "<group>"; };
 		C9CE825F263B7CC200F98DDB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		C9CE8262263B806200F98DDB /* UIRiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIRiveView.swift; sourceTree = "<group>"; };
 		C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
@@ -827,11 +823,9 @@
 		C9BD3928263B65B100696C37 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				C9CE824F263B6F9600F98DDB /* RiveView.mm */,
-				C9CE8251263B6FA700F98DDB /* RiveView.h */,
-				C9CE8254263B724900F98DDB /* RiveViewController.mm */,
-				C9CE8256263B725600F98DDB /* RiveViewController.h */,
 				C9CE8262263B806200F98DDB /* UIRiveView.swift */,
+				C9002A1F263C76080011556B /* RiveView.swift */,
+				C9002A21263C76170011556B /* RiveViewController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1329,8 +1323,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9CE8258263B776600F98DDB /* RiveViewController.h in Headers */,
-				C9CE8257263B771700F98DDB /* RiveView.h in Headers */,
 				C9601F6C251004780032AA07 /* color.hpp in Headers */,
 				C9BD38F5263B5E4000696C37 /* transition_number_condition.hpp in Headers */,
 				C9BD38ED263B5E4000696C37 /* state_machine.hpp in Headers */,
@@ -1637,9 +1629,11 @@
 				C9C7416924FC4F0500EF9516 /* root_bone.cpp in Sources */,
 				C9C7413E24FC4F0500EF9516 /* component.cpp in Sources */,
 				C9BD3904263B5E7600696C37 /* state_machine_importer.cpp in Sources */,
+				C9002A22263C76170011556B /* RiveViewController.swift in Sources */,
 				C9601FB6251004950032AA07 /* color.cpp in Sources */,
 				C9C7413F24FC4F0500EF9516 /* node.cpp in Sources */,
 				C9BD3909263B5E7600696C37 /* state_machine_layer_importer.cpp in Sources */,
+				C9002A20263C76080011556B /* RiveView.swift in Sources */,
 				C9C7415E24FC4F0500EF9516 /* path_composer.cpp in Sources */,
 				C9C7413924FC4F0500EF9516 /* core_double_type.cpp in Sources */,
 				C9C7413A24FC4F0500EF9516 /* core_string_type.cpp in Sources */,
@@ -1674,7 +1668,6 @@
 				C9C7416A24FC4F0500EF9516 /* bone.cpp in Sources */,
 				C9C7415824FC4F0500EF9516 /* shape.cpp in Sources */,
 				C9601FB0251004950032AA07 /* metrics_path.cpp in Sources */,
-				C9CE8250263B6F9600F98DDB /* RiveView.mm in Sources */,
 				C98F29832513FAC30076E802 /* draw_target.cpp in Sources */,
 				C9C7414524FC4F0500EF9516 /* keyframe_double.cpp in Sources */,
 				C9C7415C24FC4F0500EF9516 /* rectangle.cpp in Sources */,
@@ -1699,7 +1692,6 @@
 				C9C7416024FC4F0500EF9516 /* cubic_mirrored_vertex.cpp in Sources */,
 				C9AEB7EF25C8904E00AE9C43 /* polygon.cpp in Sources */,
 				C9C7415424FC4F0500EF9516 /* points_path.cpp in Sources */,
-				C9CE8255263B724900F98DDB /* RiveViewController.mm in Sources */,
 				C9C7416324FC4F0500EF9516 /* aabb.cpp in Sources */,
 				C9C7414724FC4F0500EF9516 /* cubic_interpolator.cpp in Sources */,
 				C9C7415A24FC4F0500EF9516 /* parametric_path.cpp in Sources */,
