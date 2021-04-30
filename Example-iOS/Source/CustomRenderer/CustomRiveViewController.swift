@@ -1,5 +1,5 @@
 //
-//  MyRiveViewController.swift
+//  CustomRiveViewController.swift
 //  RiveExample
 //
 //  Created by Matt Sullivan on 10/5/20.
@@ -9,7 +9,7 @@
 import UIKit
 import RiveRuntime
 
-class MyRiveViewController: UIViewController {
+class CustomRiveViewController: UIViewController {
 
     var resourceName: String?
     var resourceExt: String?
@@ -35,8 +35,8 @@ class MyRiveViewController: UIViewController {
     }
     
     override func loadView() {
-        // Wire up an instance of MyRiveView to the controller
-        let view = MyRiveView()
+        // Wire up an instance of CustomRiveView to the controller
+        let view = CustomRiveView()
         view.backgroundColor = UIColor.blue
         self.view = view
     }
@@ -69,7 +69,7 @@ class MyRiveViewController: UIViewController {
             
             self.artboard = artboard
             // update the artboard in the view
-            (self.view as! MyRiveView).updateArtboard(artboard)
+            (self.view as! CustomRiveView).updateArtboard(artboard)
             
             if (artboard.animationCount() == 0) {
                 fatalError("No animations in the file.")
