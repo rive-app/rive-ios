@@ -8,7 +8,7 @@
 
 import UIKit
 import SwiftUI
-import RiveRuntime
+// import RiveRuntime
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -26,7 +26,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
+            
+            // Adds a SwiftUI view to the window
             window.rootViewController = UIHostingController(rootView: contentView)
+            
+            // Adds a RiveController directly to the window
+            // let riveController = RiveViewController(withResource: "juice_v7", withExtension: "riv")
+            // window.rootViewController = riveController
+            
             self.window = window
             window.makeKeyAndVisible()
         }
