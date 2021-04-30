@@ -1,5 +1,5 @@
 //
-//  MyViewView.swift
+//  CustomViewView.swift
 //  RiveExample
 //
 //  Created by Matt Sullivan on 10/5/20.
@@ -9,7 +9,7 @@
 import UIKit
 import RiveRuntime
 
-class MyRiveView: UIView {
+class CustomRiveView: UIView {
 
     var artboard: RiveArtboard?;
     
