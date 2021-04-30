@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9002A22263C76170011556B /* RiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A21263C76170011556B /* RiveViewController.swift */; };
+		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
 		C9601F69251004780032AA07 /* vec2d.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9601F2D251004770032AA07 /* vec2d.hpp */; };
 		C9601F6C251004780032AA07 /* color.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9601F30251004770032AA07 /* color.hpp */; };
@@ -136,7 +137,7 @@
 		C9BD3921263B5E9000696C37 /* state_machine_instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9BD3915263B5E9000696C37 /* state_machine_instance.cpp */; };
 		C9BD3922263B5E9000696C37 /* state_machine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9BD3916263B5E9000696C37 /* state_machine.cpp */; };
 		C9C3E4902565BA400051D67C /* triangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C3E48F2565BA3F0051D67C /* triangle.cpp */; };
-		C9C73EE024FC478900EF9516 /* RiveRuntimeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.m */; };
+		C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.mm */; };
 		C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C73ED424FC478800EF9516 /* RiveRuntime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C7413724FC4F0500EF9516 /* core_bool_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C7407024FC4F0400EF9516 /* core_bool_type.cpp */; };
 		C9C7413824FC4F0500EF9516 /* core_uint_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C7407124FC4F0400EF9516 /* core_uint_type.cpp */; };
@@ -467,7 +468,7 @@
 		C9C73ED424FC478800EF9516 /* RiveRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveRuntime.h; sourceTree = "<group>"; };
 		C9C73ED524FC478800EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9C73EDA24FC478900EF9516 /* RiveRuntimeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RiveRuntimeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RiveRuntimeTests.m; sourceTree = "<group>"; };
+		C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRuntimeTests.mm; sourceTree = "<group>"; };
 		C9C73EE124FC478900EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9C7407024FC4F0400EF9516 /* core_bool_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core_bool_type.cpp; sourceTree = "<group>"; };
 		C9C7407124FC4F0400EF9516 /* core_uint_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core_uint_type.cpp; sourceTree = "<group>"; };
@@ -670,6 +671,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -864,7 +866,7 @@
 		C9C73EDE24FC478900EF9516 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.m */,
+				C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.mm */,
 				C9C73EE124FC478900EF9516 /* Info.plist */,
 			);
 			path = Tests;
@@ -1708,7 +1710,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.m in Sources */,
+				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
