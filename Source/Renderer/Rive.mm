@@ -189,13 +189,22 @@
     return _artboard->animationCount();
 }
 
--(RiveLinearAnimation *) animationAt:(NSInteger) index {
+- (RiveLinearAnimation *)animationFromIndex:(NSInteger) index {
     if (index >= [self animationCount]) {
         return NULL;
     }
-    
     return [[RiveLinearAnimation alloc] initWithAnimation: reinterpret_cast<rive::LinearAnimation *>(_artboard->animation(index))];
 }
+
+- (RiveLinearAnimation *)animationFromName:(NSString *) name {
+    std::string stdName = std::string([name UTF8String]);
+    rive::LinearAnimation *animation = _artboard->animation(stdName);
+    if (animation == nullptr) {
+        return NULL;
+    }
+    return [[RiveLinearAnimation alloc] initWithAnimation: animation];
+}
+
 
 -(void) advanceBy:(double) elapsedSeconds {
     _artboard->advance(elapsedSeconds);

@@ -15,6 +15,7 @@ public class RiveViewController: UIViewController {
     var fit: Fit = Fit.Contain
     var alignment: Alignment = Alignment.Center
     var artboardName: String? = nil
+    var animationName: String? = nil
     
     var artboard: RiveArtboard?
     var instance: RiveLinearAnimationInstance?
@@ -26,13 +27,15 @@ public class RiveViewController: UIViewController {
         withExtension ext: String = ".riv",
         withFit fit: Fit = Fit.Contain,
         withAlignment alignment: Alignment = Alignment.Center,
-        withArtboardName artboardName: String? = nil
+        withArtboardName artboardName: String? = nil,
+        withAnimationName animationName: String? = nil
     ) {
         resourceName = name
         resourceExt = ext
         self.fit = fit
         self.alignment = alignment
         self.artboardName = artboardName
+        self.animationName = animationName
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -77,7 +80,7 @@ public class RiveViewController: UIViewController {
                 fatalError("Failed to import \(url).")
             }
             
-            let errorMsg: String
+            var errorMsg: String
             if let artboardName = self.artboardName {
                 self.artboard = riveFile.artboard(fromName: artboardName)
                 errorMsg = "No artboard with \(artboardName) exists"
@@ -99,10 +102,21 @@ public class RiveViewController: UIViewController {
             if (artboard.animationCount() == 0) {
                 fatalError("No animations in the file.")
             }
-                        
-            // Fetch an animation
-            let animation = artboard.animation(at: 0)
-            self.instance = animation.instance()
+                
+            let animation: RiveLinearAnimation?
+            if let animationName = self.animationName {
+                animation = artboard.animation(fromName: animationName)
+                errorMsg = "No animation \(animationName) exists in this artboard"
+            } else {
+                animation = artboard.animation(from: 0)
+                errorMsg = "No animations in this artboard"
+            }
+            
+            if (animation == nil) {
+                fatalError(errorMsg)
+            }
+            
+            self.instance = animation!.instance()
             
             // Advance the artboard, this will ensure the first
             // frame is displayed when the artboard is drawn
