@@ -93,6 +93,9 @@ UInt8 pingPongRiveFileBytes[] = {
     RiveArtboard* artboard = [file artboardFromIndex: 0];
     XCTAssert(artboard != NULL);
     XCTAssert([[artboard name] isEqual: @"New Artboard"]);
+    
+    artboard = [file artboardFromIndex: 1];
+    XCTAssert(artboard == NULL);
 }
 
 /*
@@ -107,6 +110,45 @@ UInt8 pingPongRiveFileBytes[] = {
     artboard = [file artboardFromName: @"Bad Artboard"];
     XCTAssert(artboard == NULL);
 }
+
+/*
+ * Tests retrieving animation count from artboards
+ */
+- (void)testRetrieveAnimationCountFromArtboard {
+    RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156];
+    RiveArtboard* artboard = [file artboard];
+    NSInteger count = [artboard animationCount];
+    XCTAssert(count == 1);
+}
+
+/*
+ * Tests retrieving animation by index
+ */
+- (void)testRetrieveAnimationByIndex {
+    RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156];
+    RiveArtboard* artboard = [file artboard];
+    RiveLinearAnimation* animation = [artboard animationFromIndex: 0];
+    XCTAssert(animation != NULL);
+    XCTAssert([[animation name] isEqual: @"Animation 1"]);
+    
+    animation = [artboard animationFromIndex: 1];
+    XCTAssert(animation == NULL);
+}
+
+/*
+ * Tests retrieving animation by name
+ */
+- (void)testRetrieveAnimationByName {
+    RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156];
+    RiveArtboard* artboard = [file artboard];
+    RiveLinearAnimation* animation = [artboard animationFromName: @"Animation 1"];
+    XCTAssert(animation != NULL);
+    XCTAssert([[animation name] isEqual: @"Animation 1"]);
+    
+    animation = [artboard animationFromName: @"Bad Name"];
+    XCTAssert(animation == NULL);
+}
+
 
 //- (void)testPerformanceExample {
 //    // This is an example of a performance test case.
