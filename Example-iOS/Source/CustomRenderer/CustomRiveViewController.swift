@@ -76,7 +76,7 @@ class CustomRiveViewController: UIViewController {
             }
                         
             // Fetch an animation
-            let animation = artboard.animation(at: 0)
+            let animation = artboard.animation(from: 0)
             self.instance = animation.instance()
             
             // Advance the artboard, this will ensure the first

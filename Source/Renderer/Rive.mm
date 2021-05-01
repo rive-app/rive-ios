@@ -88,7 +88,7 @@
     }
 
     // Work out the alignment
-    rive::Alignment riveAlignment = rive::Alignment(.0, .0);
+    rive::Alignment riveAlignment = rive::Alignment::center;
     switch(alignment) {
         case TopLeft:
             riveAlignment = rive::Alignment::topLeft;
@@ -130,10 +130,10 @@
     rive::File* riveFile;
 }
 
-+ (uint) majorVersion { return UInt8(rive::File::majorVersion); }
-+ (uint) minorVersion { return UInt8(rive::File::minorVersion); }
++ (uint)majorVersion { return UInt8(rive::File::majorVersion); }
++ (uint)minorVersion { return UInt8(rive::File::minorVersion); }
 
--(nullable instancetype) initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length {
+- (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length {
     if (self = [super init]) {
         rive::BinaryReader reader = rive::BinaryReader(bytes, length);
         rive::ImportResult result = rive::File::import(reader, &riveFile);
@@ -144,8 +144,30 @@
     return nil;
 }
 
-- (RiveArtboard *) artboard {
+- (RiveArtboard *)artboard {
     return [[RiveArtboard alloc] initWithArtboard: riveFile->artboard()];
+}
+
+- (NSInteger)artboardCount {
+    return riveFile->artboardCount();
+}
+
+- (RiveArtboard *)artboardFromIndex:(NSInteger) index {
+    if (index >= [self artboardCount]) {
+        return NULL;
+    }
+    return [[RiveArtboard alloc]
+            initWithArtboard: reinterpret_cast<rive::Artboard *>(riveFile->artboard(index))];
+}
+
+- (RiveArtboard *)artboardFromName:(NSString *) name {
+    std::string stdName = std::string([name UTF8String]);
+    rive::Artboard *artboard = riveFile->artboard(stdName);
+    if (artboard == nullptr) {
+        return NULL;
+    } else {
+        return [[RiveArtboard alloc] initWithArtboard: artboard];
+    }
 }
 
 @end
@@ -159,7 +181,7 @@
         _artboard = riveArtboard;
         return self;
     } else {
-        return nil;
+        return NULL;
     }
 }
 
@@ -167,13 +189,22 @@
     return _artboard->animationCount();
 }
 
--(RiveLinearAnimation *) animationAt:(NSInteger) index {
+- (RiveLinearAnimation *)animationFromIndex:(NSInteger) index {
     if (index >= [self animationCount]) {
-        return nil;
+        return NULL;
     }
-    
     return [[RiveLinearAnimation alloc] initWithAnimation: reinterpret_cast<rive::LinearAnimation *>(_artboard->animation(index))];
 }
+
+- (RiveLinearAnimation *)animationFromName:(NSString *) name {
+    std::string stdName = std::string([name UTF8String]);
+    rive::LinearAnimation *animation = _artboard->animation(stdName);
+    if (animation == nullptr) {
+        return NULL;
+    }
+    return [[RiveLinearAnimation alloc] initWithAnimation: animation];
+}
+
 
 -(void) advanceBy:(double) elapsedSeconds {
     _artboard->advance(elapsedSeconds);

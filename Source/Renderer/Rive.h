@@ -35,13 +35,6 @@ typedef NS_ENUM(NSInteger, Alignment) {
     BottomRight
 };
 
-// Result of file importing
-typedef NS_ENUM(NSInteger, ImportResult) {
-    success,
-    unsupportedVersion,
-    malformed
-};
-
 @class RiveArtboard;
 @class RiveLinearAnimation;
 
@@ -80,12 +73,13 @@ typedef NS_ENUM(NSInteger, ImportResult) {
 // Artboard wrapper
 @interface RiveArtboard : NSObject
 
--(NSString *) name;
--(CGRect) bounds;
--(NSInteger) animationCount;
--(RiveLinearAnimation *) animationAt:(NSInteger)index;
--(void) advanceBy:(double)elapsedSeconds;
--(void) draw:(RiveRenderer *)renderer;
+- (NSString *)name;
+- (CGRect)bounds;
+- (NSInteger)animationCount;
+- (RiveLinearAnimation *)animationFromIndex:(NSInteger)index;
+- (RiveLinearAnimation *)animationFromName:(NSString *)name;
+- (void)advanceBy:(double)elapsedSeconds;
+- (void)draw:(RiveRenderer *)renderer;
 
 @end
 
@@ -95,10 +89,20 @@ typedef NS_ENUM(NSInteger, ImportResult) {
 @property (class, readonly) uint majorVersion;
 @property (class, readonly) uint minorVersion;
 
--(nullable instancetype) initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length;
+- (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length;
 
-// Wraps: Artboard* artboard() const;
--(RiveArtboard *) artboard;
+// Returns a reference to the default artboard
+- (RiveArtboard *)artboard;
+
+// Returns the number of artboards in the file
+- (NSInteger)artboardCount;
+
+// Returns the artboard by its index
+- (RiveArtboard *)artboardFromIndex:(NSInteger) index;
+
+// Returns the artboard by its name
+- (RiveArtboard *)artboardFromName:(NSString *) name;
+
 @end
 
 NS_ASSUME_NONNULL_END
