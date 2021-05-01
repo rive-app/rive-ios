@@ -14,7 +14,8 @@ struct ContentView: View {
         UIRiveView(
             fromResource: "juice_v7",
             fromFit: Fit.Cover,
-            fromAlignment: Alignment.TopRight
+            fromAlignment: Alignment.Center,
+            fromArtboardName: "New Artboard"
         )
     }
 }

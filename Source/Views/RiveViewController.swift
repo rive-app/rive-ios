@@ -14,6 +14,8 @@ public class RiveViewController: UIViewController {
     var resourceExt: String?
     var fit: Fit = Fit.Contain
     var alignment: Alignment = Alignment.Center
+    var artboardName: String? = nil
+    
     var artboard: RiveArtboard?
     var instance: RiveLinearAnimationInstance?
     var displayLink: CADisplayLink?
@@ -23,12 +25,14 @@ public class RiveViewController: UIViewController {
         withResource name: String,
         withExtension ext: String = ".riv",
         withFit fit: Fit = Fit.Contain,
-        withAlignment alignment: Alignment = Alignment.Center
+        withAlignment alignment: Alignment = Alignment.Center,
+        withArtboardName artboardName: String? = nil
     ) {
         resourceName = name
         resourceExt = ext
         self.fit = fit
         self.alignment = alignment
+        self.artboardName = artboardName
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -73,9 +77,19 @@ public class RiveViewController: UIViewController {
                 fatalError("Failed to import \(url).")
             }
             
-            let artboard = riveFile.artboard()
+            let errorMsg: String
+            if let artboardName = self.artboardName {
+                self.artboard = riveFile.artboard(fromName: artboardName)
+                errorMsg = "No artboard with \(artboardName) exists"
+            } else {
+                self.artboard = riveFile.artboard()
+                errorMsg = "No default artboard exists"
+            }
             
-            self.artboard = artboard
+            guard let artboard = self.artboard else {
+                fatalError(errorMsg)
+            }
+                        
             // update the artboard in the view
             (self.view as! RiveView).updateArtboard(
                 withArtboard: artboard,
