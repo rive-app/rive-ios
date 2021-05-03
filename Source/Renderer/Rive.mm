@@ -14,28 +14,56 @@
 #import "animation.hpp"
 #import "linear_animation.hpp"
 #import "linear_animation_instance.hpp"
+#import "state_machine.hpp"
+#import "state_machine_instance.hpp"
 
-
-@interface RiveLinearAnimationInstance()
--(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation;
+/*
+ * RiveStateMachineInstance interface
+ */
+@interface RiveStateMachineInstance ()
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine;
 @end
 
+/*
+ * RiveStateMachine interface
+ */
+@interface RiveStateMachine ()
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)riveStateMachine;
+@end
+
+/*
+ * RiveLinearAnimationInstance interface
+ */
+@interface RiveLinearAnimationInstance ()
+- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation;
+@end
+
+/*
+ * RiveLinearAnimation interface
+ */
 @interface RiveLinearAnimation ()
- -(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation;
+- (instancetype) initWithAnimation:(const rive::LinearAnimation *)riveAnimation;
 @end
 
+/*
+ * RiveArtboard interface
+ */
 @interface RiveArtboard ()
 @property (nonatomic, readonly) rive::Artboard* artboard;
 -(instancetype) initWithArtboard:(rive::Artboard *) riveArtboard;
 @end
 
+/*
+ * RiveRenderer interface
+ */
 @interface RiveRenderer ()
 @property (nonatomic, readonly) rive::Renderer* renderer;
 -(rive::Renderer *) renderer;
 @end
 
-// RIVE RENDERER
-
+/*
+ * RiveRenderer
+ */
 @implementation RiveRenderer {
     CGContextRef ctx;
 }
@@ -124,8 +152,9 @@
 
 @end
 
-// RIVE FILE
-
+/*
+ * RiveFile
+ */
 @implementation RiveFile {
     rive::File* riveFile;
 }
@@ -172,11 +201,12 @@
 
 @end
 
-// RIVE ARTBOARD
-
+/*
+ * RiveArtboard
+ */
 @implementation RiveArtboard
 
--(instancetype) initWithArtboard:(rive::Artboard *) riveArtboard {
+- (instancetype)initWithArtboard:(rive::Artboard *)riveArtboard {
     if (self = [super init]) {
         _artboard = riveArtboard;
         return self;
@@ -185,18 +215,23 @@
     }
 }
 
--(NSInteger) animationCount {
+- (NSInteger)animationCount {
     return _artboard->animationCount();
 }
 
-- (RiveLinearAnimation *)animationFromIndex:(NSInteger) index {
-    if (index >= [self animationCount]) {
-        return NULL;
-    }
-    return [[RiveLinearAnimation alloc] initWithAnimation: reinterpret_cast<rive::LinearAnimation *>(_artboard->animation(index))];
+// Returns the first animation in the artboard, or null if it has none
+- (RiveLinearAnimation *)firstAnimation {
+    return [[RiveLinearAnimation alloc] initWithAnimation:_artboard->firstAnimation()];
 }
 
-- (RiveLinearAnimation *)animationFromName:(NSString *) name {
+- (RiveLinearAnimation *)animationFromIndex:(NSInteger)index {
+    if (index < 0 || index >= [self animationCount]) {
+        return NULL;
+    }
+    return [[RiveLinearAnimation alloc] initWithAnimation: _artboard->animation(index)];
+}
+
+- (RiveLinearAnimation *)animationFromName:(NSString *)name {
     std::string stdName = std::string([name UTF8String]);
     rive::LinearAnimation *animation = _artboard->animation(stdName);
     if (animation == nullptr) {
@@ -205,28 +240,56 @@
     return [[RiveLinearAnimation alloc] initWithAnimation: animation];
 }
 
+// Returns the number of state machines in the artboard
+- (NSInteger)stateMachineCount {
+    return _artboard->stateMachineCount();
+}
 
--(void) advanceBy:(double) elapsedSeconds {
+- (RiveStateMachine *)firstStateMachine {
+    return [[RiveStateMachine alloc] initWithStateMachine:_artboard->firstStateMachine()];
+}
+
+// Returns a state machine at the given index, or null if the index is invalid
+- (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index {
+    if (index < 0 || index >= [self stateMachineCount]) {
+        return NULL;
+    }
+    return [[RiveStateMachine alloc] initWithStateMachine: _artboard->stateMachine(index)];
+}
+
+// Returns a state machine with the given name, or null if none exists
+- (RiveStateMachine *)stateMachineFromName:(NSString *)name {
+    std::string stdName = std::string([name UTF8String]);
+    rive::StateMachine *machine = _artboard->stateMachine(stdName);
+    if (machine == nullptr) {
+        return NULL;
+    }
+    return [[RiveStateMachine alloc] initWithStateMachine: machine];
+}
+
+
+- (void)advanceBy:(double)elapsedSeconds {
     _artboard->advance(elapsedSeconds);
 }
 
--(void) draw:(RiveRenderer *) renderer {
+- (void)draw:(RiveRenderer *)renderer {
     _artboard->draw([renderer renderer]);
 }
 
--(NSString *) name {
+- (NSString *)name {
     return [NSString stringWithUTF8String:_artboard->name().c_str()];
 }
 
--(CGRect) bounds {
+- (CGRect)bounds {
     rive::AABB aabb = _artboard->bounds();
     return CGRectMake(aabb.minX, aabb.minY, aabb.width(), aabb.height());
 }
 
 @end
 
-// RIVE LINEAR ANIMATION
-
+/*
+ * RiveLinearAnimation
+ */
 @implementation RiveLinearAnimation {
     const rive::LinearAnimation *animation;
 }
@@ -240,7 +303,7 @@
     }
 }
 
-- (NSString *) name {
+- (NSString *)name {
     std::string str = animation->name();
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
@@ -271,15 +334,15 @@
 
 @end
 
-// RIVE LINEAR ANIMATION INSTANCE
-
+/*
+ * RiveLinearAnimationInstance
+ */
 @implementation RiveLinearAnimationInstance {
     rive::LinearAnimationInstance *instance;
 }
 
 -(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation {
     if (self = [super init]) {
-        
         instance = new rive::LinearAnimationInstance(riveAnimation);
         return self;
     } else {
@@ -306,6 +369,65 @@
 
 -(void) advanceBy:(double)elapsedSeconds {
     instance->advance(elapsedSeconds);
+}
+
+@end
+
+/*
+ * RiveStateMachine
+ */
+@implementation RiveStateMachine {
+    const rive::StateMachine *stateMachine;
+}
+
+// Creates a new RiveStateMachine from a cpp StateMachine
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)riveStateMachine {
+    if (self = [super init]) {
+        stateMachine = riveStateMachine;
+        return self;
+    } else {
+        return nil;
+    }
+}
+
+// Returns the name of the state machine
+- (NSString *)name {
+    std::string str = stateMachine->name();
+    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+}
+
+// Returns the number of inputs in the state machine
+- (NSInteger)inputCount {
+    return stateMachine->inputCount();
+}
+
+// Returns the number of layers in the state machine
+- (NSInteger)layerCount {
+    return stateMachine->layerCount();
+}
+
+// Creates a new instance of this state machine
+- (RiveStateMachineInstance *)instance {
+    return [[RiveStateMachineInstance alloc] initWithStateMachine: stateMachine];
+}
+
+@end
+
+/*
+ * RiveStateMachineInstance
+ */
+@implementation RiveStateMachineInstance {
+    const rive::StateMachineInstance *instance;
+}
+
+// Creates a new RiveStateMachineInstance from a cpp StateMachine
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine {
+    if (self = [super init]) {
+        instance = new rive::StateMachineInstance(stateMachine);
+        return self;
+    } else {
+        return nil;
+    }
 }
 
 @end
