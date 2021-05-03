@@ -11,7 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Different fits for rendering a Rive animation in a View
+/*
+ * Fits
+ */
 typedef NS_ENUM(NSInteger, Fit) {
     Fill,
     Contain,
@@ -22,7 +24,9 @@ typedef NS_ENUM(NSInteger, Fit) {
     None
 };
 
-// Different alignments for rendering a Rive animation in a View
+/*
+ * Alignments
+ */
 typedef NS_ENUM(NSInteger, Alignment) {
     TopLeft,
     TopCenter,
@@ -38,31 +42,53 @@ typedef NS_ENUM(NSInteger, Alignment) {
 @class RiveArtboard;
 @class RiveLinearAnimation;
 
-// Linear animation instance wrapper
+/*
+ * RiveStateMachineInstance
+ */
+@interface RiveStateMachineInstance : NSObject
+@end
+
+/*
+ * RiveStateMachine
+ */
+@interface RiveStateMachine : NSObject
+- (NSString *)name;
+- (NSInteger)layerCount;
+- (NSInteger)inputCount;
+- (RiveStateMachineInstance *)instance;
+@end
+
+/*
+ * RiveLinearAnimationInstance
+ */
 @interface RiveLinearAnimationInstance : NSObject
 
--(float) time;
--(void) setTime:(float) time;
--(const RiveLinearAnimation *) animation;
--(void) applyTo:(RiveArtboard*) artboard;
--(void) advanceBy:(double)elapsedSeconds;
+- (float)time;
+- (void)setTime:(float) time;
+- (const RiveLinearAnimation *)animation;
+- (void)applyTo:(RiveArtboard*)artboard;
+- (void)advanceBy:(double)elapsedSeconds;
 
 @end
 
-// Linear animation wrapper
+/*
+ * RiveLinearAnimation
+ */
 @interface RiveLinearAnimation : NSObject
 
--(NSString *) name;
--(RiveLinearAnimationInstance *) instance;
--(NSInteger) workStart;
--(NSInteger) workEnd;
--(NSInteger) duration;
--(NSInteger) fps;
--(void) apply:(float) time to:(RiveArtboard *) artboard;
+- (NSString *)name;
+- (RiveLinearAnimationInstance *)instance;
+- (NSInteger)workStart;
+- (NSInteger)workEnd;
+- (NSInteger)duration;
+- (NSInteger)fps;
+- (void)apply:(float)time to:(RiveArtboard *)artboard;
 
 @end
 
-// Render wrapper
+/*
+ * RiveRenderer
+ */
 @interface RiveRenderer : NSObject
 
 -(instancetype) initWithContext:(nonnull CGContextRef) context;
@@ -70,20 +96,32 @@ typedef NS_ENUM(NSInteger, Alignment) {
 
 @end
 
-// Artboard wrapper
+/*
+ * RiveArtboard
+ */
 @interface RiveArtboard : NSObject
 
 - (NSString *)name;
 - (CGRect)bounds;
+
 - (NSInteger)animationCount;
+- (RiveLinearAnimation *)firstAnimation;
 - (RiveLinearAnimation *)animationFromIndex:(NSInteger)index;
 - (RiveLinearAnimation *)animationFromName:(NSString *)name;
+
+- (NSInteger)stateMachineCount;
+- (RiveStateMachine *)firstStateMachine;
+- (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index;
+- (RiveStateMachine *)stateMachineFromName:(NSString *)name;
+
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer *)renderer;
 
 @end
 
-// File wrapper
+/*
+ * RiveFile
+ */
 @interface RiveFile : NSObject
 
 @property (class, readonly) uint majorVersion;
