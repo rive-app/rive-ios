@@ -43,15 +43,18 @@ public class RiveView: UIView {
      * Updates the artboard and layout options
      */
     open func configure(
-        withRiveFile riveFile: RiveFile
+        withRiveFile riveFile: RiveFile,
+        andArtboard artboard: String?=nil,
+        andAnimation animation: String?=nil
     ) {
         self.riveFile = riveFile
         
-//        // TODO: is there a more Swift-y way to do these?
-//        self.fit = fit ?? self.fit
-//        self.alignment = alignment ?? self.alignment
+        if let artboardName = artboard {
+            self.artboard = riveFile.artboard(fromName:artboardName)
+        }else {
+            self.artboard = riveFile.artboard()
+        }
         
-        self.artboard = riveFile.artboard()
         guard let artboard = self.artboard else {
             fatalError("No default artboard exists")
         }
@@ -59,8 +62,20 @@ public class RiveView: UIView {
         if (artboard.animationCount() == 0) {
             fatalError("No animations in the file.")
         }
-            
-        animations.append(artboard.firstAnimation().instance())
+        
+        var linearAnimation: RiveLinearAnimation?
+        if let animationName = animation {
+            linearAnimation = artboard.animation(fromName: animationName)
+        }else {
+            linearAnimation = artboard.firstAnimation()
+        }
+        
+        if let thisLinearAnimation=linearAnimation {
+            animations.append(thisLinearAnimation.instance())
+        }
+        else {
+            fatalError("Animation not found in file.")
+        }
         
         // Advance the artboard, this will ensure the first
         // frame is displayed when the artboard is drawn
