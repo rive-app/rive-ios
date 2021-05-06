@@ -287,7 +287,6 @@
 		C9C741F524FC510200EF9516 /* Rive.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C741F324FC510200EF9516 /* Rive.mm */; };
 		C9CE8253263B716F00F98DDB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9CE8252263B716F00F98DDB /* UIKit.framework */; };
 		C9CE8260263B7CC200F98DDB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9CE825F263B7CC200F98DDB /* SwiftUI.framework */; };
-		C9CE8263263B806200F98DDB /* UIRiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CE8262263B806200F98DDB /* UIRiveView.swift */; };
 		C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */; };
 		C9D60DAC2512B04B00AAA3A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
@@ -650,7 +649,6 @@
 		C9C741F324FC510200EF9516 /* Rive.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Rive.mm; sourceTree = "<group>"; };
 		C9CE8252263B716F00F98DDB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C9CE825F263B7CC200F98DDB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
-		C9CE8262263B806200F98DDB /* UIRiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIRiveView.swift; sourceTree = "<group>"; };
 		C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -825,7 +823,6 @@
 		C9BD3928263B65B100696C37 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				C9CE8262263B806200F98DDB /* UIRiveView.swift */,
 				C9002A1F263C76080011556B /* RiveView.swift */,
 				C9002A21263C76170011556B /* RiveViewController.swift */,
 			);
@@ -1627,7 +1624,6 @@
 				C9C7414624FC4F0500EF9516 /* keyframe.cpp in Sources */,
 				C9BD3918263B5E9000696C37 /* state_machine_input_instance.cpp in Sources */,
 				C9C7413B24FC4F0500EF9516 /* core_color_type.cpp in Sources */,
-				C9CE8263263B806200F98DDB /* UIRiveView.swift in Sources */,
 				C9C7416924FC4F0500EF9516 /* root_bone.cpp in Sources */,
 				C9C7413E24FC4F0500EF9516 /* component.cpp in Sources */,
 				C9BD3904263B5E7600696C37 /* state_machine_importer.cpp in Sources */,
