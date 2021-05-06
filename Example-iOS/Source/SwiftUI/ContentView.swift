@@ -12,11 +12,11 @@ import RiveRuntime
 struct ContentView: View {
     var body: some View {
         UIRiveView(
-            resource: "juice_v7",
+            resource: "truck_v7",
             fit: Fit.Cover,
             alignment: Alignment.Center,
             artboardName: "New Artboard",
-            animationName: "walk"
+            animationNames: ["idle", "bouncing"]
         )
     }
 }
