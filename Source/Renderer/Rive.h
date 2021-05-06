@@ -46,6 +46,10 @@ typedef NS_ENUM(NSInteger, Alignment) {
  * RiveStateMachineInstance
  */
 @interface RiveStateMachineInstance : NSObject
+
+- (void)applyTo:(RiveArtboard*)artboard;
+- (bool)advanceBy:(double)elapsedSeconds;
+
 @end
 
 /*
@@ -67,7 +71,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (void)setTime:(float) time;
 - (const RiveLinearAnimation *)animation;
 - (void)applyTo:(RiveArtboard*)artboard;
-- (void)advanceBy:(double)elapsedSeconds;
+- (bool)advanceBy:(double)elapsedSeconds;
 
 @end
 

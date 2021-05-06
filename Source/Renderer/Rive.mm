@@ -367,8 +367,8 @@
     instance->apply(artboard.artboard);
 }
 
--(void) advanceBy:(double)elapsedSeconds {
-    instance->advance(elapsedSeconds);
+-(bool) advanceBy:(double)elapsedSeconds {
+    return instance->advance(elapsedSeconds);
 }
 
 @end
@@ -417,7 +417,7 @@
  * RiveStateMachineInstance
  */
 @implementation RiveStateMachineInstance {
-    const rive::StateMachineInstance *instance;
+    rive::StateMachineInstance *instance;
 }
 
 // Creates a new RiveStateMachineInstance from a cpp StateMachine
@@ -428,6 +428,15 @@
     } else {
         return nil;
     }
+}
+
+
+-(void) applyTo:(RiveArtboard*) artboard {
+    instance->apply(artboard.artboard);
+}
+
+-(bool) advanceBy:(double)elapsedSeconds {
+    return instance->advance(elapsedSeconds);
 }
 
 @end
