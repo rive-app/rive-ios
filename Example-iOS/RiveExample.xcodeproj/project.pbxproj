@@ -12,25 +12,24 @@
 		042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042C888B2643EEE300E7DBB2 /* Layout.swift */; };
 		042C888E2644230700E7DBB2 /* utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042C888D2644230700E7DBB2 /* utility.swift */; };
 		042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042C888F2644250D00E7DBB2 /* MultipleAnimations.swift */; };
-		042C8892264427F700E7DBB2 /* loopy.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88912644276900E7DBB2 /* loopy.riv */; };
-		042C88A52644286600E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88932644286500E7DBB2 /* ui_swipe_left_to_delete.riv */; };
-		042C88A62644286600E7DBB2 /* basketball.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88942644286500E7DBB2 /* basketball.riv */; };
-		042C88A72644286600E7DBB2 /* pull.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88952644286500E7DBB2 /* pull.riv */; };
-		042C88A82644286600E7DBB2 /* flux_capacitor.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88962644286500E7DBB2 /* flux_capacitor.riv */; };
-		042C88A92644286600E7DBB2 /* f22.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88972644286500E7DBB2 /* f22.riv */; };
-		042C88AA2644286600E7DBB2 /* neostream.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88982644286500E7DBB2 /* neostream.riv */; };
-		042C88AB2644286600E7DBB2 /* progress.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88992644286500E7DBB2 /* progress.riv */; };
-		042C88AC2644286600E7DBB2 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C889A2644286500E7DBB2 /* skills.riv */; };
-		042C88AD2644286600E7DBB2 /* trailblaze.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C889B2644286500E7DBB2 /* trailblaze.riv */; };
-		042C88AE2644286600E7DBB2 /* off_road_car_blog.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C889C2644286600E7DBB2 /* off_road_car_blog.riv */; };
-		042C88AF2644286600E7DBB2 /* mascot.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C889D2644286600E7DBB2 /* mascot.riv */; };
-		042C88B02644286600E7DBB2 /* rope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C889E2644286600E7DBB2 /* rope.riv */; };
-		042C88B12644286600E7DBB2 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C889F2644286600E7DBB2 /* vader.riv */; };
-		042C88B22644286600E7DBB2 /* loopy.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88A02644286600E7DBB2 /* loopy.riv */; };
-		042C88B32644286600E7DBB2 /* clipping.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88A12644286600E7DBB2 /* clipping.riv */; };
-		042C88B42644286600E7DBB2 /* wacky.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88A22644286600E7DBB2 /* wacky.riv */; };
-		042C88B52644286600E7DBB2 /* explorer.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88A32644286600E7DBB2 /* explorer.riv */; };
-		042C88B62644286600E7DBB2 /* artboard_animations.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88A42644286600E7DBB2 /* artboard_animations.riv */; };
+		042C88DB2644447500E7DBB2 /* wacky.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88C92644447400E7DBB2 /* wacky.riv */; };
+		042C88DC2644447500E7DBB2 /* pull.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CA2644447400E7DBB2 /* pull.riv */; };
+		042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CB2644447400E7DBB2 /* ui_swipe_left_to_delete.riv */; };
+		042C88DE2644447500E7DBB2 /* rope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CC2644447400E7DBB2 /* rope.riv */; };
+		042C88DF2644447500E7DBB2 /* mascot.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CD2644447400E7DBB2 /* mascot.riv */; };
+		042C88E02644447500E7DBB2 /* progress.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CE2644447500E7DBB2 /* progress.riv */; };
+		042C88E12644447500E7DBB2 /* basketball.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CF2644447500E7DBB2 /* basketball.riv */; };
+		042C88E22644447500E7DBB2 /* f22.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D02644447500E7DBB2 /* f22.riv */; };
+		042C88E32644447500E7DBB2 /* flux_capacitor.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D12644447500E7DBB2 /* flux_capacitor.riv */; };
+		042C88E42644447500E7DBB2 /* neostream.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D22644447500E7DBB2 /* neostream.riv */; };
+		042C88E52644447500E7DBB2 /* explorer.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D32644447500E7DBB2 /* explorer.riv */; };
+		042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D42644447500E7DBB2 /* artboard_animations.riv */; };
+		042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D52644447500E7DBB2 /* trailblaze.riv */; };
+		042C88E82644447500E7DBB2 /* loopy.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D62644447500E7DBB2 /* loopy.riv */; };
+		042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D72644447500E7DBB2 /* off_road_car_blog.riv */; };
+		042C88EA2644447500E7DBB2 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D82644447500E7DBB2 /* skills.riv */; };
+		042C88EB2644447500E7DBB2 /* clipping.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D92644447500E7DBB2 /* clipping.riv */; };
+		042C88EC2644447500E7DBB2 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
 		C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9BD3925263B5FC700696C37 /* truck_v7.riv */; };
 		C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9724FC471E00EF9516 /* AppDelegate.swift */; };
 		C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */; };
@@ -78,25 +77,24 @@
 		042C888B2643EEE300E7DBB2 /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		042C888D2644230700E7DBB2 /* utility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utility.swift; sourceTree = "<group>"; };
 		042C888F2644250D00E7DBB2 /* MultipleAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleAnimations.swift; sourceTree = "<group>"; };
-		042C88912644276900E7DBB2 /* loopy.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = loopy.riv; path = "../../../rive-android/app/src/main/res/raw/loopy.riv"; sourceTree = "<group>"; };
-		042C88932644286500E7DBB2 /* ui_swipe_left_to_delete.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = ui_swipe_left_to_delete.riv; path = "../../../rive-android/app/src/main/res/raw/ui_swipe_left_to_delete.riv"; sourceTree = "<group>"; };
-		042C88942644286500E7DBB2 /* basketball.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = basketball.riv; path = "../../../rive-android/app/src/main/res/raw/basketball.riv"; sourceTree = "<group>"; };
-		042C88952644286500E7DBB2 /* pull.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = pull.riv; path = "../../../rive-android/app/src/main/res/raw/pull.riv"; sourceTree = "<group>"; };
-		042C88962644286500E7DBB2 /* flux_capacitor.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = flux_capacitor.riv; path = "../../../rive-android/app/src/main/res/raw/flux_capacitor.riv"; sourceTree = "<group>"; };
-		042C88972644286500E7DBB2 /* f22.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = f22.riv; path = "../../../rive-android/app/src/main/res/raw/f22.riv"; sourceTree = "<group>"; };
-		042C88982644286500E7DBB2 /* neostream.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = neostream.riv; path = "../../../rive-android/app/src/main/res/raw/neostream.riv"; sourceTree = "<group>"; };
-		042C88992644286500E7DBB2 /* progress.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = progress.riv; path = "../../../rive-android/app/src/main/res/raw/progress.riv"; sourceTree = "<group>"; };
-		042C889A2644286500E7DBB2 /* skills.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = skills.riv; path = "../../../rive-android/app/src/main/res/raw/skills.riv"; sourceTree = "<group>"; };
-		042C889B2644286500E7DBB2 /* trailblaze.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = trailblaze.riv; path = "../../../rive-android/app/src/main/res/raw/trailblaze.riv"; sourceTree = "<group>"; };
-		042C889C2644286600E7DBB2 /* off_road_car_blog.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = off_road_car_blog.riv; path = "../../../rive-android/app/src/main/res/raw/off_road_car_blog.riv"; sourceTree = "<group>"; };
-		042C889D2644286600E7DBB2 /* mascot.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = mascot.riv; path = "../../../rive-android/app/src/main/res/raw/mascot.riv"; sourceTree = "<group>"; };
-		042C889E2644286600E7DBB2 /* rope.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rope.riv; path = "../../../rive-android/app/src/main/res/raw/rope.riv"; sourceTree = "<group>"; };
-		042C889F2644286600E7DBB2 /* vader.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = vader.riv; path = "../../../rive-android/app/src/main/res/raw/vader.riv"; sourceTree = "<group>"; };
-		042C88A02644286600E7DBB2 /* loopy.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = loopy.riv; path = "../../../rive-android/app/src/main/res/raw/loopy.riv"; sourceTree = "<group>"; };
-		042C88A12644286600E7DBB2 /* clipping.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = clipping.riv; path = "../../../rive-android/app/src/main/res/raw/clipping.riv"; sourceTree = "<group>"; };
-		042C88A22644286600E7DBB2 /* wacky.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = wacky.riv; path = "../../../rive-android/app/src/main/res/raw/wacky.riv"; sourceTree = "<group>"; };
-		042C88A32644286600E7DBB2 /* explorer.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = explorer.riv; path = "../../../rive-android/app/src/main/res/raw/explorer.riv"; sourceTree = "<group>"; };
-		042C88A42644286600E7DBB2 /* artboard_animations.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = artboard_animations.riv; path = "../../../rive-android/app/src/main/res/raw/artboard_animations.riv"; sourceTree = "<group>"; };
+		042C88C92644447400E7DBB2 /* wacky.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = wacky.riv; sourceTree = "<group>"; };
+		042C88CA2644447400E7DBB2 /* pull.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = pull.riv; sourceTree = "<group>"; };
+		042C88CB2644447400E7DBB2 /* ui_swipe_left_to_delete.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = ui_swipe_left_to_delete.riv; sourceTree = "<group>"; };
+		042C88CC2644447400E7DBB2 /* rope.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rope.riv; sourceTree = "<group>"; };
+		042C88CD2644447400E7DBB2 /* mascot.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = mascot.riv; sourceTree = "<group>"; };
+		042C88CE2644447500E7DBB2 /* progress.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = progress.riv; sourceTree = "<group>"; };
+		042C88CF2644447500E7DBB2 /* basketball.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = basketball.riv; sourceTree = "<group>"; };
+		042C88D02644447500E7DBB2 /* f22.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = f22.riv; sourceTree = "<group>"; };
+		042C88D12644447500E7DBB2 /* flux_capacitor.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = flux_capacitor.riv; sourceTree = "<group>"; };
+		042C88D22644447500E7DBB2 /* neostream.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = neostream.riv; sourceTree = "<group>"; };
+		042C88D32644447500E7DBB2 /* explorer.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = explorer.riv; sourceTree = "<group>"; };
+		042C88D42644447500E7DBB2 /* artboard_animations.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = artboard_animations.riv; sourceTree = "<group>"; };
+		042C88D52644447500E7DBB2 /* trailblaze.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = trailblaze.riv; sourceTree = "<group>"; };
+		042C88D62644447500E7DBB2 /* loopy.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = loopy.riv; sourceTree = "<group>"; };
+		042C88D72644447500E7DBB2 /* off_road_car_blog.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = off_road_car_blog.riv; sourceTree = "<group>"; };
+		042C88D82644447500E7DBB2 /* skills.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = skills.riv; sourceTree = "<group>"; };
+		042C88D92644447500E7DBB2 /* clipping.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = clipping.riv; sourceTree = "<group>"; };
+		042C88DA2644447500E7DBB2 /* vader.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = vader.riv; sourceTree = "<group>"; };
 		C9BD3925263B5FC700696C37 /* truck_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck_v7.riv; sourceTree = "<group>"; };
 		C9C73E9424FC471E00EF9516 /* RiveExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiveExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C73E9724FC471E00EF9516 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -134,25 +132,24 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				042C88912644276900E7DBB2 /* loopy.riv */,
-				042C88A42644286600E7DBB2 /* artboard_animations.riv */,
-				042C88942644286500E7DBB2 /* basketball.riv */,
-				042C88A12644286600E7DBB2 /* clipping.riv */,
-				042C88A32644286600E7DBB2 /* explorer.riv */,
-				042C88972644286500E7DBB2 /* f22.riv */,
-				042C88962644286500E7DBB2 /* flux_capacitor.riv */,
-				042C88A02644286600E7DBB2 /* loopy.riv */,
-				042C889D2644286600E7DBB2 /* mascot.riv */,
-				042C88982644286500E7DBB2 /* neostream.riv */,
-				042C889C2644286600E7DBB2 /* off_road_car_blog.riv */,
-				042C88992644286500E7DBB2 /* progress.riv */,
-				042C88952644286500E7DBB2 /* pull.riv */,
-				042C889E2644286600E7DBB2 /* rope.riv */,
-				042C889A2644286500E7DBB2 /* skills.riv */,
-				042C889B2644286500E7DBB2 /* trailblaze.riv */,
-				042C88932644286500E7DBB2 /* ui_swipe_left_to_delete.riv */,
-				042C889F2644286600E7DBB2 /* vader.riv */,
-				042C88A22644286600E7DBB2 /* wacky.riv */,
+				042C88D42644447500E7DBB2 /* artboard_animations.riv */,
+				042C88CF2644447500E7DBB2 /* basketball.riv */,
+				042C88D92644447500E7DBB2 /* clipping.riv */,
+				042C88D32644447500E7DBB2 /* explorer.riv */,
+				042C88D02644447500E7DBB2 /* f22.riv */,
+				042C88D12644447500E7DBB2 /* flux_capacitor.riv */,
+				042C88D62644447500E7DBB2 /* loopy.riv */,
+				042C88CD2644447400E7DBB2 /* mascot.riv */,
+				042C88D22644447500E7DBB2 /* neostream.riv */,
+				042C88D72644447500E7DBB2 /* off_road_car_blog.riv */,
+				042C88CE2644447500E7DBB2 /* progress.riv */,
+				042C88CA2644447400E7DBB2 /* pull.riv */,
+				042C88CC2644447400E7DBB2 /* rope.riv */,
+				042C88D82644447500E7DBB2 /* skills.riv */,
+				042C88D52644447500E7DBB2 /* trailblaze.riv */,
+				042C88CB2644447400E7DBB2 /* ui_swipe_left_to_delete.riv */,
+				042C88DA2644447500E7DBB2 /* vader.riv */,
+				042C88C92644447400E7DBB2 /* wacky.riv */,
 				C9CE8265263B90E000F98DDB /* juice_v7.riv */,
 				C9BD3925263B5FC700696C37 /* truck_v7.riv */,
 			);
@@ -298,30 +295,29 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				042C88DF2644447500E7DBB2 /* mascot.riv in Resources */,
 				C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */,
-				042C88B42644286600E7DBB2 /* wacky.riv in Resources */,
-				042C88AB2644286600E7DBB2 /* progress.riv in Resources */,
-				042C88A82644286600E7DBB2 /* flux_capacitor.riv in Resources */,
-				042C88B22644286600E7DBB2 /* loopy.riv in Resources */,
-				042C88AC2644286600E7DBB2 /* skills.riv in Resources */,
-				042C88AA2644286600E7DBB2 /* neostream.riv in Resources */,
-				042C88B62644286600E7DBB2 /* artboard_animations.riv in Resources */,
-				042C8892264427F700E7DBB2 /* loopy.riv in Resources */,
-				042C88A92644286600E7DBB2 /* f22.riv in Resources */,
-				042C88A62644286600E7DBB2 /* basketball.riv in Resources */,
+				042C88DC2644447500E7DBB2 /* pull.riv in Resources */,
+				042C88E32644447500E7DBB2 /* flux_capacitor.riv in Resources */,
 				C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */,
-				042C88AF2644286600E7DBB2 /* mascot.riv in Resources */,
-				042C88A72644286600E7DBB2 /* pull.riv in Resources */,
-				042C88B32644286600E7DBB2 /* clipping.riv in Resources */,
+				042C88E42644447500E7DBB2 /* neostream.riv in Resources */,
+				042C88E82644447500E7DBB2 /* loopy.riv in Resources */,
+				042C88E02644447500E7DBB2 /* progress.riv in Resources */,
+				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
-				042C88A52644286600E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
-				042C88B02644286600E7DBB2 /* rope.riv in Resources */,
-				042C88AE2644286600E7DBB2 /* off_road_car_blog.riv in Resources */,
-				042C88B52644286600E7DBB2 /* explorer.riv in Resources */,
-				042C88AD2644286600E7DBB2 /* trailblaze.riv in Resources */,
-				042C88B12644286600E7DBB2 /* vader.riv in Resources */,
+				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
+				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
+				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
+				042C88E12644447500E7DBB2 /* basketball.riv in Resources */,
+				042C88DE2644447500E7DBB2 /* rope.riv in Resources */,
 				C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */,
+				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
+				042C88E52644447500E7DBB2 /* explorer.riv in Resources */,
+				042C88E22644447500E7DBB2 /* f22.riv in Resources */,
+				042C88EC2644447500E7DBB2 /* vader.riv in Resources */,
 				C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */,
+				042C88DB2644447500E7DBB2 /* wacky.riv in Resources */,
+				042C88EB2644447500E7DBB2 /* clipping.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
