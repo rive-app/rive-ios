@@ -9,23 +9,71 @@
 import UIKit
 
 public class RiveView: UIView {
-
-    var artboard: RiveArtboard?
+    
+    var displayLink: CADisplayLink?
+    
     var fit = Fit.Contain
     var alignment = Alignment.Center
     
+    var riveFile: RiveFile?
+    
+    var artboard: RiveArtboard?
+    
+    var animations: [RiveLinearAnimationInstance] = []
+    var playingAnimations: Set<RiveLinearAnimationInstance> = []
+    var stateMachines: [RiveStateMachineInstance] = []
+    var playingStateMachines: Set<RiveStateMachineInstance> = []
+    
+    var autoPlay: Bool = true
+    var lastTime: CFTimeInterval = 0
+    
+    
+    func isPlaying() -> Bool {
+        return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
+    }
+    
+    open func setFit(fit: Fit){
+        self.fit = fit
+    }
+    open func setAlignment(alignment: Alignment){
+        self.alignment = alignment
+    }
+
     /*
      * Updates the artboard and layout options
      */
-    func updateArtboard(
-        withArtboard artboard: RiveArtboard,
-        withFit fit: Fit?,
-        withAlignment alignment: Alignment?
+    open func configure(
+        withRiveFile riveFile: RiveFile
     ) {
-        self.artboard = artboard
-        // TODO: is there a more Swift-y way to do these?
-        self.fit = fit ?? self.fit
-        self.alignment = alignment ?? self.alignment
+        self.riveFile = riveFile
+        
+//        // TODO: is there a more Swift-y way to do these?
+//        self.fit = fit ?? self.fit
+//        self.alignment = alignment ?? self.alignment
+        
+        self.artboard = riveFile.artboard()
+        guard let artboard = self.artboard else {
+            fatalError("No default artboard exists")
+        }
+        
+        if (artboard.animationCount() == 0) {
+            fatalError("No animations in the file.")
+        }
+            
+        animations.append(artboard.firstAnimation().instance())
+        
+        // Advance the artboard, this will ensure the first
+        // frame is displayed when the artboard is drawn
+        artboard.advance(by: 0)
+        
+        // Start the animation loop
+        if autoPlay {
+            animations.forEach{ animation in
+                playingAnimations.insert(animation)
+            }
+            
+        }
+        runTimer()
     }
     
     /*
@@ -38,5 +86,70 @@ public class RiveView: UIView {
         let renderer = RiveRenderer(context: context);
         renderer.align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
         artboard.draw(renderer)
+    }
+    
+    // Starts the animation timer
+    func runTimer() {
+        if (displayLink == nil){
+            displayLink = CADisplayLink(target: self, selector: #selector(tick));
+        }
+        displayLink?.add(to: .main, forMode: .default)
+    }
+    
+    // Stops the animation timer
+    func stopTimer() {
+        displayLink?.remove(from: .main, forMode: .default)
+    }
+    
+    
+    // Animates a frame
+    @objc func tick() {
+        guard let displayLink = displayLink else {
+            // Something's gone wrong, clean up and bug out
+            stopTimer()
+            return
+        }
+        
+        let timestamp = displayLink.timestamp
+        // last time needs to be set on the first tick
+        if (lastTime == 0) {
+            lastTime = timestamp
+        }
+        
+        // Calculate the time elapsed between ticks
+        let elapsedTime = timestamp - lastTime;
+        lastTime = timestamp;
+        advance(delta: elapsedTime)
+        if(!isPlaying()){
+            stopTimer()
+        }
+    }
+    
+    func advance(delta:Double){
+        guard let artboard = artboard else {
+            return
+        }
+        animations.forEach{ animation in
+            if playingAnimations.contains(animation){
+                let stillPlaying = animation.advance(by: delta)
+                animation.apply(to: artboard)
+                if !stillPlaying {
+                    playingAnimations.remove(animation)
+                }
+            }
+        }
+        stateMachines.forEach{ stateMachine in
+            if playingStateMachines.contains(stateMachine){
+                let stillPlaying = stateMachine.advance(by: delta)
+                stateMachine.apply(to: artboard)
+                if !stillPlaying {
+                    playingStateMachines.remove(stateMachine)
+                }
+            }
+        }
+        // advance the artboard
+        artboard.advance(by: delta)
+        // Trigger a redraw
+        self.setNeedsDisplay()
     }
 }
