@@ -47,6 +47,7 @@ public class RiveView: UIView {
         andArtboard artboard: String?=nil,
         andAnimation animation: String?=nil
     ) {
+        UITableView
         self.riveFile = riveFile
         
         if let artboardName = artboard {
