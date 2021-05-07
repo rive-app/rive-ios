@@ -95,6 +95,8 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (bool)advanceBy:(double)elapsedSeconds;
 - (int)direction;
 - (void)direction:(int)direction;
+- (int)loop;
+- (void)loop:(int)loopMode;
 
 @end
 
@@ -110,8 +112,6 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (NSInteger)duration;
 - (float)endTime;
 - (NSInteger)fps;
-- (int)loop;
-- (void)loop:(int)loopMode;
 - (void)apply:(float)time to:(RiveArtboard *)artboard;
 
 @end
@@ -121,8 +121,8 @@ typedef NS_ENUM(NSInteger, Alignment) {
  */
 @interface RiveRenderer : NSObject
 
--(instancetype) initWithContext:(nonnull CGContextRef) context;
--(void) alignWithRect:(CGRect)rect withContentRect:(CGRect)contentRect withAlignment:(Alignment)alignment withFit:(Fit)fit;
+- (instancetype)initWithContext:(nonnull CGContextRef)context;
+- (void)alignWithRect:(CGRect)rect withContentRect:(CGRect)contentRect withAlignment:(Alignment)alignment withFit:(Fit)fit;
 
 @end
 

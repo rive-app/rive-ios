@@ -35,11 +35,11 @@ public class RiveView: UIView {
     }
     
     public init() {
-      super.init(frame: .zero)
+        super.init(frame: .zero)
     }
     
     required public init?(coder aDecoder: NSCoder) {
-      super.init(coder: aDecoder)
+        super.init(coder: aDecoder)
     }
     
     
@@ -63,6 +63,9 @@ public class RiveView: UIView {
         andAnimation animation: String?=nil,
         andAutoPlay autoPlay: Bool=true
     ) {
+        // Ensure the view's transparent
+        self.isOpaque = false
+        
         self.riveFile = riveFile
         self.autoPlay = autoPlay
         
@@ -82,7 +85,7 @@ public class RiveView: UIView {
         
         // Advance the artboard, this will ensure the first
         // frame is displayed when the artboard is drawn
-//        artboard.advance(by: 0)
+        // artboard.advance(by: 0)
         
         // Start the animation loop
         if autoPlay {
@@ -103,9 +106,9 @@ public class RiveView: UIView {
         guard let context = UIGraphicsGetCurrentContext(), let artboard = self.artboard else {
             return
         }
-        let renderer = RiveRenderer(context: context);
-        renderer.align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
-        artboard.draw(renderer)
+         let renderer = RiveRenderer(context: context);
+         renderer.align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
+         artboard.draw(renderer)
     }
     
     // Starts the animation timer
@@ -179,7 +182,7 @@ public class RiveView: UIView {
                 animation.apply(to: artboard)
                 if !stillPlaying {
                     playingAnimations.remove(animation)
-                    if (animation.animation().loop() == Loop.LoopOneShot.rawValue) {
+                    if (animation.loop() == Loop.LoopOneShot.rawValue) {
                         animations.removeAll(where: {animationInstance in
                             return animationInstance == animation
                         })
@@ -284,7 +287,7 @@ public class RiveView: UIView {
         direction: Direction
     ) {
         if (loop != Loop.LoopAuto) {
-            animationInstance.animation().loop(Int32(loop.rawValue))
+            animationInstance.loop(Int32(loop.rawValue))
         }
         if (!animations.contains(animationInstance)) {
             if (direction == Direction.DirectionBackwards) {

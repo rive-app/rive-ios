@@ -294,7 +294,7 @@
     const rive::LinearAnimation *animation;
 }
 
--(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation {
+- (instancetype)initWithAnimation:(const rive::LinearAnimation *) riveAnimation {
     if (self = [super init]) {
         animation = riveAnimation;
         return self;
@@ -308,43 +308,38 @@
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
--(RiveLinearAnimationInstance *) instance {
+- (RiveLinearAnimationInstance *)instance {
     return [[RiveLinearAnimationInstance alloc] initWithAnimation: animation];
 }
 
--(NSInteger) workStart {
+- (NSInteger)workStart {
     return animation->workStart();
 }
 
--(NSInteger) workEnd {
+- (NSInteger)workEnd {
     return animation->workEnd();
 }
 
--(NSInteger) duration {
+- (NSInteger)duration {
     return animation->duration();
 }
 
--(float) endTime {
+- (float)endTime {
     if (animation->enableWorkArea()){
         return animation->workEnd()/animation->fps();
     }
     return animation->duration()/animation->fps();
 }
 
--(NSInteger) fps {
+- (NSInteger)fps {
     return animation->fps();
 }
 
--(void) apply:(float) time to:(RiveArtboard *) artboard {
+- (void)apply:(float)time to:(RiveArtboard *)artboard {
     animation->apply(artboard.artboard, time);
 }
 
--(void) loop:(int)loopType {
-//    TODO: fix this. we shoudln't be casting the const out of this.
-    ((rive::LinearAnimation*) animation)->loopValue(loopType);
-}
-
--(int) loop {
+- (int)loop {
     return animation->loopValue();
 }
 
@@ -357,7 +352,7 @@
     rive::LinearAnimationInstance *instance;
 }
 
--(instancetype) initWithAnimation:(const rive::LinearAnimation *) riveAnimation {
+- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation {
     if (self = [super init]) {
         instance = new rive::LinearAnimationInstance(riveAnimation);
         return self;
@@ -366,31 +361,39 @@
     }
 }
 
--(RiveLinearAnimation *) animation {
+- (RiveLinearAnimation *)animation {
     const rive::LinearAnimation *linearAnimation = instance->animation();
     return [[RiveLinearAnimation alloc] initWithAnimation: linearAnimation];
 }
 
--(float) time {
+- (float)time {
     return instance->time();
 }
 
--(void) setTime:(float) time {
+- (void)setTime:(float) time {
     instance->time(time);
 }
 
--(void) applyTo:(RiveArtboard*) artboard {
+- (void)applyTo:(RiveArtboard*) artboard {
     instance->apply(artboard.artboard);
 }
 
--(bool) advanceBy:(double)elapsedSeconds {
+- (bool)advanceBy:(double)elapsedSeconds {
     return instance->advance(elapsedSeconds);
 }
--(void) direction:(int)direction {
+- (void)direction:(int)direction {
     instance->direction(direction);
 }
--(int) direction{
+- (int)direction {
     return instance->direction();
+}
+
+- (int)loop {
+    return instance->loopValue();
+}
+
+- (void)loop:(int)loopType {
+    instance->loopValue(loopType);
 }
 
 @end
