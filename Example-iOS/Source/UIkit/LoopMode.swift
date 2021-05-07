@@ -104,7 +104,13 @@ class LoopModeController: UIViewController {
         )
         
         loopModeView.triggeredResetButton = {
+            loopModeView.riveView.reset()
             
+            // TODO: just calling reset on an existing file is really not so hot.
+            loopModeView.riveView.configure(
+                withRiveFile: getRiveFile(resourceName: self.loopResourceName),
+                andAutoPlay: false
+            )
         }
         loopModeView.triggeredForwardsButton = {
             self.direction = Direction.DirectionForwards
