@@ -12,7 +12,7 @@
         <!--Examples-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController title="Examples" id="Y6W-OH-hqX" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ExamplesViewController" title="Examples" id="Y6W-OH-hqX" customClass="ExamplesViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -43,6 +43,14 @@
                                 <state key="normal" title="Multiple Animations (Scroll)"/>
                                 <connections>
                                     <segue destination="qQy-Yc-tGr" kind="show" id="xDt-M5-1hC"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrC-Ng-Q2K">
+                                <rect key="frame" x="125" y="240" width="162" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Simple SwiftUI Example"/>
+                                <connections>
+                                    <segue destination="w39-2n-FCH" kind="presentation" destinationCreationSelector="hostingAction:" id="SeF-el-OxU"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -257,7 +265,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iPR-UO-vO8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2049" y="154"/>
+            <point key="canvasLocation" x="2799" y="147"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="iqU-00-Krb">
@@ -501,6 +509,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xxk-hl-V9T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2048" y="-494"/>
+        </scene>
+        <!--Hosting Controller-->
+        <scene sceneID="ywB-z0-0QJ">
+            <objects>
+                <hostingController id="w39-2n-FCH" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="GYU-ku-HRS"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tzM-Rx-Bel" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2800" y="-494"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Vw7-FC-sqO">

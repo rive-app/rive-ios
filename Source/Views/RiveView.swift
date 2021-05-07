@@ -27,6 +27,21 @@ public class RiveView: UIView {
     var autoPlay: Bool = true
     var lastTime: CFTimeInterval = 0
     
+    public init(riveFile: RiveFile, fit: Fit = Fit.Contain, alignment: Alignment = Alignment.Center) {
+        super.init(frame: .zero)
+        self.configure(withRiveFile: riveFile)
+        setFit(fit: fit)
+        setAlignment(alignment: alignment)
+    }
+    
+    public init() {
+      super.init(frame: .zero)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+      super.init(coder: aDecoder)
+    }
+    
     
     func isPlaying() -> Bool {
         return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
@@ -47,7 +62,6 @@ public class RiveView: UIView {
         andArtboard artboard: String?=nil,
         andAnimation animation: String?=nil
     ) {
-        UITableView
         self.riveFile = riveFile
         
         if let artboardName = artboard {
