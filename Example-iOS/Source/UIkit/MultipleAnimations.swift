@@ -25,7 +25,7 @@ class MultipleAnimationsController: UIViewController {
         guard let multipleAnimationView = view as? MultipleAnimations else {
             fatalError("Could not find LayoutView")
         }
-        
+
         multipleAnimationView.squareGoAround.configure(
             withRiveFile: getRiveFile(resourceName: loopResourceName),
             andArtboard: "Square",

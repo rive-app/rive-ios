@@ -30,6 +30,7 @@
 		042C88EA2644447500E7DBB2 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D82644447500E7DBB2 /* skills.riv */; };
 		042C88EB2644447500E7DBB2 /* clipping.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D92644447500E7DBB2 /* clipping.riv */; };
 		042C88EC2644447500E7DBB2 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
+		04A8F6C126452E31002C909A /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		C9A84F38264495600014D8E0 /* RiveSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F37264495600014D8E0 /* RiveSwiftUIView.swift */; };
 		C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */; };
 		C9A84F602644AB6B0014D8E0 /* RiveViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5F2644AB6B0014D8E0 /* RiveViewWrapper.swift */; };
@@ -39,21 +40,19 @@
 		C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C73E9D24FC471E00EF9516 /* Assets.xcassets */; };
 		C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C73EA024FC471E00EF9516 /* Preview Assets.xcassets */; };
 		C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9CE8265263B90E000F98DDB /* juice_v7.riv */; };
-		C9E1AA45251E957F00BD52EC /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9E1AA3E251E94CC00BD52EC /* RiveRuntime.framework */; };
-		C9E1AA46251E957F00BD52EC /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C9E1AA3E251E94CC00BD52EC /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C9E1AA3D251E94CC00BD52EC /* PBXContainerItemProxy */ = {
+		04A8F6BC26452E10002C909A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C9E1AA38251E94CC00BD52EC /* RiveRuntime.xcodeproj */;
+			containerPortal = 04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C9C73ED124FC478800EF9516;
 			remoteInfo = RiveRuntime;
 		};
-		C9E1AA3F251E94CC00BD52EC /* PBXContainerItemProxy */ = {
+		04A8F6BE26452E10002C909A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C9E1AA38251E94CC00BD52EC /* RiveRuntime.xcodeproj */;
+			containerPortal = 04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C9C73EDA24FC478900EF9516;
 			remoteInfo = RiveRuntimeTests;
@@ -67,7 +66,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C9E1AA46251E957F00BD52EC /* RiveRuntime.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -98,6 +96,7 @@
 		042C88D82644447500E7DBB2 /* skills.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = skills.riv; sourceTree = "<group>"; };
 		042C88D92644447500E7DBB2 /* clipping.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = clipping.riv; sourceTree = "<group>"; };
 		042C88DA2644447500E7DBB2 /* vader.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = vader.riv; sourceTree = "<group>"; };
+		04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RiveRuntime.xcodeproj; path = ../RiveRuntime.xcodeproj; sourceTree = "<group>"; };
 		C9A84F37264495600014D8E0 /* RiveSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwiftUIView.swift; sourceTree = "<group>"; };
 		C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesViewController.swift; sourceTree = "<group>"; };
 		C9A84F5F2644AB6B0014D8E0 /* RiveViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveViewWrapper.swift; sourceTree = "<group>"; };
@@ -109,15 +108,14 @@
 		C9C73EA024FC471E00EF9516 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C9C73EA524FC471E00EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9CE8265263B90E000F98DDB /* juice_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = juice_v7.riv; sourceTree = "<group>"; };
-		C9E1AA38251E94CC00BD52EC /* RiveRuntime.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RiveRuntime.xcodeproj; path = ../RiveRuntime.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C9C73E9124FC471E00EF9516 /* Frameworks */ = {
+		04A8F6C026452E27002C909A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9E1AA45251E957F00BD52EC /* RiveRuntime.framework in Frameworks */,
+				04A8F6C126452E31002C909A /* RiveRuntime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,11 +127,27 @@
 			children = (
 				042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */,
 				042C888B2643EEE300E7DBB2 /* Layout.swift */,
-				042C888D2644230700E7DBB2 /* utility.swift */,
 				042C888F2644250D00E7DBB2 /* MultipleAnimations.swift */,
 				C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */,
 			);
 			path = UIkit;
+			sourceTree = "<group>";
+		};
+		04A8F6B826452E10002C909A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				04A8F6BD26452E10002C909A /* RiveRuntime.framework */,
+				04A8F6BF26452E10002C909A /* RiveRuntimeTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		04A8F6C226452F25002C909A /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				042C888D2644230700E7DBB2 /* utility.swift */,
+			);
+			path = lib;
 			sourceTree = "<group>";
 		};
 		C9696B0E24FC6FD10041502A /* Assets */ = {
@@ -175,7 +189,6 @@
 		C9C73E8B24FC471E00EF9516 = {
 			isa = PBXGroup;
 			children = (
-				C9E1AA38251E94CC00BD52EC /* RiveRuntime.xcodeproj */,
 				C9696B0E24FC6FD10041502A /* Assets */,
 				C9C73E9624FC471E00EF9516 /* Source */,
 				C9C73E9524FC471E00EF9516 /* Products */,
@@ -194,6 +207,7 @@
 		C9C73E9624FC471E00EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				04A8F6C226452F25002C909A /* lib */,
 				C9A84F342644931E0014D8E0 /* SwiftUI */,
 				C9C73E9724FC471E00EF9516 /* AppDelegate.swift */,
 				C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */,
@@ -217,17 +231,9 @@
 		C9C741FF24FC53CF00EF9516 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		C9E1AA39251E94CC00BD52EC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				C9E1AA3E251E94CC00BD52EC /* RiveRuntime.framework */,
-				C9E1AA40251E94CC00BD52EC /* RiveRuntimeTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -237,8 +243,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9C73EBE24FC471E00EF9516 /* Build configuration list for PBXNativeTarget "RiveExample" */;
 			buildPhases = (
+				04A8F6C026452E27002C909A /* Frameworks */,
 				C9C73E9024FC471E00EF9516 /* Sources */,
-				C9C73E9124FC471E00EF9516 /* Frameworks */,
 				C9C73E9224FC471E00EF9516 /* Resources */,
 				C9C7420224FC53CF00EF9516 /* Embed Frameworks */,
 			);
@@ -279,8 +285,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = C9E1AA39251E94CC00BD52EC /* Products */;
-					ProjectRef = C9E1AA38251E94CC00BD52EC /* RiveRuntime.xcodeproj */;
+					ProductGroup = 04A8F6B826452E10002C909A /* Products */;
+					ProjectRef = 04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -291,18 +297,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		C9E1AA3E251E94CC00BD52EC /* RiveRuntime.framework */ = {
+		04A8F6BD26452E10002C909A /* RiveRuntime.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = RiveRuntime.framework;
-			remoteRef = C9E1AA3D251E94CC00BD52EC /* PBXContainerItemProxy */;
+			remoteRef = 04A8F6BC26452E10002C909A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C9E1AA40251E94CC00BD52EC /* RiveRuntimeTests.xctest */ = {
+		04A8F6BF26452E10002C909A /* RiveRuntimeTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RiveRuntimeTests.xctest;
-			remoteRef = C9E1AA3F251E94CC00BD52EC /* PBXContainerItemProxy */;
+			remoteRef = 04A8F6BE26452E10002C909A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
