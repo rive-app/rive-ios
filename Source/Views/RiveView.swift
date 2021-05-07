@@ -82,7 +82,7 @@ public class RiveView: UIView {
         
         // Advance the artboard, this will ensure the first
         // frame is displayed when the artboard is drawn
-        artboard.advance(by: 0)
+//        artboard.advance(by: 0)
         
         // Start the animation loop
         if autoPlay {
@@ -91,6 +91,8 @@ public class RiveView: UIView {
             }else {
                 play()
             }
+        }else {
+            advance(delta: 0)
         }
     }
     
@@ -123,6 +125,24 @@ public class RiveView: UIView {
     func stopTimer() {
         // should we pause or invalidate?
         displayLink?.isPaused=true
+    }
+    
+    func clear() {
+        playingAnimations.removeAll()
+        playingStateMachines.removeAll()
+        animations.removeAll()
+        stateMachines.removeAll()
+        stopTimer()
+        lastTime=0
+    }
+    
+    public func reset() {
+        clear()
+        stopTimer()
+        if let riveFile = self.riveFile {
+            // TODO: this is totally not enough to reset the file. i guess its because the file's artboard is already changed.
+            configure(withRiveFile: riveFile, andAutoPlay: autoPlay)
+        }
     }
     
     
