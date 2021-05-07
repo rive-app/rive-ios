@@ -127,7 +127,6 @@
 			children = (
 				042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */,
 				042C888B2643EEE300E7DBB2 /* Layout.swift */,
-				042C888D2644230700E7DBB2 /* utility.swift */,
 				042C888F2644250D00E7DBB2 /* MultipleAnimations.swift */,
 				C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */,
 			);
@@ -141,6 +140,14 @@
 				04A8F6BF26452E10002C909A /* RiveRuntimeTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		04A8F6C226452F25002C909A /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				042C888D2644230700E7DBB2 /* utility.swift */,
+			);
+			path = lib;
 			sourceTree = "<group>";
 		};
 		C9696B0E24FC6FD10041502A /* Assets */ = {
@@ -200,6 +207,7 @@
 		C9C73E9624FC471E00EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				04A8F6C226452F25002C909A /* lib */,
 				C9A84F342644931E0014D8E0 /* SwiftUI */,
 				C9C73E9724FC471E00EF9516 /* AppDelegate.swift */,
 				C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */,
