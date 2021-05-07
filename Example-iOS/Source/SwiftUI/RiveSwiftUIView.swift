@@ -25,6 +25,7 @@ struct RiveSwiftUIView: View {
                     Button(action: { alignment = RiveRuntime.Alignment.BottomRight },
                            label: { Text("Bottom Right") })
                 }
+                .padding()
                 HStack {
                     Button(action: { fit = Fit.Contain },
                            label: { Text("Contain") })
@@ -46,6 +47,7 @@ struct RiveSwiftUIView: View {
                 }
                 .padding()
             }
+            .background(Color.init(white: 0, opacity: 0.75))
         }
     }
 }
