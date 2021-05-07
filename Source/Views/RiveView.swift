@@ -60,9 +60,11 @@ public class RiveView: UIView {
     open func configure(
         withRiveFile riveFile: RiveFile,
         andArtboard artboard: String?=nil,
-        andAnimation animation: String?=nil
+        andAnimation animation: String?=nil,
+        andAutoPlay autoPlay: Bool=true
     ) {
         self.riveFile = riveFile
+        self.autoPlay = autoPlay
         
         if let artboardName = artboard {
             self.artboard = riveFile.artboard(fromName:artboardName)
@@ -78,32 +80,18 @@ public class RiveView: UIView {
             fatalError("No animations in the file.")
         }
         
-        var linearAnimation: RiveLinearAnimation?
-        if let animationName = animation {
-            linearAnimation = artboard.animation(fromName: animationName)
-        }else {
-            linearAnimation = artboard.firstAnimation()
-        }
-        
-        if let thisLinearAnimation=linearAnimation {
-            animations.append(thisLinearAnimation.instance())
-        }
-        else {
-            fatalError("Animation not found in file.")
-        }
-        
         // Advance the artboard, this will ensure the first
         // frame is displayed when the artboard is drawn
         artboard.advance(by: 0)
         
         // Start the animation loop
         if autoPlay {
-            animations.forEach{ animation in
-                playingAnimations.insert(animation)
+            if let animationName = animation {
+                play(animationName: animationName)
+            }else {
+                play()
             }
-            
         }
-        runTimer()
     }
     
     /*
@@ -122,13 +110,19 @@ public class RiveView: UIView {
     func runTimer() {
         if (displayLink == nil){
             displayLink = CADisplayLink(target: self, selector: #selector(tick));
+            // Note: common didnt pause on scroll.
+            displayLink?.add(to: .main, forMode: .common)
         }
-        displayLink?.add(to: .main, forMode: .default)
+        if (displayLink?.isPaused==true){
+            lastTime=0
+            displayLink!.isPaused=false
+        }
     }
     
     // Stops the animation timer
     func stopTimer() {
-        displayLink?.remove(from: .main, forMode: .default)
+        // should we pause or invalidate?
+        displayLink?.isPaused=true
     }
     
     
@@ -165,6 +159,11 @@ public class RiveView: UIView {
                 animation.apply(to: artboard)
                 if !stillPlaying {
                     playingAnimations.remove(animation)
+                    if (animation.animation().loop() == Loop.LoopOneShot.rawValue) {
+                        animations.removeAll(where: {animationInstance in
+                            return animationInstance == animation
+                        })
+                    }
                 }
             }
         }
@@ -181,5 +180,107 @@ public class RiveView: UIView {
         artboard.advance(by: delta)
         // Trigger a redraw
         self.setNeedsDisplay()
+    }
+    
+    public func play(
+        loop: Loop = Loop.LoopAuto,
+        direction: Direction = Direction.DirectionAuto
+    ) {
+        guard let guardedArtboard=artboard else {
+            return;
+        }
+        
+        _playAnimation(
+            animationName:guardedArtboard.firstAnimation().name(),
+            loop:loop,
+            direction:direction
+        )
+        runTimer()
+    }
+    
+    
+    public func play(
+        animationName: String,
+        loop: Loop = Loop.LoopAuto,
+        direction: Direction = Direction.DirectionAuto,
+        isStateMachine: Bool = false
+    ) {
+        _playAnimation(
+            animationName:animationName,
+            loop:loop,
+            direction:direction,
+            isStateMachine:isStateMachine
+        )
+        runTimer()
+    }
+    
+    private func _playAnimation(
+            animationName: String,
+            loop: Loop = Loop.LoopAuto,
+            direction: Direction = Direction.DirectionAuto,
+            isStateMachine: Bool = false
+        )
+    {
+        if (isStateMachine) {
+//                val stateMachineInstances = _getOrCreateStateMachines(animationName)
+//                stateMachineInstances.forEach { stateMachineInstance ->
+//                    _play(stateMachineInstance)
+//                }
+        } else {
+            let animationInstances = _animations(animationName: animationName)
+            
+            animationInstances.forEach { animationInstance in
+                _play(
+                    animation:animationInstance,
+                    loop:loop, direction:direction
+                )
+            }
+            if (animationInstances.isEmpty) {
+                guard let guardedArtboard=artboard else {
+                    return
+                }
+                let animationInstance = guardedArtboard.animation(fromName:animationName).instance()
+                    
+                _play(animation:animationInstance, loop:loop, direction:direction)
+
+            }
+        }
+    }
+        
+    
+    private func _animations(animationName: String)->[RiveLinearAnimationInstance] {
+        return _animations(animationNames:[animationName])
+    }
+    
+    private func _animations(animationNames: [String])-> [RiveLinearAnimationInstance] {
+        return animations.filter {  animationInstance in
+            animationNames.contains(animationInstance.animation().name())
+        }
+    }
+
+    private func _play(
+        animation animationInstance: RiveLinearAnimationInstance,
+        loop: Loop,
+        direction: Direction
+    ) {
+        if (loop != Loop.LoopAuto) {
+            animationInstance.animation().loop(Int32(loop.rawValue))
+        }
+        if (!animations.contains(animationInstance)) {
+            if (direction == Direction.DirectionBackwards) {
+                animationInstance.setTime(animationInstance.animation().endTime())
+            }
+            animations.append(
+                animationInstance
+            )
+        }
+        if (direction == Direction.DirectionForwards) {
+            animationInstance.direction(1)
+        }else if (direction == Direction.DirectionBackwards) {
+            animationInstance.direction(-1)
+        }
+    
+        playingAnimations.insert(animationInstance)
+        //        notifyPlay(animationInstance)
     }
 }

@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="wRo-9V-rXR">
-                                <rect key="frame" x="0.0" y="88" width="414" height="120"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="150"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQZ-zi-PeG">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="30"/>
@@ -46,6 +46,13 @@
                                         <state key="normal" title="Simple SwiftUI Example"/>
                                         <connections>
                                             <segue destination="w39-2n-FCH" kind="presentation" destinationCreationSelector="hostingAction:" id="SeF-el-OxU"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tdH-Jc-BAa">
+                                        <rect key="frame" x="0.0" y="120" width="414" height="30"/>
+                                        <state key="normal" title="Loop Mode"/>
+                                        <connections>
+                                            <segue destination="fGr-bk-Efd" kind="show" id="x3r-N0-mCq"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -259,31 +266,233 @@
             </objects>
             <point key="canvasLocation" x="2799" y="147"/>
         </scene>
-        <!--View Controller-->
+        <!--Loop Mode-->
         <scene sceneID="iqU-00-Krb">
             <objects>
-                <viewController id="fGr-bk-Efd" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="PUC-Yj-uP6">
+                <viewController id="fGr-bk-Efd" customClass="LoopModeController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PUC-Yj-uP6" customClass="LoopMode" customModule="RiveExample" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lf8-o5-lpM">
-                                <rect key="frame" x="87" y="115" width="240" height="128"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </tableView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oUs-bT-6kr">
-                                <rect key="frame" x="64" y="384" width="240" height="128"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="5oq-0F-BqP">
+                                <rect key="frame" x="0.0" y="88" width="414" height="590"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6bX-tZ-DVu" customClass="RiveView" customModule="RiveRuntime">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="414"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="414" id="AXW-qC-d7S"/>
+                                        </constraints>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vG4-7v-f5q">
+                                        <rect key="frame" x="0.0" y="414" width="414" height="44"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0lc-BE-QMv">
+                                                <rect key="frame" x="0.0" y="0.0" width="165.5" height="44"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="44" id="sN2-UV-nGg"/>
+                                                </constraints>
+                                                <state key="normal" title="Reset"/>
+                                                <connections>
+                                                    <action selector="resetButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="U8i-2h-lp8"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="400" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qBl-ZB-vZ6">
+                                                <rect key="frame" x="165.5" y="0.0" width="83" height="44"/>
+                                                <state key="normal" title="Forwards"/>
+                                                <connections>
+                                                    <action selector="forwardsButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="LIm-Ki-BrA"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZOU-0V-ryg">
+                                                <rect key="frame" x="248.5" y="0.0" width="82.5" height="44"/>
+                                                <state key="normal" title="Auto"/>
+                                                <connections>
+                                                    <action selector="autoButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="Xvm-JB-c9S"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J4W-CB-rNG">
+                                                <rect key="frame" x="331" y="0.0" width="83" height="44"/>
+                                                <state key="normal" title="Backwards"/>
+                                                <connections>
+                                                    <action selector="backwardsButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="Enr-eu-RgY"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="J4W-CB-rNG" firstAttribute="width" secondItem="vG4-7v-f5q" secondAttribute="width" multiplier="0.2" id="7bd-yx-Lkb"/>
+                                            <constraint firstItem="ZOU-0V-ryg" firstAttribute="width" secondItem="vG4-7v-f5q" secondAttribute="width" multiplier="0.2" id="Omx-Sg-Ng1"/>
+                                            <constraint firstAttribute="height" constant="44" id="dzU-pE-zyW"/>
+                                            <constraint firstItem="qBl-ZB-vZ6" firstAttribute="width" secondItem="vG4-7v-f5q" secondAttribute="width" multiplier="0.2" id="gEd-JI-Bvh"/>
+                                            <constraint firstItem="0lc-BE-QMv" firstAttribute="width" secondItem="vG4-7v-f5q" secondAttribute="width" multiplier="0.4" id="nkd-6z-fg9"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wKB-YJ-GTX">
+                                        <rect key="frame" x="0.0" y="458" width="414" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Animation: Rotate 90" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iMa-Yv-xPk">
+                                                <rect key="frame" x="0.0" y="0.0" width="83" height="44"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RZH-IF-Oyo">
+                                                <rect key="frame" x="83" y="0.0" width="82.5" height="44"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="44" id="9Q2-yh-Zba"/>
+                                                </constraints>
+                                                <state key="normal" title="Play"/>
+                                                <connections>
+                                                    <action selector="rotatePlayButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="Niz-x4-pSA"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S2m-Kc-c45">
+                                                <rect key="frame" x="165.5" y="0.0" width="83" height="44"/>
+                                                <state key="normal" title="OneShot"/>
+                                                <connections>
+                                                    <action selector="rotateOneShotButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="Yxc-hR-How"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qlk-2e-CqT">
+                                                <rect key="frame" x="248.5" y="0.0" width="82.5" height="44"/>
+                                                <state key="normal" title="Loop"/>
+                                                <connections>
+                                                    <action selector="rotateLoopButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="s2R-Ss-E22"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vwa-HX-ne0">
+                                                <rect key="frame" x="331" y="0.0" width="83" height="44"/>
+                                                <state key="normal" title="PingPong"/>
+                                                <connections>
+                                                    <action selector="rotatePingPongButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="glG-uh-W5c"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="Qlk-2e-CqT" firstAttribute="width" secondItem="wKB-YJ-GTX" secondAttribute="width" multiplier="0.2" id="97b-A8-oTb"/>
+                                            <constraint firstAttribute="height" constant="44" id="CEf-p4-l4c"/>
+                                            <constraint firstItem="S2m-Kc-c45" firstAttribute="width" secondItem="wKB-YJ-GTX" secondAttribute="width" multiplier="0.2" id="gop-cP-bkG"/>
+                                            <constraint firstItem="RZH-IF-Oyo" firstAttribute="width" secondItem="wKB-YJ-GTX" secondAttribute="width" multiplier="0.2" id="ltR-N8-zLF"/>
+                                            <constraint firstItem="vwa-HX-ne0" firstAttribute="width" secondItem="wKB-YJ-GTX" secondAttribute="width" multiplier="0.2" id="tPf-B7-khY"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kTS-8H-Aq0">
+                                        <rect key="frame" x="0.0" y="502" width="414" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Animation: Loop down up" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lse-aU-utM">
+                                                <rect key="frame" x="0.0" y="0.0" width="83" height="44"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xWA-lk-Fum">
+                                                <rect key="frame" x="83" y="0.0" width="82.5" height="44"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" priority="100" constant="44" id="etL-U6-GWM"/>
+                                                </constraints>
+                                                <state key="normal" title="Play"/>
+                                                <connections>
+                                                    <action selector="loopDownPlayButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="wIb-ee-D9m"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tbT-jB-Xmh">
+                                                <rect key="frame" x="165.5" y="0.0" width="83" height="44"/>
+                                                <state key="normal" title="OneShot"/>
+                                                <connections>
+                                                    <action selector="loopDownOneShotButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="6iN-x2-mTa"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5h3-gE-xsK">
+                                                <rect key="frame" x="248.5" y="0.0" width="82.5" height="44"/>
+                                                <state key="normal" title="Loop"/>
+                                                <connections>
+                                                    <action selector="loopDownLoopButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="HeA-K7-ERT"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1yD-57-tC8">
+                                                <rect key="frame" x="331" y="0.0" width="83" height="44"/>
+                                                <state key="normal" title="PingPong"/>
+                                                <connections>
+                                                    <action selector="loopDownPingPongButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="d0i-DY-e1v"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="tbT-jB-Xmh" firstAttribute="width" secondItem="kTS-8H-Aq0" secondAttribute="width" multiplier="0.2" id="BCh-PM-Rr7"/>
+                                            <constraint firstItem="5h3-gE-xsK" firstAttribute="width" secondItem="kTS-8H-Aq0" secondAttribute="width" multiplier="0.2" id="YOP-F5-Hrb"/>
+                                            <constraint firstItem="1yD-57-tC8" firstAttribute="width" secondItem="kTS-8H-Aq0" secondAttribute="width" multiplier="0.2" id="fVe-EW-P2I"/>
+                                            <constraint firstAttribute="height" constant="44" id="gER-kb-wNN"/>
+                                            <constraint firstItem="xWA-lk-Fum" firstAttribute="width" secondItem="kTS-8H-Aq0" secondAttribute="width" multiplier="0.2" id="l0Q-BU-6MI"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YoR-no-Lrc">
+                                        <rect key="frame" x="0.0" y="546" width="414" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Animation: Ping Pong Ltr" lineBreakMode="characterWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HkQ-5L-2wi">
+                                                <rect key="frame" x="0.0" y="0.0" width="83" height="44"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eDV-ky-rpB">
+                                                <rect key="frame" x="83" y="0.0" width="82.5" height="44"/>
+                                                <state key="normal" title="Play"/>
+                                                <connections>
+                                                    <action selector="ltrPlayButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="tJV-zf-cey"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NhK-0B-YoB">
+                                                <rect key="frame" x="165.5" y="0.0" width="83" height="44"/>
+                                                <state key="normal" title="OneShot"/>
+                                                <connections>
+                                                    <action selector="ltrOneShotButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="JiC-Vu-01w"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L1G-dW-OU4">
+                                                <rect key="frame" x="248.5" y="0.0" width="82.5" height="44"/>
+                                                <state key="normal" title="Loop"/>
+                                                <connections>
+                                                    <action selector="ltrLoopButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="Few-JU-lXP"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lez-Yj-5kZ">
+                                                <rect key="frame" x="331" y="0.0" width="83" height="44"/>
+                                                <state key="normal" title="PingPong"/>
+                                                <connections>
+                                                    <action selector="ltrPingPongButton:" destination="PUC-Yj-uP6" eventType="touchUpInside" id="H3Z-go-f4W"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="eDV-ky-rpB" firstAttribute="width" secondItem="YoR-no-Lrc" secondAttribute="width" multiplier="0.2" id="GzT-TJ-B4N"/>
+                                            <constraint firstItem="NhK-0B-YoB" firstAttribute="width" secondItem="YoR-no-Lrc" secondAttribute="width" multiplier="0.2" id="RFx-Md-Erb"/>
+                                            <constraint firstItem="L1G-dW-OU4" firstAttribute="width" secondItem="YoR-no-Lrc" secondAttribute="width" multiplier="0.2" id="a3n-RK-rys"/>
+                                            <constraint firstItem="Lez-Yj-5kZ" firstAttribute="width" secondItem="YoR-no-Lrc" secondAttribute="width" multiplier="0.2" id="e29-f8-32Y"/>
+                                            <constraint firstAttribute="height" constant="44" id="hYe-HV-LtV"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="vG4-7v-f5q" firstAttribute="leading" secondItem="5oq-0F-BqP" secondAttribute="leading" id="ZIo-LY-evr"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="amb-Wh-Zu0"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="5oq-0F-BqP" firstAttribute="leading" secondItem="amb-Wh-Zu0" secondAttribute="leading" id="A9O-l4-FI9"/>
+                            <constraint firstItem="5oq-0F-BqP" firstAttribute="top" secondItem="amb-Wh-Zu0" secondAttribute="top" id="d4F-sr-kN0"/>
+                            <constraint firstItem="amb-Wh-Zu0" firstAttribute="trailing" secondItem="5oq-0F-BqP" secondAttribute="trailing" id="mhF-9J-bLt"/>
+                        </constraints>
+                        <connections>
+                            <outlet property="riveView" destination="6bX-tZ-DVu" id="QLq-yY-ECo"/>
+                        </connections>
                     </view>
+                    <navigationItem key="navigationItem" title="Loop Mode" id="7T4-7w-YZm"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ozx-fu-trC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="785" y="986"/>
+            <point key="canvasLocation" x="2048" y="884"/>
         </scene>
         <!--Multiple Animations-->
         <scene sceneID="RWJ-v9-IHm">

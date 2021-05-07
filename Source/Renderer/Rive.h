@@ -12,6 +12,27 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /*
+ * LoopMode
+ */
+typedef NS_ENUM(NSInteger, Loop) {
+    LoopOneShot,
+    LoopLoop,
+    LoopPingPong,
+    LoopAuto,
+    wat
+};
+
+/*
+ * Direction
+ */
+typedef NS_ENUM(NSInteger, Direction) {
+    DirectionBackwards,
+    DirectionForwards,
+    DirectionAuto,
+    huh
+};
+
+/*
  * Fits
  */
 typedef NS_ENUM(NSInteger, Fit) {
@@ -72,6 +93,8 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (const RiveLinearAnimation *)animation;
 - (void)applyTo:(RiveArtboard*)artboard;
 - (bool)advanceBy:(double)elapsedSeconds;
+- (int)direction;
+- (void)direction:(int)direction;
 
 @end
 
@@ -85,7 +108,10 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (NSInteger)workStart;
 - (NSInteger)workEnd;
 - (NSInteger)duration;
+- (float)endTime;
 - (NSInteger)fps;
+- (int)loop;
+- (void)loop:(int)loopMode;
 - (void)apply:(float)time to:(RiveArtboard *)artboard;
 
 @end

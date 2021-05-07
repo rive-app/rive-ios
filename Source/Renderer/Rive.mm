@@ -324,12 +324,28 @@
     return animation->duration();
 }
 
+-(float) endTime {
+    if (animation->enableWorkArea()){
+        return animation->workEnd()/animation->fps();
+    }
+    return animation->duration()/animation->fps();
+}
+
 -(NSInteger) fps {
     return animation->fps();
 }
 
 -(void) apply:(float) time to:(RiveArtboard *) artboard {
     animation->apply(artboard.artboard, time);
+}
+
+-(void) loop:(int)loopType {
+//    TODO: fix this. we shoudln't be casting the const out of this.
+    ((rive::LinearAnimation*) animation)->loopValue(loopType);
+}
+
+-(int) loop {
+    return animation->loopValue();
 }
 
 @end
@@ -369,6 +385,12 @@
 
 -(bool) advanceBy:(double)elapsedSeconds {
     return instance->advance(elapsedSeconds);
+}
+-(void) direction:(int)direction {
+    instance->direction(direction);
+}
+-(int) direction{
+    return instance->direction();
 }
 
 @end
