@@ -58,6 +58,7 @@ public class RiveView: UIView {
     open func setFit(fit: Fit){
         self.fit = fit
     }
+    
     open func setAlignment(alignment: Alignment) {
         self.alignment = alignment
     }
@@ -78,6 +79,7 @@ public class RiveView: UIView {
         withRiveFile riveFile: RiveFile,
         andArtboard artboard: String?=nil,
         andAnimation animation: String?=nil,
+        andStateMachine stateMachine: String?=nil,
         andAutoPlay autoPlay: Bool=true
     ) {
         // Testing stuff
@@ -114,6 +116,8 @@ public class RiveView: UIView {
         if autoPlay {
             if let animationName = animation {
                 play(animationName: animationName)
+            }else if let stateMachineName = stateMachine {
+                play(animationName: stateMachineName, isStateMachine: true)
             }else {
                 play()
             }
@@ -264,6 +268,20 @@ public class RiveView: UIView {
         runTimer()
     }
     
+    private func _getOrCreateStateMachines(
+        animationName: String
+    ) -> [RiveStateMachineInstance]{
+        let stateMachineInstances = _stateMachines(animationName: animationName)
+        if (stateMachineInstances.isEmpty){
+            guard let guardedArtboard=artboard else {
+                return []
+            }
+            let stateMachineInstance = guardedArtboard.stateMachine(fromName: animationName).instance()
+            return [stateMachineInstance]
+        }
+        return stateMachineInstances
+    }
+    
     private func _playAnimation(
             animationName: String,
             loop: Loop = Loop.LoopAuto,
@@ -272,10 +290,10 @@ public class RiveView: UIView {
         )
     {
         if (isStateMachine) {
-//                val stateMachineInstances = _getOrCreateStateMachines(animationName)
-//                stateMachineInstances.forEach { stateMachineInstance ->
-//                    _play(stateMachineInstance)
-//                }
+            let stateMachineInstances = _getOrCreateStateMachines(animationName:animationName)
+            stateMachineInstances.forEach { stateMachineInstance in
+                _play(stateMachine: stateMachineInstance)
+            }
         } else {
             let animationInstances = _animations(animationName: animationName)
             
@@ -307,6 +325,16 @@ public class RiveView: UIView {
             animationNames.contains(animationInstance.animation().name())
         }
     }
+    
+    private func _stateMachines(animationName: String)->[RiveStateMachineInstance] {
+        return _stateMachines(animationNames:[animationName])
+    }
+    
+    private func _stateMachines(animationNames: [String])-> [RiveStateMachineInstance] {
+        return stateMachines.filter {  stateMachineInstance in
+            animationNames.contains(stateMachineInstance.stateMachine().name())
+        }
+    }
 
     private func _play(
         animation animationInstance: RiveLinearAnimationInstance,
@@ -332,5 +360,45 @@ public class RiveView: UIView {
     
         playingAnimations.insert(animationInstance)
         //        notifyPlay(animationInstance)
+    }
+    
+    private func _play(
+        stateMachine stateMachineInstance: RiveStateMachineInstance
+    ) {
+        if (!stateMachines.contains(stateMachineInstance)) {
+            stateMachines.append(
+                stateMachineInstance
+            )
+        }
+    
+        playingStateMachines.insert(stateMachineInstance)
+        
+    }
+    
+    open func fireState(stateMachineName: String, inputName: String) {
+        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
+        stateMachineInstances.forEach { stateMachine in
+            stateMachine.getTrigger(inputName).fire()
+            _play(stateMachine: stateMachine)
+        }
+        runTimer()
+    }
+
+    open func setBooleanState(stateMachineName: String, inputName: String, value: Bool) {
+        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
+        stateMachineInstances.forEach { stateMachine in
+            stateMachine.getBool(inputName).setValue(value)
+            _play(stateMachine:stateMachine)
+        }
+        runTimer()
+    }
+
+    open func setNumberState(stateMachineName: String, inputName: String, value: Float) {
+        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
+        stateMachineInstances.forEach { stateMachine in
+            stateMachine.getNumber(inputName).setValue(value)
+            _play(stateMachine:stateMachine)
+        }
+        runTimer()
     }
 }
