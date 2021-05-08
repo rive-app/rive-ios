@@ -6,15 +6,20 @@ struct RiveSwiftUIView: View {
     @State private var isPlaying: Bool = true
     @State private var fit: Fit = Fit.Cover
     @State private var alignment: RiveRuntime.Alignment = RiveRuntime.Alignment.Center
+    @State private var loopCount: Int = 0
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             UIRiveView(
                 resource: "off_road_car_blog",
                 fit: $fit,
-                alignment: $alignment
+                alignment: $alignment,
+                loopCount: $loopCount
             )
             VStack {
+                Text("Looped \(loopCount) times")
+                    .foregroundColor(.blue)
+                    .padding()
                 HStack {
                     Button(action: { alignment = RiveRuntime.Alignment.TopLeft },
                            label: { Text("Top Left") })

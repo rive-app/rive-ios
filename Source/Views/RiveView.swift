@@ -8,6 +8,11 @@
 
 import UIKit
 
+// Delegate for handling loop events
+public protocol LoopDelegate: AnyObject {
+    func loop(_ animationName: String, type: Int)
+}
+
 public class RiveView: UIView {
     
     var displayLink: CADisplayLink?
@@ -26,6 +31,9 @@ public class RiveView: UIView {
     
     var autoPlay: Bool = true
     var lastTime: CFTimeInterval = 0
+    
+    // Delegates
+    public weak var loopDelegate: LoopDelegate?
     
     public init(riveFile: RiveFile, fit: Fit = Fit.Contain, alignment: Alignment = Alignment.Center) {
         super.init(frame: .zero)
@@ -50,10 +58,19 @@ public class RiveView: UIView {
     open func setFit(fit: Fit){
         self.fit = fit
     }
-    open func setAlignment(alignment: Alignment){
+    open func setAlignment(alignment: Alignment) {
         self.alignment = alignment
     }
 
+    
+    @objc func animationWillMoveToBackground() {
+        print("Triggers when app is moving to background")
+    }
+    
+    @objc func animationWillEnterForeground() {
+        print("Triggers when app is moving to foreground")
+    }
+    
     /*
      * Updates the artboard and layout options
      */
@@ -63,6 +80,12 @@ public class RiveView: UIView {
         andAnimation animation: String?=nil,
         andAutoPlay autoPlay: Bool=true
     ) {
+        // Testing stuff
+        NotificationCenter.default.addObserver(self, selector: #selector(animationWillEnterForeground),
+                                               name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(animationWillMoveToBackground),
+                                               name: UIApplication.didEnterBackgroundNotification, object: nil)
+        
         // Ensure the view's transparent
         self.isOpaque = false
         
@@ -177,21 +200,25 @@ public class RiveView: UIView {
             return
         }
         animations.forEach{ animation in
-            if playingAnimations.contains(animation){
+            if playingAnimations.contains(animation) {
                 let stillPlaying = animation.advance(by: delta)
                 animation.apply(to: artboard)
                 if !stillPlaying {
                     playingAnimations.remove(animation)
                     if (animation.loop() == Loop.LoopOneShot.rawValue) {
-                        animations.removeAll(where: {animationInstance in
+                        animations.removeAll(where: { animationInstance in
                             return animationInstance == animation
                         })
                     }
                 }
+                // Check if the animation looped and if so, call the delegate
+                if animation.didLoop() {
+                    loopDelegate?.loop(animation.name(), type: Int(animation.loop()))
+                }
             }
         }
         stateMachines.forEach{ stateMachine in
-            if playingStateMachines.contains(stateMachine){
+            if playingStateMachines.contains(stateMachine) {
                 let stillPlaying = stateMachine.advance(by: delta)
                 stateMachine.apply(to: artboard)
                 if !stillPlaying {
