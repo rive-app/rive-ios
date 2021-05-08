@@ -97,6 +97,8 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (void)direction:(int)direction;
 - (int)loop;
 - (void)loop:(int)loopMode;
+- (bool)didLoop;
+- (NSString *)name;
 
 @end
 
