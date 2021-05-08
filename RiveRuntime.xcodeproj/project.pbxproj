@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
-		C9002A22263C76170011556B /* RiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A21263C76170011556B /* RiveViewController.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
 		C9601F69251004780032AA07 /* vec2d.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9601F2D251004770032AA07 /* vec2d.hpp */; };
@@ -303,7 +302,6 @@
 
 /* Begin PBXFileReference section */
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
-		C9002A21263C76170011556B /* RiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveViewController.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
 		C9601F2D251004770032AA07 /* vec2d.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec2d.hpp; sourceTree = "<group>"; };
@@ -824,7 +822,6 @@
 			isa = PBXGroup;
 			children = (
 				C9002A1F263C76080011556B /* RiveView.swift */,
-				C9002A21263C76170011556B /* RiveViewController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1627,7 +1624,6 @@
 				C9C7416924FC4F0500EF9516 /* root_bone.cpp in Sources */,
 				C9C7413E24FC4F0500EF9516 /* component.cpp in Sources */,
 				C9BD3904263B5E7600696C37 /* state_machine_importer.cpp in Sources */,
-				C9002A22263C76170011556B /* RiveViewController.swift in Sources */,
 				C9601FB6251004950032AA07 /* color.cpp in Sources */,
 				C9C7413F24FC4F0500EF9516 /* node.cpp in Sources */,
 				C9BD3909263B5E7600696C37 /* state_machine_layer_importer.cpp in Sources */,
