@@ -11,10 +11,12 @@ struct RiveSwiftUIView: View {
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             UIRiveView(
-                resource: "off_road_car_blog",
-                fit: $fit,
-                alignment: $alignment,
-                loopCount: $loopCount
+                resource: "basketball",
+                fit: fit,
+                alignment: alignment,
+                loopAction: { name, type in
+                    loopCount += 1
+                }
             )
             VStack {
                 Text("Looped \(loopCount) times")
