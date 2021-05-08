@@ -396,6 +396,14 @@
     instance->loopValue(loopType);
 }
 
+- (bool)didLoop {
+    return instance->didLoop();
+}
+
+- (NSString *)name {
+    std::string str = instance->animation()->name();
+    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+}
 @end
 
 /*
