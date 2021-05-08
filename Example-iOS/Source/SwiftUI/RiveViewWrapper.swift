@@ -1,11 +1,13 @@
 import SwiftUI
 import RiveRuntime
 
+typealias LoopAction = ((String, Int) -> Void)?
+
 struct UIRiveView: UIViewRepresentable {
     let resource: String
-    @Binding var fit: Fit // Binding<Fit> = Binding.constant(Fit.Contain)
-    @Binding var alignment: RiveRuntime.Alignment
-    @Binding var loopCount: Int
+    var fit: Fit = Fit.Contain
+    var alignment: RiveRuntime.Alignment = RiveRuntime.Alignment.Center
+    var loopAction: LoopAction = nil
     
     // Constructs the view
     func makeUIView(context: Context) -> RiveView {
@@ -21,32 +23,38 @@ struct UIRiveView: UIViewRepresentable {
  
     // Called when a bound variable changes state
     func updateUIView(_ uiView: RiveView, context: Context) {
+        print("updateUI")
         uiView.setFit(fit: fit)
         uiView.setAlignment(alignment: alignment)
     }
     
     // Constructs a coordinator for managing updating state
     func makeCoordinator() -> Coordinator {
-        Coordinator(loopCount: $loopCount)
+        // Coordinator(loopCount: $loopCount)
+        Coordinator(loopAction: loopAction)
     }
     
 }
 
 // Coordinator between RiveView and UIRiveView
 class Coordinator: NSObject, LoopDelegate {
-    @Binding private var loopCount: Int
+    private var loopAction: LoopAction
     
-    init(loopCount: Binding<Int>) {
-        self._loopCount = loopCount
+    init(loopAction: LoopAction) {
+        self.loopAction = loopAction
     }
     
     func loop(_ animationName: String, type: Int) {
-        loopCount += 1
-    }
+            loopAction?(animationName, type)
+        }
     
-//    @Binding private var fit: Fit
+//    @Binding private var loopCount: Int
 //
-//    init(fit: Binding<Fit>) {
-//        self._fit = fit
+//    init(loopCount: Binding<Int>) {
+//        self._loopCount = loopCount
+//    }
+//
+//    func loop(_ animationName: String, type: Int) {
+//        loopCount += 1
 //    }
 }
