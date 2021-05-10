@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04BE54042649403600427B39 /* shapes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53F82649403500427B39 /* shapes.riv */; };
+		04BE54052649403600427B39 /* noartboard.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53F92649403500427B39 /* noartboard.riv */; };
+		04BE54062649403600427B39 /* off_road_car_blog.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53FA2649403600427B39 /* off_road_car_blog.riv */; };
+		04BE54072649403600427B39 /* what_a_state.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53FB2649403600427B39 /* what_a_state.riv */; };
+		04BE54082649403600427B39 /* flux_capacitor.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53FC2649403600427B39 /* flux_capacitor.riv */; };
+		04BE54092649403600427B39 /* state_machine_configurations.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53FD2649403600427B39 /* state_machine_configurations.riv */; };
+		04BE540A2649403600427B39 /* noanimation.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53FE2649403600427B39 /* noanimation.riv */; };
+		04BE540B2649403600427B39 /* multiple_animations.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53FF2649403600427B39 /* multiple_animations.riv */; };
+		04BE540C2649403600427B39 /* multipleartboards.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE54002649403600427B39 /* multipleartboards.riv */; };
+		04BE540D2649403600427B39 /* junk.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE54012649403600427B39 /* junk.riv */; };
+		04BE540E2649403600427B39 /* multiple_state_machines.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE54022649403600427B39 /* multiple_state_machines.riv */; };
+		04BE540F2649403600427B39 /* sample6.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE54032649403600427B39 /* sample6.riv */; };
+		04BE54112649434900427B39 /* RiveFileLoadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 04BE54102649434900427B39 /* RiveFileLoadTest.m */; };
+		04BE5413264943BB00427B39 /* util.m in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5412264943BB00427B39 /* util.m */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
@@ -301,6 +315,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04BE53F82649403500427B39 /* shapes.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = shapes.riv; sourceTree = "<group>"; };
+		04BE53F92649403500427B39 /* noartboard.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = noartboard.riv; sourceTree = "<group>"; };
+		04BE53FA2649403600427B39 /* off_road_car_blog.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = off_road_car_blog.riv; sourceTree = "<group>"; };
+		04BE53FB2649403600427B39 /* what_a_state.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = what_a_state.riv; sourceTree = "<group>"; };
+		04BE53FC2649403600427B39 /* flux_capacitor.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = flux_capacitor.riv; sourceTree = "<group>"; };
+		04BE53FD2649403600427B39 /* state_machine_configurations.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = state_machine_configurations.riv; sourceTree = "<group>"; };
+		04BE53FE2649403600427B39 /* noanimation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = noanimation.riv; sourceTree = "<group>"; };
+		04BE53FF2649403600427B39 /* multiple_animations.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = multiple_animations.riv; sourceTree = "<group>"; };
+		04BE54002649403600427B39 /* multipleartboards.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = multipleartboards.riv; sourceTree = "<group>"; };
+		04BE54012649403600427B39 /* junk.riv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = junk.riv; sourceTree = "<group>"; };
+		04BE54022649403600427B39 /* multiple_state_machines.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = multiple_state_machines.riv; sourceTree = "<group>"; };
+		04BE54032649403600427B39 /* sample6.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample6.riv; sourceTree = "<group>"; };
+		04BE54102649434900427B39 /* RiveFileLoadTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RiveFileLoadTest.m; sourceTree = "<group>"; };
+		04BE5412264943BB00427B39 /* util.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = util.m; sourceTree = "<group>"; };
+		04BE541526497D4100427B39 /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
@@ -674,6 +703,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04BE53F726493FE600427B39 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				04BE53FC2649403600427B39 /* flux_capacitor.riv */,
+				04BE54012649403600427B39 /* junk.riv */,
+				04BE53FF2649403600427B39 /* multiple_animations.riv */,
+				04BE54022649403600427B39 /* multiple_state_machines.riv */,
+				04BE54002649403600427B39 /* multipleartboards.riv */,
+				04BE53FE2649403600427B39 /* noanimation.riv */,
+				04BE53F92649403500427B39 /* noartboard.riv */,
+				04BE53FA2649403600427B39 /* off_road_car_blog.riv */,
+				04BE54032649403600427B39 /* sample6.riv */,
+				04BE53F82649403500427B39 /* shapes.riv */,
+				04BE53FD2649403600427B39 /* state_machine_configurations.riv */,
+				04BE53FB2649403600427B39 /* what_a_state.riv */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
 		C9601F2C251004770032AA07 /* math */ = {
 			isa = PBXGroup;
 			children = (
@@ -860,8 +908,12 @@
 		C9C73EDE24FC478900EF9516 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				04BE53F726493FE600427B39 /* Assets */,
 				C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.mm */,
 				C9C73EE124FC478900EF9516 /* Info.plist */,
+				04BE54102649434900427B39 /* RiveFileLoadTest.m */,
+				04BE5412264943BB00427B39 /* util.m */,
+				04BE541526497D4100427B39 /* util.h */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1536,9 +1588,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9C73EE824FC478900EF9516 /* Build configuration list for PBXNativeTarget "RiveRuntimeTests" */;
 			buildPhases = (
+				C9C73ED824FC478900EF9516 /* Resources */,
 				C9C73ED624FC478900EF9516 /* Sources */,
 				C9C73ED724FC478900EF9516 /* Frameworks */,
-				C9C73ED824FC478900EF9516 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -1599,6 +1651,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04BE540A2649403600427B39 /* noanimation.riv in Resources */,
+				04BE54042649403600427B39 /* shapes.riv in Resources */,
+				04BE540F2649403600427B39 /* sample6.riv in Resources */,
+				04BE54082649403600427B39 /* flux_capacitor.riv in Resources */,
+				04BE54052649403600427B39 /* noartboard.riv in Resources */,
+				04BE540B2649403600427B39 /* multiple_animations.riv in Resources */,
+				04BE54062649403600427B39 /* off_road_car_blog.riv in Resources */,
+				04BE540C2649403600427B39 /* multipleartboards.riv in Resources */,
+				04BE540D2649403600427B39 /* junk.riv in Resources */,
+				04BE54092649403600427B39 /* state_machine_configurations.riv in Resources */,
+				04BE54072649403600427B39 /* what_a_state.riv in Resources */,
+				04BE540E2649403600427B39 /* multiple_state_machines.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1703,6 +1767,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */,
+				04BE5413264943BB00427B39 /* util.m in Sources */,
+				04BE54112649434900427B39 /* RiveFileLoadTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
