@@ -16,6 +16,7 @@
 #import "linear_animation_instance.hpp"
 #import "state_machine.hpp"
 #import "state_machine_instance.hpp"
+#import "state_machine_input_instance.hpp"
 
 /*
  * RiveStateMachineInstance interface
@@ -29,6 +30,27 @@
  */
 @interface RiveStateMachine ()
 - (instancetype)initWithStateMachine:(const rive::StateMachine *)riveStateMachine;
+@end
+
+/*
+ * SMITrigger interface
+ */
+@interface RiveSMITrigger ()
+- (instancetype)initWithSMITrigger:(rive::SMITrigger *)riveSMITrigger;
+@end
+
+/*
+ * SMINumber interface
+ */
+@interface RiveSMINumber ()
+- (instancetype)initWithSMINumber:(rive::SMINumber *)riveSMINumber;
+@end
+
+/*
+ * SMIBool interface
+ */
+@interface RiveSMIBool ()
+- (instancetype)initWithSMIBool:(rive::SMIBool *)riveSMIBool;
 @end
 
 /*
@@ -463,13 +485,116 @@
     }
 }
 
-
 -(void) applyTo:(RiveArtboard*) artboard {
     instance->apply(artboard.artboard);
 }
 
 -(bool) advanceBy:(double)elapsedSeconds {
     return instance->advance(elapsedSeconds);
+}
+
+- (RiveStateMachine *)stateMachine {
+    const rive::StateMachine *stateMachine = instance->stateMachine();
+    return [[RiveStateMachine alloc] initWithStateMachine: stateMachine];
+}
+
+- (RiveSMIBool *)getBool:(NSString *) name {
+    std::string stdName = std::string([name UTF8String]);
+    rive::SMIBool *smi = instance->getBool(stdName);
+    if (smi == nullptr) {
+        return NULL;
+    } else {
+        return [[RiveSMIBool alloc] initWithSMIBool: smi];
+    }
+}
+
+- (RiveSMITrigger *)getTrigger:(NSString *) name {
+    std::string stdName = std::string([name UTF8String]);
+    rive::SMITrigger *smi = instance->getTrigger(stdName);
+    if (smi == nullptr) {
+        return NULL;
+    } else {
+        return [[RiveSMITrigger alloc] initWithSMITrigger: smi];
+    }
+}
+
+- (RiveSMINumber *)getNumber:(NSString *) name {
+    std::string stdName = std::string([name UTF8String]);
+    rive::SMINumber *smi = instance->getNumber(stdName);
+    if (smi == nullptr) {
+        return NULL;
+    } else {
+        return [[RiveSMINumber alloc] initWithSMINumber: smi];
+    }
+}
+
+@end
+
+/*
+ * RiveSMITrigger
+ */
+@implementation RiveSMITrigger {
+     rive::SMITrigger *instance;
+}
+
+// Creates a new RiveSMITrigger from a cpp SMITrigger
+- (instancetype)initWithSMITrigger:(rive::SMITrigger *)smiTrigger {
+    if (self = [super init]) {
+        instance = (rive::SMITrigger *)smiTrigger;
+        return self;
+    } else {
+        return nil;
+    }
+}
+
+- (void) fire {
+    instance->fire();
+}
+
+@end
+
+/*
+ * RiveSMIBool
+ */
+@implementation RiveSMIBool {
+     rive::SMIBool *instance;
+}
+
+// Creates a new RiveSMIBool from a cpp SMIBool
+- (instancetype)initWithSMIBool:(rive::SMIBool *)smiBool {
+    if (self = [super init]) {
+        instance = (rive::SMIBool *)smiBool;
+        return self;
+    } else {
+        return nil;
+    }
+}
+
+- (void) setValue:(bool)newValue {
+    instance->value(newValue);
+}
+
+@end
+
+/*
+ * RiveSMINumber
+ */
+@implementation RiveSMINumber {
+     rive::SMINumber *instance;
+}
+
+// Creates a new RiveSMINumber from a cpp SMINumber
+- (instancetype)initWithSMINumber:(rive::SMINumber *)smiNumber {
+    if (self = [super init]) {
+        instance = (rive::SMINumber *)smiNumber;
+        return self;
+    } else {
+        return nil;
+    }
+}
+
+- (void) setValue:(float)newValue {
+    instance->value(newValue);
 }
 
 @end

@@ -18,41 +18,60 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="wRo-9V-rXR">
-                                <rect key="frame" x="0.0" y="88" width="414" height="150"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="221"/>
                                 <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UIKit examples" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C8u-cc-gX1">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQZ-zi-PeG">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="30"/>
+                                        <rect key="frame" x="0.0" y="20.5" width="414" height="30"/>
                                         <state key="normal" title="SimpleAnimation"/>
                                         <connections>
                                             <segue destination="l4C-BT-Wpi" kind="show" id="LHB-TA-e4W"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mhU-90-IiH">
-                                        <rect key="frame" x="0.0" y="30" width="414" height="30"/>
+                                        <rect key="frame" x="0.0" y="50.5" width="414" height="30"/>
                                         <state key="normal" title="Layout"/>
                                         <connections>
                                             <segue destination="6EP-ej-U9V" kind="show" id="3pi-Qq-8fB"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dCb-q6-0j5">
-                                        <rect key="frame" x="0.0" y="60" width="414" height="30"/>
+                                        <rect key="frame" x="0.0" y="80.5" width="414" height="30"/>
                                         <state key="normal" title="Multiple Animations"/>
                                         <connections>
                                             <segue destination="qQy-Yc-tGr" kind="show" id="xDt-M5-1hC"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrC-Ng-Q2K">
-                                        <rect key="frame" x="0.0" y="90" width="414" height="30"/>
-                                        <state key="normal" title="Simple SwiftUI Example"/>
-                                        <connections>
-                                            <segue destination="w39-2n-FCH" kind="presentation" destinationCreationSelector="hostingAction:" id="SeF-el-OxU"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tdH-Jc-BAa">
-                                        <rect key="frame" x="0.0" y="120" width="414" height="30"/>
+                                        <rect key="frame" x="0.0" y="110.5" width="414" height="30"/>
                                         <state key="normal" title="Loop Mode"/>
                                         <connections>
                                             <segue destination="fGr-bk-Efd" kind="show" id="x3r-N0-mCq"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oJ8-UX-LUE">
+                                        <rect key="frame" x="0.0" y="140.5" width="414" height="30"/>
+                                        <state key="normal" title="State Machine"/>
+                                        <connections>
+                                            <segue destination="tat-Jb-Aap" kind="show" id="ATD-KD-J91"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SwiftUI examples" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wyj-7w-GPq">
+                                        <rect key="frame" x="0.0" y="170.5" width="414" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrC-Ng-Q2K">
+                                        <rect key="frame" x="0.0" y="191" width="414" height="30"/>
+                                        <state key="normal" title="Simple SwiftUI Example"/>
+                                        <connections>
+                                            <segue destination="w39-2n-FCH" kind="presentation" destinationCreationSelector="hostingAction:" id="SeF-el-OxU"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -264,7 +283,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iPR-UO-vO8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2799" y="147"/>
+            <point key="canvasLocation" x="2741" y="-692"/>
         </scene>
         <!--Loop Mode-->
         <scene sceneID="iqU-00-Krb">
@@ -492,7 +511,82 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ozx-fu-trC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2048" y="884"/>
+            <point key="canvasLocation" x="181" y="1130"/>
+        </scene>
+        <!--State Machine-->
+        <scene sceneID="sMa-mk-G4H">
+            <objects>
+                <viewController id="tat-Jb-Aap" customClass="StateMachineViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="EmG-VF-nMb" customClass="StateMachineView" customModule="RiveExample" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="xT7-qJ-ddv">
+                                <rect key="frame" x="0.0" y="88" width="414" height="344"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H4O-e0-nOc" customClass="RiveView" customModule="RiveRuntime">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="300"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="300" id="cEY-4Z-k8S"/>
+                                        </constraints>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5fe-j7-MNI">
+                                        <rect key="frame" x="0.0" y="300" width="414" height="44"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZY8-Ly-zLN">
+                                                <rect key="frame" x="0.0" y="0.0" width="138" height="44"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="44" id="8N3-hu-JOd"/>
+                                                </constraints>
+                                                <state key="normal" title="Beginner"/>
+                                                <connections>
+                                                    <action selector="beginnerButtonTriggered:" destination="EmG-VF-nMb" eventType="touchUpInside" id="Yzx-9v-q3A"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="saF-Z2-Vmd">
+                                                <rect key="frame" x="138" y="0.0" width="138" height="44"/>
+                                                <state key="normal" title="Intermediate"/>
+                                                <connections>
+                                                    <action selector="intermediateButtonTriggered:" destination="EmG-VF-nMb" eventType="touchUpInside" id="BpF-ak-6Vf"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I8b-9j-1y3">
+                                                <rect key="frame" x="276" y="0.0" width="138" height="44"/>
+                                                <state key="normal" title="Expert"/>
+                                                <connections>
+                                                    <action selector="expertButtonTriggered:" destination="EmG-VF-nMb" eventType="touchUpInside" id="DLp-FQ-VSf"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="saF-Z2-Vmd" firstAttribute="width" secondItem="ZY8-Ly-zLN" secondAttribute="width" id="97X-at-KCn"/>
+                                            <constraint firstItem="I8b-9j-1y3" firstAttribute="width" secondItem="ZY8-Ly-zLN" secondAttribute="width" id="Oqn-Ft-IRr"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="H4O-e0-nOc" firstAttribute="leading" secondItem="xT7-qJ-ddv" secondAttribute="leading" id="1X1-RW-Kf8"/>
+                                    <constraint firstAttribute="trailing" secondItem="H4O-e0-nOc" secondAttribute="trailing" id="rDz-3V-Uzb"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="4ah-AH-K39"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="xT7-qJ-ddv" firstAttribute="trailing" secondItem="4ah-AH-K39" secondAttribute="trailing" id="Idk-3M-0Vy"/>
+                            <constraint firstItem="xT7-qJ-ddv" firstAttribute="top" secondItem="4ah-AH-K39" secondAttribute="top" id="THm-w8-jyg"/>
+                            <constraint firstItem="xT7-qJ-ddv" firstAttribute="leading" secondItem="4ah-AH-K39" secondAttribute="leading" id="aRk-j7-d99"/>
+                        </constraints>
+                        <connections>
+                            <outlet property="riveView" destination="H4O-e0-nOc" id="ZSs-2Y-mjw"/>
+                        </connections>
+                    </view>
+                    <navigationItem key="navigationItem" title="State Machine" id="soC-V3-Fki"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qYD-XH-vp4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1324.6376811594205" y="1129.6875"/>
         </scene>
         <!--Multiple Animations-->
         <scene sceneID="RWJ-v9-IHm">
@@ -653,7 +747,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yc7-ml-Tkq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2872" y="884"/>
+            <point key="canvasLocation" x="3603" y="-222"/>
         </scene>
         <!--Simple Animation Example-->
         <scene sceneID="b8F-wH-PQu">
@@ -669,7 +763,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xxk-hl-V9T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2048" y="-494"/>
+            <point key="canvasLocation" x="1822" y="-879"/>
         </scene>
         <!--Hosting Controller-->
         <scene sceneID="ywB-z0-0QJ">
@@ -679,7 +773,7 @@
                 </hostingController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tzM-Rx-Bel" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2800" y="-494"/>
+            <point key="canvasLocation" x="3603" y="555"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Vw7-FC-sqO">
