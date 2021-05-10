@@ -3,7 +3,7 @@ import RiveRuntime
 
 struct RiveSwiftUIView: View {
     var dismiss: () -> Void = {}
-    @State private var isPlaying: Bool = true
+    @State private var playback: Playback = Playback.play
     @State private var fit: Fit = Fit.Cover
     @State private var alignment: RiveRuntime.Alignment = RiveRuntime.Alignment.Center
     @State private var loopCount: Int = 0
@@ -14,8 +14,15 @@ struct RiveSwiftUIView: View {
                 resource: "basketball",
                 fit: fit,
                 alignment: alignment,
+                playback: playback,
                 loopAction: { name, type in
                     loopCount += 1
+                },
+                playAction: { name in
+                    print("Playing \(name)")
+                },
+                pauseAction: { name in
+                    print("Pausing \(name)")
                 }
             )
             VStack {
@@ -45,8 +52,22 @@ struct RiveSwiftUIView: View {
                 }
                 .padding()
                 HStack {
-                    Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/,
-                           label: { Text(isPlaying ? "Pause" : "Play") })
+                    Button(action: {
+                        if playback == Playback.play {
+                            playback = Playback.pause
+                        } else {
+                            playback = Playback.play
+                        }
+                    },
+                    label: {
+                        switch playback {
+                        case .play:
+                            Text("Pause")
+                        case .pause, .stop:
+                            Text("Play")
+                        }
+                    })
+
                     Spacer()
                     Button(action: dismiss, label: {
                         Text("Dismiss")

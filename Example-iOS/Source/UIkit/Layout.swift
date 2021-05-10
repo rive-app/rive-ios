@@ -58,7 +58,7 @@ class LayoutViewController: UIViewController {
             default:
                 fit = Fit.Contain
             }
-            layoutView.riveView.setFit(fit:fit)
+            layoutView.riveView.fit = fit
         }
         
         func setAlignmnet(name:String){
@@ -85,7 +85,7 @@ class LayoutViewController: UIViewController {
             default:
                 alignment = Alignment.Center
             }
-            layoutView.riveView.setAlignment(alignment:alignment)
+            layoutView.riveView.alignment = alignment
         }
         
         layoutView.fitButtonAction = setFit

@@ -81,6 +81,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (const RiveSMIBool *)getBool:(NSString*)name;
 - (const RiveSMITrigger *)getTrigger:(NSString*)name;
 - (const RiveSMINumber *)getNumber:(NSString*)name;
+- (NSString* )name;
 
 @end
 
