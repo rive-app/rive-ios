@@ -18,6 +18,9 @@
 #import "state_machine_instance.hpp"
 #import "state_machine_input_instance.hpp"
 
+@implementation RiveException
+@end
+
 /*
  * RiveStateMachineInstance interface
  */
@@ -190,6 +193,16 @@
         rive::ImportResult result = rive::File::import(reader, &riveFile);
         if (result == rive::ImportResult::success) {
             return self;
+        }
+        else if(result == rive::ImportResult::unsupportedVersion){
+            @throw [[RiveException alloc] initWithName:@"UnsupportedVersion" reason:@"Unsupported Rive File Version." userInfo:nil];
+            
+        }
+        else if(result == rive::ImportResult::malformed){
+            @throw [[RiveException alloc] initWithName:@"Malformed" reason:@"Malformed Rive File." userInfo:nil];
+        }
+        else {
+            @throw [[RiveException alloc] initWithName:@"Unknown" reason:@"Unknown error loading file." userInfo:nil];
         }
     }
     return nil;

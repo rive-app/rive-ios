@@ -60,6 +60,9 @@ typedef NS_ENUM(NSInteger, Alignment) {
     BottomRight
 };
 
+@interface RiveException : NSException
+@end
+
 @class RiveArtboard;
 @class RiveLinearAnimation;
 @class RiveStateMachine;
