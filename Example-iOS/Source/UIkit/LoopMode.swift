@@ -89,7 +89,7 @@ class LoopMode: UIView {
 
 class LoopModeController: UIViewController {
     let loopResourceName = "loopy"
-    var direction = Direction.DirectionAuto
+    var direction = Direction.directionAuto
     
     override public func loadView() {
         super.loadView()
@@ -113,52 +113,52 @@ class LoopModeController: UIViewController {
             )
         }
         loopModeView.triggeredForwardsButton = {
-            self.direction = Direction.DirectionForwards
+            self.direction = Direction.directionForwards
         }
         loopModeView.triggeredAutoButton = {
-            self.direction = Direction.DirectionAuto
+            self.direction = Direction.directionAuto
         }
         loopModeView.triggeredBackwardsButton = {
-            self.direction = Direction.DirectionBackwards
+            self.direction = Direction.directionBackwards
         }
         
         loopModeView.triggeredRotatePlayButton = {
             loopModeView.riveView.play(animationName:"oneshot", direction: self.direction)
         }
         loopModeView.triggeredRotateOneShotButton = {
-            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.LoopOneShot, direction: self.direction)
+            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopOneShot, direction: self.direction)
         }
         loopModeView.triggeredRotateLoopButton = {
-            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.LoopLoop, direction: self.direction)
+            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopLoop, direction: self.direction)
         }
         loopModeView.triggeredRotatePingPongButton = {
-            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.LoopPingPong, direction: self.direction)
+            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopPingPong, direction: self.direction)
         }
         
         loopModeView.triggeredLoopDownPlayButton = {
             loopModeView.riveView.play(animationName:"loop", direction: self.direction)
         }
         loopModeView.triggeredLoopDownOneShotButton = {
-            loopModeView.riveView.play(animationName:"loop", loop: Loop.LoopOneShot, direction: self.direction)
+            loopModeView.riveView.play(animationName:"loop", loop: Loop.loopOneShot, direction: self.direction)
         }
         loopModeView.triggeredLoopDownLoopButton = {
-            loopModeView.riveView.play(animationName:"loop", loop: Loop.LoopLoop, direction: self.direction)
+            loopModeView.riveView.play(animationName:"loop", loop: Loop.loopLoop, direction: self.direction)
         }
         loopModeView.triggeredLoopDownPingPongButton = {
-            loopModeView.riveView.play(animationName:"loop", loop: Loop.LoopPingPong, direction: self.direction)
+            loopModeView.riveView.play(animationName:"loop", loop: Loop.loopPingPong, direction: self.direction)
         }
         
         loopModeView.triggeredLtrPlayButton = {
             loopModeView.riveView.play(animationName:"pingpong", direction: self.direction)
         }
         loopModeView.triggeredLtrLoopButton = {
-            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.LoopLoop, direction: self.direction)
+            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopLoop, direction: self.direction)
         }
         loopModeView.triggeredLtrOneShotButton = {
-            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.LoopOneShot, direction: self.direction)
+            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopOneShot, direction: self.direction)
         }
         loopModeView.triggeredLtrPingPongButton = {
-            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.LoopPingPong, direction: self.direction)
+            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopPingPong, direction: self.direction)
         }
 
         
