@@ -359,6 +359,16 @@
     return animation->duration();
 }
 
+- (NSInteger)effectiveDuration {
+    if (self.workStart == -1) {
+        return animation->duration();
+        
+    }else {
+        return self.workEnd - self.workStart;
+    }
+    
+}
+
 - (float)endTime {
     if (animation->enableWorkArea()){
         return animation->workEnd()/animation->fps();

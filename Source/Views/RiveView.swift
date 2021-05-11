@@ -274,7 +274,7 @@ public class RiveView: UIView {
                 animation.apply(to: artboard)
                 if !stillPlaying {
                     playingAnimations.remove(animation)
-                    if (animation.loop() == Loop.LoopOneShot.rawValue) {
+                    if (animation.loop() == Loop.loopOneShot.rawValue) {
                         animations.removeAll(where: { animationInstance in
                             return animationInstance == animation
                         })
@@ -302,8 +302,8 @@ public class RiveView: UIView {
     }
     
     public func play(
-        loop: Loop = Loop.LoopAuto,
-        direction: Direction = Direction.DirectionAuto
+        loop: Loop = .loopAuto,
+        direction: Direction = .directionAuto
     ) {
         guard let guardedArtboard=artboard else {
             return;
@@ -324,8 +324,8 @@ public class RiveView: UIView {
     /// - Parameter isStateMachine: true of the name refers to a state machine and not an animation
     public func play(
         animationName: String,
-        loop: Loop = Loop.LoopAuto,
-        direction: Direction = Direction.DirectionAuto,
+        loop: Loop = .loopAuto,
+        direction: Direction = .directionAuto,
         isStateMachine: Bool = false
     ) {
         _playAnimation(
@@ -358,12 +358,11 @@ public class RiveView: UIView {
     }
     
     private func _playAnimation(
-            animationName: String,
-            loop: Loop = Loop.LoopAuto,
-            direction: Direction = Direction.DirectionAuto,
-            isStateMachine: Bool = false
-        )
-    {
+        animationName: String,
+        loop: Loop = .loopAuto,
+        direction: Direction = .directionAuto,
+        isStateMachine: Bool = false
+    ){
         if (isStateMachine) {
             let stateMachineInstances = _getOrCreateStateMachines(animationName:animationName)
             stateMachineInstances.forEach { stateMachineInstance in
@@ -415,20 +414,20 @@ public class RiveView: UIView {
         loop: Loop,
         direction: Direction
     ) {
-        if (loop != Loop.LoopAuto) {
+        if (loop != .loopAuto) {
             animationInstance.loop(Int32(loop.rawValue))
         }
         if (!animations.contains(animationInstance)) {
-            if (direction == Direction.DirectionBackwards) {
+            if (direction == .directionBackwards) {
                 animationInstance.setTime(animationInstance.animation().endTime())
             }
             animations.append(
                 animationInstance
             )
         }
-        if (direction == Direction.DirectionForwards) {
+        if (direction == .directionForwards) {
             animationInstance.direction(1)
-        }else if (direction == Direction.DirectionBackwards) {
+        }else if (direction == .directionBackwards) {
             animationInstance.direction(-1)
         }
     
