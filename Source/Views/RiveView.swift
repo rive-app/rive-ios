@@ -46,14 +46,24 @@ public class RiveView: UIView {
     private var _fit = Fit.Contain
     
     open var fit: Fit {
-        set { _fit = newValue }
+        set {
+            _fit = newValue
+            // Advance the artboard if there's one so that Rive redraws with the new fit
+            // TODO: this does nothing when animations are paused as they're skipped for drawing
+            artboard?.advance(by: 0)
+        }
         get { return _fit }
     }
     
     private var _alignment = Alignment.Center
     
     open var alignment: Alignment {
-        set { _alignment = newValue }
+        set {
+            _alignment = newValue
+            // Advance the artboard if there's one so that Rive redraws with the new alignment
+            // TODO: this does nothing when animations are paused as they're skipped for drawing
+            artboard?.advance(by: 0)
+        }
         get { return _alignment }
     }
     
