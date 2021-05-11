@@ -121,10 +121,7 @@ UInt8 stateMachineFileBytes[] = {
     // Valid Rive file, should not be null
     RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156];
     XCTAssert(file != NULL);
-    
-    // Invalid Rive file, should be null
-    file = [[RiveFile alloc] initWithBytes: brokenRiveFileBytes byteLength: 20];
-    XCTAssert(file == NULL);
+
 }
 
 /*
