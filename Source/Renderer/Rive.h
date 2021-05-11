@@ -172,6 +172,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (CGRect)bounds;
 
 - (NSInteger)animationCount;
+- (NSArray *)animationNames;
 - (RiveLinearAnimation *)firstAnimation;
 - (RiveLinearAnimation *)animationFromIndex:(NSInteger)index;
 - (RiveLinearAnimation *)animationFromName:(NSString *)name;

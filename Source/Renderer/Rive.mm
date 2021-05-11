@@ -256,12 +256,19 @@
 
 // Returns the first animation in the artboard, or null if it has none
 - (RiveLinearAnimation *)firstAnimation {
-    return [[RiveLinearAnimation alloc] initWithAnimation:_artboard->firstAnimation()];
+    rive::LinearAnimation *animation = _artboard->firstAnimation();
+    if (animation == nullptr) {
+        @throw [[RiveException alloc] initWithName:@"NoAnimations" reason:@"No Animations Found." userInfo:nil];
+    }
+    else {
+        return [[RiveLinearAnimation alloc] initWithAnimation:animation];
+    }
+    
 }
 
 - (RiveLinearAnimation *)animationFromIndex:(NSInteger)index {
     if (index < 0 || index >= [self animationCount]) {
-        return NULL;
+        @throw [[RiveException alloc] initWithName:@"NoAnimationFound" reason:[NSString stringWithFormat: @"No Animation Found at index %ld.", index] userInfo:nil];
     }
     return [[RiveLinearAnimation alloc] initWithAnimation: _artboard->animation(index)];
 }
@@ -270,9 +277,19 @@
     std::string stdName = std::string([name UTF8String]);
     rive::LinearAnimation *animation = _artboard->animation(stdName);
     if (animation == nullptr) {
-        return NULL;
+        @throw [[RiveException alloc] initWithName:@"NoAnimationFound" reason:[NSString stringWithFormat: @"No Animation Found with name %@.", name] userInfo:nil];
     }
     return [[RiveLinearAnimation alloc] initWithAnimation: animation];
+}
+
+- (NSArray *)animationNames{
+    NSMutableArray *animationNames = [NSMutableArray array];
+    
+    for (NSUInteger i=0; i<[self animationCount]; i++){
+        [animationNames addObject:[[self animationFromIndex: i] name]];
+    }
+    return animationNames;
+    
 }
 
 // Returns the number of state machines in the artboard
@@ -328,6 +345,7 @@
 @implementation RiveLinearAnimation {
     const rive::LinearAnimation *animation;
 }
+
 
 - (instancetype)initWithAnimation:(const rive::LinearAnimation *) riveAnimation {
     if (self = [super init]) {

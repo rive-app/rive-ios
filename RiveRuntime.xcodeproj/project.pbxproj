@@ -23,6 +23,7 @@
 		04BE5413264943BB00427B39 /* util.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5412264943BB00427B39 /* util.mm */; };
 		04BE5418264A818F00427B39 /* RiveAnimationConfigurationsTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5417264A818F00427B39 /* RiveAnimationConfigurationsTest.mm */; };
 		04BE541A264A823000427B39 /* animationconfigurations.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE5419264A823000427B39 /* animationconfigurations.riv */; };
+		04BE541C264A90D600427B39 /* RiveAnimationLoadTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE541B264A90D600427B39 /* RiveAnimationLoadTest.mm */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
@@ -334,6 +335,7 @@
 		04BE541526497D4100427B39 /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
 		04BE5417264A818F00427B39 /* RiveAnimationConfigurationsTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveAnimationConfigurationsTest.mm; sourceTree = "<group>"; };
 		04BE5419264A823000427B39 /* animationconfigurations.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = animationconfigurations.riv; sourceTree = "<group>"; };
+		04BE541B264A90D600427B39 /* RiveAnimationLoadTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveAnimationLoadTest.mm; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
@@ -920,6 +922,7 @@
 				04BE5412264943BB00427B39 /* util.mm */,
 				04BE541526497D4100427B39 /* util.h */,
 				04BE5417264A818F00427B39 /* RiveAnimationConfigurationsTest.mm */,
+				04BE541B264A90D600427B39 /* RiveAnimationLoadTest.mm */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1773,6 +1776,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04BE541C264A90D600427B39 /* RiveAnimationLoadTest.mm in Sources */,
 				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */,
 				04BE5413264943BB00427B39 /* util.mm in Sources */,
 				04BE54112649434900427B39 /* RiveFileLoadTest.mm in Sources */,
