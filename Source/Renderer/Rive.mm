@@ -274,7 +274,7 @@
 - (RiveLinearAnimation *)firstAnimation {
     rive::LinearAnimation *animation = _artboard->firstAnimation();
     if (animation == nullptr) {
-        @throw [[RiveException alloc] initWithName:@"NoAnimations" reason:@"No Animations Found." userInfo:nil];
+        @throw [[RiveException alloc] initWithName:@"NoAnimations" reason:@"No Animations found." userInfo:nil];
     }
     else {
         return [[RiveLinearAnimation alloc] initWithAnimation:animation];
@@ -284,7 +284,7 @@
 
 - (RiveLinearAnimation *)animationFromIndex:(NSInteger)index {
     if (index < 0 || index >= [self animationCount]) {
-        @throw [[RiveException alloc] initWithName:@"NoAnimationFound" reason:[NSString stringWithFormat: @"No Animation Found at index %ld.", index] userInfo:nil];
+        @throw [[RiveException alloc] initWithName:@"NoAnimationFound" reason:[NSString stringWithFormat: @"No Animation found at index %ld.", index] userInfo:nil];
     }
     return [[RiveLinearAnimation alloc] initWithAnimation: _artboard->animation(index)];
 }
@@ -293,7 +293,7 @@
     std::string stdName = std::string([name UTF8String]);
     rive::LinearAnimation *animation = _artboard->animation(stdName);
     if (animation == nullptr) {
-        @throw [[RiveException alloc] initWithName:@"NoAnimationFound" reason:[NSString stringWithFormat: @"No Animation Found with name %@.", name] userInfo:nil];
+        @throw [[RiveException alloc] initWithName:@"NoAnimationFound" reason:[NSString stringWithFormat: @"No Animation found with name %@.", name] userInfo:nil];
     }
     return [[RiveLinearAnimation alloc] initWithAnimation: animation];
 }
@@ -313,13 +313,19 @@
 }
 
 - (RiveStateMachine *)firstStateMachine {
-    return [[RiveStateMachine alloc] initWithStateMachine:_artboard->firstStateMachine()];
+    rive::StateMachine *stateMachine = _artboard->firstStateMachine();
+    if (stateMachine == nullptr) {
+        @throw [[RiveException alloc] initWithName:@"NoStateMachines" reason:@"No State Machines found." userInfo:nil];
+    }
+    else {
+        return [[RiveStateMachine alloc] initWithStateMachine:stateMachine];
+    }
 }
 
 // Returns a state machine at the given index, or null if the index is invalid
 - (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index {
     if (index < 0 || index >= [self stateMachineCount]) {
-        return NULL;
+        @throw [[RiveException alloc] initWithName:@"NoStateMachineFound" reason:[NSString stringWithFormat: @"No State Machine found at index %ld.", index] userInfo:nil];
     }
     return [[RiveStateMachine alloc] initWithStateMachine: _artboard->stateMachine(index)];
 }
@@ -329,9 +335,18 @@
     std::string stdName = std::string([name UTF8String]);
     rive::StateMachine *machine = _artboard->stateMachine(stdName);
     if (machine == nullptr) {
-        return NULL;
+        @throw [[RiveException alloc] initWithName:@"NoStateMachineFound" reason:[NSString stringWithFormat: @"No State Machine found with name %@.", name] userInfo:nil];
     }
     return [[RiveStateMachine alloc] initWithStateMachine: machine];
+}
+
+- (NSArray *)stateMachineNames{
+    NSMutableArray *stateMachineNames = [NSMutableArray array];
+    
+    for (NSUInteger i=0; i<[self stateMachineCount]; i++){
+        [stateMachineNames addObject:[[self stateMachineFromIndex: i] name]];
+    }
+    return stateMachineNames;
 }
 
 

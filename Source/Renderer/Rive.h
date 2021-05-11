@@ -178,6 +178,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (RiveLinearAnimation *)animationFromName:(NSString *)name;
 
 - (NSInteger)stateMachineCount;
+- (NSArray *)stateMachineNames;
 - (RiveStateMachine *)firstStateMachine;
 - (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index;
 - (RiveStateMachine *)stateMachineFromName:(NSString *)name;

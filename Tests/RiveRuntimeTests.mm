@@ -238,10 +238,8 @@ UInt8 stateMachineFileBytes[] = {
     RiveStateMachine* machine = [artboard stateMachineFromIndex: 0];
     XCTAssert(machine != NULL);
     XCTAssert([machine.name isEqual: @"StateMachine"]);
-    machine = [artboard stateMachineFromIndex: 1];
-    XCTAssert(machine == NULL);
-    machine = [artboard stateMachineFromIndex: -1];
-    XCTAssert(machine == NULL);
+    XCTAssertThrows([artboard stateMachineFromIndex: 1]);
+    XCTAssertThrows([artboard stateMachineFromIndex: -1]);
 }
 
 /*
@@ -254,8 +252,7 @@ UInt8 stateMachineFileBytes[] = {
     XCTAssert(artboard != NULL);
     RiveStateMachine* machine = [artboard stateMachineFromName: @"StateMachine"];
     XCTAssert(machine != NULL);
-    machine = [artboard stateMachineFromName: @"Bad Name"];
-    XCTAssert(machine == NULL);
+    XCTAssertThrows([artboard stateMachineFromName: @"Bad Name"]);
 }
 
 /*
