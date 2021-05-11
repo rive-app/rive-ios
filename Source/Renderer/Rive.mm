@@ -209,7 +209,14 @@
 }
 
 - (RiveArtboard *)artboard {
-    return [[RiveArtboard alloc] initWithArtboard: riveFile->artboard()];
+    rive::Artboard *artboard = riveFile->artboard();
+    if (artboard == nullptr) {
+        @throw [[RiveException alloc] initWithName:@"NoArtboardsFound" reason: @"No Artboards Found." userInfo:nil];
+    }
+    else {
+        return [[RiveArtboard alloc] initWithArtboard: artboard];
+    }
+    
 }
 
 - (NSInteger)artboardCount {
@@ -218,7 +225,7 @@
 
 - (RiveArtboard *)artboardFromIndex:(NSInteger) index {
     if (index >= [self artboardCount]) {
-        return NULL;
+        @throw [[RiveException alloc] initWithName:@"NoArtboardFound" reason:[NSString stringWithFormat: @"No Artboard Found at index %ld.", index] userInfo:nil];
     }
     return [[RiveArtboard alloc]
             initWithArtboard: reinterpret_cast<rive::Artboard *>(riveFile->artboard(index))];
@@ -228,10 +235,19 @@
     std::string stdName = std::string([name UTF8String]);
     rive::Artboard *artboard = riveFile->artboard(stdName);
     if (artboard == nullptr) {
-        return NULL;
+        @throw [[RiveException alloc] initWithName:@"NoArtboardFound" reason:[NSString stringWithFormat: @"No Artboard Found with name %@.", name] userInfo:nil];
     } else {
         return [[RiveArtboard alloc] initWithArtboard: artboard];
     }
+}
+
+- (NSArray *)artboardNames{
+    NSMutableArray *artboardNames = [NSMutableArray array];
+    
+    for (NSUInteger i=0; i<[self artboardCount]; i++){
+        [artboardNames addObject:[[self artboardFromIndex: i] name]];
+    }
+    return artboardNames;
 }
 
 @end
@@ -289,7 +305,6 @@
         [animationNames addObject:[[self animationFromIndex: i] name]];
     }
     return animationNames;
-    
 }
 
 // Returns the number of state machines in the artboard

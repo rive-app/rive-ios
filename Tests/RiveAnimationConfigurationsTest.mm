@@ -45,7 +45,7 @@
 - (void)testOneShot {
     RiveFile* file = [Util loadTestFile:@"animationconfigurations"];
     RiveArtboard* artboard = [file artboard];
-    RiveLinearAnimation* animation = [artboard animationFromName:@"oneShot"];
+    RiveLinearAnimation* animation = [artboard animationFromName:@"oneshot"];
 
     XCTAssertEqual([animation loop], Loop::loopOneShot);
 }

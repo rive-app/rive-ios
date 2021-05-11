@@ -209,6 +209,9 @@ typedef NS_ENUM(NSInteger, Alignment) {
 // Returns the artboard by its name
 - (RiveArtboard *)artboardFromName:(NSString *) name;
 
+// Returns the names of all artboards in the file.
+- (NSArray *)artboardNames;
+
 @end
 
 NS_ASSUME_NONNULL_END
