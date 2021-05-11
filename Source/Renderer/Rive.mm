@@ -32,7 +32,7 @@
  * RiveStateMachine interface
  */
 @interface RiveStateMachine ()
-- (instancetype)initWithStateMachine:(const rive::StateMachine *)riveStateMachine;
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine;
 @end
 
 /*
@@ -449,9 +449,9 @@
 }
 
 // Creates a new RiveStateMachine from a cpp StateMachine
-- (instancetype)initWithStateMachine:(const rive::StateMachine *)riveStateMachine {
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine {
     if (self = [super init]) {
-        stateMachine = riveStateMachine;
+        self->stateMachine = stateMachine;
         return self;
     } else {
         return nil;
@@ -485,12 +485,14 @@
  * RiveStateMachineInstance
  */
 @implementation RiveStateMachineInstance {
+    const rive::StateMachine *stateMachine;
     rive::StateMachineInstance *instance;
 }
 
 // Creates a new RiveStateMachineInstance from a cpp StateMachine
 - (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine {
     if (self = [super init]) {
+        self->stateMachine = stateMachine;
         instance = new rive::StateMachineInstance(stateMachine);
         return self;
     } else {
@@ -498,11 +500,11 @@
     }
 }
 
--(void) applyTo:(RiveArtboard*) artboard {
+- (void) applyTo:(RiveArtboard*)artboard {
     instance->apply(artboard.artboard);
 }
 
--(bool) advanceBy:(double)elapsedSeconds {
+- (bool) advanceBy:(double)elapsedSeconds {
     return instance->advance(elapsedSeconds);
 }
 
@@ -539,6 +541,11 @@
     } else {
         return [[RiveSMINumber alloc] initWithSMINumber: smi];
     }
+}
+
+- (NSString *)name {
+    std::string str = stateMachine->name();
+    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
 @end

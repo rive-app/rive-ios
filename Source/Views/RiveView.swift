@@ -8,17 +8,79 @@
 
 import UIKit
 
+// Signature for a loop action delegate function
+public typealias LoopAction = ((String, Int) -> Void)?
+
 // Delegate for handling loop events
 public protocol LoopDelegate: AnyObject {
     func loop(_ animationName: String, type: Int)
+}
+
+// signature for a play action delegate function
+public typealias PlaybackAction = ((String) -> Void)?
+
+// Delegate for handling play action
+public protocol PlayDelegate: AnyObject {
+    func play(_ animationName: String)
+}
+
+// Delegate for handling pause action
+public protocol PauseDelegate: AnyObject {
+    func pause(_ animationName: String)
+}
+
+/// Playback states for a Rive file
+public enum Playback {
+    case play
+    case pause
+    case stop
 }
 
 public class RiveView: UIView {
     
     var displayLink: CADisplayLink?
     
-    var fit = Fit.Contain
-    var alignment = Alignment.Center
+    // Queue of events that need to be done outside view updates
+    private var eventQueue = EventQueue()
+    
+    private var _fit = Fit.Contain
+    
+    open var fit: Fit {
+        set {
+            _fit = newValue
+            // Advance the artboard if there's one so that Rive redraws with the new fit
+            // TODO: this does nothing when animations are paused as they're skipped for drawing
+            artboard?.advance(by: 0)
+        }
+        get { return _fit }
+    }
+    
+    private var _alignment = Alignment.Center
+    
+    open var alignment: Alignment {
+        set {
+            _alignment = newValue
+            // Advance the artboard if there's one so that Rive redraws with the new alignment
+            // TODO: this does nothing when animations are paused as they're skipped for drawing
+            artboard?.advance(by: 0)
+        }
+        get { return _alignment }
+    }
+    
+    var isPlaying: Bool {
+        get { return !playingAnimations.isEmpty || !playingStateMachines.isEmpty }
+    }
+    
+    open var playback: Playback {
+        get { return isPlaying ? Playback.play : Playback.pause }
+        set {
+            if newValue == Playback.play {
+                play()
+            } else {
+                pause()
+            }
+        }
+    }
     
     var riveFile: RiveFile?
     
@@ -34,12 +96,24 @@ public class RiveView: UIView {
     
     // Delegates
     public weak var loopDelegate: LoopDelegate?
+    public weak var playDelegate: PlayDelegate?
+    public weak var pauseDelegate: PauseDelegate?
     
-    public init(riveFile: RiveFile, fit: Fit = Fit.Contain, alignment: Alignment = Alignment.Center) {
+    public init(
+        riveFile: RiveFile,
+        fit: Fit = Fit.Contain,
+        alignment: Alignment = Alignment.Center,
+        autoplay: Bool = true,
+        loopDelegate: LoopDelegate? = nil,
+        playDelegate: PlayDelegate? = nil,
+        pauseDelegate: PauseDelegate? = nil
+    ) {
         super.init(frame: .zero)
-        self.configure(withRiveFile: riveFile)
-        setFit(fit: fit)
-        setAlignment(alignment: alignment)
+        self.fit = fit
+        self.alignment = alignment
+        self.loopDelegate = loopDelegate
+        self.playDelegate = playDelegate
+        self.configure(withRiveFile: riveFile, andAutoPlay: autoplay)
     }
     
     public init() {
@@ -49,21 +123,8 @@ public class RiveView: UIView {
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
-    
-    func isPlaying() -> Bool {
-        return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
-    }
-    
-    open func setFit(fit: Fit){
-        self.fit = fit
-    }
-    
-    open func setAlignment(alignment: Alignment) {
-        self.alignment = alignment
-    }
 
-    
+        
     @objc func animationWillMoveToBackground() {
         print("Triggers when app is moving to background")
     }
@@ -140,21 +201,21 @@ public class RiveView: UIView {
     
     // Starts the animation timer
     func runTimer() {
-        if (displayLink == nil){
+        if displayLink == nil {
             displayLink = CADisplayLink(target: self, selector: #selector(tick));
             // Note: common didnt pause on scroll.
             displayLink?.add(to: .main, forMode: .common)
         }
-        if (displayLink?.isPaused==true){
-            lastTime=0
-            displayLink!.isPaused=false
+        if displayLink?.isPaused == true {
+            lastTime = 0
+            displayLink!.isPaused = false
         }
     }
     
     // Stops the animation timer
     func stopTimer() {
         // should we pause or invalidate?
-        displayLink?.isPaused=true
+        displayLink?.isPaused = true
     }
     
     func clear() {
@@ -163,7 +224,7 @@ public class RiveView: UIView {
         animations.removeAll()
         stateMachines.removeAll()
         stopTimer()
-        lastTime=0
+        lastTime = 0
     }
     
     public func reset() {
@@ -186,7 +247,7 @@ public class RiveView: UIView {
         
         let timestamp = displayLink.timestamp
         // last time needs to be set on the first tick
-        if (lastTime == 0) {
+        if lastTime == 0 {
             lastTime = timestamp
         }
         
@@ -194,15 +255,19 @@ public class RiveView: UIView {
         let elapsedTime = timestamp - lastTime;
         lastTime = timestamp;
         advance(delta: elapsedTime)
-        if(!isPlaying()){
+        if(!isPlaying){
             stopTimer()
         }
     }
     
-    func advance(delta:Double){
+    func advance(delta:Double) {
         guard let artboard = artboard else {
             return
         }
+        
+        // Testing firing events here
+        eventQueue.fireAll()
+        
         animations.forEach{ animation in
             if playingAnimations.contains(animation) {
                 let stillPlaying = animation.advance(by: delta)
@@ -252,7 +317,11 @@ public class RiveView: UIView {
         runTimer()
     }
     
-    
+    /// Plays the specified animation or state machine with optional loop and directions
+    /// - Parameter animationName: name of the animation to play
+    /// - Parameter loop: overrides the animation's loop setting
+    /// - Parameter direction: overrides the animation's default direction (forwards)
+    /// - Parameter isStateMachine: true of the name refers to a state machine and not an animation
     public func play(
         animationName: String,
         loop: Loop = Loop.LoopAuto,
@@ -266,6 +335,12 @@ public class RiveView: UIView {
             isStateMachine:isStateMachine
         )
         runTimer()
+    }
+    
+    /// Pauses all playing animations and state machines
+    public func pause() {
+        playingAnimations.forEach { animation in _pause(animation) }
+        playingStateMachines.forEach { stateMachine in _pause(stateMachine) }
     }
     
     private func _getOrCreateStateMachines(
@@ -292,7 +367,7 @@ public class RiveView: UIView {
         if (isStateMachine) {
             let stateMachineInstances = _getOrCreateStateMachines(animationName:animationName)
             stateMachineInstances.forEach { stateMachineInstance in
-                _play(stateMachine: stateMachineInstance)
+                _play(stateMachineInstance)
             }
         } else {
             let animationInstances = _animations(animationName: animationName)
@@ -315,7 +390,6 @@ public class RiveView: UIView {
         }
     }
         
-    
     private func _animations(animationName: String)->[RiveLinearAnimationInstance] {
         return _animations(animationNames:[animationName])
     }
@@ -359,12 +433,20 @@ public class RiveView: UIView {
         }
     
         playingAnimations.insert(animationInstance)
-        //        notifyPlay(animationInstance)
+        eventQueue.add( { self.playDelegate?.play(animationInstance.name()) } )
+    }
+        
+    /// Pauses a playing animation
+    ///
+    /// - Parameter animation: the animation to pause
+    private func _pause(_ animation: RiveLinearAnimationInstance) {
+        let removed = playingAnimations.remove(animation)
+        if removed != nil {
+            eventQueue.add( { self.pauseDelegate?.pause(animation.name()) } )
+        }
     }
     
-    private func _play(
-        stateMachine stateMachineInstance: RiveStateMachineInstance
-    ) {
+    private func _play(_ stateMachineInstance: RiveStateMachineInstance) {
         if (!stateMachines.contains(stateMachineInstance)) {
             stateMachines.append(
                 stateMachineInstance
@@ -372,14 +454,24 @@ public class RiveView: UIView {
         }
     
         playingStateMachines.insert(stateMachineInstance)
-        
+        eventQueue.add( { self.playDelegate?.play(stateMachineInstance.name()) } )
+    }
+    
+    /// Pauses a playing state machine
+    ///
+    /// - Parameter stateMachine: the state machine to pause
+    private func _pause(_ stateMachine: RiveStateMachineInstance) {
+        let removed = playingStateMachines.remove(stateMachine)
+        if removed != nil {
+            eventQueue.add( { self.pauseDelegate?.pause(stateMachine.name()) } )
+        }
     }
     
     open func fireState(stateMachineName: String, inputName: String) {
         let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
         stateMachineInstances.forEach { stateMachine in
             stateMachine.getTrigger(inputName).fire()
-            _play(stateMachine: stateMachine)
+            _play(stateMachine)
         }
         runTimer()
     }
@@ -388,7 +480,7 @@ public class RiveView: UIView {
         let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
         stateMachineInstances.forEach { stateMachine in
             stateMachine.getBool(inputName).setValue(value)
-            _play(stateMachine:stateMachine)
+            _play(stateMachine)
         }
         runTimer()
     }
@@ -397,8 +489,29 @@ public class RiveView: UIView {
         let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
         stateMachineInstances.forEach { stateMachine in
             stateMachine.getNumber(inputName).setValue(value)
-            _play(stateMachine:stateMachine)
+            _play(stateMachine)
         }
         runTimer()
+    }
+
+}
+
+
+// Tracks a queue of events that haven't been fired yet. We do this so
+// that we're not calling delegates and modifying state while a view is
+// updating (e.g. being initialized, as we autoplay and fire play events
+// during the view's init otherwise
+class EventQueue {
+    var events:[() -> Void] = []
+    
+    func add(_ event: @escaping () -> Void) {
+        events.append(event)
+    }
+    
+    func fireAll() {
+        events.forEach { event in
+            event()
+        }
+        events.removeAll()
     }
 }
