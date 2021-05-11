@@ -12,11 +12,11 @@
 #import "Rive.h"
 #import "util.h"
 
-@interface RiveanimationLoadTest : XCTestCase
+@interface RiveAnimationLoadTest : XCTestCase
 
 @end
 
-@implementation RiveanimationLoadTest
+@implementation RiveAnimationLoadTest
 
 /*
  * Test first Animation
@@ -70,8 +70,7 @@
     
     XCTAssertEqual([artboard animationCount], 0);
     
-    NSArray *target = [NSArray array];
-    XCTAssertTrue([[artboard animationNames] isEqualToArray: target]);
+    XCTAssertTrue([[artboard animationNames] isEqualToArray: [NSArray array]]);
 }
 
 /*
@@ -80,7 +79,6 @@
 - (void)testArtboardAnimationDoesntExist {
     RiveFile* file = [Util loadTestFile:@"noanimation"];
     RiveArtboard* artboard = [file artboard];
-    
     
     XCTAssertThrowsSpecificNamed(
          [artboard firstAnimation],

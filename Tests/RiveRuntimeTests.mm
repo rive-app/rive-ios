@@ -151,9 +151,6 @@ UInt8 stateMachineFileBytes[] = {
     RiveArtboard* artboard = [file artboardFromIndex: 0];
     XCTAssert(artboard != NULL);
     XCTAssert([[artboard name] isEqual: @"New Artboard"]);
-    
-    artboard = [file artboardFromIndex: 1];
-    XCTAssert(artboard == NULL);
 }
 
 /*
@@ -164,9 +161,6 @@ UInt8 stateMachineFileBytes[] = {
     RiveArtboard* artboard = [file artboardFromName: @"New Artboard"];
     XCTAssert(artboard != NULL);
     XCTAssert([[artboard name] isEqual: @"New Artboard"]);
-    
-    artboard = [file artboardFromName: @"Bad Artboard"];
-    XCTAssert(artboard == NULL);
 }
 
 /*
@@ -203,9 +197,6 @@ UInt8 stateMachineFileBytes[] = {
     RiveLinearAnimation* animation = [artboard animationFromIndex: 0];
     XCTAssert(animation != NULL);
     XCTAssert([[animation name] isEqual: @"Animation 1"]);
-    
-    animation = [artboard animationFromIndex: 1];
-    XCTAssert(animation == NULL);
 }
 
 /*
@@ -217,9 +208,6 @@ UInt8 stateMachineFileBytes[] = {
     RiveLinearAnimation* animation = [artboard animationFromName: @"Animation 1"];
     XCTAssert(animation != NULL);
     XCTAssert([animation.name isEqual: @"Animation 1"]);
-    
-    animation = [artboard animationFromName: @"Bad Name"];
-    XCTAssert(animation == NULL);
 }
 
 /*
