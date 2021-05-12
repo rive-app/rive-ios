@@ -67,6 +67,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 @class RiveSMIBool;
 @class RiveSMITrigger;
 @class RiveSMINumber;
+@class RiveStateMachineInput;
 
 /*
  * RiveStateMachineInstance
@@ -91,6 +92,9 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (NSInteger)layerCount;
 - (NSInteger)inputCount;
 - (RiveStateMachineInstance *)instance;
+- (NSArray *)inputNames;
+- (RiveStateMachineInput *)inputFromIndex:(NSInteger)index;
+- (RiveStateMachineInput *)inputFromName:(NSString*)name;
 @end
 
 /*
@@ -112,6 +116,36 @@ typedef NS_ENUM(NSInteger, Alignment) {
  */
 @interface RiveSMINumber : NSObject
 - (void)setValue:(float)newValue;
+@end
+
+/*
+ * RiveStateMachineInput
+ */
+@interface RiveStateMachineInput : NSObject
+- (bool)isBoolean;
+- (bool)isTrigger;
+- (bool)isNumber;
+- (NSString *)name;
+@end
+
+/*
+ * RiveStateMachineBoolInput
+ */
+@interface RiveStateMachineBoolInput : RiveStateMachineInput
+- (bool)value;
+@end
+
+/*
+ * RiveStateMachineTriggerInput
+ */
+@interface RiveStateMachineTriggerInput : RiveStateMachineInput
+@end
+
+/*
+ * RiveStateMachineNumberInput
+ */
+@interface RiveStateMachineNumberInput : RiveStateMachineInput
+- (float)value;
 @end
 
 
