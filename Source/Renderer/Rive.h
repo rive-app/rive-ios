@@ -64,6 +64,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 @class RiveArtboard;
 @class RiveLinearAnimation;
 @class RiveStateMachine;
+@class RiveSMIInput;
 @class RiveSMIBool;
 @class RiveSMITrigger;
 @class RiveSMINumber;
@@ -73,14 +74,17 @@ typedef NS_ENUM(NSInteger, Alignment) {
  * RiveStateMachineInstance
  */
 @interface RiveStateMachineInstance : NSObject
-
+- (NSString* )name;
 - (void)applyTo:(RiveArtboard*)artboard;
 - (bool)advanceBy:(double)elapsedSeconds;
 - (const RiveStateMachine *)stateMachine;
 - (const RiveSMIBool *)getBool:(NSString*)name;
 - (const RiveSMITrigger *)getTrigger:(NSString*)name;
 - (const RiveSMINumber *)getNumber:(NSString*)name;
-- (NSString* )name;
+- (NSArray *)inputNames;
+- (NSInteger)inputCount;
+- (RiveSMIInput *)inputFromIndex:(NSInteger)index;
+- (RiveSMIInput *)inputFromName:(NSString*)name;
 
 @end
 
@@ -100,21 +104,33 @@ typedef NS_ENUM(NSInteger, Alignment) {
 /*
  * SMITrigger
  */
-@interface RiveSMITrigger : NSObject
+@interface RiveSMIInput : NSObject
+- (NSString *)name;
+- (bool)isBoolean;
+- (bool)isTrigger;
+- (bool)isNumber;
+@end
+
+/*
+ * SMITrigger
+ */
+@interface RiveSMITrigger : RiveSMIInput
 - (void)fire;
 @end
 
 /*
  * SMIBool
  */
-@interface RiveSMIBool : NSObject
+@interface RiveSMIBool : RiveSMIInput
+- (bool)value;
 - (void)setValue:(bool)newValue;
 @end
 
 /*
  * SMINumber
  */
-@interface RiveSMINumber : NSObject
+@interface RiveSMINumber : RiveSMIInput
+- (float)value;
 - (void)setValue:(float)newValue;
 @end
 
