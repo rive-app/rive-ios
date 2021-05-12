@@ -40,24 +40,28 @@
 @end
 
 /*
+ * RiveSMIInput interface
+ */
+@interface RiveSMIInput ()
+- (instancetype)initWithSMIInput:(const rive::SMIInput *)riveSMIInput;
+@end
+
+/*
  * SMITrigger interface
  */
 @interface RiveSMITrigger ()
-- (instancetype)initWithSMITrigger:(rive::SMITrigger *)riveSMITrigger;
 @end
 
 /*
  * SMINumber interface
  */
 @interface RiveSMINumber ()
-- (instancetype)initWithSMINumber:(rive::SMINumber *)riveSMINumber;
 @end
 
 /*
  * SMIBool interface
  */
 @interface RiveSMIBool ()
-- (instancetype)initWithSMIBool:(rive::SMIBool *)riveSMIBool;
 @end
 
 
@@ -594,7 +598,6 @@
     }
     return inputNames;
 }
-
 @end
 
 /*
@@ -635,7 +638,7 @@
     if (smi == nullptr) {
         return NULL;
     } else {
-        return [[RiveSMIBool alloc] initWithSMIBool: smi];
+        return [[RiveSMIBool alloc] initWithSMIInput: smi];
     }
 }
 
@@ -645,7 +648,7 @@
     if (smi == nullptr) {
         return NULL;
     } else {
-        return [[RiveSMITrigger alloc] initWithSMITrigger: smi];
+        return [[RiveSMITrigger alloc] initWithSMIInput: smi];
     }
 }
 
@@ -655,7 +658,7 @@
     if (smi == nullptr) {
         return NULL;
     } else {
-        return [[RiveSMINumber alloc] initWithSMINumber: smi];
+        return [[RiveSMINumber alloc] initWithSMIInput: smi];
     }
 }
 
@@ -664,27 +667,107 @@
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
+- (NSInteger)inputCount{
+    return instance->inputCount();
+}
+
+- (RiveSMIInput *)_convertInput:(const rive::SMIInput *)input{
+    if (input->input()->is<rive::StateMachineBool>()){
+        return [[RiveSMIBool alloc] initWithSMIInput: input];
+    }
+    else if (input->input()->is<rive::StateMachineNumber>()){
+        return [[RiveSMINumber alloc] initWithSMIInput: input];
+    }
+    else if (input->input()->is<rive::StateMachineTrigger>()){
+        return [[RiveSMITrigger alloc] initWithSMIInput: input];
+    }
+    else {
+        @throw [[RiveException alloc] initWithName:@"UnkownInput" reason: @"Unknown State Machine Input" userInfo:nil];
+    }
+}
+
+// Creates a new instance of this state machine
+- (RiveSMIInput *)inputFromIndex:(NSInteger)index {
+    if (index >= [self inputCount]) {
+        @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No Input found at index %ld.", index] userInfo:nil];
+    }
+    return [self _convertInput: instance->input(index) ];
+}
+
+// Creates a new instance of this state machine
+- (RiveSMIInput *)inputFromName:(NSString*)name {
+    std::string stdName = std::string([name UTF8String]);
+    
+    RiveSMIInput* input = [RiveSMIInput alloc];
+    for (int i=0; i< [self inputCount]; i++) {
+        input = [self inputFromIndex: i];
+        if ([[input name] isEqualToString: name]){
+            return input;
+        }
+    }
+    @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No State Machine Input found with name %@.", name] userInfo:nil];
+}
+
+- (NSArray *)inputNames{
+    NSMutableArray *inputNames = [NSMutableArray array];
+    
+    for (NSUInteger i=0; i<[self inputCount]; i++){
+        [inputNames addObject:[[self inputFromIndex: i] name]];
+    }
+    return inputNames;
+}
+
+
 @end
 
 /*
- * RiveSMITrigger
+ * RiveSMIInput
  */
-@implementation RiveSMITrigger {
-     rive::SMITrigger *instance;
+@implementation RiveSMIInput {
+     const rive::SMIInput *instance;
 }
 
-// Creates a new RiveSMITrigger from a cpp SMITrigger
-- (instancetype)initWithSMITrigger:(rive::SMITrigger *)smiTrigger {
+- (const rive::SMIInput *)getInstance {
+    return instance;
+}
+
+// Creates a new RiveSMINumber from a cpp SMINumber
+- (instancetype)initWithSMIInput:(const rive::SMIInput *)stateMachineInput {
     if (self = [super init]) {
-        instance = (rive::SMITrigger *)smiTrigger;
+        instance = stateMachineInput;
         return self;
     } else {
         return nil;
     }
 }
 
+- (bool)isBoolean {
+    return instance->input()->is<rive::StateMachineBool>();
+}
+
+- (bool)isTrigger{
+    return instance->input()->is<rive::StateMachineTrigger>();
+}
+
+- (bool)isNumber{
+    return instance->input()->is<rive::StateMachineNumber>();
+};
+
+- (NSString *)name{
+    std::string str = ((const rive::SMIInput *)instance)->name();
+    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+}
+
+@end
+
+
+/*
+ * RiveSMITrigger
+ */
+@implementation RiveSMITrigger
+
 - (void) fire {
-    instance->fire();
+    ((rive::SMITrigger *)[self getInstance])->fire();
 }
 
 @end
@@ -692,22 +775,14 @@
 /*
  * RiveSMIBool
  */
-@implementation RiveSMIBool {
-     rive::SMIBool *instance;
-}
-
-// Creates a new RiveSMIBool from a cpp SMIBool
-- (instancetype)initWithSMIBool:(rive::SMIBool *)smiBool {
-    if (self = [super init]) {
-        instance = (rive::SMIBool *)smiBool;
-        return self;
-    } else {
-        return nil;
-    }
-}
+@implementation RiveSMIBool
 
 - (void) setValue:(bool)newValue {
-    instance->value(newValue);
+    ((rive::SMIBool *)[self getInstance])->value(newValue);
+}
+
+- (bool) value{
+    return ((rive::SMIBool *)[self getInstance])->value();
 }
 
 @end
@@ -715,22 +790,13 @@
 /*
  * RiveSMINumber
  */
-@implementation RiveSMINumber {
-     rive::SMINumber *instance;
-}
-
-// Creates a new RiveSMINumber from a cpp SMINumber
-- (instancetype)initWithSMINumber:(rive::SMINumber *)smiNumber {
-    if (self = [super init]) {
-        instance = (rive::SMINumber *)smiNumber;
-        return self;
-    } else {
-        return nil;
-    }
-}
+@implementation RiveSMINumber
 
 - (void) setValue:(float)newValue {
-    instance->value(newValue);
+    ((rive::SMINumber *)[self getInstance])->value(newValue);
+}
+- (float) value {
+    return ((rive::SMINumber *)[self getInstance])->value();
 }
 
 @end
