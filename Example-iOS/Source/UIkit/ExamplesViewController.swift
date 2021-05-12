@@ -25,9 +25,9 @@ class ExamplesViewController: UIViewController {
     }
 }
 
-class RiveHostingViewController: UIHostingController<RiveSwiftUIView> {
+class RiveHostingViewController: UIHostingController<ExampleUIRiveView> {
     required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: RiveSwiftUIView())
+        super.init(coder: coder, rootView: ExampleUIRiveView())
         rootView.dismiss = dismiss
     }
 

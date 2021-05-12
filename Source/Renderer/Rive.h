@@ -205,10 +205,10 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (NSInteger)artboardCount;
 
 // Returns the artboard by its index
-- (RiveArtboard *)artboardFromIndex:(NSInteger) index;
+- (RiveArtboard *)artboardFromIndex:(NSInteger)index;
 
 // Returns the artboard by its name
-- (RiveArtboard *)artboardFromName:(NSString *) name;
+- (RiveArtboard *)artboardFromName:(NSString *)name;
 
 // Returns the names of all artboards in the file.
 - (NSArray *)artboardNames;

@@ -27,21 +27,21 @@ class MultipleAnimationsController: UIViewController {
         }
 
         multipleAnimationView.squareGoAround.configure(
-            withRiveFile: getRiveFile(resourceName: loopResourceName),
+            getRiveFile(resourceName: loopResourceName),
             andArtboard: "Square",
             andAnimation: "goaround"
         )
         multipleAnimationView.squareRollAround.configure(
-            withRiveFile: getRiveFile(resourceName: loopResourceName),
+            getRiveFile(resourceName: loopResourceName),
             andArtboard: "Square",
             andAnimation: "rollaround"
         )
         multipleAnimationView.circle.configure(
-            withRiveFile: getRiveFile(resourceName: loopResourceName),
+            getRiveFile(resourceName: loopResourceName),
             andArtboard: "Circle"
         )
         multipleAnimationView.star?.configure(
-            withRiveFile: getRiveFile(resourceName: loopResourceName),
+            getRiveFile(resourceName: loopResourceName),
             andArtboard: "Star"
         )
     }

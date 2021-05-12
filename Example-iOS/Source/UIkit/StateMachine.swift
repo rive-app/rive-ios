@@ -40,7 +40,7 @@ class StateMachineViewController: UIViewController {
         }
         
         stateMachineView.riveView.configure(
-            withRiveFile: getRiveFile(resourceName: resourceName),
+            getRiveFile(resourceName: resourceName),
             andStateMachine: "Designer's Test"
         )
         stateMachineView.beginnerButtonAction = {
