@@ -29,6 +29,11 @@ public protocol PauseDelegate: AnyObject {
     func pause(_ animationName: String)
 }
 
+// Delegate for handling pause action
+public protocol StopDelegate: AnyObject {
+    func stop(_ animationName: String)
+}
+
 /// Playback states for a Rive file
 public enum Playback {
     case play
@@ -76,10 +81,10 @@ public class RiveView: UIView {
         get { return _artboard }
     }
     
-    var animations: [RiveLinearAnimationInstance] = []
-    var playingAnimations: Set<RiveLinearAnimationInstance> = []
-    var stateMachines: [RiveStateMachineInstance] = []
-    var playingStateMachines: Set<RiveStateMachineInstance> = []
+    public var animations: [RiveLinearAnimationInstance] = []
+    public var playingAnimations: Set<RiveLinearAnimationInstance> = []
+    public var stateMachines: [RiveStateMachineInstance] = []
+    public var playingStateMachines: Set<RiveStateMachineInstance> = []
     
     var autoPlay: Bool = true
     var lastTime: CFTimeInterval = 0
@@ -88,6 +93,7 @@ public class RiveView: UIView {
     public weak var loopDelegate: LoopDelegate?
     public weak var playDelegate: PlayDelegate?
     public weak var pauseDelegate: PauseDelegate?
+    public weak var stopDelegate: StopDelegate?
     
     public init(
         riveFile: RiveFile,
@@ -97,7 +103,8 @@ public class RiveView: UIView {
         artboard: String? = nil,
         loopDelegate: LoopDelegate? = nil,
         playDelegate: PlayDelegate? = nil,
-        pauseDelegate: PauseDelegate? = nil
+        pauseDelegate: PauseDelegate? = nil,
+        stopDelegate: StopDelegate? = nil
     ) {
         super.init(frame: .zero)
         self.fit = fit
@@ -105,6 +112,7 @@ public class RiveView: UIView {
         self.loopDelegate = loopDelegate
         self.playDelegate = playDelegate
         self.pauseDelegate = pauseDelegate
+        self.stopDelegate = stopDelegate
         self.configure(riveFile, andArtboard: artboard, andAutoPlay: autoplay)
     }
     
@@ -252,7 +260,7 @@ public class RiveView: UIView {
         }
     }
     
-    func advance(delta:Double) {
+    open func advance(delta:Double) {
         guard let artboard = _artboard else {
             return
         }
@@ -265,16 +273,13 @@ public class RiveView: UIView {
                 let stillPlaying = animation.advance(by: delta)
                 animation.apply(to: artboard)
                 if !stillPlaying {
-                    playingAnimations.remove(animation)
-                    if (animation.loop() == Loop.loopOneShot.rawValue) {
-                        animations.removeAll(where: { animationInstance in
-                            return animationInstance == animation
-                        })
+                    _stop(animation)
+                } else {
+                    
+                    // Check if the animation looped and if so, call the delegate
+                    if animation.didLoop() {
+                        loopDelegate?.loop(animation.name(), type: Int(animation.loop()))
                     }
-                }
-                // Check if the animation looped and if so, call the delegate
-                if animation.didLoop() {
-                    loopDelegate?.loop(animation.name(), type: Int(animation.loop()))
                 }
             }
         }
@@ -329,10 +334,49 @@ public class RiveView: UIView {
         runTimer()
     }
     
+    
     /// Pauses all playing animations and state machines
     public func pause() {
         playingAnimations.forEach { animation in _pause(animation) }
         playingStateMachines.forEach { stateMachine in _pause(stateMachine) }
+    }
+    
+    public func pause(animationName:String, isStateMachine:Bool=false) {
+        if (isStateMachine){
+            _stateMachines(animationName: animationName).forEach{ animation in _pause(animation)}
+        } else {
+            _animations(animationName: animationName).forEach{ animation in _pause(animation)}
+        }
+    }
+    
+    public func pause(animationNames:[String], isStateMachine:Bool=false) {
+        if (isStateMachine){
+            _stateMachines(animationNames: animationNames).forEach{ animation in _pause(animation)}
+        } else {
+            _animations(animationNames: animationNames).forEach{ animation in _pause(animation)}
+        }
+    }
+    
+    /// Stops all playing animations and state machines
+    public func stop() {
+        animations.forEach { animation in _stop(animation) }
+        stateMachines.forEach { stateMachine in _stop(stateMachine) }
+    }
+    
+    public func stop(animationName:String, isStateMachine:Bool=false) {
+        if (isStateMachine){
+            _stateMachines(animationName: animationName).forEach{ animation in _stop(animation)}
+        } else {
+            _animations(animationName: animationName).forEach{ animation in _stop(animation)}
+        }
+    }
+    
+    public func stop(animationNames:[String], isStateMachine:Bool=false) {
+        if (isStateMachine){
+            _stateMachines(animationNames: animationNames).forEach{ animation in _stop(animation)}
+        } else {
+            _animations(animationNames: animationNames).forEach{ animation in _stop(animation)}
+        }
     }
     
     private func _getOrCreateStateMachines(
@@ -437,6 +481,21 @@ public class RiveView: UIView {
         }
     }
     
+    /// Stops an animation
+    ///
+    /// - Parameter animation: the animation to pause
+    private func _stop(_ animation: RiveLinearAnimationInstance) {
+        let initialCount = animations.count
+        // TODO: Better way to do this?
+        animations = animations.filter{ it in
+            return it != animation
+        }
+        playingAnimations.remove(animation)
+        if (initialCount != animations.count){
+            eventQueue.add( { self.stopDelegate?.stop(animation.name()) } )
+        }
+    }
+    
     private func _play(_ stateMachineInstance: RiveStateMachineInstance) {
         if (!stateMachines.contains(stateMachineInstance)) {
             stateMachines.append(
@@ -455,6 +514,21 @@ public class RiveView: UIView {
         let removed = playingStateMachines.remove(stateMachine)
         if removed != nil {
             eventQueue.add( { self.pauseDelegate?.pause(stateMachine.name()) } )
+        }
+    }
+    
+    /// Stops an animation
+    ///
+    /// - Parameter animation: the animation to pause
+    private func _stop(_ stateMachine: RiveStateMachineInstance) {
+        let initialCount = stateMachines.count
+        // TODO: Better way to do this?
+        stateMachines = stateMachines.filter{ it in
+            return it != stateMachine
+        }
+        playingStateMachines.remove(stateMachine)
+        if (initialCount != stateMachines.count){
+            eventQueue.add( { self.stopDelegate?.stop(stateMachine.name()) } )
         }
     }
     
