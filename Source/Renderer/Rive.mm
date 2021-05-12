@@ -16,6 +16,10 @@
 #import "linear_animation_instance.hpp"
 #import "state_machine.hpp"
 #import "state_machine_instance.hpp"
+#import "state_machine_input.hpp"
+#import "state_machine_bool.hpp"
+#import "state_machine_number.hpp"
+#import "state_machine_trigger.hpp"
 #import "state_machine_input_instance.hpp"
 
 @implementation RiveException
@@ -54,6 +58,14 @@
  */
 @interface RiveSMIBool ()
 - (instancetype)initWithSMIBool:(rive::SMIBool *)riveSMIBool;
+@end
+
+
+/*
+ * RiveStateMachineInput interface
+ */
+@interface RiveStateMachineInput ()
+- (instancetype)initWithStateMachineInput:(const rive::StateMachineInput *)riveStateMachineInput;
 @end
 
 /*
@@ -539,6 +551,50 @@
     return [[RiveStateMachineInstance alloc] initWithStateMachine: stateMachine];
 }
 
+- (RiveStateMachineInput *)_convertInput:(const rive::StateMachineInput *)input{
+    if (input->is<rive::StateMachineBool>()){
+        return [[RiveStateMachineBoolInput alloc] initWithStateMachineInput: input];
+    }
+    else if (input->is<rive::StateMachineNumber>()){
+        return [[RiveStateMachineNumberInput alloc] initWithStateMachineInput: input];
+    }
+    else if (input->is<rive::StateMachineTrigger>()){
+        return [[RiveStateMachineTriggerInput alloc] initWithStateMachineInput: input];
+    }
+    else {
+        @throw [[RiveException alloc] initWithName:@"UnkownInput" reason: @"Unknown State Machine Input" userInfo:nil];
+    }
+}
+
+// Creates a new instance of this state machine
+- (RiveStateMachineInput *)inputFromIndex:(NSInteger)index {
+    if (index >= [self inputCount]) {
+        @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No Input found at index %ld.", index] userInfo:nil];
+    }
+    return [self _convertInput: stateMachine->input(index) ];
+}
+
+// Creates a new instance of this state machine
+- (RiveStateMachineInput *)inputFromName:(NSString*)name {
+    
+    std::string stdName = std::string([name UTF8String]);
+    const rive::StateMachineInput *stateMachineInput = stateMachine->input(stdName);
+    if (stateMachineInput == nullptr) {
+        @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No State Machine Input found with name %@.", name] userInfo:nil];
+    } else {
+        return [self _convertInput: stateMachineInput];
+    }
+}
+
+- (NSArray *)inputNames{
+    NSMutableArray *inputNames = [NSMutableArray array];
+    
+    for (NSUInteger i=0; i<[self inputCount]; i++){
+        [inputNames addObject:[[self inputFromIndex: i] name]];
+    }
+    return inputNames;
+}
+
 @end
 
 /*
@@ -675,6 +731,76 @@
 
 - (void) setValue:(float)newValue {
     instance->value(newValue);
+}
+
+@end
+
+
+/*
+ * RiveStateMachineInput
+ */
+@implementation RiveStateMachineInput {
+     const rive::StateMachineInput *instance;
+}
+
+- (const rive::StateMachineInput *)getInstance {
+    return instance;
+}
+
+// Creates a new RiveSMINumber from a cpp SMINumber
+- (instancetype)initWithStateMachineInput:(const rive::StateMachineInput *)stateMachineInput {
+    if (self = [super init]) {
+        instance = stateMachineInput;
+        return self;
+    } else {
+        return nil;
+    }
+}
+
+- (bool)isBoolean {
+    return instance->is<rive::StateMachineBool>();
+}
+
+- (bool)isTrigger{
+    return instance->is<rive::StateMachineTrigger>();
+}
+
+- (bool)isNumber{
+    return instance->is<rive::StateMachineNumber>();
+};
+
+- (NSString *)name{
+    std::string str = ((const rive::StateMachineInput *)instance)->name();
+    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+}
+
+@end
+
+/*
+ * RiveStateMachineInput
+ */
+@implementation RiveStateMachineBoolInput
+
+- (bool)value {
+    return ((const rive::StateMachineBool *)[self getInstance])->value();
+}
+
+@end
+ 
+/*
+ * RiveStateMachineInput
+ */
+@implementation RiveStateMachineTriggerInput
+
+@end
+ 
+/*
+ * RiveStateMachineInput
+ */
+@implementation RiveStateMachineNumberInput
+
+- (float)value {
+    return ((const rive::StateMachineNumber*)[self getInstance])->value();
 }
 
 @end

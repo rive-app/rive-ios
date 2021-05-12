@@ -26,6 +26,7 @@
 		04BE541C264A90D600427B39 /* RiveAnimationLoadTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE541B264A90D600427B39 /* RiveAnimationLoadTest.mm */; };
 		04BE541E264AC7A600427B39 /* RiveArtboardLoadTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE541D264AC7A600427B39 /* RiveArtboardLoadTest.mm */; };
 		04BE5420264ACFC200427B39 /* RiveStateMachineLoadTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE541F264ACFC200427B39 /* RiveStateMachineLoadTest.mm */; };
+		04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
@@ -340,6 +341,7 @@
 		04BE541B264A90D600427B39 /* RiveAnimationLoadTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveAnimationLoadTest.mm; sourceTree = "<group>"; };
 		04BE541D264AC7A600427B39 /* RiveArtboardLoadTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveArtboardLoadTest.mm; sourceTree = "<group>"; };
 		04BE541F264ACFC200427B39 /* RiveStateMachineLoadTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveStateMachineLoadTest.mm; sourceTree = "<group>"; };
+		04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveStateMachineConfigurationTest.mm; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
@@ -929,6 +931,7 @@
 				04BE541B264A90D600427B39 /* RiveAnimationLoadTest.mm */,
 				04BE541D264AC7A600427B39 /* RiveArtboardLoadTest.mm */,
 				04BE541F264ACFC200427B39 /* RiveStateMachineLoadTest.mm */,
+				04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1784,6 +1787,7 @@
 			files = (
 				04BE5420264ACFC200427B39 /* RiveStateMachineLoadTest.mm in Sources */,
 				04BE541E264AC7A600427B39 /* RiveArtboardLoadTest.mm in Sources */,
+				04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */,
 				04BE541C264A90D600427B39 /* RiveAnimationLoadTest.mm in Sources */,
 				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */,
 				04BE5413264943BB00427B39 /* util.mm in Sources */,
