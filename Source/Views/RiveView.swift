@@ -44,25 +44,23 @@ public class RiveView: UIView {
     private var eventQueue = EventQueue()
     
     private var _fit = Fit.Contain
-    
     open var fit: Fit {
         set {
             _fit = newValue
             // Advance the artboard if there's one so that Rive redraws with the new fit
             // TODO: this does nothing when animations are paused as they're skipped for drawing
-            artboard?.advance(by: 0)
+            _artboard?.advance(by: 0)
         }
         get { return _fit }
     }
     
     private var _alignment = Alignment.Center
-    
     open var alignment: Alignment {
         set {
             _alignment = newValue
             // Advance the artboard if there's one so that Rive redraws with the new alignment
             // TODO: this does nothing when animations are paused as they're skipped for drawing
-            artboard?.advance(by: 0)
+            _artboard?.advance(by: 0)
         }
         get { return _alignment }
     }
@@ -70,21 +68,13 @@ public class RiveView: UIView {
     var isPlaying: Bool {
         get { return !playingAnimations.isEmpty || !playingStateMachines.isEmpty }
     }
-    
-    open var playback: Playback {
-        get { return isPlaying ? Playback.play : Playback.pause }
-        set {
-            if newValue == Playback.play {
-                play()
-            } else {
-                pause()
-            }
-        }
-    }
-    
+
     var riveFile: RiveFile?
     
-    var artboard: RiveArtboard?
+    private var _artboard: RiveArtboard?
+    open var artboard: RiveArtboard? {
+        get { return _artboard }
+    }
     
     var animations: [RiveLinearAnimationInstance] = []
     var playingAnimations: Set<RiveLinearAnimationInstance> = []
@@ -104,6 +94,7 @@ public class RiveView: UIView {
         fit: Fit = Fit.Contain,
         alignment: Alignment = Alignment.Center,
         autoplay: Bool = true,
+        artboard: String? = nil,
         loopDelegate: LoopDelegate? = nil,
         playDelegate: PlayDelegate? = nil,
         pauseDelegate: PauseDelegate? = nil
@@ -113,7 +104,8 @@ public class RiveView: UIView {
         self.alignment = alignment
         self.loopDelegate = loopDelegate
         self.playDelegate = playDelegate
-        self.configure(withRiveFile: riveFile, andAutoPlay: autoplay)
+        self.pauseDelegate = pauseDelegate
+        self.configure(riveFile, andArtboard: artboard, andAutoPlay: autoplay)
     }
     
     public init() {
@@ -137,7 +129,7 @@ public class RiveView: UIView {
      * Updates the artboard and layout options
      */
     open func configure(
-        withRiveFile riveFile: RiveFile,
+        _ riveFile: RiveFile,
         andArtboard artboard: String?=nil,
         andAnimation animation: String?=nil,
         andStateMachine stateMachine: String?=nil,
@@ -156,12 +148,12 @@ public class RiveView: UIView {
         self.autoPlay = autoPlay
         
         if let artboardName = artboard {
-            self.artboard = riveFile.artboard(fromName:artboardName)
+            self._artboard = riveFile.artboard(fromName:artboardName)
         }else {
-            self.artboard = riveFile.artboard()
+            self._artboard = riveFile.artboard()
         }
         
-        guard let artboard = self.artboard else {
+        guard let artboard = self._artboard else {
             fatalError("No default artboard exists")
         }
         
@@ -191,7 +183,7 @@ public class RiveView: UIView {
      * Creates a Rive renderer and applies the currently animating artboard to it
      */
     override public func draw(_ rect: CGRect) {
-        guard let context = UIGraphicsGetCurrentContext(), let artboard = self.artboard else {
+        guard let context = UIGraphicsGetCurrentContext(), let artboard = self._artboard else {
             return
         }
          let renderer = RiveRenderer(context: context);
@@ -232,7 +224,7 @@ public class RiveView: UIView {
         stopTimer()
         if let riveFile = self.riveFile {
             // TODO: this is totally not enough to reset the file. i guess its because the file's artboard is already changed.
-            configure(withRiveFile: riveFile, andAutoPlay: autoPlay)
+            configure(riveFile, andAutoPlay: autoPlay)
         }
     }
     
@@ -261,7 +253,7 @@ public class RiveView: UIView {
     }
     
     func advance(delta:Double) {
-        guard let artboard = artboard else {
+        guard let artboard = _artboard else {
             return
         }
         
@@ -305,7 +297,7 @@ public class RiveView: UIView {
         loop: Loop = .loopAuto,
         direction: Direction = .directionAuto
     ) {
-        guard let guardedArtboard=artboard else {
+        guard let guardedArtboard=_artboard else {
             return;
         }
         
@@ -348,7 +340,7 @@ public class RiveView: UIView {
     ) -> [RiveStateMachineInstance]{
         let stateMachineInstances = _stateMachines(animationName: animationName)
         if (stateMachineInstances.isEmpty){
-            guard let guardedArtboard=artboard else {
+            guard let guardedArtboard=_artboard else {
                 return []
             }
             let stateMachineInstance = guardedArtboard.stateMachine(fromName: animationName).instance()
@@ -378,7 +370,7 @@ public class RiveView: UIView {
                 )
             }
             if (animationInstances.isEmpty) {
-                guard let guardedArtboard=artboard else {
+                guard let guardedArtboard=_artboard else {
                     return
                 }
                 let animationInstance = guardedArtboard.animation(fromName:animationName).instance()
@@ -491,6 +483,32 @@ public class RiveView: UIView {
             _play(stateMachine)
         }
         runTimer()
+    }
+    
+    /// Returns a list of artboard names in the rive file
+    /// - Returns a list of artboard names
+    open func artboardNames() -> [String] {
+        if let names = riveFile?.artboardNames() {
+            return names as! [String]
+        } else {
+            return []
+        }
+    }
+    
+    /// Returns a list of animation names for the active artboard
+    /// - Returns a list of animation names
+    open func animationNames() -> [String] {
+        if let names = _artboard?.animationNames() {
+            return names as! [String]
+        } else {
+            return []
+        }
+    }
+    
+    /// Returns true if the active artboard has the specified name
+    /// - Parameter name: the artboard name to check
+    open func isArtboard(name: String) -> Bool {
+        return _artboard?.name() == name
     }
 
 }

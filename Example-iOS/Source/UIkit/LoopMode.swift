@@ -99,7 +99,7 @@ class LoopModeController: UIViewController {
         }
         
         loopModeView.riveView.configure(
-            withRiveFile: getRiveFile(resourceName: loopResourceName),
+            getRiveFile(resourceName: loopResourceName),
             andAutoPlay: false
         )
         
@@ -108,7 +108,7 @@ class LoopModeController: UIViewController {
             
             // TODO: just calling reset on an existing file is really not so hot.
             loopModeView.riveView.configure(
-                withRiveFile: getRiveFile(resourceName: self.loopResourceName),
+                getRiveFile(resourceName: self.loopResourceName),
                 andAutoPlay: false
             )
         }

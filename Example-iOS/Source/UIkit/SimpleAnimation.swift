@@ -19,6 +19,6 @@ class SimpleAnimationViewController: UIViewController {
         // Wire up an instance of RiveView to the controller
         let view = RiveView()
         self.view = view
-        (self.view! as! RiveView).configure(withRiveFile: getRiveFile(resourceName: resourceName))
+        (self.view! as! RiveView).configure(getRiveFile(resourceName: resourceName))
     }
 }

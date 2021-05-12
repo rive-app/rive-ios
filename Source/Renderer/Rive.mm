@@ -223,7 +223,7 @@
     return riveFile->artboardCount();
 }
 
-- (RiveArtboard *)artboardFromIndex:(NSInteger) index {
+- (RiveArtboard *)artboardFromIndex:(NSInteger)index {
     if (index >= [self artboardCount]) {
         @throw [[RiveException alloc] initWithName:@"NoArtboardFound" reason:[NSString stringWithFormat: @"No Artboard Found at index %ld.", index] userInfo:nil];
     }
@@ -231,7 +231,7 @@
             initWithArtboard: reinterpret_cast<rive::Artboard *>(riveFile->artboard(index))];
 }
 
-- (RiveArtboard *)artboardFromName:(NSString *) name {
+- (RiveArtboard *)artboardFromName:(NSString *)name {
     std::string stdName = std::string([name UTF8String]);
     rive::Artboard *artboard = riveFile->artboard(stdName);
     if (artboard == nullptr) {
@@ -241,11 +241,12 @@
     }
 }
 
-- (NSArray *)artboardNames{
+- (NSArray *)artboardNames {
     NSMutableArray *artboardNames = [NSMutableArray array];
     
-    for (NSUInteger i=0; i<[self artboardCount]; i++){
-        [artboardNames addObject:[[self artboardFromIndex: i] name]];
+    for (NSUInteger i=0; i<[self artboardCount]; i++) {
+        NSString* name = [[self artboardFromIndex: i] name];
+        [artboardNames addObject:name];
     }
     return artboardNames;
 }
@@ -359,7 +360,8 @@
 }
 
 - (NSString *)name {
-    return [NSString stringWithUTF8String:_artboard->name().c_str()];
+    std::string str = _artboard->name();
+    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
 - (CGRect)bounds {
