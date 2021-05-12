@@ -196,6 +196,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (NSInteger)workEnd;
 - (NSInteger)duration;
 - (NSInteger)effectiveDuration;
+- (float)effectiveDurationInSeconds;
 - (float)endTime;
 - (NSInteger)fps;
 - (int)loop;

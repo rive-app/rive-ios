@@ -432,7 +432,10 @@
     }else {
         return self.workEnd - self.workStart;
     }
-    
+}
+
+- (float)effectiveDurationInSeconds {
+    return [self effectiveDuration] / [self fps];
 }
 
 - (float)endTime {

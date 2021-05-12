@@ -28,6 +28,7 @@
 		04BE5420264ACFC200427B39 /* RiveStateMachineLoadTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE541F264ACFC200427B39 /* RiveStateMachineLoadTest.mm */; };
 		04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */; };
 		04BE5427264C02AA00427B39 /* StateMachineInstanceTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5426264C02AA00427B39 /* StateMachineInstanceTest.mm */; };
+		04BE542D264C1A3300427B39 /* RiveDelegatesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
@@ -344,6 +345,7 @@
 		04BE541F264ACFC200427B39 /* RiveStateMachineLoadTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveStateMachineLoadTest.mm; sourceTree = "<group>"; };
 		04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveStateMachineConfigurationTest.mm; sourceTree = "<group>"; };
 		04BE5426264C02AA00427B39 /* StateMachineInstanceTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = StateMachineInstanceTest.mm; sourceTree = "<group>"; };
+		04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveDelegatesTest.swift; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
@@ -935,6 +937,7 @@
 				04BE541F264ACFC200427B39 /* RiveStateMachineLoadTest.mm */,
 				04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */,
 				04BE5426264C02AA00427B39 /* StateMachineInstanceTest.mm */,
+				04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1638,6 +1641,7 @@
 					};
 					C9C73ED924FC478900EF9516 = {
 						CreatedOnToolsVersion = 11.6;
+						LastSwiftMigration = 1250;
 					};
 				};
 			};
@@ -1790,6 +1794,7 @@
 			files = (
 				04BE5420264ACFC200427B39 /* RiveStateMachineLoadTest.mm in Sources */,
 				04BE541E264AC7A600427B39 /* RiveArtboardLoadTest.mm in Sources */,
+				04BE542D264C1A3300427B39 /* RiveDelegatesTest.swift in Sources */,
 				04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */,
 				04BE541C264A90D600427B39 /* RiveAnimationLoadTest.mm in Sources */,
 				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */,
@@ -2000,6 +2005,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2009,6 +2015,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -2017,6 +2025,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2026,6 +2035,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
