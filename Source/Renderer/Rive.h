@@ -6,8 +6,13 @@
 //  Copyright © 2020 Rive. All rights reserved.
 //
 
+
+#ifndef rive_h
+#define rive_h
+
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -69,6 +74,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 @class RiveSMITrigger;
 @class RiveSMINumber;
 @class RiveStateMachineInput;
+@class RiveLayerState;
 
 /*
  * RiveStateMachineInstance
@@ -85,6 +91,9 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (NSInteger)inputCount;
 - (RiveSMIInput *)inputFromIndex:(NSInteger)index;
 - (RiveSMIInput *)inputFromName:(NSString*)name;
+- (NSInteger)stateChangedCount;
+- (RiveLayerState *)stateChangedFromIndex:(NSInteger)index;
+- (NSArray *)stateChanges;
 
 @end
 
@@ -189,7 +198,6 @@ typedef NS_ENUM(NSInteger, Alignment) {
  * RiveLinearAnimation
  */
 @interface RiveLinearAnimation : NSObject
-
 - (NSString *)name;
 - (RiveLinearAnimationInstance *)instance;
 - (NSInteger)workStart;
@@ -267,3 +275,6 @@ typedef NS_ENUM(NSInteger, Alignment) {
 @end
 
 NS_ASSUME_NONNULL_END
+
+
+#endif /* rive_h */

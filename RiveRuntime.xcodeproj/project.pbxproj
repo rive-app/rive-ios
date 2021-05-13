@@ -29,6 +29,9 @@
 		04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */; };
 		04BE5427264C02AA00427B39 /* StateMachineInstanceTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5426264C02AA00427B39 /* StateMachineInstanceTest.mm */; };
 		04BE542D264C1A3300427B39 /* RiveDelegatesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */; };
+		04BE5430264D1F4100427B39 /* LayerState.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE542F264D1F4100427B39 /* LayerState.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		04BE5434264D267900427B39 /* LayerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5431264D243D00427B39 /* LayerState.mm */; };
+		04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
@@ -346,6 +349,9 @@
 		04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveStateMachineConfigurationTest.mm; sourceTree = "<group>"; };
 		04BE5426264C02AA00427B39 /* StateMachineInstanceTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = StateMachineInstanceTest.mm; sourceTree = "<group>"; };
 		04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveDelegatesTest.swift; sourceTree = "<group>"; };
+		04BE542F264D1F4100427B39 /* LayerState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayerState.h; sourceTree = "<group>"; };
+		04BE5431264D243D00427B39 /* LayerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LayerState.mm; sourceTree = "<group>"; };
+		04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RivePrivateHeaders.h; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
@@ -879,6 +885,9 @@
 				C9C741F324FC510200EF9516 /* Rive.mm */,
 				C9601F29250C25830032AA07 /* RiveRenderer.hpp */,
 				C9601F2A250C25930032AA07 /* RiveRenderer.mm */,
+				04BE542F264D1F4100427B39 /* LayerState.h */,
+				04BE5431264D243D00427B39 /* LayerState.mm */,
+				04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -1395,6 +1404,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04BE5430264D1F4100427B39 /* LayerState.h in Headers */,
 				C9601F6C251004780032AA07 /* color.hpp in Headers */,
 				C9BD38F5263B5E4000696C37 /* transition_number_condition.hpp in Headers */,
 				C9BD38ED263B5E4000696C37 /* state_machine.hpp in Headers */,
@@ -1404,6 +1414,7 @@
 				C9601F8E251004780032AA07 /* solid_color.hpp in Headers */,
 				C9C741DF24FC4F0500EF9516 /* artboard.hpp in Headers */,
 				C9601F7F251004780032AA07 /* linear_gradient.hpp in Headers */,
+				04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */,
 				C9C741B324FC4F0500EF9516 /* linear_animation.hpp in Headers */,
 				C9BD38CB263B5E0D00696C37 /* state_machine_importer.hpp in Headers */,
 				C9C741E524FC4F0500EF9516 /* skin.hpp in Headers */,
@@ -1699,6 +1710,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
 				C9C7414124FC4F0500EF9516 /* keyframe_color.cpp in Sources */,
 				C9C7414F24FC4F0500EF9516 /* radial_gradient.cpp in Sources */,
 				C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */,

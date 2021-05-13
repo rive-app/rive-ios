@@ -35,7 +35,7 @@ func getRiveFile(resourceName: String, resourceExt: String=".riv") -> RiveFile {
     }
 }
 
-class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate {
+class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, StateChangeDelegate {
     var plays = [String]()
     var pauses = [String]()
     var stops = [String]()
@@ -56,6 +56,10 @@ class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate {
     
     func stop(_ animationName: String) {
         stops.append(animationName)
+    }
+    
+    func stateChange(_ stateName: String) {
+        states.append(stateName)
     }
     
     
@@ -213,5 +217,86 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.pauses.count, 0)
         XCTAssertEqual(delegate.stops.count, 0)
     }
+    
+    func testStateMachineLayerStates(){
+        let delegate = MrDelegate()
+        let view = RiveView.init(
+            riveFile: getRiveFile(resourceName:"what_a_state"),
+            stateMachine: "State Machine 2",
+            stateChangeDelegate: delegate
+        )
+    
+        view.advance(delta:0.1)
+        XCTAssertEqual(delegate.states.count, 1)
+        XCTAssertEqual(delegate.states[0], "go right")
+        view.advance(delta:1.1)
+        XCTAssertEqual(delegate.states.count, 2)
+        XCTAssertEqual(delegate.states[1], "ExitState")
+    }
+    
+    func testStateMachineLayerStatesComplex(){
+        let delegate = MrDelegate()
+        let view = RiveView.init(
+            riveFile: getRiveFile(resourceName:"what_a_state"),
+            stateMachine: "State Machine 1",
+            stateChangeDelegate: delegate
+        )
+    
+        view.advance(delta:0.0)
+        XCTAssertEqual(delegate.states.count, 0)
+        
+        // lets just start, expect 1 change.
+        view.fireState(stateMachineName: "State Machine 1", inputName: "right")
+        // TODO: looks like we got a bit of a bug here. if we do not call this advance,
+        // the first animation doesnt seem to get the delta applied. i think its all because of
+        // how the 
+        view.advance(delta:0.0)
+        view.advance(delta:0.4)
+        XCTAssertEqual(delegate.states.count, 1)
+        XCTAssertEqual(delegate.states[0], "go right")
+        delegate.states.removeAll()
+        
+        
+        // should be in same animation still. no state change
+        view.advance(delta:0.4)
+        XCTAssertEqual(0, delegate.states.count)
+        XCTAssertEqual(true, view.isPlaying)
 
+        // animation came to an end inside this time period, this still means no state change
+        view.advance(delta:0.4)
+        XCTAssertEqual(false, view.isPlaying)
+        XCTAssertEqual(0, delegate.states.count)
+
+        // animation is just kinda stuck there. no change no happening.
+        view.advance(delta:0.4)
+        XCTAssertEqual(false, view.isPlaying)
+        XCTAssertEqual(0, delegate.states.count)
+
+        // ok lets change thigns up again.
+        view.fireState(stateMachineName: "State Machine 1", inputName: "change")
+        view.advance(delta:0.0)
+        view.advance(delta:0.4)
+        XCTAssertEqual(true, view.isPlaying)
+        XCTAssertEqual(1, delegate.states.count)
+        
+        XCTAssertEqual("change!", delegate.states[0])
+        delegate.states.removeAll()
+
+        // as before lets advance inside the animation -> no change
+        view.advance(delta:0.4)
+        XCTAssertEqual(true, view.isPlaying)
+        XCTAssertEqual(0, delegate.states.count)
+
+        // as before lets advance beyond the end of the animaiton, in this case change to exit!
+        view.advance(delta:0.4)
+        XCTAssertEqual(false, view.isPlaying)
+        XCTAssertEqual(1, delegate.states.count)
+        XCTAssertEqual("ExitState", delegate.states[0])
+        delegate.states.removeAll()
+
+        // chill on exit. no change.
+        view.advance(delta:0.4)
+        XCTAssertEqual(false, view.isPlaying)
+        XCTAssertEqual(0, delegate.states.count)
+    }
 }

@@ -42,6 +42,11 @@ public protocol InputsDelegate: AnyObject {
     func inputs(_ inputs: [StateMachineInput])
 }
 
+// Delegate for new input states
+public protocol StateChangeDelegate: AnyObject {
+    func stateChange(_ stateName: String)
+}
+
 /// Playback states for a Rive file
 public enum Playback {
     case play
@@ -78,8 +83,10 @@ public class RiveView: UIView {
         get { return _alignment }
     }
     
-    var isPlaying: Bool {
-        get { return !playingAnimations.isEmpty || !playingStateMachines.isEmpty }
+    open var isPlaying: Bool {
+        get {
+            return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
+        }
     }
 
     var riveFile: RiveFile?
@@ -103,6 +110,7 @@ public class RiveView: UIView {
     public weak var pauseDelegate: PauseDelegate?
     public weak var stopDelegate: StopDelegate?
     public weak var inputsDelegate: InputsDelegate?
+    public weak var stateChangeDelegate: StateChangeDelegate?
     
     public init(
         riveFile: RiveFile,
@@ -110,11 +118,14 @@ public class RiveView: UIView {
         alignment: Alignment = Alignment.Center,
         autoplay: Bool = true,
         artboard: String? = nil,
+        animation: String? = nil,
+        stateMachine: String? = nil,
         loopDelegate: LoopDelegate? = nil,
         playDelegate: PlayDelegate? = nil,
         pauseDelegate: PauseDelegate? = nil,
         stopDelegate: StopDelegate? = nil,
-        inputsDelegate: InputsDelegate? = nil
+        inputsDelegate: InputsDelegate? = nil,
+        stateChangeDelegate: StateChangeDelegate? = nil
     ) {
         super.init(frame: .zero)
         self.fit = fit
@@ -124,7 +135,8 @@ public class RiveView: UIView {
         self.pauseDelegate = pauseDelegate
         self.stopDelegate = stopDelegate
         self.inputsDelegate = inputsDelegate
-        self.configure(riveFile, andArtboard: artboard, andAutoPlay: autoplay)
+        self.stateChangeDelegate = stateChangeDelegate
+        self.configure(riveFile, andArtboard: artboard, andAnimation:animation, andStateMachine: stateMachine, andAutoPlay: autoplay)
     }
     
     public init() {
@@ -297,8 +309,12 @@ public class RiveView: UIView {
             if playingStateMachines.contains(stateMachine) {
                 let stillPlaying = stateMachine.advance(by: delta)
                 stateMachine.apply(to: artboard)
+                
+                stateMachine.stateChanges().forEach{
+                    stateChangeName in stateChangeDelegate?.stateChange(stateChangeName as! String)}
+                
                 if !stillPlaying {
-                    playingStateMachines.remove(stateMachine)
+                    _pause(stateMachine)
                 }
             }
         }
