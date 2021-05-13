@@ -166,6 +166,7 @@ public class RiveView: UIView {
         andStateMachine stateMachine: String?=nil,
         andAutoPlay autoPlay: Bool=true
     ) {
+        clear()
         // Testing stuff
         NotificationCenter.default.addObserver(self, selector: #selector(animationWillEnterForeground),
                                                name: UIApplication.willEnterForegroundNotification, object: nil)

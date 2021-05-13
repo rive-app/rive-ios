@@ -32,6 +32,7 @@
 		042C88EC2644447500E7DBB2 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
 		04A8F6C126452E31002C909A /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		04A8F6C526454711002C909A /* LoopMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A8F6C426454711002C909A /* LoopMode.swift */; };
+		04BE5438264D604500427B39 /* iosPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5437264D604500427B39 /* iosPlayer.swift */; };
 		04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C4C83D2646FE410047E614 /* StateMachine.swift */; };
 		C9A84F38264495600014D8E0 /* ExampleUIRiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F37264495600014D8E0 /* ExampleUIRiveView.swift */; };
 		C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */; };
@@ -101,6 +102,7 @@
 		042C88DA2644447500E7DBB2 /* vader.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = vader.riv; sourceTree = "<group>"; };
 		04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RiveRuntime.xcodeproj; path = ../RiveRuntime.xcodeproj; sourceTree = "<group>"; };
 		04A8F6C426454711002C909A /* LoopMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopMode.swift; sourceTree = "<group>"; };
+		04BE5437264D604500427B39 /* iosPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosPlayer.swift; sourceTree = "<group>"; };
 		04C4C83D2646FE410047E614 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		C9A84F37264495600014D8E0 /* ExampleUIRiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleUIRiveView.swift; sourceTree = "<group>"; };
 		C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesViewController.swift; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 				C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */,
 				04A8F6C426454711002C909A /* LoopMode.swift */,
 				04C4C83D2646FE410047E614 /* StateMachine.swift */,
+				04BE5437264D604500427B39 /* iosPlayer.swift */,
 			);
 			path = UIkit;
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 				04A8F6C526454711002C909A /* LoopMode.swift in Sources */,
 				C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */,
 				04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */,
+				04BE5438264D604500427B39 /* iosPlayer.swift in Sources */,
 				C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */,
 				042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */,
 				C9A84F602644AB6B0014D8E0 /* RiveViewWrapper.swift in Sources */,
