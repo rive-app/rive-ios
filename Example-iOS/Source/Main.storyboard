@@ -69,13 +69,21 @@
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrC-Ng-Q2K">
                                         <rect key="frame" x="0.0" y="191" width="414" height="30"/>
-                                        <state key="normal" title="Simple SwiftUI Example"/>
+                                        <state key="normal" title="Animation SwiftUI"/>
                                         <connections>
                                             <segue destination="w39-2n-FCH" kind="presentation" destinationCreationSelector="hostingAction:" id="SeF-el-OxU"/>
                                         </connections>
                                     </button>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5d-hg-cnK">
+                                <rect key="frame" x="0.0" y="317" width="414" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="State Machine SwiftUI"/>
+                                <connections>
+                                    <segue destination="yNC-ze-bA4" kind="presentation" destinationCreationSelector="hostingActionStateMachine:" id="9dn-S5-TjE"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -588,6 +596,14 @@
             </objects>
             <point key="canvasLocation" x="1324.6376811594205" y="1129.6875"/>
         </scene>
+        <!--Hosting Controller-->
+        <scene sceneID="FCb-Pg-8ib">
+            <objects>
+                <hostingController id="yNC-ze-bA4" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SUL-R1-Glq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2829" y="978"/>
+        </scene>
         <!--Multiple Animations-->
         <scene sceneID="RWJ-v9-IHm">
             <objects>
@@ -773,7 +789,7 @@
                 </hostingController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tzM-Rx-Bel" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3603" y="555"/>
+            <point key="canvasLocation" x="3565" y="553"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Vw7-FC-sqO">
