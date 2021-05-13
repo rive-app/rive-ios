@@ -19,6 +19,9 @@ public protocol LoopDelegate: AnyObject {
 // signature for a play action delegate function
 public typealias PlaybackAction = ((String) -> Void)?
 
+// signature for inputs action delegate function
+public typealias InputsAction = (([StateMachineInput]) -> Void)?
+
 // Delegate for handling play action
 public protocol PlayDelegate: AnyObject {
     func play(_ animationName: String)
@@ -29,9 +32,14 @@ public protocol PauseDelegate: AnyObject {
     func pause(_ animationName: String)
 }
 
-// Delegate for handling pause action
+// Delegate for handling stop action
 public protocol StopDelegate: AnyObject {
     func stop(_ animationName: String)
+}
+
+// Delegate for new input states
+public protocol InputsDelegate: AnyObject {
+    func inputs(_ inputs: [StateMachineInput])
 }
 
 /// Playback states for a Rive file
@@ -94,6 +102,7 @@ public class RiveView: UIView {
     public weak var playDelegate: PlayDelegate?
     public weak var pauseDelegate: PauseDelegate?
     public weak var stopDelegate: StopDelegate?
+    public weak var inputsDelegate: InputsDelegate?
     
     public init(
         riveFile: RiveFile,
@@ -104,7 +113,8 @@ public class RiveView: UIView {
         loopDelegate: LoopDelegate? = nil,
         playDelegate: PlayDelegate? = nil,
         pauseDelegate: PauseDelegate? = nil,
-        stopDelegate: StopDelegate? = nil
+        stopDelegate: StopDelegate? = nil,
+        inputsDelegate: InputsDelegate? = nil
     ) {
         super.init(frame: .zero)
         self.fit = fit
@@ -113,6 +123,7 @@ public class RiveView: UIView {
         self.playDelegate = playDelegate
         self.pauseDelegate = pauseDelegate
         self.stopDelegate = stopDelegate
+        self.inputsDelegate = inputsDelegate
         self.configure(riveFile, andArtboard: artboard, andAutoPlay: autoplay)
     }
     
@@ -235,7 +246,6 @@ public class RiveView: UIView {
             configure(riveFile, andAutoPlay: autoPlay)
         }
     }
-    
     
     // Animates a frame
     @objc func tick() {
@@ -379,6 +389,11 @@ public class RiveView: UIView {
         }
     }
     
+    /// - Returns true if there's an animation with the given name
+    public func isAnimation(name: String) {
+        return
+    }
+    
     private func _getOrCreateStateMachines(
         animationName: String
     ) -> [RiveStateMachineInstance]{
@@ -505,6 +520,7 @@ public class RiveView: UIView {
     
         playingStateMachines.insert(stateMachineInstance)
         eventQueue.add( { self.playDelegate?.play(stateMachineInstance.name()) } )
+        eventQueue.add( { self.inputsDelegate?.inputs(self.stateMachineInputs()) } )
     }
     
     /// Pauses a playing state machine
@@ -579,14 +595,52 @@ public class RiveView: UIView {
         }
     }
     
+    /// Returns a list of state machine names for the active artboard
+    /// - Returns a list of state machine names
+    open func stateMachineNames() -> [String] {
+        if let names = _artboard?.stateMachineNames() {
+            return names as! [String]
+        } else {
+            return []
+        }
+    }
+    
     /// Returns true if the active artboard has the specified name
     /// - Parameter name: the artboard name to check
     open func isArtboard(name: String) -> Bool {
         return _artboard?.name() == name
     }
 
+    /// Returns a list of valid state machine inputs for any instanced state machine
+    /// - Returns a list of valid state machine inputs and thir types
+    open func stateMachineInputs() -> [StateMachineInput] {
+        var inputs: [StateMachineInput] = []
+        stateMachines.forEach({ machine in
+            let inputCount = machine.inputCount()
+            for i in 0...inputCount-1 {
+                let input = machine.input(from: i)
+                var type = StateMachineInputType.boolean
+                if input.isTrigger() { type = StateMachineInputType.trigger }
+                else if input.isNumber() { type = StateMachineInputType.number }
+                inputs.append(StateMachineInput(name: input.name(), type: type))
+            }
+        });
+        return inputs
+    }
 }
 
+/// State machine input types
+public enum StateMachineInputType {
+    case trigger
+    case number
+    case boolean
+}
+
+/// Simple data type for passing state machine input names and their types
+public struct StateMachineInput: Hashable {
+    public let name: String
+    public let type: StateMachineInputType
+}
 
 // Tracks a queue of events that haven't been fired yet. We do this so
 // that we're not calling delegates and modifying state while a view is

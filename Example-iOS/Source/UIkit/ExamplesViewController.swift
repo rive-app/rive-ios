@@ -23,11 +23,26 @@ class ExamplesViewController: UIViewController {
     @IBSegueAction func hostingAction(_ coder: NSCoder) -> UIViewController? {
         return RiveHostingViewController(coder: coder)
     }
+    
+    @IBSegueAction func hostingActionStateMachine(_ coder: NSCoder) -> UIViewController? {
+        return StateMachineHostingViewController(coder: coder)
+    }
 }
 
 class RiveHostingViewController: UIHostingController<ExampleUIRiveView> {
     required init?(coder: NSCoder) {
         super.init(coder: coder, rootView: ExampleUIRiveView())
+        rootView.dismiss = dismiss
+    }
+
+    func dismiss() {
+        dismiss(animated: true, completion: nil)
+    }
+}
+
+class StateMachineHostingViewController: UIHostingController<ExampleStateMachineView> {
+    required init?(coder: NSCoder) {
+        super.init(coder: coder, rootView: ExampleStateMachineView())
         rootView.dismiss = dismiss
     }
 

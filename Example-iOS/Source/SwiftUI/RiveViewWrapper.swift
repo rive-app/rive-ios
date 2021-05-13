@@ -7,12 +7,13 @@ class RiveController: ObservableObject {
     let rive: RiveFile
     
     private let resource: String
-    var artboard: RiveArtboard?
+    @Published var artboard: RiveArtboard?
     @Published var fit: Fit
     @Published var alignment: RiveRuntime.Alignment
     @Published var playback: Playback = Playback.play
     @Published var activeArtboard: String?
     @Published var playAnimation: String?
+    @Published var stateMachineInputs: [StateMachineInput] = []
     
     init(
         _ resource: String,
@@ -40,14 +41,23 @@ class RiveController: ObservableObject {
         self.playback = Playback.pause
     }
     
-    /// Returns a list of animation names
+    /// - Returns a list of animation names
     func artboardNames() -> [String] {
         return rive.artboardNames() as! [String]
     }
     
-    /// Returns a list of animation names
+    /// - Returns a list of animation names
     func animationNames() -> [String] {
         if let names = artboard?.animationNames() {
+            return names as! [String]
+        } else {
+            return []
+        }
+    }
+    
+    /// - Returns a list of inputs for the currently active state machine(s)
+    func stateMachineNames() -> [String] {
+        if let names = artboard?.stateMachineNames() {
             return names as! [String]
         } else {
             return []
@@ -65,6 +75,7 @@ struct UIRiveView: UIViewRepresentable {
     var loopAction: LoopAction = nil
     var playAction: PlaybackAction = nil
     var pauseAction: PlaybackAction = nil
+    var inputsAction: InputsAction = nil
     
     // MARK: - UIViewRepresentable
     
@@ -78,7 +89,8 @@ struct UIRiveView: UIViewRepresentable {
             artboard: controller.activeArtboard,
             loopDelegate: context.coordinator,
             playDelegate: context.coordinator,
-            pauseDelegate: context.coordinator
+            pauseDelegate: context.coordinator,
+            inputsDelegate: context.coordinator
         )
         
         // Update the controller with the correct artboard
@@ -109,7 +121,11 @@ struct UIRiveView: UIViewRepresentable {
         // Start playback of an animation if necessary
         if let playAnimation = controller.playAnimation {
             uiView.pause()
-            uiView.play(animationName: playAnimation)
+            if uiView.animationNames().contains(playAnimation) {
+                uiView.play(animationName: playAnimation)
+            } else if uiView.stateMachineNames().contains(playAnimation) {
+                uiView.play(animationName: playAnimation, isStateMachine: true)
+            }
         } else {
             if controller.playback == .play {
                 uiView.play()
@@ -121,7 +137,7 @@ struct UIRiveView: UIViewRepresentable {
     
     // Constructs a coordinator for managing updating state
     func makeCoordinator() -> Coordinator {
-        Coordinator(controller: controller, loopAction: loopAction, playAction: playAction, pauseAction: pauseAction)
+        Coordinator(controller: controller, loopAction: loopAction, playAction: playAction, pauseAction: pauseAction, inputsAction: inputsAction)
     }
 }
 
@@ -130,19 +146,21 @@ extension UIRiveView {
     // MARK: - Coordinator
     
     // Coordinator between RiveView and UIRiveView
-    class Coordinator: NSObject, LoopDelegate, PlayDelegate, PauseDelegate {
+    class Coordinator: NSObject, LoopDelegate, PlayDelegate, PauseDelegate, InputsDelegate {
         
         private var controller: RiveController
         private var loopAction: LoopAction
         private var playAction: PlaybackAction
         private var pauseAction: PlaybackAction
+        private var inputsAction: InputsAction
         var subscribers: [AnyCancellable] = []
         
-        init(controller: RiveController, loopAction: LoopAction, playAction: PlaybackAction, pauseAction: PlaybackAction) {
+        init(controller: RiveController, loopAction: LoopAction, playAction: PlaybackAction, pauseAction: PlaybackAction, inputsAction: InputsAction) {
+            self.controller = controller
             self.loopAction = loopAction
             self.playAction = playAction
             self.pauseAction = pauseAction
-            self.controller = controller
+            self.inputsAction = inputsAction
             
             // This stuff is all experimental and may get removed
 //            let fitSubscription = controller.$fit.receive(on: RunLoop.main).sink(receiveValue: fitDidChange)
@@ -170,6 +188,11 @@ extension UIRiveView {
         func pause(_ animationName: String) {
             controller.playback = Playback.pause
             pauseAction?(animationName)
+        }
+        
+        func inputs(_ inputs: [StateMachineInput]) {
+            print("Got inputs callback")
+            controller.stateMachineInputs = inputs
         }
     }
 }
