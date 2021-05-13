@@ -388,7 +388,8 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
         }
         
         // Clip the gradient
-        CGContextClip(ctx);
+        if (!CGContextIsPathEmpty(ctx))
+            CGContextClip(ctx);
             
         if (rivePaint->gradientType == RiveGradient::Linear) {
             CGContextDrawLinearGradient(ctx, rivePaint->gradient, rivePaint->gradientStart, rivePaint->gradientEnd,  0x3);
@@ -413,7 +414,8 @@ void RiveRenderer::clipPath(RenderPath* path) {
 //        NSLog(@" --- Renderer::clipPath %@", clipPath);
     const CGPath *clipPath = reinterpret_cast<RiveRenderPath *>(path)->getPath();
     CGContextAddPath(ctx, clipPath);
-    CGContextClip(ctx);
+    if (!CGContextIsPathEmpty(ctx))
+        CGContextClip(ctx);
 }
 
 void RiveRenderer::transform(const Mat2D& transform) {
