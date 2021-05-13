@@ -7,6 +7,8 @@
 //
 
 #import "Rive.h"
+#import "LayerState.h"
+#import "RivePrivateHeaders.h"
 #import "RiveRenderer.hpp"
 
 #import "file.hpp"
@@ -21,85 +23,13 @@
 #import "state_machine_number.hpp"
 #import "state_machine_trigger.hpp"
 #import "state_machine_input_instance.hpp"
+#import "layer_state.hpp"
+#import "exit_state.hpp"
+#import "entry_state.hpp"
+#import "any_state.hpp"
+#import "animation_state.hpp"
 
 @implementation RiveException
-@end
-
-/*
- * RiveStateMachineInstance interface
- */
-@interface RiveStateMachineInstance ()
-- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine;
-@end
-
-/*
- * RiveStateMachine interface
- */
-@interface RiveStateMachine ()
-- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine;
-@end
-
-/*
- * RiveSMIInput interface
- */
-@interface RiveSMIInput ()
-- (instancetype)initWithSMIInput:(const rive::SMIInput *)riveSMIInput;
-@end
-
-/*
- * SMITrigger interface
- */
-@interface RiveSMITrigger ()
-@end
-
-/*
- * SMINumber interface
- */
-@interface RiveSMINumber ()
-@end
-
-/*
- * SMIBool interface
- */
-@interface RiveSMIBool ()
-@end
-
-
-/*
- * RiveStateMachineInput interface
- */
-@interface RiveStateMachineInput ()
-- (instancetype)initWithStateMachineInput:(const rive::StateMachineInput *)riveStateMachineInput;
-@end
-
-/*
- * RiveLinearAnimationInstance interface
- */
-@interface RiveLinearAnimationInstance ()
-- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation;
-@end
-
-/*
- * RiveLinearAnimation interface
- */
-@interface RiveLinearAnimation ()
-- (instancetype) initWithAnimation:(const rive::LinearAnimation *)riveAnimation;
-@end
-
-/*
- * RiveArtboard interface
- */
-@interface RiveArtboard ()
-@property (nonatomic, readonly) rive::Artboard* artboard;
--(instancetype) initWithArtboard:(rive::Artboard *) riveArtboard;
-@end
-
-/*
- * RiveRenderer interface
- */
-@interface RiveRenderer ()
-@property (nonatomic, readonly) rive::Renderer* renderer;
--(rive::Renderer *) renderer;
 @end
 
 /*
@@ -720,6 +650,44 @@
     return inputNames;
 }
 
+- (NSInteger)stateChangedCount{
+    return instance->stateChangedCount();
+}
+
+- (RiveLayerState *)_convertLayerState:(const rive::LayerState *)layerState{
+    if (layerState->is<rive::EntryState>()){
+        return [[RiveEntryState alloc] initWithLayerState: layerState];
+    }
+    else if (layerState->is<rive::AnyState>()){
+        return [[RiveAnyState alloc] initWithLayerState: layerState];
+    }
+    else if (layerState->is<rive::ExitState>()){
+        return [[RiveExitState alloc] initWithLayerState: layerState];
+    }
+    else if (layerState->is<rive::AnimationState>()){
+        return [[RiveAnimationState alloc] initWithLayerState: layerState];
+    }
+    else {
+        @throw [[RiveException alloc] initWithName:@"UnkownLayerState" reason: @"Unknown Layer State" userInfo:nil];
+    }
+}
+
+- (RiveLayerState *)stateChangedFromIndex:(NSInteger)index{
+    const rive::LayerState *layerState = instance->stateChangedByIndex(index);
+    if (layerState == nullptr) {
+        @throw [[RiveException alloc] initWithName:@"NoStateChangeFound" reason:[NSString stringWithFormat: @"No State Changed found at index %lu.", index] userInfo:nil];
+    } else {
+        return [self _convertLayerState: layerState];
+    }
+}
+- (NSArray *)stateChanges{
+    NSMutableArray *inputNames = [NSMutableArray array];
+    
+    for (NSUInteger i=0; i<[self stateChangedCount]; i++){
+        [inputNames addObject:[[self stateChangedFromIndex: i] name]];
+    }
+    return inputNames;
+}
 
 @end
 
