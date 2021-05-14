@@ -628,9 +628,11 @@
                                                     </view>
                                                     <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nJZ-4O-McF">
                                                         <rect key="frame" x="0.0" y="300" width="414" height="216"/>
+                                                        <color key="backgroundColor" systemColor="systemYellowColor"/>
                                                     </pickerView>
                                                     <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NF8-SZ-zV2">
                                                         <rect key="frame" x="0.0" y="516" width="414" height="216"/>
+                                                        <color key="backgroundColor" systemColor="systemGreenColor"/>
                                                     </pickerView>
                                                 </subviews>
                                                 <constraints>
@@ -640,7 +642,6 @@
                                                 </constraints>
                                             </stackView>
                                         </subviews>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstItem="kkV-9t-LxF" firstAttribute="width" secondItem="ivU-mP-rmv" secondAttribute="width" id="HoI-8G-gzu"/>
                                             <constraint firstAttribute="bottom" secondItem="kkV-9t-LxF" secondAttribute="bottom" id="JHo-I8-Ylw"/>
@@ -653,6 +654,7 @@
                                 <constraints>
                                     <constraint firstItem="ivU-mP-rmv" firstAttribute="leading" secondItem="FaC-da-Pqd" secondAttribute="leading" id="YAF-RX-l7X"/>
                                     <constraint firstAttribute="bottom" secondItem="ivU-mP-rmv" secondAttribute="bottom" id="ZGk-TU-OIr"/>
+                                    <constraint firstItem="ivU-mP-rmv" firstAttribute="width" secondItem="FaC-da-Pqd" secondAttribute="width" id="c6e-vf-gFI"/>
                                     <constraint firstItem="ivU-mP-rmv" firstAttribute="top" secondItem="FaC-da-Pqd" secondAttribute="top" id="cBs-Gi-OXM"/>
                                     <constraint firstAttribute="trailing" secondItem="ivU-mP-rmv" secondAttribute="trailing" id="cva-ay-WX7"/>
                                 </constraints>
@@ -900,6 +902,12 @@
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGreenColor">
+            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemYellowColor">
+            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

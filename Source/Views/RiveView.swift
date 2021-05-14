@@ -312,7 +312,7 @@ public class RiveView: UIView {
                 stateMachine.apply(to: artboard)
                 
                 stateMachine.stateChanges().forEach{
-                    stateChangeName in stateChangeDelegate?.stateChange(stateChangeName as! String)}
+                    stateChangeName in stateChangeDelegate?.stateChange(stateChangeName)}
                 
                 if !stillPlaying {
                     _pause(stateMachine)
@@ -596,7 +596,7 @@ public class RiveView: UIView {
     /// - Returns a list of artboard names
     open func artboardNames() -> [String] {
         if let names = riveFile?.artboardNames() {
-            return names as! [String]
+            return names
         } else {
             return []
         }
@@ -606,7 +606,7 @@ public class RiveView: UIView {
     /// - Returns a list of animation names
     open func animationNames() -> [String] {
         if let names = _artboard?.animationNames() {
-            return names as! [String]
+            return names
         } else {
             return []
         }
@@ -616,7 +616,7 @@ public class RiveView: UIView {
     /// - Returns a list of state machine names
     open func stateMachineNames() -> [String] {
         if let names = _artboard?.stateMachineNames() {
-            return names as! [String]
+            return names
         } else {
             return []
         }
