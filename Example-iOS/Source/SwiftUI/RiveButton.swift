@@ -15,7 +15,7 @@ struct RiveButton: View {
     var action: (() -> Void)? = nil
     
     var body: some View {
-        RiveButtonBridge(resource: resource, fit: .cover, play: $play)
+        RiveButtonBridge(resource: resource, fit: .fitCover, play: $play)
             .frame(width: 100, height: 20)
             .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
             .onTapGesture {

@@ -20,7 +20,7 @@ struct RiveSwitch: View {
     var action: ((Bool) -> Void)? = nil
     
     var body: some View {
-        RiveSwitchBridge(resource: resource, fit: .cover, switchToOn: $switchToOn, switchToOff: $switchToOff)
+        RiveSwitchBridge(resource: resource, fit: .fitCover, switchToOn: $switchToOn, switchToOff: $switchToOff)
             .frame(width: 100, height: 50)
             .onTapGesture {
                 switchToOn = false

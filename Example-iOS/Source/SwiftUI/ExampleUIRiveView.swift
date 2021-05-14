@@ -4,7 +4,7 @@ import RiveRuntime
 struct ExampleUIRiveView: View {
     @ObservedObject private var riveController = RiveController(
         "artboard_animations",
-        fit: Fit.cover
+        fit: Fit.fitCover
     )
     @State private var loopCount: Int = 0
     @State private var selection = 1
@@ -50,17 +50,17 @@ struct ExampleUIRiveView: View {
                     if #available(iOS 14.0, *) {
                         Menu {
                             Button {
-                                riveController.fit = .contain
+                                riveController.fit = .fitContain
                             } label: {
                                 Text("Contain")
                             }
                             Button {
-                                riveController.fit = Fit.cover
+                                riveController.fit = .fitCover
                             } label: {
                                 Text("Cover")
                             }
                             Button {
-                                riveController.fit = Fit.fill
+                                riveController.fit = .fitFill
                             } label: {
                                 Text("Fill")
                             }
@@ -70,47 +70,47 @@ struct ExampleUIRiveView: View {
                         }
                         Menu {
                             Button {
-                                riveController.alignment = .topLeft
+                                riveController.alignment = .alignmentTopLeft
                             } label: {
                                 Text("Top Left")
                             }
                             Button {
-                                riveController.alignment = .topCenter
+                                riveController.alignment = .alignmentTopCenter
                             } label: {
                                 Text("Top Center")
                             }
                             Button {
-                                riveController.alignment = .topRight
+                                riveController.alignment = .alignmentTopRight
                             } label: {
                                 Text("Top Right")
                             }
                             Button {
-                                riveController.alignment = .centerLeft
+                                riveController.alignment = .alignmentCenterLeft
                             } label: {
                                 Text("Left")
                             }
                             Button {
-                                riveController.alignment = .center
+                                riveController.alignment = .alignmentCenter
                             } label: {
                                 Text("Center")
                             }
                             Button {
-                                riveController.alignment = .centerRight
+                                riveController.alignment = .alignmentCenterRight
                             } label: {
                                 Text("Right")
                             }
                             Button {
-                                riveController.alignment = .bottomLeft
+                                riveController.alignment = .alignmentBottomLeft
                             } label: {
                                 Text("Bottom Left")
                             }
                             Button {
-                                riveController.alignment = .bottomCenter
+                                riveController.alignment = .alignmentBottomCenter
                             } label: {
                                 Text("Bottom Center")
                             }
                             Button {
-                                riveController.alignment = .bottomRight
+                                riveController.alignment = .alignmentBottomRight
                             } label: {
                                 Text("Bottom Right")
                             }
