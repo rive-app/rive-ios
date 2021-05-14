@@ -17,14 +17,14 @@ class RiveController: ObservableObject {
     
     init(
         _ resource: String,
-        fit: Fit = Fit.Contain,
-        alignment: RiveRuntime.Alignment = RiveRuntime.Alignment.Center,
+        fit: Fit = Fit.contain,
+        alignment: RiveRuntime.Alignment = .center,
         autoplay: Bool = false,
         playAnimation: String? = nil
     ) {
         self.fit = fit
         self.alignment = alignment
-        self.playback = autoplay ? Playback.play : Playback.stop
+        self.playback = autoplay ? .play : .stop
         self.resource = resource
         self.rive = getRiveFile(resourceName: resource)
         self.playAnimation = playAnimation
@@ -32,13 +32,13 @@ class RiveController: ObservableObject {
     
     /// Play animations
     func play() {
-        self.playback = Playback.play
+        self.playback = .play
     }
     
     /// Pause all animations and state machines
     func pause() {
         self.playAnimation = nil
-        self.playback = Playback.pause
+        self.playback = .pause
     }
     
     /// - Returns a list of animation names
@@ -124,6 +124,7 @@ struct UIRiveView: UIViewRepresentable {
             if uiView.animationNames().contains(playAnimation) {
                 uiView.play(animationName: playAnimation)
             } else if uiView.stateMachineNames().contains(playAnimation) {
+                print("3")
                 uiView.play(animationName: playAnimation, isStateMachine: true)
             }
         } else {
@@ -181,12 +182,12 @@ extension UIRiveView {
             }
 
         func play(_ animationName: String) {
-            controller.playback = Playback.play
+            controller.playback = .play
             playAction?(animationName)
         }
         
         func pause(_ animationName: String) {
-            controller.playback = Playback.pause
+            controller.playback = .pause
             pauseAction?(animationName)
         }
         

@@ -44,6 +44,11 @@
 		C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C73EA024FC471E00EF9516 /* Preview Assets.xcassets */; };
 		C9CB2F13264C92D200E7FF0D /* ExampleStateMachineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CB2F12264C92D200E7FF0D /* ExampleStateMachineView.swift */; };
 		C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9CE8265263B90E000F98DDB /* juice_v7.riv */; };
+		C9E04099264DD4F5009ABC7C /* RiveButtonBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E04098264DD4F5009ABC7C /* RiveButtonBridge.swift */; };
+		C9E0409D264DEAA2009ABC7C /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E0409C264DEAA2009ABC7C /* RiveButton.swift */; };
+		C9E0409F264DF1A3009ABC7C /* RiveSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E0409E264DF1A3009ABC7C /* RiveSwitch.swift */; };
+		C9E040A7264DF95C009ABC7C /* RiveSwitchBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E040A6264DF95C009ABC7C /* RiveSwitchBridge.swift */; };
+		C9E040A9264DFCFD009ABC7C /* switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9E040A8264DFCFD009ABC7C /* switch.riv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +121,11 @@
 		C9C73EA524FC471E00EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9CB2F12264C92D200E7FF0D /* ExampleStateMachineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleStateMachineView.swift; sourceTree = "<group>"; };
 		C9CE8265263B90E000F98DDB /* juice_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = juice_v7.riv; sourceTree = "<group>"; };
+		C9E04098264DD4F5009ABC7C /* RiveButtonBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButtonBridge.swift; sourceTree = "<group>"; };
+		C9E0409C264DEAA2009ABC7C /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
+		C9E0409E264DF1A3009ABC7C /* RiveSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitch.swift; sourceTree = "<group>"; };
+		C9E040A6264DF95C009ABC7C /* RiveSwitchBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitchBridge.swift; sourceTree = "<group>"; };
+		C9E040A8264DFCFD009ABC7C /* switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = switch.riv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +180,7 @@
 				042C88D32644447500E7DBB2 /* explorer.riv */,
 				042C88D02644447500E7DBB2 /* f22.riv */,
 				042C88D12644447500E7DBB2 /* flux_capacitor.riv */,
+				C9CE8265263B90E000F98DDB /* juice_v7.riv */,
 				042C88D62644447500E7DBB2 /* loopy.riv */,
 				042C88CD2644447400E7DBB2 /* mascot.riv */,
 				042C88D22644447500E7DBB2 /* neostream.riv */,
@@ -178,11 +189,11 @@
 				042C88CA2644447400E7DBB2 /* pull.riv */,
 				042C88CC2644447400E7DBB2 /* rope.riv */,
 				042C88D82644447500E7DBB2 /* skills.riv */,
+				C9E040A8264DFCFD009ABC7C /* switch.riv */,
 				042C88D52644447500E7DBB2 /* trailblaze.riv */,
 				042C88CB2644447400E7DBB2 /* ui_swipe_left_to_delete.riv */,
 				042C88DA2644447500E7DBB2 /* vader.riv */,
 				042C88C92644447400E7DBB2 /* wacky.riv */,
-				C9CE8265263B90E000F98DDB /* juice_v7.riv */,
 				C9BD3925263B5FC700696C37 /* truck_v7.riv */,
 			);
 			path = Assets;
@@ -194,6 +205,10 @@
 				C9A84F37264495600014D8E0 /* ExampleUIRiveView.swift */,
 				C9A84F5F2644AB6B0014D8E0 /* RiveViewWrapper.swift */,
 				C9CB2F12264C92D200E7FF0D /* ExampleStateMachineView.swift */,
+				C9E04098264DD4F5009ABC7C /* RiveButtonBridge.swift */,
+				C9E0409C264DEAA2009ABC7C /* RiveButton.swift */,
+				C9E0409E264DF1A3009ABC7C /* RiveSwitch.swift */,
+				C9E040A6264DF95C009ABC7C /* RiveSwitchBridge.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -341,6 +356,7 @@
 				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
 				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
+				C9E040A9264DFCFD009ABC7C /* switch.riv in Resources */,
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
 				042C88E12644447500E7DBB2 /* basketball.riv in Resources */,
@@ -366,16 +382,20 @@
 				C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */,
 				C9CB2F13264C92D200E7FF0D /* ExampleStateMachineView.swift in Sources */,
 				042C888E2644230700E7DBB2 /* utility.swift in Sources */,
+				C9E0409F264DF1A3009ABC7C /* RiveSwitch.swift in Sources */,
 				042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */,
+				C9E040A7264DF95C009ABC7C /* RiveSwitchBridge.swift in Sources */,
 				C9A84F38264495600014D8E0 /* ExampleUIRiveView.swift in Sources */,
 				04A8F6C526454711002C909A /* LoopMode.swift in Sources */,
 				C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */,
+				C9E04099264DD4F5009ABC7C /* RiveButtonBridge.swift in Sources */,
 				04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */,
 				04BE5438264D604500427B39 /* iosPlayer.swift in Sources */,
 				C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */,
 				042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */,
 				C9A84F602644AB6B0014D8E0 /* RiveViewWrapper.swift in Sources */,
 				042C88882643DB7100E7DBB2 /* SimpleAnimation.swift in Sources */,
+				C9E0409D264DEAA2009ABC7C /* RiveButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

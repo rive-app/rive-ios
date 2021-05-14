@@ -10,6 +10,39 @@ import SwiftUI
 import RiveRuntime
 
 struct ExampleStateMachineView: View {
+    
+    /// lets UIKit bind to this to trigger dismiss events
+    var dismiss: () -> Void = {}
+    
+    /// Plays or pauses the Rive animation
+    @State var play: Bool = false
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("RiveButton:")
+                RiveButton(resource: "pull") {
+                    print("Button tapped")
+                }
+            }
+            HStack {
+                Text("RiveSwitch:")
+                RiveSwitch(resource: "switch") { on in
+                    print("switch is \(on ? "on" : "off")")
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+
+/*
+
+struct ExampleStateMachineView: View {
     @ObservedObject private var riveController = RiveController(
         "skills",
         fit: Fit.Cover
@@ -99,6 +132,8 @@ struct ExampleStateMachineView: View {
     }
 }
 
+*/
+ 
 struct ExampleStateMachineView_Previews: PreviewProvider {
     static var previews: some View {
         ExampleStateMachineView()

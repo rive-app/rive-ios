@@ -63,25 +63,25 @@
     // Work out the fit
     rive::Fit riveFit;
     switch(fit) {
-        case Fill:
+        case fill:
             riveFit = rive::Fit::fill;
             break;
-        case Contain:
+        case contain:
             riveFit = rive::Fit::contain;
             break;
-        case Cover:
+        case cover:
             riveFit = rive::Fit::cover;
             break;
-        case FitHeight:
+        case fitHeight:
             riveFit = rive::Fit::fitHeight;
             break;
-        case FitWidth:
+        case fitWidth:
             riveFit = rive::Fit::fitWidth;
             break;
-        case ScaleDown:
+        case scaleDown:
             riveFit = rive::Fit::scaleDown;
             break;
-        case None:
+        case none:
             riveFit = rive::Fit::none;
             break;
     }
@@ -89,31 +89,31 @@
     // Work out the alignment
     rive::Alignment riveAlignment = rive::Alignment::center;
     switch(alignment) {
-        case TopLeft:
+        case topLeft:
             riveAlignment = rive::Alignment::topLeft;
             break;
-        case TopCenter:
+        case topCenter:
             riveAlignment = rive::Alignment::topCenter;
             break;
-        case TopRight:
+        case topRight:
             riveAlignment = rive::Alignment::topRight;
             break;
-        case CenterLeft:
+        case centerLeft:
             riveAlignment = rive::Alignment::centerLeft;
             break;
-        case Center:
+        case center:
             riveAlignment = rive::Alignment::center;
             break;
-        case CenterRight:
+        case centerRight:
             riveAlignment = rive::Alignment::centerRight;
             break;
-        case BottomLeft:
+        case bottomLeft:
             riveAlignment = rive::Alignment::bottomLeft;
             break;
-        case BottomCenter:
+        case bottomCenter:
             riveAlignment = rive::Alignment::bottomCenter;
             break;
-        case BottomRight:
+        case bottomRight:
             riveAlignment = rive::Alignment::bottomRight;
             break;
     }

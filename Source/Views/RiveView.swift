@@ -37,7 +37,7 @@ public protocol StopDelegate: AnyObject {
     func stop(_ animationName: String)
 }
 
-// Delegate for new input states
+/// Delegate for reporting changes to available input states
 public protocol InputsDelegate: AnyObject {
     func inputs(_ inputs: [StateMachineInput])
 }
@@ -61,7 +61,7 @@ public class RiveView: UIView {
     // Queue of events that need to be done outside view updates
     private var eventQueue = EventQueue()
     
-    private var _fit = Fit.Contain
+    private var _fit: Fit = .contain
     open var fit: Fit {
         set {
             _fit = newValue
@@ -72,7 +72,7 @@ public class RiveView: UIView {
         get { return _fit }
     }
     
-    private var _alignment = Alignment.Center
+    private var _alignment: Alignment = .center
     open var alignment: Alignment {
         set {
             _alignment = newValue
@@ -114,8 +114,8 @@ public class RiveView: UIView {
     
     public init(
         riveFile: RiveFile,
-        fit: Fit = Fit.Contain,
-        alignment: Alignment = Alignment.Center,
+        fit: Fit = .contain,
+        alignment: Alignment = .center,
         autoplay: Bool = true,
         artboard: String? = nil,
         animation: String? = nil,
@@ -519,12 +519,12 @@ public class RiveView: UIView {
     private func _stop(_ animation: RiveLinearAnimationInstance) {
         let initialCount = animations.count
         // TODO: Better way to do this?
-        animations = animations.filter{ it in
-            return it != animation
-        }
+        animations = animations.filter { $0 != animation }
         playingAnimations.remove(animation)
-        if (initialCount != animations.count){
-            eventQueue.add( { self.stopDelegate?.stop(animation.name()) } )
+        if (initialCount != animations.count) {
+            // eventQueue.add( { self.stopDelegate?.stop(animation.name()) } )
+            // Firing this immediately as if it's the only animation stopping, advance won't get called
+            self.stopDelegate?.stop(animation.name())
         }
     }
     
@@ -671,9 +671,7 @@ class EventQueue {
     }
     
     func fireAll() {
-        events.forEach { event in
-            event()
-        }
+        events.forEach { $0() }
         events.removeAll()
     }
 }

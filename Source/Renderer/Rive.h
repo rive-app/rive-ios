@@ -39,28 +39,28 @@ typedef NS_ENUM(NSInteger, Direction) {
  * Fits
  */
 typedef NS_ENUM(NSInteger, Fit) {
-    Fill,
-    Contain,
-    Cover,
-    FitHeight,
-    FitWidth,
-    ScaleDown,
-    None
+    fill,
+    contain,
+    cover,
+    fitHeight,
+    fitWidth,
+    scaleDown,
+    none
 };
 
 /*
  * Alignments
  */
 typedef NS_ENUM(NSInteger, Alignment) {
-    TopLeft,
-    TopCenter,
-    TopRight,
-    CenterLeft,
-    Center,
-    CenterRight,
-    BottomLeft,
-    BottomCenter,
-    BottomRight
+    topLeft,
+    topCenter,
+    topRight,
+    centerLeft,
+    center,
+    centerRight,
+    bottomLeft,
+    bottomCenter,
+    bottomRight
 };
 
 @interface RiveException : NSException
