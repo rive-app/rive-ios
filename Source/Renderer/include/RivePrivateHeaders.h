@@ -22,6 +22,10 @@
 #import "state_machine_trigger.hpp"
 #import "state_machine_input_instance.hpp"
 #import "layer_state.hpp"
+#import <entry_state.hpp>
+#import <any_state.hpp>
+#import <exit_state.hpp>
+#import <animation_state.hpp>
 
 /*
  * RiveStateMachineInstance interface

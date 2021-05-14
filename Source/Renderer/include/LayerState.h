@@ -12,6 +12,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class RiveLinearAnimation;
 
 /*
@@ -55,5 +57,7 @@
 @interface RiveAnimationState : RiveLayerState
 - (NSString *)name;
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif /* layer_state_h */

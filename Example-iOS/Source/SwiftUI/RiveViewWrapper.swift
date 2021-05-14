@@ -17,8 +17,8 @@ class RiveController: ObservableObject {
     
     init(
         _ resource: String,
-        fit: Fit = Fit.contain,
-        alignment: RiveRuntime.Alignment = .center,
+        fit: Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
         autoplay: Bool = false,
         playAnimation: String? = nil
     ) {

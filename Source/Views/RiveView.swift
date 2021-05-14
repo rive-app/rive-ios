@@ -61,7 +61,7 @@ public class RiveView: UIView {
     // Queue of events that need to be done outside view updates
     private var eventQueue = EventQueue()
     
-    private var _fit: Fit = .contain
+    private var _fit: Fit = .fitContain
     open var fit: Fit {
         set {
             _fit = newValue
@@ -72,7 +72,7 @@ public class RiveView: UIView {
         get { return _fit }
     }
     
-    private var _alignment: Alignment = .center
+    private var _alignment: Alignment = .alignmentCenter
     open var alignment: Alignment {
         set {
             _alignment = newValue
@@ -114,8 +114,8 @@ public class RiveView: UIView {
     
     public init(
         riveFile: RiveFile,
-        fit: Fit = .contain,
-        alignment: Alignment = .center,
+        fit: Fit = .fitContain,
+        alignment: Alignment = .alignmentCenter,
         autoplay: Bool = true,
         artboard: String? = nil,
         animation: String? = nil,

@@ -3,8 +3,8 @@ import RiveRuntime
 
 struct RiveButtonBridge: UIViewRepresentable {
     let resource: String
-    var fit: Fit = .contain
-    var alignment: RiveRuntime.Alignment = .center
+    var fit: Fit = .fitContain
+    var alignment: RiveRuntime.Alignment = .alignmentCenter
     var artboard: String? = nil
     var animation: String? = nil
     
