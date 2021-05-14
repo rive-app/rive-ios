@@ -71,7 +71,7 @@ class IOSPlayerViewController: UIViewController {
         playerView?.riveView.configure(
             riveFile!
         )
-        artboardChoices.choices = riveFile!.artboardNames() as! [String]
+        artboardChoices.choices = riveFile!.artboardNames()
         ArtboardPicker.reloadComponent(0)
         loadAnimations()
     }
@@ -95,10 +95,10 @@ class IOSPlayerViewController: UIViewController {
         
         var animationNames = [String]()
         if (artboardName == nil){
-            animationNames = riveFile?.artboard().animationNames() as! [String]
+            animationNames = riveFile!.artboard().animationNames()
         }
         else {
-            animationNames = riveFile?.artboard(fromName: artboardName!).animationNames() as! [String]
+            animationNames = riveFile!.artboard(fromName: artboardName!).animationNames()
         }
         
         if #available(iOS 14.0, *) {
@@ -121,25 +121,28 @@ class IOSPlayerViewController: UIViewController {
                         UIAction(title: "||", handler: { _ in
                             self.playerView?.riveView?.pause(animationName: name)
                         }))
+                
                 let stop = UIButton(
                     type: .system,
                     primaryAction:
                         UIAction(title: "[]", handler: { _ in
                             self.playerView?.riveView?.stop(animationName: name)
                         }))
-                
+                play.widthAnchor.constraint(equalToConstant: 40).isActive = true
+                pause.widthAnchor.constraint(equalToConstant: 40).isActive = true
+                stop.widthAnchor.constraint(equalToConstant: 40).isActive = true
+
                 
                 let stackView = UIStackView()
                 stackView.translatesAutoresizingMaskIntoConstraints = false
                 stackView.axis = .horizontal
-                stackView.spacing = 16
-                stackView.distribution = .fill
+                stackView.alignment = .leading
+                
                 stackView.addArrangedSubview(label)
                 stackView.addArrangedSubview(play)
                 stackView.addArrangedSubview(pause)
                 stackView.addArrangedSubview(stop)
                 
-    //            stackView.alignment = .fill
                 
                 PlayerStack.addArrangedSubview(stackView)
             })

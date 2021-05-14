@@ -305,6 +305,7 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint) {
     // Apply the blend mode
     if (rivePaint->currentBlendMode != RiveBlendMode::None) {
         switch (rivePaint->currentBlendMode) {
+                
             case RiveBlendMode::SrcOver:
                 CGContextSetBlendMode(ctx, kCGBlendModeNormal);
                 break;

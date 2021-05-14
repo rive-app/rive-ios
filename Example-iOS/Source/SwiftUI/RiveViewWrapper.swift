@@ -43,13 +43,13 @@ class RiveController: ObservableObject {
     
     /// - Returns a list of animation names
     func artboardNames() -> [String] {
-        return rive.artboardNames() as! [String]
+        return rive.artboardNames()
     }
     
     /// - Returns a list of animation names
     func animationNames() -> [String] {
         if let names = artboard?.animationNames() {
-            return names as! [String]
+            return names
         } else {
             return []
         }
@@ -58,7 +58,7 @@ class RiveController: ObservableObject {
     /// - Returns a list of inputs for the currently active state machine(s)
     func stateMachineNames() -> [String] {
         if let names = artboard?.stateMachineNames() {
-            return names as! [String]
+            return names
         } else {
             return []
         }

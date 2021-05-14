@@ -87,13 +87,13 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (const RiveSMIBool *)getBool:(NSString*)name;
 - (const RiveSMITrigger *)getTrigger:(NSString*)name;
 - (const RiveSMINumber *)getNumber:(NSString*)name;
-- (NSArray *)inputNames;
+- (NSArray<NSString *> *)inputNames;
 - (NSInteger)inputCount;
 - (RiveSMIInput *)inputFromIndex:(NSInteger)index;
 - (RiveSMIInput *)inputFromName:(NSString*)name;
 - (NSInteger)stateChangedCount;
 - (RiveLayerState *)stateChangedFromIndex:(NSInteger)index;
-- (NSArray *)stateChanges;
+- (NSArray<NSString *> *)stateChanges;
 
 @end
 
@@ -105,7 +105,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (NSInteger)layerCount;
 - (NSInteger)inputCount;
 - (RiveStateMachineInstance *)instance;
-- (NSArray *)inputNames;
+- (NSArray<NSString *> *)inputNames;
 - (RiveStateMachineInput *)inputFromIndex:(NSInteger)index;
 - (RiveStateMachineInput *)inputFromName:(NSString*)name;
 @end
@@ -231,13 +231,13 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (CGRect)bounds;
 
 - (NSInteger)animationCount;
-- (NSArray *)animationNames;
+- (NSArray<NSString *> *)animationNames;
 - (RiveLinearAnimation *)firstAnimation;
 - (RiveLinearAnimation *)animationFromIndex:(NSInteger)index;
 - (RiveLinearAnimation *)animationFromName:(NSString *)name;
 
 - (NSInteger)stateMachineCount;
-- (NSArray *)stateMachineNames;
+- (NSArray<NSString *> *)stateMachineNames;
 - (RiveStateMachine *)firstStateMachine;
 - (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index;
 - (RiveStateMachine *)stateMachineFromName:(NSString *)name;
@@ -270,7 +270,7 @@ typedef NS_ENUM(NSInteger, Alignment) {
 - (RiveArtboard *)artboardFromName:(NSString *)name;
 
 // Returns the names of all artboards in the file.
-- (NSArray *)artboardNames;
+- (NSArray<NSString *> *)artboardNames;
 
 @end
 
