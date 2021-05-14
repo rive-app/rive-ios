@@ -38,52 +38,52 @@ class LayoutViewController: UIViewController {
         
         layoutView.riveView.configure(getRiveFile(resourceName: resourceName))
         
-        func setFit(name:String){
-            var fit = Fit.Contain
+        func setFit(name:String) {
+            var fit: Fit = .contain
             switch name {
             case "Fill":
-                fit = Fit.Fill
+                fit = .fill
             case "Contain":
-                fit = Fit.Contain
+                fit = .contain
             case "Cover":
-                fit = Fit.Cover
+                fit = .cover
             case "Fit Width":
-                fit = Fit.FitWidth
+                fit = .fitWidth
             case "Fit Height":
-                fit = Fit.FitHeight
+                fit = .fitHeight
             case "Scale Down":
-                fit = Fit.ScaleDown
+                fit = .scaleDown
             case "None":
-                fit = Fit.None
+                fit = .none
             default:
-                fit = Fit.Contain
+                fit = .contain
             }
             layoutView.riveView.fit = fit
         }
         
-        func setAlignmnet(name:String){
-            var alignment = Alignment.Center
+        func setAlignmnet(name:String) {
+            var alignment: Alignment = .center
             switch name {
             case "Top Left":
-                alignment = Alignment.TopLeft
+                alignment = .topLeft
             case "Top Center":
-                alignment = Alignment.TopCenter
+                alignment = .topCenter
             case "Top Right":
-                alignment = Alignment.TopRight
+                alignment = .topRight
             case "Center Left":
-                alignment = Alignment.CenterLeft
+                alignment = .centerLeft
             case "Center":
-                alignment = Alignment.Center
+                alignment = .center
             case "Center Right":
-                alignment = Alignment.CenterRight
+                alignment = .centerRight
             case "Bottom Left":
-                alignment = Alignment.BottomLeft
+                alignment = .bottomLeft
             case "Bottom Center":
-                alignment = Alignment.BottomCenter
+                alignment = .bottomCenter
             case "Bottom Right":
-                alignment = Alignment.BottomRight
+                alignment = .bottomRight
             default:
-                alignment = Alignment.Center
+                alignment = .center
             }
             layoutView.riveView.alignment = alignment
         }

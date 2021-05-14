@@ -83,7 +83,7 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5d-hg-cnK">
                                         <rect key="frame" x="0.0" y="251" width="414" height="30"/>
-                                        <state key="normal" title="State Machine SwiftUI"/>
+                                        <state key="normal" title="SwiftUI Controls"/>
                                         <connections>
                                             <segue destination="yNC-ze-bA4" kind="presentation" destinationCreationSelector="hostingActionStateMachine:" id="9dn-S5-TjE"/>
                                         </connections>
