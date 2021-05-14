@@ -84,24 +84,30 @@ class IOSPlayerViewController: UIViewController {
         loadAnimations()
     }
     
-    func loadAnimations(){
+    func _clearOld(){
         
         if (PlayerStack.subviews.count > 3){
             for n in stride(from: PlayerStack.subviews.count-1, through: 3, by: -1){
                 PlayerStack.subviews[n].removeFromSuperview()
             }
         }
-        
-        
-        var animationNames = [String]()
-        if (artboardName == nil){
-            animationNames = riveFile!.artboard().animationNames()
-        }
-        else {
-            animationNames = riveFile!.artboard(fromName: artboardName!).animationNames()
-        }
+    }
+    
+    func _loadAnimations(){
         
         if #available(iOS 14.0, *) {
+            
+            let artboard = _getArtbaord()
+            let animationNames = artboard.animationNames()
+            
+            if (animationNames.count > 0){
+                let label = UILabel()
+                label.text = "Animations:"
+                label.textColor = .black
+                label.heightAnchor.constraint(equalToConstant: 60).isActive = true
+                
+                PlayerStack.addArrangedSubview(label)
+            }
             animationNames.forEach({name in
                 
                 let label = UILabel()
@@ -128,6 +134,11 @@ class IOSPlayerViewController: UIViewController {
                         UIAction(title: "[]", handler: { _ in
                             self.playerView?.riveView?.stop(animationName: name)
                         }))
+                
+                label.heightAnchor.constraint(equalToConstant: 30).isActive = true
+                play.heightAnchor.constraint(equalToConstant: 30).isActive = true
+                pause.heightAnchor.constraint(equalToConstant: 30).isActive = true
+                stop.heightAnchor.constraint(equalToConstant: 30).isActive = true
                 play.widthAnchor.constraint(equalToConstant: 40).isActive = true
                 pause.widthAnchor.constraint(equalToConstant: 40).isActive = true
                 stop.widthAnchor.constraint(equalToConstant: 40).isActive = true
@@ -147,6 +158,162 @@ class IOSPlayerViewController: UIViewController {
                 PlayerStack.addArrangedSubview(stackView)
             })
         }
+    }
+    
+    func _getArtbaord()->RiveArtboard{
+        if let name=artboardName{
+            return riveFile!.artboard(fromName:name)
+        }
+        else {
+            return riveFile!.artboard()
+        }
+    }
+    
+    func _loadStateMachines(){
+
+        if #available(iOS 14.0, *) {
+            let artboard = _getArtbaord()
+            let stateMachineNames = artboard.stateMachineNames()
+            
+            if(stateMachineNames.count > 0){
+                let label = UILabel()
+                label.text = "StateMachines:"
+                label.textColor = .black
+                label.heightAnchor.constraint(equalToConstant: 60).isActive = true
+                PlayerStack.addArrangedSubview(label)
+            }
+            
+            stateMachineNames.forEach({name in
+                
+                let label = UILabel()
+                label.text = name
+                label.textColor = .black
+                
+                
+                let play = UIButton(
+                    type: .system,
+                    primaryAction:
+                        UIAction(title: ">", handler: { _ in
+                            self.playerView?.riveView?.play(animationName: name, isStateMachine: true)
+                        }))
+                let pause = UIButton(
+                    type: .system,
+                    primaryAction:
+                        UIAction(title: "||", handler: { _ in
+                            self.playerView?.riveView?.pause(animationName: name, isStateMachine: true)
+                        }))
+                
+                let stop = UIButton(
+                    type: .system,
+                    primaryAction:
+                        UIAction(title: "[]", handler: { _ in
+                            self.playerView?.riveView?.stop(animationName: name, isStateMachine: true)
+                        }))
+                
+                label.heightAnchor.constraint(equalToConstant: 30).isActive = true
+                play.heightAnchor.constraint(equalToConstant: 30).isActive = true
+                pause.heightAnchor.constraint(equalToConstant: 30).isActive = true
+                stop.heightAnchor.constraint(equalToConstant: 30).isActive = true
+                play.widthAnchor.constraint(equalToConstant: 40).isActive = true
+                pause.widthAnchor.constraint(equalToConstant: 40).isActive = true
+                stop.widthAnchor.constraint(equalToConstant: 40).isActive = true
+
+                
+                let stackView = UIStackView()
+                stackView.translatesAutoresizingMaskIntoConstraints = false
+                stackView.axis = .horizontal
+                stackView.alignment = .leading
+                
+                stackView.addArrangedSubview(label)
+                stackView.addArrangedSubview(play)
+                stackView.addArrangedSubview(pause)
+                stackView.addArrangedSubview(stop)
+                
+                PlayerStack.addArrangedSubview(stackView)
+                // time to add buttons for all the states :P
+                
+                let stateMachine = artboard.stateMachine(fromName: name)
+                stateMachine.inputNames().forEach{inputName in
+                    let label = UILabel()
+                    label.text = inputName
+                    label.textColor = .black
+                    
+                    let stackView = UIStackView()
+                    stackView.translatesAutoresizingMaskIntoConstraints = false
+                    stackView.axis = .horizontal
+                    stackView.alignment = .trailing
+                    stackView.addArrangedSubview(label)
+                    
+                    let input = stateMachine.input(fromName: inputName)
+                    if (input.isBoolean()){
+                        let switchToggle = UISwitch(
+                            frame: CGRect(),
+                            primaryAction: UIAction(
+                                handler: { this in
+                                    if ((this.sender as! UISwitch).isOn){
+                                        self.playerView?.riveView.setBooleanState(stateMachineName: name, inputName: inputName, value: true)
+                                    }
+                                    else {
+                                        self.playerView?.riveView.setBooleanState(stateMachineName: name, inputName: inputName, value: false)
+                                    }
+                                }
+                            )
+                        )
+                        stackView.addArrangedSubview(switchToggle)
+                    }
+                    else if (input.isTrigger()){
+                        let fireButton = UIButton(
+                            type: .system,
+                            primaryAction:
+                                UIAction(title: "fire", handler: { _ in
+                                    self.playerView?.riveView.fireState(stateMachineName: name, inputName: inputName)
+                                }))
+                        stackView.addArrangedSubview(fireButton)
+                    }
+                    else if (input.isNumber()){
+                                
+                        let valueLabel = UILabel()
+                        valueLabel.text = NSString(format: "%.2f", (input as! RiveStateMachineNumberInput).value()) as String
+                        valueLabel.textColor = .black
+                        
+                        let downButton = UIButton(
+                            type: .system,
+                            primaryAction:
+                                UIAction(title: "-", handler: { _ in
+                                    let currentValue = (valueLabel.text! as NSString)
+                                    let currentFloat = currentValue.floatValue - 1
+                                    valueLabel.text = NSString(format: "%.2f", currentFloat) as String
+                                    
+                                    self.playerView?.riveView.setNumberState(stateMachineName: name, inputName: inputName, value: currentFloat)
+                                }))
+                        let upButton = UIButton(
+                            type: .system,
+                            primaryAction:
+                                UIAction(title: "+", handler: { _ in
+                                    let currentValue = (valueLabel.text! as NSString)
+                                    let currentFloat = currentValue.floatValue + 1
+                                    valueLabel.text = NSString(format: "%.2f", currentFloat) as String
+                                    
+                                    self.playerView?.riveView.setNumberState(stateMachineName: name, inputName: inputName, value: currentFloat)
+                                }))
+                        stackView.addArrangedSubview(downButton)
+                        stackView.addArrangedSubview(valueLabel)
+                        stackView.addArrangedSubview(upButton)
+                    }
+                    
+                    
+                    
+                    
+                    PlayerStack.addArrangedSubview(stackView)
+                }
+            })
+        }
+    }
+    
+    func loadAnimations(){
+        _clearOld()
+        _loadStateMachines()
+        _loadAnimations()
         PlayerStack.reloadInputViews()
     }
     
