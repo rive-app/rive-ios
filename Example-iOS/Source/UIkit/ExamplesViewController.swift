@@ -29,9 +29,9 @@ class ExamplesViewController: UIViewController {
     }
 }
 
-class RiveHostingViewController: UIHostingController<ExampleUIRiveView> {
+class RiveHostingViewController: UIHostingController<RiveExplorer> {
     required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: ExampleUIRiveView())
+        super.init(coder: coder, rootView: RiveExplorer())
         rootView.dismiss = dismiss
     }
 
@@ -40,9 +40,9 @@ class RiveHostingViewController: UIHostingController<ExampleUIRiveView> {
     }
 }
 
-class StateMachineHostingViewController: UIHostingController<ExampleStateMachineView> {
+class StateMachineHostingViewController: UIHostingController<RiveComponents> {
     required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: ExampleStateMachineView())
+        super.init(coder: coder, rootView: RiveComponents())
         rootView.dismiss = dismiss
     }
 

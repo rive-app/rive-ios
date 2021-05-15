@@ -65,7 +65,7 @@ class RiveController: ObservableObject {
     }
 }
 
-struct UIRiveView: UIViewRepresentable {
+struct RiveExplorerBridge: UIViewRepresentable {
     
     // MARK: - Properties
     
@@ -102,7 +102,7 @@ struct UIRiveView: UIViewRepresentable {
     }
  
     /// Called when the view model changes
-    func updateUIView(_ uiView: RiveView, context: UIViewRepresentableContext<UIRiveView>) {
+    func updateUIView(_ uiView: RiveView, context: UIViewRepresentableContext<RiveExplorerBridge>) {
         // Set the properties
         uiView.fit = controller.fit
         uiView.alignment = controller.alignment
@@ -142,7 +142,7 @@ struct UIRiveView: UIViewRepresentable {
     }
 }
 
-extension UIRiveView {
+extension RiveExplorerBridge {
     
     // MARK: - Coordinator
     

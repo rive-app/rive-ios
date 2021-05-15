@@ -251,10 +251,10 @@ class IOSPlayerViewController: UIViewController {
                             primaryAction: UIAction(
                                 handler: { this in
                                     if ((this.sender as! UISwitch).isOn){
-                                        self.playerView?.riveView.setBooleanState(stateMachineName: name, inputName: inputName, value: true)
+                                        self.playerView?.riveView.setBooleanState(name, inputName: inputName, value: true)
                                     }
                                     else {
-                                        self.playerView?.riveView.setBooleanState(stateMachineName: name, inputName: inputName, value: false)
+                                        self.playerView?.riveView.setBooleanState(name, inputName: inputName, value: false)
                                     }
                                 }
                             )
@@ -266,7 +266,7 @@ class IOSPlayerViewController: UIViewController {
                             type: .system,
                             primaryAction:
                                 UIAction(title: "fire", handler: { _ in
-                                    self.playerView?.riveView.fireState(stateMachineName: name, inputName: inputName)
+                                    self.playerView?.riveView.fireState(name, inputName: inputName)
                                 }))
                         stackView.addArrangedSubview(fireButton)
                     }
@@ -284,7 +284,7 @@ class IOSPlayerViewController: UIViewController {
                                     let currentFloat = currentValue.floatValue - 1
                                     valueLabel.text = NSString(format: "%.2f", currentFloat) as String
                                     
-                                    self.playerView?.riveView.setNumberState(stateMachineName: name, inputName: inputName, value: currentFloat)
+                                    self.playerView?.riveView.setNumberState(name, inputName: inputName, value: currentFloat)
                                 }))
                         let upButton = UIButton(
                             type: .system,
@@ -294,7 +294,7 @@ class IOSPlayerViewController: UIViewController {
                                     let currentFloat = currentValue.floatValue + 1
                                     valueLabel.text = NSString(format: "%.2f", currentFloat) as String
                                     
-                                    self.playerView?.riveView.setNumberState(stateMachineName: name, inputName: inputName, value: currentFloat)
+                                    self.playerView?.riveView.setNumberState(name, inputName: inputName, value: currentFloat)
                                 }))
                         stackView.addArrangedSubview(downButton)
                         stackView.addArrangedSubview(valueLabel)

@@ -144,7 +144,8 @@
         return [[RiveAnimationState alloc] initWithLayerState: layerState];
     }
     else {
-        @throw [[RiveException alloc] initWithName:@"UnkownLayerState" reason: @"Unknown Layer State" userInfo:nil];
+        return [[RiveUnknownState alloc] initWithLayerState: layerState];
+        // @throw [[RiveException alloc] initWithName:@"UnknownLayerState" reason: @"Unknown Layer State" userInfo:nil];
     }
 }
 

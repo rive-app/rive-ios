@@ -19,7 +19,6 @@ struct RiveButton: View {
             .frame(width: 100, height: 20)
             .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
             .onTapGesture {
-                print("Rive button click")
                 play = true
                 action?()
             }

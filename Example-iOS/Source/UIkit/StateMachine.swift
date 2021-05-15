@@ -45,21 +45,21 @@ class StateMachineViewController: UIViewController {
         )
         stateMachineView.beginnerButtonAction = {
             stateMachineView.riveView.setNumberState(
-                stateMachineName: "Designer's Test",
+                "Designer's Test",
                 inputName: "Level",
                 value: 0.0
             )
         }
         stateMachineView.intermediateButtonAction = {
             stateMachineView.riveView.setNumberState(
-                stateMachineName: "Designer's Test",
+                "Designer's Test",
                 inputName: "Level",
                 value: 1.0
             )
         }
         stateMachineView.expertButtonAction = {
             stateMachineView.riveView.setNumberState(
-                stateMachineName: "Designer's Test",
+                "Designer's Test",
                 inputName: "Level",
                 value: 2.0
             )

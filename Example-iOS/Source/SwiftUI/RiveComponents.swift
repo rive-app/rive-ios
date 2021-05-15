@@ -9,13 +9,16 @@
 import SwiftUI
 import RiveRuntime
 
-struct ExampleStateMachineView: View {
+struct RiveComponents: View {
     
     /// lets UIKit bind to this to trigger dismiss events
     var dismiss: () -> Void = {}
     
-    /// Plays or pauses the Rive animation
+    /// Plays or pauses the button's Rive animation
     @State var play: Bool = false
+    
+    /// Tracks the health value coming from the slide for the progress bar
+    @State var health: Double = 100
     
     var body: some View {
         VStack {
@@ -31,6 +34,15 @@ struct ExampleStateMachineView: View {
                     print("switch is \(on ? "on" : "off")")
                 }
             }
+            VStack {
+                Text("RiveProgressBar:")
+                RiveProgressBar(resource: "liquid", health: $health)
+            }
+            Slider(
+                value: $health,
+                in: 0...100
+            )
+            .padding()
         }
     }
 }
@@ -136,6 +148,6 @@ struct ExampleStateMachineView: View {
  
 struct ExampleStateMachineView_Previews: PreviewProvider {
     static var previews: some View {
-        ExampleStateMachineView()
+        RiveComponents()
     }
 }
