@@ -565,7 +565,7 @@ public class RiveView: UIView {
         }
     }
     
-    open func fireState(stateMachineName: String, inputName: String) {
+    open func fireState(_ stateMachineName: String, inputName: String) {
         let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
         stateMachineInstances.forEach { stateMachine in
             stateMachine.getTrigger(inputName).fire()
@@ -574,7 +574,7 @@ public class RiveView: UIView {
         runTimer()
     }
 
-    open func setBooleanState(stateMachineName: String, inputName: String, value: Bool) {
+    open func setBooleanState(_ stateMachineName: String, inputName: String, value: Bool) {
         let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
         stateMachineInstances.forEach { stateMachine in
             stateMachine.getBool(inputName).setValue(value)
@@ -583,7 +583,7 @@ public class RiveView: UIView {
         runTimer()
     }
 
-    open func setNumberState(stateMachineName: String, inputName: String, value: Float) {
+    open func setNumberState(_ stateMachineName: String, inputName: String, value: Float) {
         let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
         stateMachineInstances.forEach { stateMachine in
             stateMachine.getNumber(inputName).setValue(value)

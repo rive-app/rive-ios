@@ -58,6 +58,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)name;
 @end
 
+/*
+ * RiveUnknownState
+ * This catches new states that haven't been added to iOS runtime yet
+ */
+@interface RiveUnknownState : RiveLayerState
+- (NSString *)name;
+@end
+
 NS_ASSUME_NONNULL_END
 
 #endif /* layer_state_h */

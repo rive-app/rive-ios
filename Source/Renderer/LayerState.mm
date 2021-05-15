@@ -9,7 +9,7 @@
 #import "Rive.h"
 #import "RivePrivateHeaders.h"
 
-@implementation RiveLayerState{
+@implementation RiveLayerState {
     const rive::LayerState* instance;
 }
 
@@ -26,23 +26,23 @@
     return [[RiveLinearAnimation alloc] initWithAnimation: ((const rive::AnimationState *)instance)->animation()];
 };
 
-- (bool)isEntryState{
+- (bool)isEntryState {
     return instance->is<rive::EntryState>();
 }
 
-- (bool)isExitState{
+- (bool)isExitState {
     return instance->is<rive::ExitState>();
 }
 
-- (bool)isAnyState{
+- (bool)isAnyState {
     return instance->is<rive::AnyState>();
 }
 
-- (bool)isAnimationState{
+- (bool)isAnimationState {
     return instance->is<rive::AnimationState>();
 }
 
-- (NSString * )name{
+- (NSString *)name {
     return @"RiveLayerState";
 }
 
@@ -50,14 +50,14 @@
 
 @implementation RiveAnyState
 
-- (NSString * )name{
+- (NSString *)name{
     return @"AnyState";
 }
 @end
 
 @implementation RiveEntryState
 
-- (NSString * )name{
+- (NSString *)name{
     return @"EntryState";
 }
 @end
@@ -65,14 +65,21 @@
 
 @implementation RiveExitState
 
-- (NSString * )name{
+- (NSString *)name{
     return @"ExitState";
 }
 @end
 
 @implementation RiveAnimationState
 
-- (NSString * )name{
+- (NSString *)name{
     return [[self animation] name];
+}
+@end
+
+@implementation RiveUnknownState
+
+- (NSString *)name{
+    return @"UnknownState";
 }
 @end

@@ -76,14 +76,14 @@
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrC-Ng-Q2K">
                                         <rect key="frame" x="0.0" y="221" width="414" height="30"/>
-                                        <state key="normal" title="Animation SwiftUI"/>
+                                        <state key="normal" title="Rive Explorer"/>
                                         <connections>
                                             <segue destination="w39-2n-FCH" kind="presentation" destinationCreationSelector="hostingAction:" id="SeF-el-OxU"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5d-hg-cnK">
                                         <rect key="frame" x="0.0" y="251" width="414" height="30"/>
-                                        <state key="normal" title="SwiftUI Controls"/>
+                                        <state key="normal" title="SwiftUI Components"/>
                                         <connections>
                                             <segue destination="yNC-ze-bA4" kind="presentation" destinationCreationSelector="hostingActionStateMachine:" id="9dn-S5-TjE"/>
                                         </connections>

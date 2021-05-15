@@ -1,7 +1,7 @@
 import SwiftUI
 import RiveRuntime
 
-struct ExampleUIRiveView: View {
+struct RiveExplorer: View {
     @ObservedObject private var riveController = RiveController(
         "artboard_animations",
         fit: Fit.fitCover
@@ -13,7 +13,7 @@ struct ExampleUIRiveView: View {
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            UIRiveView(
+            RiveExplorerBridge(
                 controller: riveController
             )
             VStack {
@@ -153,6 +153,6 @@ struct ExampleUIRiveView: View {
 
 struct RiveSwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
-        ExampleUIRiveView()
+        RiveExplorer()
     }
 }
