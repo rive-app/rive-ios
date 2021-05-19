@@ -246,7 +246,7 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.states.count, 0)
         
         // lets just start, expect 1 change.
-        view.fireState(stateMachineName: "State Machine 1", inputName: "right")
+        view.fireState("State Machine 1", inputName: "right")
         // TODO: looks like we got a bit of a bug here. if we do not call this advance,
         // the first animation doesnt seem to get the delta applied. i think its all because of
         // how the 
@@ -273,7 +273,7 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(0, delegate.states.count)
 
         // ok lets change thigns up again.
-        view.fireState(stateMachineName: "State Machine 1", inputName: "change")
+        view.fireState("State Machine 1", inputName: "change")
         view.advance(delta:0.0)
         view.advance(delta:0.4)
         XCTAssertEqual(true, view.isPlaying)
