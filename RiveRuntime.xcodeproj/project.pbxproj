@@ -100,6 +100,89 @@
 		C98F29832513FAC30076E802 /* draw_target.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29802513FAC30076E802 /* draw_target.cpp */; };
 		C98F29842513FAC30076E802 /* keyframe_id.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29812513FAC30076E802 /* keyframe_id.cpp */; };
 		C98F29852513FAC30076E802 /* draw_rules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C98F29822513FAC30076E802 /* draw_rules.cpp */; };
+		C9A9D9F2265C50930005DB1F /* blend_state_direct_instance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9E5265C50930005DB1F /* blend_state_direct_instance.hpp */; };
+		C9A9D9F3265C50930005DB1F /* blend_state_direct.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9E6265C50930005DB1F /* blend_state_direct.hpp */; };
+		C9A9D9F4265C50930005DB1F /* blend_animation_direct.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9E7265C50930005DB1F /* blend_animation_direct.hpp */; };
+		C9A9D9F5265C50930005DB1F /* blend_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9E8265C50930005DB1F /* blend_animation.hpp */; };
+		C9A9D9F6265C50930005DB1F /* blend_state_instance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9E9265C50930005DB1F /* blend_state_instance.hpp */; };
+		C9A9D9F7265C50930005DB1F /* blend_state_1d.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9EA265C50930005DB1F /* blend_state_1d.hpp */; };
+		C9A9D9F8265C50930005DB1F /* blend_animation_1d.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9EB265C50930005DB1F /* blend_animation_1d.hpp */; };
+		C9A9D9F9265C50930005DB1F /* system_state_instance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9EC265C50930005DB1F /* system_state_instance.hpp */; };
+		C9A9D9FA265C50930005DB1F /* blend_state_transition.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9ED265C50930005DB1F /* blend_state_transition.hpp */; };
+		C9A9D9FB265C50930005DB1F /* animation_state_instance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9EE265C50930005DB1F /* animation_state_instance.hpp */; };
+		C9A9D9FC265C50930005DB1F /* state_instance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9EF265C50930005DB1F /* state_instance.hpp */; };
+		C9A9D9FD265C50930005DB1F /* blend_state.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9F0265C50930005DB1F /* blend_state.hpp */; };
+		C9A9D9FE265C50930005DB1F /* blend_state_1d_instance.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9F1265C50930005DB1F /* blend_state_1d_instance.hpp */; };
+		C9A9DA06265C50CA0005DB1F /* blend_animation_direct_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9D9FF265C50C90005DB1F /* blend_animation_direct_base.hpp */; };
+		C9A9DA07265C50CA0005DB1F /* blend_state_direct_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9DA00265C50C90005DB1F /* blend_state_direct_base.hpp */; };
+		C9A9DA08265C50CA0005DB1F /* blend_state_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9DA01265C50C90005DB1F /* blend_state_base.hpp */; };
+		C9A9DA09265C50CA0005DB1F /* blend_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9DA02265C50C90005DB1F /* blend_animation_base.hpp */; };
+		C9A9DA0A265C50CA0005DB1F /* blend_state_1d_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9DA03265C50C90005DB1F /* blend_state_1d_base.hpp */; };
+		C9A9DA0B265C50CA0005DB1F /* blend_animation_1d_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9DA04265C50C90005DB1F /* blend_animation_1d_base.hpp */; };
+		C9A9DA0C265C50CA0005DB1F /* blend_state_transition_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A9DA05265C50CA0005DB1F /* blend_state_transition_base.hpp */; };
+		C9A9DA19265C51100005DB1F /* blend_animation_direct.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA0D265C510F0005DB1F /* blend_animation_direct.cpp */; };
+		C9A9DA1A265C51100005DB1F /* blend_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA0E265C510F0005DB1F /* blend_state.cpp */; };
+		C9A9DA1B265C51100005DB1F /* animation_state_instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA0F265C510F0005DB1F /* animation_state_instance.cpp */; };
+		C9A9DA1C265C51100005DB1F /* blend_state_1d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA10265C510F0005DB1F /* blend_state_1d.cpp */; };
+		C9A9DA1D265C51100005DB1F /* blend_state_direct.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA11265C510F0005DB1F /* blend_state_direct.cpp */; };
+		C9A9DA1E265C51100005DB1F /* blend_animation_1d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA12265C510F0005DB1F /* blend_animation_1d.cpp */; };
+		C9A9DA1F265C51100005DB1F /* blend_state_transition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA13265C510F0005DB1F /* blend_state_transition.cpp */; };
+		C9A9DA20265C51100005DB1F /* system_state_instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA14265C510F0005DB1F /* system_state_instance.cpp */; };
+		C9A9DA21265C51100005DB1F /* blend_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA15265C510F0005DB1F /* blend_animation.cpp */; };
+		C9A9DA22265C51100005DB1F /* blend_state_direct_instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA16265C510F0005DB1F /* blend_state_direct_instance.cpp */; };
+		C9A9DA23265C51100005DB1F /* state_instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA17265C510F0005DB1F /* state_instance.cpp */; };
+		C9A9DA24265C51100005DB1F /* blend_state_1d_instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA18265C510F0005DB1F /* blend_state_1d_instance.cpp */; };
+		C9A9DA5D265C51A40005DB1F /* draw_target_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA26265C51A40005DB1F /* draw_target_base.cpp */; };
+		C9A9DA5E265C51A40005DB1F /* backboard_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA27265C51A40005DB1F /* backboard_base.cpp */; };
+		C9A9DA5F265C51A40005DB1F /* any_state_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA29265C51A40005DB1F /* any_state_base.cpp */; };
+		C9A9DA60265C51A40005DB1F /* state_machine_trigger_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA2A265C51A40005DB1F /* state_machine_trigger_base.cpp */; };
+		C9A9DA61265C51A40005DB1F /* state_machine_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA2B265C51A40005DB1F /* state_machine_base.cpp */; };
+		C9A9DA62265C51A40005DB1F /* exit_state_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA2C265C51A40005DB1F /* exit_state_base.cpp */; };
+		C9A9DA63265C51A40005DB1F /* state_machine_number_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA2D265C51A40005DB1F /* state_machine_number_base.cpp */; };
+		C9A9DA64265C51A40005DB1F /* state_transition_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA2E265C51A40005DB1F /* state_transition_base.cpp */; };
+		C9A9DA65265C51A40005DB1F /* keyframe_double_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA2F265C51A40005DB1F /* keyframe_double_base.cpp */; };
+		C9A9DA66265C51A40005DB1F /* state_machine_bool_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA30265C51A40005DB1F /* state_machine_bool_base.cpp */; };
+		C9A9DA67265C51A40005DB1F /* transition_bool_condition_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA31265C51A40005DB1F /* transition_bool_condition_base.cpp */; };
+		C9A9DA68265C51A40005DB1F /* transition_trigger_condition_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA32265C51A40005DB1F /* transition_trigger_condition_base.cpp */; };
+		C9A9DA69265C51A40005DB1F /* transition_number_condition_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA33265C51A40005DB1F /* transition_number_condition_base.cpp */; };
+		C9A9DA6A265C51A40005DB1F /* cubic_interpolator_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA34265C51A40005DB1F /* cubic_interpolator_base.cpp */; };
+		C9A9DA6B265C51A40005DB1F /* linear_animation_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA35265C51A40005DB1F /* linear_animation_base.cpp */; };
+		C9A9DA6C265C51A40005DB1F /* entry_state_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA36265C51A40005DB1F /* entry_state_base.cpp */; };
+		C9A9DA6D265C51A40005DB1F /* state_machine_layer_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA37265C51A40005DB1F /* state_machine_layer_base.cpp */; };
+		C9A9DA6E265C51A40005DB1F /* keyed_object_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA38265C51A40005DB1F /* keyed_object_base.cpp */; };
+		C9A9DA6F265C51A40005DB1F /* keyframe_id_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA39265C51A40005DB1F /* keyframe_id_base.cpp */; };
+		C9A9DA70265C51A40005DB1F /* keyframe_color_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA3A265C51A40005DB1F /* keyframe_color_base.cpp */; };
+		C9A9DA71265C51A40005DB1F /* keyed_property_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA3B265C51A40005DB1F /* keyed_property_base.cpp */; };
+		C9A9DA72265C51A40005DB1F /* animation_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA3C265C51A40005DB1F /* animation_base.cpp */; };
+		C9A9DA73265C51A40005DB1F /* animation_state_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA3D265C51A40005DB1F /* animation_state_base.cpp */; };
+		C9A9DA74265C51A40005DB1F /* straight_vertex_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA3F265C51A40005DB1F /* straight_vertex_base.cpp */; };
+		C9A9DA75265C51A40005DB1F /* radial_gradient_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA41265C51A40005DB1F /* radial_gradient_base.cpp */; };
+		C9A9DA76265C51A40005DB1F /* gradient_stop_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA42265C51A40005DB1F /* gradient_stop_base.cpp */; };
+		C9A9DA77265C51A40005DB1F /* solid_color_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA43265C51A40005DB1F /* solid_color_base.cpp */; };
+		C9A9DA78265C51A40005DB1F /* trim_path_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA44265C51A40005DB1F /* trim_path_base.cpp */; };
+		C9A9DA79265C51A40005DB1F /* linear_gradient_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA45265C51A40005DB1F /* linear_gradient_base.cpp */; };
+		C9A9DA7A265C51A40005DB1F /* stroke_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA46265C51A40005DB1F /* stroke_base.cpp */; };
+		C9A9DA7B265C51A40005DB1F /* fill_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA47265C51A40005DB1F /* fill_base.cpp */; };
+		C9A9DA7C265C51A40005DB1F /* polygon_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA48265C51A40005DB1F /* polygon_base.cpp */; };
+		C9A9DA7D265C51A40005DB1F /* cubic_detached_vertex_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA49265C51A40005DB1F /* cubic_detached_vertex_base.cpp */; };
+		C9A9DA7E265C51A40005DB1F /* clipping_shape_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA4A265C51A40005DB1F /* clipping_shape_base.cpp */; };
+		C9A9DA7F265C51A40005DB1F /* rectangle_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA4B265C51A40005DB1F /* rectangle_base.cpp */; };
+		C9A9DA80265C51A40005DB1F /* cubic_mirrored_vertex_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA4C265C51A40005DB1F /* cubic_mirrored_vertex_base.cpp */; };
+		C9A9DA81265C51A40005DB1F /* star_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA4D265C51A40005DB1F /* star_base.cpp */; };
+		C9A9DA82265C51A40005DB1F /* ellipse_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA4E265C51A40005DB1F /* ellipse_base.cpp */; };
+		C9A9DA83265C51A40005DB1F /* points_path_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA4F265C51A40005DB1F /* points_path_base.cpp */; };
+		C9A9DA84265C51A40005DB1F /* triangle_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA50265C51A40005DB1F /* triangle_base.cpp */; };
+		C9A9DA85265C51A40005DB1F /* shape_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA51265C51A40005DB1F /* shape_base.cpp */; };
+		C9A9DA86265C51A40005DB1F /* cubic_asymmetric_vertex_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA52265C51A40005DB1F /* cubic_asymmetric_vertex_base.cpp */; };
+		C9A9DA87265C51A40005DB1F /* artboard_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA53265C51A40005DB1F /* artboard_base.cpp */; };
+		C9A9DA88265C51A40005DB1F /* draw_rules_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA54265C51A40005DB1F /* draw_rules_base.cpp */; };
+		C9A9DA89265C51A40005DB1F /* tendon_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA56265C51A40005DB1F /* tendon_base.cpp */; };
+		C9A9DA8A265C51A40005DB1F /* skin_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA57265C51A40005DB1F /* skin_base.cpp */; };
+		C9A9DA8B265C51A40005DB1F /* bone_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA58265C51A40005DB1F /* bone_base.cpp */; };
+		C9A9DA8C265C51A40005DB1F /* weight_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA59265C51A40005DB1F /* weight_base.cpp */; };
+		C9A9DA8D265C51A40005DB1F /* root_bone_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA5A265C51A40005DB1F /* root_bone_base.cpp */; };
+		C9A9DA8E265C51A40005DB1F /* cubic_weight_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA5B265C51A40005DB1F /* cubic_weight_base.cpp */; };
+		C9A9DA8F265C51A40005DB1F /* node_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A9DA5C265C51A40005DB1F /* node_base.cpp */; };
 		C9AEB7E825C8903C00AE9C43 /* star_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9AEB7E625C8903C00AE9C43 /* star_base.hpp */; };
 		C9AEB7E925C8903C00AE9C43 /* polygon_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9AEB7E725C8903C00AE9C43 /* polygon_base.hpp */; };
 		C9AEB7EE25C8904E00AE9C43 /* star.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9AEB7EC25C8904E00AE9C43 /* star.cpp */; };
@@ -467,6 +550,89 @@
 		C98F29802513FAC30076E802 /* draw_target.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_target.cpp; sourceTree = "<group>"; };
 		C98F29812513FAC30076E802 /* keyframe_id.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = keyframe_id.cpp; path = animation/keyframe_id.cpp; sourceTree = "<group>"; };
 		C98F29822513FAC30076E802 /* draw_rules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_rules.cpp; sourceTree = "<group>"; };
+		C9A9D9E5265C50930005DB1F /* blend_state_direct_instance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_direct_instance.hpp; sourceTree = "<group>"; };
+		C9A9D9E6265C50930005DB1F /* blend_state_direct.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_direct.hpp; sourceTree = "<group>"; };
+		C9A9D9E7265C50930005DB1F /* blend_animation_direct.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_animation_direct.hpp; sourceTree = "<group>"; };
+		C9A9D9E8265C50930005DB1F /* blend_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_animation.hpp; sourceTree = "<group>"; };
+		C9A9D9E9265C50930005DB1F /* blend_state_instance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_instance.hpp; sourceTree = "<group>"; };
+		C9A9D9EA265C50930005DB1F /* blend_state_1d.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_1d.hpp; sourceTree = "<group>"; };
+		C9A9D9EB265C50930005DB1F /* blend_animation_1d.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_animation_1d.hpp; sourceTree = "<group>"; };
+		C9A9D9EC265C50930005DB1F /* system_state_instance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_state_instance.hpp; sourceTree = "<group>"; };
+		C9A9D9ED265C50930005DB1F /* blend_state_transition.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_transition.hpp; sourceTree = "<group>"; };
+		C9A9D9EE265C50930005DB1F /* animation_state_instance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = animation_state_instance.hpp; sourceTree = "<group>"; };
+		C9A9D9EF265C50930005DB1F /* state_instance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = state_instance.hpp; sourceTree = "<group>"; };
+		C9A9D9F0265C50930005DB1F /* blend_state.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state.hpp; sourceTree = "<group>"; };
+		C9A9D9F1265C50930005DB1F /* blend_state_1d_instance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_1d_instance.hpp; sourceTree = "<group>"; };
+		C9A9D9FF265C50C90005DB1F /* blend_animation_direct_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_animation_direct_base.hpp; sourceTree = "<group>"; };
+		C9A9DA00265C50C90005DB1F /* blend_state_direct_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_direct_base.hpp; sourceTree = "<group>"; };
+		C9A9DA01265C50C90005DB1F /* blend_state_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_base.hpp; sourceTree = "<group>"; };
+		C9A9DA02265C50C90005DB1F /* blend_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_animation_base.hpp; sourceTree = "<group>"; };
+		C9A9DA03265C50C90005DB1F /* blend_state_1d_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_1d_base.hpp; sourceTree = "<group>"; };
+		C9A9DA04265C50C90005DB1F /* blend_animation_1d_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_animation_1d_base.hpp; sourceTree = "<group>"; };
+		C9A9DA05265C50CA0005DB1F /* blend_state_transition_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = blend_state_transition_base.hpp; sourceTree = "<group>"; };
+		C9A9DA0D265C510F0005DB1F /* blend_animation_direct.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_animation_direct.cpp; sourceTree = "<group>"; };
+		C9A9DA0E265C510F0005DB1F /* blend_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state.cpp; sourceTree = "<group>"; };
+		C9A9DA0F265C510F0005DB1F /* animation_state_instance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = animation_state_instance.cpp; sourceTree = "<group>"; };
+		C9A9DA10265C510F0005DB1F /* blend_state_1d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state_1d.cpp; sourceTree = "<group>"; };
+		C9A9DA11265C510F0005DB1F /* blend_state_direct.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state_direct.cpp; sourceTree = "<group>"; };
+		C9A9DA12265C510F0005DB1F /* blend_animation_1d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_animation_1d.cpp; sourceTree = "<group>"; };
+		C9A9DA13265C510F0005DB1F /* blend_state_transition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state_transition.cpp; sourceTree = "<group>"; };
+		C9A9DA14265C510F0005DB1F /* system_state_instance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = system_state_instance.cpp; sourceTree = "<group>"; };
+		C9A9DA15265C510F0005DB1F /* blend_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_animation.cpp; sourceTree = "<group>"; };
+		C9A9DA16265C510F0005DB1F /* blend_state_direct_instance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state_direct_instance.cpp; sourceTree = "<group>"; };
+		C9A9DA17265C510F0005DB1F /* state_instance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state_instance.cpp; sourceTree = "<group>"; };
+		C9A9DA18265C510F0005DB1F /* blend_state_1d_instance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state_1d_instance.cpp; sourceTree = "<group>"; };
+		C9A9DA26265C51A40005DB1F /* draw_target_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_target_base.cpp; sourceTree = "<group>"; };
+		C9A9DA27265C51A40005DB1F /* backboard_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = backboard_base.cpp; sourceTree = "<group>"; };
+		C9A9DA29265C51A40005DB1F /* any_state_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = any_state_base.cpp; sourceTree = "<group>"; };
+		C9A9DA2A265C51A40005DB1F /* state_machine_trigger_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state_machine_trigger_base.cpp; sourceTree = "<group>"; };
+		C9A9DA2B265C51A40005DB1F /* state_machine_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state_machine_base.cpp; sourceTree = "<group>"; };
+		C9A9DA2C265C51A40005DB1F /* exit_state_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = exit_state_base.cpp; sourceTree = "<group>"; };
+		C9A9DA2D265C51A40005DB1F /* state_machine_number_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state_machine_number_base.cpp; sourceTree = "<group>"; };
+		C9A9DA2E265C51A40005DB1F /* state_transition_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state_transition_base.cpp; sourceTree = "<group>"; };
+		C9A9DA2F265C51A40005DB1F /* keyframe_double_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyframe_double_base.cpp; sourceTree = "<group>"; };
+		C9A9DA30265C51A40005DB1F /* state_machine_bool_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state_machine_bool_base.cpp; sourceTree = "<group>"; };
+		C9A9DA31265C51A40005DB1F /* transition_bool_condition_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transition_bool_condition_base.cpp; sourceTree = "<group>"; };
+		C9A9DA32265C51A40005DB1F /* transition_trigger_condition_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transition_trigger_condition_base.cpp; sourceTree = "<group>"; };
+		C9A9DA33265C51A40005DB1F /* transition_number_condition_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transition_number_condition_base.cpp; sourceTree = "<group>"; };
+		C9A9DA34265C51A40005DB1F /* cubic_interpolator_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cubic_interpolator_base.cpp; sourceTree = "<group>"; };
+		C9A9DA35265C51A40005DB1F /* linear_animation_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linear_animation_base.cpp; sourceTree = "<group>"; };
+		C9A9DA36265C51A40005DB1F /* entry_state_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = entry_state_base.cpp; sourceTree = "<group>"; };
+		C9A9DA37265C51A40005DB1F /* state_machine_layer_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state_machine_layer_base.cpp; sourceTree = "<group>"; };
+		C9A9DA38265C51A40005DB1F /* keyed_object_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyed_object_base.cpp; sourceTree = "<group>"; };
+		C9A9DA39265C51A40005DB1F /* keyframe_id_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyframe_id_base.cpp; sourceTree = "<group>"; };
+		C9A9DA3A265C51A40005DB1F /* keyframe_color_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyframe_color_base.cpp; sourceTree = "<group>"; };
+		C9A9DA3B265C51A40005DB1F /* keyed_property_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyed_property_base.cpp; sourceTree = "<group>"; };
+		C9A9DA3C265C51A40005DB1F /* animation_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = animation_base.cpp; sourceTree = "<group>"; };
+		C9A9DA3D265C51A40005DB1F /* animation_state_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = animation_state_base.cpp; sourceTree = "<group>"; };
+		C9A9DA3F265C51A40005DB1F /* straight_vertex_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = straight_vertex_base.cpp; sourceTree = "<group>"; };
+		C9A9DA41265C51A40005DB1F /* radial_gradient_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = radial_gradient_base.cpp; sourceTree = "<group>"; };
+		C9A9DA42265C51A40005DB1F /* gradient_stop_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gradient_stop_base.cpp; sourceTree = "<group>"; };
+		C9A9DA43265C51A40005DB1F /* solid_color_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = solid_color_base.cpp; sourceTree = "<group>"; };
+		C9A9DA44265C51A40005DB1F /* trim_path_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = trim_path_base.cpp; sourceTree = "<group>"; };
+		C9A9DA45265C51A40005DB1F /* linear_gradient_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linear_gradient_base.cpp; sourceTree = "<group>"; };
+		C9A9DA46265C51A40005DB1F /* stroke_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stroke_base.cpp; sourceTree = "<group>"; };
+		C9A9DA47265C51A40005DB1F /* fill_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fill_base.cpp; sourceTree = "<group>"; };
+		C9A9DA48265C51A40005DB1F /* polygon_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = polygon_base.cpp; sourceTree = "<group>"; };
+		C9A9DA49265C51A40005DB1F /* cubic_detached_vertex_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cubic_detached_vertex_base.cpp; sourceTree = "<group>"; };
+		C9A9DA4A265C51A40005DB1F /* clipping_shape_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = clipping_shape_base.cpp; sourceTree = "<group>"; };
+		C9A9DA4B265C51A40005DB1F /* rectangle_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rectangle_base.cpp; sourceTree = "<group>"; };
+		C9A9DA4C265C51A40005DB1F /* cubic_mirrored_vertex_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cubic_mirrored_vertex_base.cpp; sourceTree = "<group>"; };
+		C9A9DA4D265C51A40005DB1F /* star_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = star_base.cpp; sourceTree = "<group>"; };
+		C9A9DA4E265C51A40005DB1F /* ellipse_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ellipse_base.cpp; sourceTree = "<group>"; };
+		C9A9DA4F265C51A40005DB1F /* points_path_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = points_path_base.cpp; sourceTree = "<group>"; };
+		C9A9DA50265C51A40005DB1F /* triangle_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = triangle_base.cpp; sourceTree = "<group>"; };
+		C9A9DA51265C51A40005DB1F /* shape_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shape_base.cpp; sourceTree = "<group>"; };
+		C9A9DA52265C51A40005DB1F /* cubic_asymmetric_vertex_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cubic_asymmetric_vertex_base.cpp; sourceTree = "<group>"; };
+		C9A9DA53265C51A40005DB1F /* artboard_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = artboard_base.cpp; sourceTree = "<group>"; };
+		C9A9DA54265C51A40005DB1F /* draw_rules_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw_rules_base.cpp; sourceTree = "<group>"; };
+		C9A9DA56265C51A40005DB1F /* tendon_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tendon_base.cpp; sourceTree = "<group>"; };
+		C9A9DA57265C51A40005DB1F /* skin_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = skin_base.cpp; sourceTree = "<group>"; };
+		C9A9DA58265C51A40005DB1F /* bone_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bone_base.cpp; sourceTree = "<group>"; };
+		C9A9DA59265C51A40005DB1F /* weight_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = weight_base.cpp; sourceTree = "<group>"; };
+		C9A9DA5A265C51A40005DB1F /* root_bone_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = root_bone_base.cpp; sourceTree = "<group>"; };
+		C9A9DA5B265C51A40005DB1F /* cubic_weight_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cubic_weight_base.cpp; sourceTree = "<group>"; };
+		C9A9DA5C265C51A40005DB1F /* node_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = node_base.cpp; sourceTree = "<group>"; };
 		C9AEB7E625C8903C00AE9C43 /* star_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = star_base.hpp; path = generated/shapes/star_base.hpp; sourceTree = "<group>"; };
 		C9AEB7E725C8903C00AE9C43 /* polygon_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = polygon_base.hpp; path = generated/shapes/polygon_base.hpp; sourceTree = "<group>"; };
 		C9AEB7EC25C8904E00AE9C43 /* star.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = star.cpp; path = shapes/star.cpp; sourceTree = "<group>"; };
@@ -899,6 +1065,96 @@
 			path = shapes/paint;
 			sourceTree = "<group>";
 		};
+		C9A9DA25265C51A40005DB1F /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C9A9DA26265C51A40005DB1F /* draw_target_base.cpp */,
+				C9A9DA27265C51A40005DB1F /* backboard_base.cpp */,
+				C9A9DA28265C51A40005DB1F /* animation */,
+				C9A9DA3E265C51A40005DB1F /* shapes */,
+				C9A9DA53265C51A40005DB1F /* artboard_base.cpp */,
+				C9A9DA54265C51A40005DB1F /* draw_rules_base.cpp */,
+				C9A9DA55265C51A40005DB1F /* bones */,
+				C9A9DA5C265C51A40005DB1F /* node_base.cpp */,
+			);
+			path = generated;
+			sourceTree = "<group>";
+		};
+		C9A9DA28265C51A40005DB1F /* animation */ = {
+			isa = PBXGroup;
+			children = (
+				C9A9DA29265C51A40005DB1F /* any_state_base.cpp */,
+				C9A9DA2A265C51A40005DB1F /* state_machine_trigger_base.cpp */,
+				C9A9DA2B265C51A40005DB1F /* state_machine_base.cpp */,
+				C9A9DA2C265C51A40005DB1F /* exit_state_base.cpp */,
+				C9A9DA2D265C51A40005DB1F /* state_machine_number_base.cpp */,
+				C9A9DA2E265C51A40005DB1F /* state_transition_base.cpp */,
+				C9A9DA2F265C51A40005DB1F /* keyframe_double_base.cpp */,
+				C9A9DA30265C51A40005DB1F /* state_machine_bool_base.cpp */,
+				C9A9DA31265C51A40005DB1F /* transition_bool_condition_base.cpp */,
+				C9A9DA32265C51A40005DB1F /* transition_trigger_condition_base.cpp */,
+				C9A9DA33265C51A40005DB1F /* transition_number_condition_base.cpp */,
+				C9A9DA34265C51A40005DB1F /* cubic_interpolator_base.cpp */,
+				C9A9DA35265C51A40005DB1F /* linear_animation_base.cpp */,
+				C9A9DA36265C51A40005DB1F /* entry_state_base.cpp */,
+				C9A9DA37265C51A40005DB1F /* state_machine_layer_base.cpp */,
+				C9A9DA38265C51A40005DB1F /* keyed_object_base.cpp */,
+				C9A9DA39265C51A40005DB1F /* keyframe_id_base.cpp */,
+				C9A9DA3A265C51A40005DB1F /* keyframe_color_base.cpp */,
+				C9A9DA3B265C51A40005DB1F /* keyed_property_base.cpp */,
+				C9A9DA3C265C51A40005DB1F /* animation_base.cpp */,
+				C9A9DA3D265C51A40005DB1F /* animation_state_base.cpp */,
+			);
+			path = animation;
+			sourceTree = "<group>";
+		};
+		C9A9DA3E265C51A40005DB1F /* shapes */ = {
+			isa = PBXGroup;
+			children = (
+				C9A9DA3F265C51A40005DB1F /* straight_vertex_base.cpp */,
+				C9A9DA40265C51A40005DB1F /* paint */,
+				C9A9DA48265C51A40005DB1F /* polygon_base.cpp */,
+				C9A9DA49265C51A40005DB1F /* cubic_detached_vertex_base.cpp */,
+				C9A9DA4A265C51A40005DB1F /* clipping_shape_base.cpp */,
+				C9A9DA4B265C51A40005DB1F /* rectangle_base.cpp */,
+				C9A9DA4C265C51A40005DB1F /* cubic_mirrored_vertex_base.cpp */,
+				C9A9DA4D265C51A40005DB1F /* star_base.cpp */,
+				C9A9DA4E265C51A40005DB1F /* ellipse_base.cpp */,
+				C9A9DA4F265C51A40005DB1F /* points_path_base.cpp */,
+				C9A9DA50265C51A40005DB1F /* triangle_base.cpp */,
+				C9A9DA51265C51A40005DB1F /* shape_base.cpp */,
+				C9A9DA52265C51A40005DB1F /* cubic_asymmetric_vertex_base.cpp */,
+			);
+			path = shapes;
+			sourceTree = "<group>";
+		};
+		C9A9DA40265C51A40005DB1F /* paint */ = {
+			isa = PBXGroup;
+			children = (
+				C9A9DA41265C51A40005DB1F /* radial_gradient_base.cpp */,
+				C9A9DA42265C51A40005DB1F /* gradient_stop_base.cpp */,
+				C9A9DA43265C51A40005DB1F /* solid_color_base.cpp */,
+				C9A9DA44265C51A40005DB1F /* trim_path_base.cpp */,
+				C9A9DA45265C51A40005DB1F /* linear_gradient_base.cpp */,
+				C9A9DA46265C51A40005DB1F /* stroke_base.cpp */,
+				C9A9DA47265C51A40005DB1F /* fill_base.cpp */,
+			);
+			path = paint;
+			sourceTree = "<group>";
+		};
+		C9A9DA55265C51A40005DB1F /* bones */ = {
+			isa = PBXGroup;
+			children = (
+				C9A9DA56265C51A40005DB1F /* tendon_base.cpp */,
+				C9A9DA57265C51A40005DB1F /* skin_base.cpp */,
+				C9A9DA58265C51A40005DB1F /* bone_base.cpp */,
+				C9A9DA59265C51A40005DB1F /* weight_base.cpp */,
+				C9A9DA5A265C51A40005DB1F /* root_bone_base.cpp */,
+				C9A9DA5B265C51A40005DB1F /* cubic_weight_base.cpp */,
+			);
+			path = bones;
+			sourceTree = "<group>";
+		};
 		C9BD38B9263B5E0D00696C37 /* importers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1020,27 +1276,28 @@
 		C9C7406D24FC4F0400EF9516 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C9A9DA25265C51A40005DB1F /* generated */,
+				C9C7407A24FC4F0400EF9516 /* animation */,
+				C9C740A624FC4F0400EF9516 /* bones */,
+				C9C7406E24FC4F0400EF9516 /* core */,
 				C9BD38FA263B5E7600696C37 /* importers */,
+				C9C7409F24FC4F0400EF9516 /* math */,
+				C9601FA4251004950032AA07 /* paint */,
+				C9C7408524FC4F0400EF9516 /* shapes */,
 				C9AEB7ED25C8904E00AE9C43 /* polygon.cpp */,
 				C9AEB7EC25C8904E00AE9C43 /* star.cpp */,
 				C98F29822513FAC30076E802 /* draw_rules.cpp */,
 				C98F29802513FAC30076E802 /* draw_target.cpp */,
 				C98F29812513FAC30076E802 /* keyframe_id.cpp */,
-				C9601FA4251004950032AA07 /* paint */,
 				C9601FA2251004950032AA07 /* trim_path.cpp */,
-				C9C7406E24FC4F0400EF9516 /* core */,
 				C9C7407624FC4F0400EF9516 /* transform_component.cpp */,
 				C9C7407724FC4F0400EF9516 /* component.cpp */,
 				C9C7407824FC4F0400EF9516 /* node.cpp */,
 				C9C7407924FC4F0400EF9516 /* layout.cpp */,
-				C9C7407A24FC4F0400EF9516 /* animation */,
 				C9C7408424FC4F0400EF9516 /* drawable.cpp */,
-				C9C7408524FC4F0400EF9516 /* shapes */,
-				C9C7409F24FC4F0400EF9516 /* math */,
 				C9C740A324FC4F0400EF9516 /* dependency_sorter.cpp */,
 				C9C740A424FC4F0400EF9516 /* artboard.cpp */,
 				C9C740A524FC4F0400EF9516 /* file.cpp */,
-				C9C740A624FC4F0400EF9516 /* bones */,
 			);
 			name = src;
 			path = "submodules/rive-cpp/src";
@@ -1070,6 +1327,18 @@
 		C9C7407A24FC4F0400EF9516 /* animation */ = {
 			isa = PBXGroup;
 			children = (
+				C9A9DA0F265C510F0005DB1F /* animation_state_instance.cpp */,
+				C9A9DA12265C510F0005DB1F /* blend_animation_1d.cpp */,
+				C9A9DA0D265C510F0005DB1F /* blend_animation_direct.cpp */,
+				C9A9DA15265C510F0005DB1F /* blend_animation.cpp */,
+				C9A9DA18265C510F0005DB1F /* blend_state_1d_instance.cpp */,
+				C9A9DA10265C510F0005DB1F /* blend_state_1d.cpp */,
+				C9A9DA16265C510F0005DB1F /* blend_state_direct_instance.cpp */,
+				C9A9DA11265C510F0005DB1F /* blend_state_direct.cpp */,
+				C9A9DA13265C510F0005DB1F /* blend_state_transition.cpp */,
+				C9A9DA0E265C510F0005DB1F /* blend_state.cpp */,
+				C9A9DA17265C510F0005DB1F /* state_instance.cpp */,
+				C9A9DA14265C510F0005DB1F /* system_state_instance.cpp */,
 				C9BD390B263B5E9000696C37 /* animation_state.cpp */,
 				C9BD3910263B5E9000696C37 /* layer_state.cpp */,
 				C9BD390C263B5E9000696C37 /* state_machine_input_instance.cpp */,
@@ -1226,6 +1495,13 @@
 		C9C740B324FC4F0400EF9516 /* animation */ = {
 			isa = PBXGroup;
 			children = (
+				C9A9DA04265C50C90005DB1F /* blend_animation_1d_base.hpp */,
+				C9A9DA02265C50C90005DB1F /* blend_animation_base.hpp */,
+				C9A9D9FF265C50C90005DB1F /* blend_animation_direct_base.hpp */,
+				C9A9DA03265C50C90005DB1F /* blend_state_1d_base.hpp */,
+				C9A9DA01265C50C90005DB1F /* blend_state_base.hpp */,
+				C9A9DA00265C50C90005DB1F /* blend_state_direct_base.hpp */,
+				C9A9DA05265C50CA0005DB1F /* blend_state_transition_base.hpp */,
 				C9BD38B3263B5DAE00696C37 /* animation_state_base.hpp */,
 				C9BD38A2263B5D9000696C37 /* any_state_base.hpp */,
 				C9BD38A1263B5D9000696C37 /* entry_state_base.hpp */,
@@ -1333,6 +1609,19 @@
 		C9C740F224FC4F0400EF9516 /* animation */ = {
 			isa = PBXGroup;
 			children = (
+				C9A9D9EE265C50930005DB1F /* animation_state_instance.hpp */,
+				C9A9D9EB265C50930005DB1F /* blend_animation_1d.hpp */,
+				C9A9D9E7265C50930005DB1F /* blend_animation_direct.hpp */,
+				C9A9D9E8265C50930005DB1F /* blend_animation.hpp */,
+				C9A9D9F1265C50930005DB1F /* blend_state_1d_instance.hpp */,
+				C9A9D9EA265C50930005DB1F /* blend_state_1d.hpp */,
+				C9A9D9E5265C50930005DB1F /* blend_state_direct_instance.hpp */,
+				C9A9D9E6265C50930005DB1F /* blend_state_direct.hpp */,
+				C9A9D9E9265C50930005DB1F /* blend_state_instance.hpp */,
+				C9A9D9ED265C50930005DB1F /* blend_state_transition.hpp */,
+				C9A9D9F0265C50930005DB1F /* blend_state.hpp */,
+				C9A9D9EF265C50930005DB1F /* state_instance.hpp */,
+				C9A9D9EC265C50930005DB1F /* system_state_instance.hpp */,
 				C9BD38D3263B5E4000696C37 /* animation_state.hpp */,
 				C9BD38D8263B5E4000696C37 /* any_state.hpp */,
 				C9BD38CE263B5E4000696C37 /* entry_state.hpp */,
@@ -1463,16 +1752,22 @@
 			files = (
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
+				C9A9DA09265C50CA0005DB1F /* blend_animation_base.hpp in Headers */,
 				046FB7FD264EAA61000129B1 /* RiveLinearAnimation.h in Headers */,
+				C9A9D9FC265C50930005DB1F /* state_instance.hpp in Headers */,
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
 				046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */,
 				046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */,
 				046FB7F3264EAA60000129B1 /* RiveStateMachineInput.h in Headers */,
 				046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */,
 				04BE5430264D1F4100427B39 /* LayerState.h in Headers */,
+				C9A9D9F3265C50930005DB1F /* blend_state_direct.hpp in Headers */,
 				C9BD38F5263B5E4000696C37 /* transition_number_condition.hpp in Headers */,
 				C9C741D624FC4F0500EF9516 /* mat2d.hpp in Headers */,
+				C9A9DA0C265C50CA0005DB1F /* blend_state_transition_base.hpp in Headers */,
 				C9C741D724FC4F0500EF9516 /* aabb.hpp in Headers */,
+				C9A9D9FD265C50930005DB1F /* blend_state.hpp in Headers */,
+				C9A9DA06265C50CA0005DB1F /* blend_animation_direct_base.hpp in Headers */,
 				C9C741DA24FC4F0500EF9516 /* circle_constant.hpp in Headers */,
 				C9601F97251004780032AA07 /* metrics_path.hpp in Headers */,
 				C9C741CC24FC4F0500EF9516 /* shape.hpp in Headers */,
@@ -1483,6 +1778,7 @@
 				C9601F80251004780032AA07 /* stroke_effect.hpp in Headers */,
 				C9601F7C251004780032AA07 /* trim_path.hpp in Headers */,
 				04C8D517265BFE3500508ACB /* runtime_header.hpp in Headers */,
+				C9A9D9F7265C50930005DB1F /* blend_state_1d.hpp in Headers */,
 				C9601F82251004780032AA07 /* straight_vertex.hpp in Headers */,
 				C9601F73251004780032AA07 /* stroke_cap.hpp in Headers */,
 				C9601F84251004780032AA07 /* gradient_stop.hpp in Headers */,
@@ -1526,6 +1822,7 @@
 				C9C7418624FC4F0500EF9516 /* cubic_vertex_base.hpp in Headers */,
 				C98F296F2513FA8B0076E802 /* keyframe_id.hpp in Headers */,
 				C9C741B624FC4F0500EF9516 /* loop.hpp in Headers */,
+				C9A9D9F2265C50930005DB1F /* blend_state_direct_instance.hpp in Headers */,
 				C9BD3893263B5D8300696C37 /* state_machine_number_base.hpp in Headers */,
 				C9601F71251004780032AA07 /* command_path.hpp in Headers */,
 				C9BD38F1263B5E4000696C37 /* state_machine_component.hpp in Headers */,
@@ -1535,6 +1832,8 @@
 				C9BD38AF263B5D9000696C37 /* entry_state_base.hpp in Headers */,
 				C9C741EA24FC4F0500EF9516 /* core.hpp in Headers */,
 				C9BD38A7263B5D9000696C37 /* transition_trigger_condition_base.hpp in Headers */,
+				C9A9D9FE265C50930005DB1F /* blend_state_1d_instance.hpp in Headers */,
+				C9A9DA07265C50CA0005DB1F /* blend_state_direct_base.hpp in Headers */,
 				C9C741A624FC4F0500EF9516 /* status_code.hpp in Headers */,
 				C9BD38E3263B5E4000696C37 /* transition_condition.hpp in Headers */,
 				C9C741A024FC4F0500EF9516 /* core_color_type.hpp in Headers */,
@@ -1544,6 +1843,7 @@
 				C9C7419F24FC4F0500EF9516 /* reader.h in Headers */,
 				C98F297D2513FAAE0076E802 /* keyframe_id_base.hpp in Headers */,
 				C9BD38A9263B5D9000696C37 /* layer_state_base.hpp in Headers */,
+				C9A9D9F5265C50930005DB1F /* blend_animation.hpp in Headers */,
 				C9C7419424FC4F0500EF9516 /* component_base.hpp in Headers */,
 				C9BD38B0263B5D9000696C37 /* any_state_base.hpp in Headers */,
 				C9C741A324FC4F0500EF9516 /* core_string_type.hpp in Headers */,
@@ -1557,6 +1857,7 @@
 				C9C7416F24FC4F0500EF9516 /* core_registry.hpp in Headers */,
 				C9BD38B4263B5DAE00696C37 /* animation_state_base.hpp in Headers */,
 				C9C741AA24FC4F0500EF9516 /* file.hpp in Headers */,
+				C9A9D9F6265C50930005DB1F /* blend_state_instance.hpp in Headers */,
 				C9C7419924FC4F0500EF9516 /* skin_base.hpp in Headers */,
 				C9C7418224FC4F0500EF9516 /* radial_gradient_base.hpp in Headers */,
 				C98F297B2513FAAE0076E802 /* draw_target_placement.hpp in Headers */,
@@ -1580,6 +1881,8 @@
 				C9BD38E5263B5E4000696C37 /* entry_state.hpp in Headers */,
 				C9C741DC24FC4F0500EF9516 /* node.hpp in Headers */,
 				C9C7418F24FC4F0500EF9516 /* path_base.hpp in Headers */,
+				C9A9DA0A265C50CA0005DB1F /* blend_state_1d_base.hpp in Headers */,
+				C9A9D9F8265C50930005DB1F /* blend_animation_1d.hpp in Headers */,
 				C9BD38CA263B5E0D00696C37 /* artboard_importer.hpp in Headers */,
 				C9C7419324FC4F0500EF9516 /* container_component_base.hpp in Headers */,
 				C9C7419524FC4F0500EF9516 /* weight_base.hpp in Headers */,
@@ -1611,6 +1914,9 @@
 				C9C7419C24FC4F0500EF9516 /* backboard_base.hpp in Headers */,
 				C9C7417B24FC4F0500EF9516 /* keyed_object_base.hpp in Headers */,
 				C9C741E324FC4F0500EF9516 /* skeletal_component.hpp in Headers */,
+				C9A9DA08265C50CA0005DB1F /* blend_state_base.hpp in Headers */,
+				C9A9DA0B265C50CA0005DB1F /* blend_animation_1d_base.hpp in Headers */,
+				C9A9D9FB265C50930005DB1F /* animation_state_instance.hpp in Headers */,
 				C9BD38C4263B5E0D00696C37 /* state_machine_layer_importer.hpp in Headers */,
 				C9C741A224FC4F0500EF9516 /* core_double_type.hpp in Headers */,
 				C9C7419024FC4F0500EF9516 /* cubic_detached_vertex_base.hpp in Headers */,
@@ -1628,6 +1934,7 @@
 				C9C7419824FC4F0500EF9516 /* bone_base.hpp in Headers */,
 				C9BD38B1263B5D9000696C37 /* exit_state_base.hpp in Headers */,
 				C9C7418124FC4F0500EF9516 /* solid_color_base.hpp in Headers */,
+				C9A9D9FA265C50930005DB1F /* blend_state_transition.hpp in Headers */,
 				C9BD38EF263B5E4000696C37 /* any_state.hpp in Headers */,
 				C9C741DB24FC4F0500EF9516 /* component.hpp in Headers */,
 				C9C7417F24FC4F0500EF9516 /* fill_base.hpp in Headers */,
@@ -1639,6 +1946,7 @@
 				C9C741B124FC4F0500EF9516 /* keyframe.hpp in Headers */,
 				C9C7417324FC4F0500EF9516 /* keyframe_color_base.hpp in Headers */,
 				C9C7419D24FC4F0500EF9516 /* drawable_base.hpp in Headers */,
+				C9A9D9F9265C50930005DB1F /* system_state_instance.hpp in Headers */,
 				C9C741E024FC4F0500EF9516 /* dependency_sorter.hpp in Headers */,
 				C9C7417C24FC4F0500EF9516 /* keyframe_double_base.hpp in Headers */,
 				C9BD38F4263B5E4000696C37 /* state_machine_input_instance.hpp in Headers */,
@@ -1655,6 +1963,7 @@
 				C9C741A124FC4F0500EF9516 /* core_uint_type.hpp in Headers */,
 				C9C7417124FC4F0500EF9516 /* transform_component_base.hpp in Headers */,
 				C9C7418C24FC4F0500EF9516 /* rectangle_base.hpp in Headers */,
+				C9A9D9F4265C50930005DB1F /* blend_animation_direct.hpp in Headers */,
 				C9C7418B24FC4F0500EF9516 /* shape_base.hpp in Headers */,
 				C9C741B724FC4F0500EF9516 /* keyframe_color.hpp in Headers */,
 				C9BD38F3263B5E4000696C37 /* transition_trigger_condition.hpp in Headers */,
@@ -1778,35 +2087,53 @@
 			files = (
 				046FB7F9264EAA60000129B1 /* RiveStateMachine.mm in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
+				C9A9DA81265C51A40005DB1F /* star_base.cpp in Sources */,
 				C9C7414124FC4F0500EF9516 /* keyframe_color.cpp in Sources */,
 				046FB7FA264EAA60000129B1 /* RiveLinearAnimation.mm in Sources */,
 				C9C7414F24FC4F0500EF9516 /* radial_gradient.cpp in Sources */,
+				C9A9DA80265C51A40005DB1F /* cubic_mirrored_vertex_base.cpp in Sources */,
+				C9A9DA87265C51A40005DB1F /* artboard_base.cpp in Sources */,
 				C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */,
 				C9C7416424FC4F0500EF9516 /* vec2d.cpp in Sources */,
 				C9C7416E24FC4F0500EF9516 /* tendon.cpp in Sources */,
+				C9A9DA1F265C51100005DB1F /* blend_state_transition.cpp in Sources */,
 				046FB7F5264EAA60000129B1 /* RiveSMIInput.mm in Sources */,
+				C9A9DA19265C51100005DB1F /* blend_animation_direct.cpp in Sources */,
+				C9A9DA5D265C51A40005DB1F /* draw_target_base.cpp in Sources */,
+				C9A9DA6B265C51A40005DB1F /* linear_animation_base.cpp in Sources */,
+				C9A9DA7D265C51A40005DB1F /* cubic_detached_vertex_base.cpp in Sources */,
 				C9C7416624FC4F0500EF9516 /* dependency_sorter.cpp in Sources */,
 				C9601FAF251004950032AA07 /* trim_path.cpp in Sources */,
+				C9A9DA6C265C51A40005DB1F /* entry_state_base.cpp in Sources */,
 				C9BD390A263B5E7600696C37 /* keyed_property_importer.cpp in Sources */,
 				C9BD391E263B5E9000696C37 /* state_transition.cpp in Sources */,
 				C9C7414624FC4F0500EF9516 /* keyframe.cpp in Sources */,
+				C9A9DA1A265C51100005DB1F /* blend_state.cpp in Sources */,
 				C9BD3918263B5E9000696C37 /* state_machine_input_instance.cpp in Sources */,
+				C9A9DA7A265C51A40005DB1F /* stroke_base.cpp in Sources */,
 				C9C7413B24FC4F0500EF9516 /* core_color_type.cpp in Sources */,
 				C9C7416924FC4F0500EF9516 /* root_bone.cpp in Sources */,
+				C9A9DA7C265C51A40005DB1F /* polygon_base.cpp in Sources */,
+				C9A9DA23265C51100005DB1F /* state_instance.cpp in Sources */,
 				C9C7413E24FC4F0500EF9516 /* component.cpp in Sources */,
 				C9BD3904263B5E7600696C37 /* state_machine_importer.cpp in Sources */,
+				C9A9DA7E265C51A40005DB1F /* clipping_shape_base.cpp in Sources */,
 				C9601FB6251004950032AA07 /* color.cpp in Sources */,
 				C9C7413F24FC4F0500EF9516 /* node.cpp in Sources */,
 				C9BD3909263B5E7600696C37 /* state_machine_layer_importer.cpp in Sources */,
 				C9002A20263C76080011556B /* RiveView.swift in Sources */,
+				C9A9DA1C265C51100005DB1F /* blend_state_1d.cpp in Sources */,
 				C9C7415E24FC4F0500EF9516 /* path_composer.cpp in Sources */,
 				C9C7413924FC4F0500EF9516 /* core_double_type.cpp in Sources */,
 				C9C7413A24FC4F0500EF9516 /* core_string_type.cpp in Sources */,
 				C9C7415B24FC4F0500EF9516 /* path_vertex.cpp in Sources */,
 				C9C7414B24FC4F0500EF9516 /* solid_color.cpp in Sources */,
+				C9A9DA85265C51A40005DB1F /* shape_base.cpp in Sources */,
 				C9C741F524FC510200EF9516 /* Rive.mm in Sources */,
 				C9BD3908263B5E7600696C37 /* state_transition_importer.cpp in Sources */,
+				C9A9DA5E265C51A40005DB1F /* backboard_base.cpp in Sources */,
 				C9C7415724FC4F0500EF9516 /* cubic_vertex.cpp in Sources */,
+				C9A9DA61265C51A40005DB1F /* state_machine_base.cpp in Sources */,
 				C9BD391D263B5E9000696C37 /* state_machine_layer.cpp in Sources */,
 				C9C7414E24FC4F0500EF9516 /* fill.cpp in Sources */,
 				C9BD391F263B5E9000696C37 /* transition_condition.cpp in Sources */,
@@ -1821,16 +2148,22 @@
 				C9C7415924FC4F0500EF9516 /* path.cpp in Sources */,
 				C9BD3922263B5E9000696C37 /* state_machine.cpp in Sources */,
 				C9C7414024FC4F0500EF9516 /* layout.cpp in Sources */,
+				C9A9DA6E265C51A40005DB1F /* keyed_object_base.cpp in Sources */,
 				C9BD3907263B5E7600696C37 /* keyed_object_importer.cpp in Sources */,
+				C9A9DA8C265C51A40005DB1F /* weight_base.cpp in Sources */,
 				C9C7414C24FC4F0500EF9516 /* linear_gradient.cpp in Sources */,
 				C9BD3906263B5E7600696C37 /* layer_state_importer.cpp in Sources */,
+				C9A9DA69265C51A40005DB1F /* transition_number_condition_base.cpp in Sources */,
 				C9C7415524FC4F0500EF9516 /* cubic_asymmetric_vertex.cpp in Sources */,
 				C98F29842513FAC30076E802 /* keyframe_id.cpp in Sources */,
 				C9C7416824FC4F0500EF9516 /* file.cpp in Sources */,
 				C9C7415F24FC4F0500EF9516 /* shape_paint_container.cpp in Sources */,
 				C9C7413C24FC4F0500EF9516 /* binary_reader.cpp in Sources */,
 				C9C7416D24FC4F0500EF9516 /* skin.cpp in Sources */,
+				C9A9DA89265C51A40005DB1F /* tendon_base.cpp in Sources */,
 				C9C7414424FC4F0500EF9516 /* linear_animation_instance.cpp in Sources */,
+				C9A9DA79265C51A40005DB1F /* linear_gradient_base.cpp in Sources */,
+				C9A9DA67265C51A40005DB1F /* transition_bool_condition_base.cpp in Sources */,
 				C9601FB9251004950032AA07 /* gradient_stop.cpp in Sources */,
 				C9C7416A24FC4F0500EF9516 /* bone.cpp in Sources */,
 				C9C7415824FC4F0500EF9516 /* shape.cpp in Sources */,
@@ -1838,39 +2171,78 @@
 				C98F29832513FAC30076E802 /* draw_target.cpp in Sources */,
 				C9C7414524FC4F0500EF9516 /* keyframe_double.cpp in Sources */,
 				C9C7415C24FC4F0500EF9516 /* rectangle.cpp in Sources */,
+				C9A9DA64265C51A40005DB1F /* state_transition_base.cpp in Sources */,
 				C9BD3919263B5E9000696C37 /* transition_bool_condition.cpp in Sources */,
+				C9A9DA72265C51A40005DB1F /* animation_base.cpp in Sources */,
 				C9C7413D24FC4F0500EF9516 /* transform_component.cpp in Sources */,
+				C9A9DA73265C51A40005DB1F /* animation_state_base.cpp in Sources */,
 				C9BD3903263B5E7600696C37 /* artboard_importer.cpp in Sources */,
 				046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */,
 				C9C7414224FC4F0500EF9516 /* keyed_object.cpp in Sources */,
+				C9A9DA76265C51A40005DB1F /* gradient_stop_base.cpp in Sources */,
 				C9C7416C24FC4F0500EF9516 /* weight.cpp in Sources */,
+				C9A9DA8E265C51A40005DB1F /* cubic_weight_base.cpp in Sources */,
+				C9A9DA8A265C51A40005DB1F /* skin_base.cpp in Sources */,
 				C9601FBA251004950032AA07 /* stroke.cpp in Sources */,
+				C9A9DA75265C51A40005DB1F /* radial_gradient_base.cpp in Sources */,
+				C9A9DA83265C51A40005DB1F /* points_path_base.cpp in Sources */,
 				C9BD3921263B5E9000696C37 /* state_machine_instance.cpp in Sources */,
 				C9C7414324FC4F0500EF9516 /* linear_animation.cpp in Sources */,
 				C9C7416B24FC4F0500EF9516 /* skinnable.cpp in Sources */,
 				C9C7413824FC4F0500EF9516 /* core_uint_type.cpp in Sources */,
+				C9A9DA8D265C51A40005DB1F /* root_bone_base.cpp in Sources */,
+				C9A9DA1B265C51100005DB1F /* animation_state_instance.cpp in Sources */,
 				C9C7414824FC4F0500EF9516 /* keyed_property.cpp in Sources */,
 				046FB7F6264EAA60000129B1 /* RiveStateMachineInput.mm in Sources */,
+				C9A9DA65265C51A40005DB1F /* keyframe_double_base.cpp in Sources */,
+				C9A9DA21265C51100005DB1F /* blend_animation.cpp in Sources */,
+				C9A9DA6A265C51A40005DB1F /* cubic_interpolator_base.cpp in Sources */,
+				C9A9DA8F265C51A40005DB1F /* node_base.cpp in Sources */,
+				C9A9DA1E265C51100005DB1F /* blend_animation_1d.cpp in Sources */,
 				C9BD3905263B5E7600696C37 /* linear_animation_importer.cpp in Sources */,
 				C9AEB7EE25C8904E00AE9C43 /* star.cpp in Sources */,
+				C9A9DA20265C51100005DB1F /* system_state_instance.cpp in Sources */,
 				C9C7413724FC4F0500EF9516 /* core_bool_type.cpp in Sources */,
 				C9C7415D24FC4F0500EF9516 /* straight_vertex.cpp in Sources */,
 				C9BD3917263B5E9000696C37 /* animation_state.cpp in Sources */,
+				C9A9DA60265C51A40005DB1F /* state_machine_trigger_base.cpp in Sources */,
 				C9BD3920263B5E9000696C37 /* state_machine_input.cpp in Sources */,
+				C9A9DA22265C51100005DB1F /* blend_state_direct_instance.cpp in Sources */,
+				C9A9DA78265C51A40005DB1F /* trim_path_base.cpp in Sources */,
+				C9A9DA68265C51A40005DB1F /* transition_trigger_condition_base.cpp in Sources */,
+				C9A9DA82265C51A40005DB1F /* ellipse_base.cpp in Sources */,
+				C9A9DA84265C51A40005DB1F /* triangle_base.cpp in Sources */,
 				C9BD391B263B5E9000696C37 /* transition_trigger_condition.cpp in Sources */,
 				C9C7416024FC4F0500EF9516 /* cubic_mirrored_vertex.cpp in Sources */,
+				C9A9DA5F265C51A40005DB1F /* any_state_base.cpp in Sources */,
 				C9AEB7EF25C8904E00AE9C43 /* polygon.cpp in Sources */,
+				C9A9DA7F265C51A40005DB1F /* rectangle_base.cpp in Sources */,
 				C9C7415424FC4F0500EF9516 /* points_path.cpp in Sources */,
 				C9C7416324FC4F0500EF9516 /* aabb.cpp in Sources */,
 				C9C7414724FC4F0500EF9516 /* cubic_interpolator.cpp in Sources */,
 				046FB7F4264EAA60000129B1 /* RiveLinearAnimationInstance.mm in Sources */,
+				C9A9DA7B265C51A40005DB1F /* fill_base.cpp in Sources */,
 				C9C7415A24FC4F0500EF9516 /* parametric_path.cpp in Sources */,
+				C9A9DA8B265C51A40005DB1F /* bone_base.cpp in Sources */,
+				C9A9DA6F265C51A40005DB1F /* keyframe_id_base.cpp in Sources */,
+				C9A9DA6D265C51A40005DB1F /* state_machine_layer_base.cpp in Sources */,
 				C9C3E4902565BA400051D67C /* triangle.cpp in Sources */,
+				C9A9DA24265C51100005DB1F /* blend_state_1d_instance.cpp in Sources */,
+				C9A9DA66265C51A40005DB1F /* state_machine_bool_base.cpp in Sources */,
+				C9A9DA62265C51A40005DB1F /* exit_state_base.cpp in Sources */,
+				C9A9DA1D265C51100005DB1F /* blend_state_direct.cpp in Sources */,
+				C9A9DA74265C51A40005DB1F /* straight_vertex_base.cpp in Sources */,
+				C9A9DA71265C51A40005DB1F /* keyed_property_base.cpp in Sources */,
+				C9A9DA86265C51A40005DB1F /* cubic_asymmetric_vertex_base.cpp in Sources */,
 				C9C7416224FC4F0500EF9516 /* clipping_shape.cpp in Sources */,
 				C9BD391C263B5E9000696C37 /* layer_state.cpp in Sources */,
 				C9C7416724FC4F0500EF9516 /* artboard.cpp in Sources */,
+				C9A9DA63265C51A40005DB1F /* state_machine_number_base.cpp in Sources */,
 				C9C7415624FC4F0500EF9516 /* cubic_detached_vertex.cpp in Sources */,
+				C9A9DA88265C51A40005DB1F /* draw_rules_base.cpp in Sources */,
 				C98F29852513FAC30076E802 /* draw_rules.cpp in Sources */,
+				C9A9DA77265C51A40005DB1F /* solid_color_base.cpp in Sources */,
+				C9A9DA70265C51A40005DB1F /* keyframe_color_base.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
