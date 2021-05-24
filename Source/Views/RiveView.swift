@@ -24,17 +24,17 @@ public typealias InputsAction = (([StateMachineInput]) -> Void)?
 
 // Delegate for handling play action
 public protocol PlayDelegate: AnyObject {
-    func play(_ animationName: String)
+    func play(_ animationName: String, isStateMachine: Bool)
 }
 
 // Delegate for handling pause action
 public protocol PauseDelegate: AnyObject {
-    func pause(_ animationName: String)
+    func pause(_ animationName: String, isStateMachine: Bool)
 }
 
 // Delegate for handling stop action
 public protocol StopDelegate: AnyObject {
-    func stop(_ animationName: String)
+    func stop(_ animationName: String, isStateMachine: Bool)
 }
 
 /// Delegate for reporting changes to available input states
@@ -500,7 +500,7 @@ public class RiveView: UIView {
         }
     
         playingAnimations.insert(animationInstance)
-        eventQueue.add( { self.playDelegate?.play(animationInstance.name()) } )
+        eventQueue.add( { self.playDelegate?.play(animationInstance.name(), isStateMachine:false) } )
     }
         
     /// Pauses a playing animation
@@ -509,7 +509,7 @@ public class RiveView: UIView {
     private func _pause(_ animation: RiveLinearAnimationInstance) {
         let removed = playingAnimations.remove(animation)
         if removed != nil {
-            eventQueue.add( { self.pauseDelegate?.pause(animation.name()) } )
+            eventQueue.add( { self.pauseDelegate?.pause(animation.name(), isStateMachine:false) } )
         }
     }
     
@@ -524,7 +524,7 @@ public class RiveView: UIView {
         if (initialCount != animations.count) {
             // eventQueue.add( { self.stopDelegate?.stop(animation.name()) } )
             // Firing this immediately as if it's the only animation stopping, advance won't get called
-            self.stopDelegate?.stop(animation.name())
+            self.stopDelegate?.stop(animation.name(), isStateMachine:false)
         }
     }
     
@@ -536,7 +536,7 @@ public class RiveView: UIView {
         }
     
         playingStateMachines.insert(stateMachineInstance)
-        eventQueue.add( { self.playDelegate?.play(stateMachineInstance.name()) } )
+        eventQueue.add( { self.playDelegate?.play(stateMachineInstance.name(),isStateMachine:true) } )
         eventQueue.add( { self.inputsDelegate?.inputs(self.stateMachineInputs()) } )
     }
     
@@ -546,7 +546,7 @@ public class RiveView: UIView {
     private func _pause(_ stateMachine: RiveStateMachineInstance) {
         let removed = playingStateMachines.remove(stateMachine)
         if removed != nil {
-            eventQueue.add( { self.pauseDelegate?.pause(stateMachine.name()) } )
+            eventQueue.add( { self.pauseDelegate?.pause(stateMachine.name(),isStateMachine:true) } )
         }
     }
     
@@ -561,7 +561,7 @@ public class RiveView: UIView {
         }
         playingStateMachines.remove(stateMachine)
         if (initialCount != stateMachines.count){
-            eventQueue.add( { self.stopDelegate?.stop(stateMachine.name()) } )
+            eventQueue.add( { self.stopDelegate?.stop(stateMachine.name(),isStateMachine:true) } )
         }
     }
     
