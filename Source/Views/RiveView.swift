@@ -361,6 +361,29 @@ public class RiveView: UIView {
         runTimer()
     }
     
+    /// Plays the list of animations or state machines with optional loop and directions
+    /// - Parameter animationNames: list of names of the animations to play
+    /// - Parameter loop: overrides the animation's loop setting
+    /// - Parameter direction: overrides the animation's default direction (forwards)
+    /// - Parameter isStateMachine: true of the name refers to a state machine and not an animation
+    public func play(
+        animationNames:[String],
+        loop: Loop = .loopAuto,
+        direction: Direction = .directionAuto,
+        isStateMachine: Bool = false
+    ) {
+        animationNames.forEach{ animationName in
+            _playAnimation(
+                animationName:animationName,
+                loop:loop,
+                direction:direction,
+                isStateMachine:isStateMachine
+            )
+        }
+        
+        runTimer()
+    }
+    
     
     /// Pauses all playing animations and state machines
     public func pause() {
@@ -425,6 +448,21 @@ public class RiveView: UIView {
         return stateMachineInstances
     }
     
+    private func _getOrCreateLinearAnimationInstances(
+        animationName: String
+    ) -> [RiveLinearAnimationInstance]{
+        let animationInstances = _animations(animationName: animationName)
+        
+        if (animationInstances.isEmpty){
+            guard let guardedArtboard=_artboard else {
+                return []
+            }
+            let animationInstance = guardedArtboard.animation(fromName:animationName).instance()
+            return [animationInstance]
+        }
+        return animationInstances
+    }
+    
     private func _playAnimation(
         animationName: String,
         loop: Loop = .loopAuto,
@@ -437,22 +475,13 @@ public class RiveView: UIView {
                 _play(stateMachineInstance)
             }
         } else {
-            let animationInstances = _animations(animationName: animationName)
+            let animationInstances = _getOrCreateLinearAnimationInstances(animationName: animationName)
             
             animationInstances.forEach { animationInstance in
                 _play(
                     animation:animationInstance,
                     loop:loop, direction:direction
                 )
-            }
-            if (animationInstances.isEmpty) {
-                guard let guardedArtboard=_artboard else {
-                    return
-                }
-                let animationInstance = guardedArtboard.animation(fromName:animationName).instance()
-                    
-                _play(animation:animationInstance, loop:loop, direction:direction)
-
             }
         }
     }

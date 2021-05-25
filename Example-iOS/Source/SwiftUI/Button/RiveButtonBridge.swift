@@ -41,15 +41,15 @@ struct RiveButtonBridge: UIViewRepresentable {
             self.rive = rive
         }
         
-        func play(_ animationName: String) {
+        func play(_ animationName: String, isStateMachine: Bool) {
             rive.play = true
         }
         
-        func pause(_ animationName: String) {
+        func pause(_ animationName: String, isStateMachine: Bool) {
             rive.play = false
         }
         
-        func stop(_ animationName: String) {
+        func stop(_ animationName: String, isStateMachine: Bool) {
             rive.play = false
         }
     }

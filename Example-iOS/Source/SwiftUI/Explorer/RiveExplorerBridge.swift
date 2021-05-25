@@ -181,12 +181,12 @@ extension RiveExplorerBridge {
                 loopAction?(animationName, type)
             }
 
-        func play(_ animationName: String) {
+        func play(_ animationName: String, isStateMachine: Bool) {
             controller.playback = .play
             playAction?(animationName)
         }
         
-        func pause(_ animationName: String) {
+        func pause(_ animationName: String, isStateMachine: Bool) {
             controller.playback = .pause
             pauseAction?(animationName)
         }
