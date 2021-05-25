@@ -12,6 +12,7 @@
 
 #import <Foundation/Foundation.h>
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class RiveStateMachine;
@@ -26,8 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RiveStateMachineInstance : NSObject
 - (NSString* )name;
-- (void)applyTo:(RiveArtboard*)artboard;
-- (bool)advanceBy:(double)elapsedSeconds;
+- (bool)advance:(RiveArtboard *)artboard by: (double)elapsedSeconds;
 - (const RiveStateMachine *)stateMachine;
 - (const RiveSMIBool *)getBool:(NSString*)name;
 - (const RiveSMITrigger *)getTrigger:(NSString*)name;

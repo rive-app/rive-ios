@@ -28,12 +28,9 @@
     }
 }
 
-- (void) applyTo:(RiveArtboard*)artboard {
-    instance->apply(artboard.artboard);
-}
 
-- (bool) advanceBy:(double)elapsedSeconds {
-    return instance->advance(elapsedSeconds);
+- (bool) advance:(RiveArtboard *)artboard by:(double)elapsedSeconds  {
+    return instance->advance(artboard.artboard, elapsedSeconds);
 }
 
 - (RiveStateMachine *)stateMachine {

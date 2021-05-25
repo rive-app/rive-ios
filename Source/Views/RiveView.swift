@@ -308,8 +308,8 @@ public class RiveView: UIView {
         }
         stateMachines.forEach{ stateMachine in
             if playingStateMachines.contains(stateMachine) {
-                let stillPlaying = stateMachine.advance(by: delta)
-                stateMachine.apply(to: artboard)
+                let stillPlaying = stateMachine.advance(artboard, by: delta)
+                
                 
                 stateMachine.stateChanges().forEach{
                     stateChangeName in stateChangeDelegate?.stateChange(stateChangeName)}
