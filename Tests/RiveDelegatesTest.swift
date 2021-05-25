@@ -36,9 +36,12 @@ func getRiveFile(resourceName: String, resourceExt: String=".riv") -> RiveFile {
 }
 
 class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, StateChangeDelegate {
-    var plays = [String]()
-    var pauses = [String]()
-    var stops = [String]()
+    var stateMachinePlays = [String]()
+    var stateMachinePauses = [String]()
+    var stateMachineStops = [String]()
+    var linearAnimaitonPlays = [String]()
+    var linearAnimaitonPauses = [String]()
+    var linearAnimaitonStops = [String]()
     var loops = [String]()
     var states = [String]()
     
@@ -46,16 +49,33 @@ class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, State
         loops.append(animationName)
     }
     
-    func play(_ animationName: String) {
-        plays.append(animationName)
+    func play(_ animationName: String, isStateMachine: Bool) {
+        if (isStateMachine){
+            stateMachinePlays.append(animationName)
+        }
+        else {
+            linearAnimaitonPlays.append(animationName)
+        }
+        
     }
     
-    func pause(_ animationName: String) {
-        pauses.append(animationName)
+    func pause(_ animationName: String, isStateMachine: Bool) {
+        if (isStateMachine){
+            stateMachinePauses.append(animationName)
+        }
+        else {
+            linearAnimaitonPauses.append(animationName)
+        }
     }
     
-    func stop(_ animationName: String) {
-        stops.append(animationName)
+    func stop(_ animationName: String, isStateMachine: Bool) {
+        if (isStateMachine){
+            stateMachineStops.append(animationName)
+        }
+        else {
+            linearAnimaitonStops.append(animationName)
+        }
+        
     }
     
     func stateChange(_ stateName: String) {
@@ -75,7 +95,7 @@ class DelegatesTest: XCTestCase {
         )
         view.play(animationName: "one")
         view.advance(delta:0)
-        XCTAssertEqual(delegate.plays.count, 1)
+        XCTAssertEqual(delegate.linearAnimaitonPlays.count, 1)
     }
     
     func testPlayTwice(){
@@ -88,7 +108,7 @@ class DelegatesTest: XCTestCase {
         view.play(animationName: "one")
         view.play(animationName: "one")
         view.advance(delta:0)
-        XCTAssertEqual(delegate.plays.count, 2)
+        XCTAssertEqual(delegate.linearAnimaitonPlays.count, 2)
     }
     
     func testPause(){
@@ -101,7 +121,7 @@ class DelegatesTest: XCTestCase {
         view.play(animationName: "one")
         view.pause(animationName: "one")
         view.advance(delta:0)
-        XCTAssertEqual(delegate.pauses.count, 1)
+        XCTAssertEqual(delegate.linearAnimaitonPauses.count, 1)
     }
     
     func testPauseWhenNotPlaying(){
@@ -113,7 +133,7 @@ class DelegatesTest: XCTestCase {
         )
         view.pause(animationName: "one")
         view.advance(delta:0)
-        XCTAssertEqual(delegate.pauses.count, 0)
+        XCTAssertEqual(delegate.linearAnimaitonPauses.count, 0)
     }
     
     func testStop(){
@@ -126,7 +146,7 @@ class DelegatesTest: XCTestCase {
         view.play(animationName: "one")
         view.stop(animationName: "one")
         view.advance(delta:0)
-        XCTAssertEqual(delegate.stops.count, 1)
+        XCTAssertEqual(delegate.linearAnimaitonStops.count, 1)
     }
     
     func testStopNotMounted(){
@@ -139,7 +159,7 @@ class DelegatesTest: XCTestCase {
         
         view.stop(animationName: "one")
         view.advance(delta:0)
-        XCTAssertEqual(delegate.stops.count, 0)
+        XCTAssertEqual(delegate.linearAnimaitonStops.count, 0)
     }
     
     func testStopPaused(){
@@ -153,7 +173,7 @@ class DelegatesTest: XCTestCase {
         view.pause(animationName: "one")
         view.stop(animationName: "one")
         view.advance(delta:0)
-        XCTAssertEqual(delegate.stops.count, 1)
+        XCTAssertEqual(delegate.linearAnimaitonStops.count, 1)
     }
         
     func testLoopOneShot(){
@@ -173,9 +193,9 @@ class DelegatesTest: XCTestCase {
         view.advance(delta:0.1)
         
         XCTAssertEqual(delegate.loops.count, 0)
-        XCTAssertEqual(delegate.plays.count, 1)
-        XCTAssertEqual(delegate.pauses.count, 0)
-        XCTAssertEqual(delegate.stops.count, 1)
+        XCTAssertEqual(delegate.linearAnimaitonPlays.count, 1)
+        XCTAssertEqual(delegate.linearAnimaitonPauses.count, 0)
+        XCTAssertEqual(delegate.linearAnimaitonStops.count, 1)
     }
     
     func testLoopLoop(){
@@ -193,9 +213,9 @@ class DelegatesTest: XCTestCase {
         view.advance(delta:Double(view.animations.first!.animation().effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 1)
-        XCTAssertEqual(delegate.plays.count, 1)
-        XCTAssertEqual(delegate.pauses.count, 0)
-        XCTAssertEqual(delegate.stops.count, 0)
+        XCTAssertEqual(delegate.linearAnimaitonPlays.count, 1)
+        XCTAssertEqual(delegate.linearAnimaitonPauses.count, 0)
+        XCTAssertEqual(delegate.linearAnimaitonStops.count, 0)
     }
     
     func testLoopPingPong(){
@@ -213,9 +233,9 @@ class DelegatesTest: XCTestCase {
         view.advance(delta:Double(view.animations.first!.animation().effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 1)
-        XCTAssertEqual(delegate.plays.count, 1)
-        XCTAssertEqual(delegate.pauses.count, 0)
-        XCTAssertEqual(delegate.stops.count, 0)
+        XCTAssertEqual(delegate.linearAnimaitonPlays.count, 1)
+        XCTAssertEqual(delegate.linearAnimaitonPauses.count, 0)
+        XCTAssertEqual(delegate.linearAnimaitonStops.count, 0)
     }
     
     func testStateMachineLayerStates(){
@@ -223,15 +243,22 @@ class DelegatesTest: XCTestCase {
         let view = RiveView.init(
             riveFile: getRiveFile(resourceName:"what_a_state"),
             stateMachine: "State Machine 2",
+            playDelegate: delegate,
+            pauseDelegate: delegate,
             stateChangeDelegate: delegate
+            
         )
     
         view.advance(delta:0.1)
+        XCTAssertEqual(delegate.stateMachinePlays.count, 1)
         XCTAssertEqual(delegate.states.count, 1)
         XCTAssertEqual(delegate.states[0], "go right")
         view.advance(delta:1.1)
         XCTAssertEqual(delegate.states.count, 2)
         XCTAssertEqual(delegate.states[1], "ExitState")
+        // takes an extra advance to trigger
+        view.advance(delta:0)
+        XCTAssertEqual(delegate.stateMachinePauses.count, 1)
     }
     
     func testStateMachineLayerStatesComplex(){
