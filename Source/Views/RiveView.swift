@@ -85,20 +85,20 @@ class EventQueue {
 }
 
 public class RiveView: UIView {
-    private var displayLink: CADisplayLink?
-    // Queue of events that need to be done outside view updates
-    private var eventQueue = EventQueue()
+    // Configuration
+    private var riveFile: RiveFile?
     private var _fit: Fit = .fitContain
     private var _alignment: Alignment = .alignmentCenter
-    private var riveFile: RiveFile?
     private var _artboard: RiveArtboard?
+    private var autoPlay: Bool = true
+    
+    // Playback controls
     public var animations: [RiveLinearAnimationInstance] = []
     public var playingAnimations: Set<RiveLinearAnimationInstance> = []
     public var stateMachines: [RiveStateMachineInstance] = []
     public var playingStateMachines: Set<RiveStateMachineInstance> = []
-    
-    private var autoPlay: Bool = true
     private var lastTime: CFTimeInterval = 0
+    private var displayLink: CADisplayLink?
     
     // Delegates
     public weak var loopDelegate: LoopDelegate?
@@ -108,6 +108,24 @@ public class RiveView: UIView {
     public weak var inputsDelegate: InputsDelegate?
     public weak var stateChangeDelegate: StateChangeDelegate?
     
+    // Queue of events that need to be done outside view updates
+    private var eventQueue = EventQueue()
+    
+    /// Constructor with a riveFile.
+    /// - Parameters:
+    ///   - riveFile: the riveFile to use for the View.
+    ///   - fit: to specify how and if the animation should be resized to fit its container.
+    ///   - alignment:  to specify how the animation should be aligned to its container.
+    ///   - autoplay: play as soon as the animaiton is loaded.
+    ///   - artboard: determine the `Artboard`to use, by default the first Artboard in the riveFile is picked.
+    ///   - animation: determine the `Animation`to play, by default the first Animation/StateMachine in the riveFile is picked.
+    ///   - stateMachine: determine the `StateMachine`to play, ignored if `animation` is set. By default the first Animation/StateMachine in the riveFile is picked.
+    ///   - loopDelegate: to get callbacks when an `Animation` Loops
+    ///   - playDelegate: to get callbacks when an `Animation` or  a `StateMachine`'s playback starts, or restarts.
+    ///   - pauseDelegate: to get callbacks when an `Animation` or  a `StateMachine`'s playback pauses.
+    ///   - stopDelegate: to get callbacks when an `Animation` or  a `StateMachine` is stopped.
+    ///   - inputsDelegate: to get callbacks for inputs relevant to a loaded `StateMachine`.
+    ///   - stateChangeDelegate: to get callbacks for when the current state of a StateMachine chagnes.
     public init(
         riveFile: RiveFile,
         fit: Fit = .fitContain,
@@ -135,6 +153,7 @@ public class RiveView: UIView {
         self.configure(riveFile, andArtboard: artboard, andAnimation:animation, andStateMachine: stateMachine, andAutoPlay: autoplay)
     }
     
+    /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
     public init() {
         super.init(frame: .zero)
     }
