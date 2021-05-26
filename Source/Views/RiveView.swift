@@ -8,31 +8,31 @@
 
 import UIKit
 
-// Signature for a loop action delegate function
+/// Signature for a loop action delegate function
 public typealias LoopAction = ((String, Int) -> Void)?
 
-// Delegate for handling loop events
+/// Delegate for handling loop events
 public protocol LoopDelegate: AnyObject {
     func loop(_ animationName: String, type: Int)
 }
 
-// signature for a play action delegate function
+/// signature for a play action delegate function
 public typealias PlaybackAction = ((String) -> Void)?
 
-// signature for inputs action delegate function
+/// signature for inputs action delegate function
 public typealias InputsAction = (([StateMachineInput]) -> Void)?
 
-// Delegate for handling play action
+/// Delegate for handling play action
 public protocol PlayDelegate: AnyObject {
     func play(_ animationName: String, isStateMachine: Bool)
 }
 
-// Delegate for handling pause action
+/// Delegate for handling pause action
 public protocol PauseDelegate: AnyObject {
     func pause(_ animationName: String, isStateMachine: Bool)
 }
 
-// Delegate for handling stop action
+/// Delegate for handling stop action
 public protocol StopDelegate: AnyObject {
     func stop(_ animationName: String, isStateMachine: Bool)
 }
@@ -42,7 +42,7 @@ public protocol InputsDelegate: AnyObject {
     func inputs(_ inputs: [StateMachineInput])
 }
 
-// Delegate for new input states
+/// Delegate for new input states
 public protocol StateChangeDelegate: AnyObject {
     func stateChange(_ stateName: String)
 }
@@ -54,55 +54,51 @@ public enum Playback {
     case stop
 }
 
-public class RiveView: UIView {
-    
-    var displayLink: CADisplayLink?
-    
-    // Queue of events that need to be done outside view updates
-    private var eventQueue = EventQueue()
-    
-    private var _fit: Fit = .fitContain
-    open var fit: Fit {
-        set {
-            _fit = newValue
-            // Advance the artboard if there's one so that Rive redraws with the new fit
-            // TODO: this does nothing when animations are paused as they're skipped for drawing
-            _artboard?.advance(by: 0)
-        }
-        get { return _fit }
-    }
-    
-    private var _alignment: Alignment = .alignmentCenter
-    open var alignment: Alignment {
-        set {
-            _alignment = newValue
-            // Advance the artboard if there's one so that Rive redraws with the new alignment
-            // TODO: this does nothing when animations are paused as they're skipped for drawing
-            _artboard?.advance(by: 0)
-        }
-        get { return _alignment }
-    }
-    
-    open var isPlaying: Bool {
-        get {
-            return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
-        }
-    }
+/// State machine input types
+public enum StateMachineInputType {
+    case trigger
+    case number
+    case boolean
+}
 
-    var riveFile: RiveFile?
+/// Simple data type for passing state machine input names and their types
+public struct StateMachineInput: Hashable {
+    public let name: String
+    public let type: StateMachineInputType
+}
+
+// Tracks a queue of events that haven't been fired yet. We do this so
+// that we're not calling delegates and modifying state while a view is
+// updating (e.g. being initialized, as we autoplay and fire play events
+// during the view's init otherwise
+class EventQueue {
+    var events:[() -> Void] = []
     
-    private var _artboard: RiveArtboard?
-    open var artboard: RiveArtboard? {
-        get { return _artboard }
+    func add(_ event: @escaping () -> Void) {
+        events.append(event)
     }
     
+    func fireAll() {
+        events.forEach { $0() }
+        events.removeAll()
+    }
+}
+
+public class RiveView: UIView {
+    // Configuration
+    private var riveFile: RiveFile?
+    private var _fit: Fit = .fitContain
+    private var _alignment: Alignment = .alignmentCenter
+    private var _artboard: RiveArtboard?
+    private var autoPlay: Bool = true
+    
+    // Playback controls
     public var animations: [RiveLinearAnimationInstance] = []
     public var playingAnimations: Set<RiveLinearAnimationInstance> = []
     public var stateMachines: [RiveStateMachineInstance] = []
     public var playingStateMachines: Set<RiveStateMachineInstance> = []
-    
-    var autoPlay: Bool = true
-    var lastTime: CFTimeInterval = 0
+    private var lastTime: CFTimeInterval = 0
+    private var displayLink: CADisplayLink?
     
     // Delegates
     public weak var loopDelegate: LoopDelegate?
@@ -112,6 +108,24 @@ public class RiveView: UIView {
     public weak var inputsDelegate: InputsDelegate?
     public weak var stateChangeDelegate: StateChangeDelegate?
     
+    // Queue of events that need to be done outside view updates
+    private var eventQueue = EventQueue()
+    
+    /// Constructor with a riveFile.
+    /// - Parameters:
+    ///   - riveFile: the riveFile to use for the View.
+    ///   - fit: to specify how and if the animation should be resized to fit its container.
+    ///   - alignment: to specify how the animation should be aligned to its container.
+    ///   - autoplay: play as soon as the animaiton is loaded.
+    ///   - artboard: determine the `Artboard`to use, by default the first Artboard in the riveFile is picked.
+    ///   - animation: determine the `Animation`to play, by default the first Animation/StateMachine in the riveFile is picked.
+    ///   - stateMachine: determine the `StateMachine`to play, ignored if `animation` is set. By default the first Animation/StateMachine in the riveFile is picked.
+    ///   - loopDelegate: to get callbacks when an `Animation` Loops
+    ///   - playDelegate: to get callbacks when an `Animation` or  a `StateMachine`'s playback starts, or restarts.
+    ///   - pauseDelegate: to get callbacks when an `Animation` or  a `StateMachine`'s playback pauses.
+    ///   - stopDelegate: to get callbacks when an `Animation` or  a `StateMachine` is stopped.
+    ///   - inputsDelegate: to get callbacks for inputs relevant to a loaded `StateMachine`.
+    ///   - stateChangeDelegate: to get callbacks for when the current state of a StateMachine chagnes.
     public init(
         riveFile: RiveFile,
         fit: Fit = .fitContain,
@@ -139,6 +153,7 @@ public class RiveView: UIView {
         self.configure(riveFile, andArtboard: artboard, andAnimation:animation, andStateMachine: stateMachine, andAutoPlay: autoplay)
     }
     
+    /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
     public init() {
         super.init(frame: .zero)
     }
@@ -146,19 +161,44 @@ public class RiveView: UIView {
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+}
 
-        
-    @objc func animationWillMoveToBackground() {
-        print("Triggers when app is moving to background")
+// MARK:- Configure
+extension RiveView {
+    /// Configure fit to specify how and if the animation should be resized to fit its container.
+    open var fit: Fit {
+        set {
+            _fit = newValue
+            // Advance the artboard if there's one so that Rive redraws with the new fit
+            // TODO: this does nothing when animations are paused as they're skipped for drawing
+            _artboard?.advance(by: 0)
+        }
+        get { return _fit }
     }
     
-    @objc func animationWillEnterForeground() {
-        print("Triggers when app is moving to foreground")
+    /// Configure alignment to specify how the animation should be aligned to its container.
+    open var alignment: Alignment {
+        set {
+            _alignment = newValue
+            // Advance the artboard if there's one so that Rive redraws with the new alignment
+            // TODO: this does nothing when animations are paused as they're skipped for drawing
+            _artboard?.advance(by: 0)
+        }
+        get { return _alignment }
+    }
+
+    /// Return the selected `RiveArtboard`.
+    open var artboard: RiveArtboard? {
+        get { return _artboard }
     }
     
-    /*
-     * Updates the artboard and layout options
-     */
+    /// Updates the artboard and layout options
+    /// - Parameters:
+    ///   - riveFile: <#riveFile description#>
+    ///   - artboard: <#artboard description#>
+    ///   - animation: <#animation description#>
+    ///   - stateMachine: <#stateMachine description#>
+    ///   - autoPlay: <#autoPlay description#>
     open func configure(
         _ riveFile: RiveFile,
         andArtboard artboard: String?=nil,
@@ -211,20 +251,103 @@ public class RiveView: UIView {
         }
     }
     
-    /*
-     * Creates a Rive renderer and applies the currently animating artboard to it
-     */
+    /// Stop playback, clear any created animation or state machine instances.
+    private func clear() {
+        playingAnimations.removeAll()
+        playingStateMachines.removeAll()
+        animations.removeAll()
+        stateMachines.removeAll()
+        stopTimer()
+        lastTime = 0
+    }
+    
+    /// Returns a list of artboard names in the rive file
+    /// - Returns a list of artboard names
+    open func artboardNames() -> [String] {
+        if let names = riveFile?.artboardNames() {
+            return names
+        } else {
+            return []
+        }
+    }
+    
+    /// Returns a list of animation names for the active artboard
+    /// - Returns a list of animation names
+    open func animationNames() -> [String] {
+        if let names = _artboard?.animationNames() {
+            return names
+        } else {
+            return []
+        }
+    }
+    
+    /// Returns a list of state machine names for the active artboard
+    /// - Returns a list of state machine names
+    open func stateMachineNames() -> [String] {
+        if let names = _artboard?.stateMachineNames() {
+            return names
+        } else {
+            return []
+        }
+    }
+    
+    /// Returns true if the active artboard has the specified name
+    /// - Parameter name: the artboard name to check
+    open func isArtboard(name: String) -> Bool {
+        return _artboard?.name() == name
+    }
+    
+    /// Returns a list of valid state machine inputs for any instanced state machine
+    /// - Returns a list of valid state machine inputs and thir types
+    open func stateMachineInputs() -> [StateMachineInput] {
+        var inputs: [StateMachineInput] = []
+        stateMachines.forEach({ machine in
+            let inputCount = machine.inputCount()
+            for i in 0...inputCount-1 {
+                let input = machine.input(from: i)
+                var type = StateMachineInputType.boolean
+                if input.isTrigger() { type = StateMachineInputType.trigger }
+                else if input.isNumber() { type = StateMachineInputType.number }
+                inputs.append(StateMachineInput(name: input.name(), type: type))
+            }
+        });
+        return inputs
+    }
+    
+    
+    /// WIP to test animation behaviour when its canvas moves to the background
+    @objc func animationWillMoveToBackground() {
+        print("Triggers when app is moving to background")
+    }
+    
+    /// WIP to test animation behaviour when its canvas moves to the foreground
+    @objc func animationWillEnterForeground() {
+        print("Triggers when app is moving to foreground")
+    }
+}
+
+// MARK:- Animation Loop
+extension RiveView {
+    /// Are any Animations or State Machines playing.
+    open var isPlaying: Bool {
+        get {
+            return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
+        }
+    }
+    
+    /// Creates a Rive renderer and applies the currently animating artboard to it
+    /// - Parameter rect: the `GCRect` that we will fit the artboard into.
     override public func draw(_ rect: CGRect) {
         guard let context = UIGraphicsGetCurrentContext(), let artboard = self._artboard else {
             return
         }
-         let renderer = RiveRenderer(context: context);
-         renderer.align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
-         artboard.draw(renderer)
+        let renderer = RiveRenderer(context: context);
+        renderer.align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
+        artboard.draw(renderer)
     }
     
     // Starts the animation timer
-    func runTimer() {
+    private func runTimer() {
         if displayLink == nil {
             displayLink = CADisplayLink(target: self, selector: #selector(tick));
             // Note: common didnt pause on scroll.
@@ -237,30 +360,15 @@ public class RiveView: UIView {
     }
     
     // Stops the animation timer
-    func stopTimer() {
+    private func stopTimer() {
         // should we pause or invalidate?
         displayLink?.isPaused = true
     }
     
-    func clear() {
-        playingAnimations.removeAll()
-        playingStateMachines.removeAll()
-        animations.removeAll()
-        stateMachines.removeAll()
-        stopTimer()
-        lastTime = 0
-    }
-    
-    public func reset() {
-        clear()
-        stopTimer()
-        if let riveFile = self.riveFile {
-            // TODO: this is totally not enough to reset the file. i guess its because the file's artboard is already changed.
-            configure(riveFile, andAutoPlay: autoPlay)
-        }
-    }
-    
-    // Animates a frame
+    /// Start a redraw:
+    /// - determine the elapsed time
+    /// - advance the artbaord, which will invalidate the display.
+    /// - if the artboard has come to a stop, stop.
     @objc func tick() {
         guard let displayLink = displayLink else {
             // Something's gone wrong, clean up and bug out
@@ -283,6 +391,10 @@ public class RiveView: UIView {
         }
     }
     
+    /// Advance all playing animations by a set amount.
+    ///
+    /// This will also trigger any events for configured delegates.
+    /// - Parameter delta: elapsed seconds.
     open func advance(delta:Double) {
         guard let artboard = _artboard else {
             return
@@ -324,7 +436,26 @@ public class RiveView: UIView {
         // Trigger a redraw
         self.setNeedsDisplay()
     }
+}
+
+// MARK:- Control Animations
+extension RiveView {
     
+    /// Reset the rive view & reload any provided `riveFile`
+    public func reset() {
+        clear()
+        stopTimer()
+        if let riveFile = self.riveFile {
+            // TODO: this is totally not enough to reset the file. i guess its because the file's artboard is already changed.
+            configure(riveFile, andAutoPlay: autoPlay)
+        }
+    }
+    
+    
+    /// Play the first animation of the loaded artboard
+    /// - Parameters:
+    ///   - loop: provide a `Loop` to overwrite the loop mode used to play the animation.
+    ///   - direction: provide a `Direction` to overwrite the direction that the animation plays in.
     public func play(
         loop: Loop = .loopAuto,
         direction: Direction = .directionAuto
@@ -342,10 +473,11 @@ public class RiveView: UIView {
     }
     
     /// Plays the specified animation or state machine with optional loop and directions
-    /// - Parameter animationName: name of the animation to play
-    /// - Parameter loop: overrides the animation's loop setting
-    /// - Parameter direction: overrides the animation's default direction (forwards)
-    /// - Parameter isStateMachine: true of the name refers to a state machine and not an animation
+    /// - Parameters:
+    ///   - animationName: name of the animation to play
+    ///   - loop: overrides the animation's loop setting
+    ///   - direction: overrides the animation's default direction (forwards)
+    ///   - isStateMachine: true of the name refers to a state machine and not an animation
     public func play(
         animationName: String,
         loop: Loop = .loopAuto,
@@ -362,10 +494,11 @@ public class RiveView: UIView {
     }
     
     /// Plays the list of animations or state machines with optional loop and directions
-    /// - Parameter animationNames: list of names of the animations to play
-    /// - Parameter loop: overrides the animation's loop setting
-    /// - Parameter direction: overrides the animation's default direction (forwards)
-    /// - Parameter isStateMachine: true of the name refers to a state machine and not an animation
+    /// - Parameters:
+    ///   - animationNames: list of names of the animations to play
+    ///   - loop: overrides the animation's loop setting
+    ///   - direction: overrides the animation's default direction (forwards)
+    ///   - isStateMachine: true of the name refers to a state machine and not an animation
     public func play(
         animationNames:[String],
         loop: Loop = .loopAuto,
@@ -391,6 +524,10 @@ public class RiveView: UIView {
         playingStateMachines.forEach { stateMachine in _pause(stateMachine) }
     }
     
+    /// Pause a specific animation or statemachine.
+    /// - Parameters:
+    ///   - animationName: the name of the animation or state machine to pause.
+    ///   - isStateMachine: a flag to signify if the animation is a state machine.
     public func pause(animationName:String, isStateMachine:Bool=false) {
         if (isStateMachine){
             _stateMachines(animationName: animationName).forEach{ animation in _pause(animation)}
@@ -399,6 +536,10 @@ public class RiveView: UIView {
         }
     }
     
+    /// Pause all matching animations or statemachines.
+    /// - Parameters:
+    ///   - animationNames: the names of the animation or state machine to pause.
+    ///   - isStateMachine: a flag to signify if the animations are state machines.
     public func pause(animationNames:[String], isStateMachine:Bool=false) {
         if (isStateMachine){
             _stateMachines(animationNames: animationNames).forEach{ animation in _pause(animation)}
@@ -408,11 +549,18 @@ public class RiveView: UIView {
     }
     
     /// Stops all playing animations and state machines
+    ///
+    /// Stopping will remove the animation instance, as well as pausing the animation, restarting the
+    /// animation will start from the beginning
     public func stop() {
         animations.forEach { animation in _stop(animation) }
         stateMachines.forEach { stateMachine in _stop(stateMachine) }
     }
     
+    /// Stops a specific animation or statemachine.
+    /// - Parameters:
+    ///   - animationName: the name of the animation or state machine to stop.
+    ///   - isStateMachine: a flag to signify if the animation is a state machine.
     public func stop(animationName:String, isStateMachine:Bool=false) {
         if (isStateMachine){
             _stateMachines(animationName: animationName).forEach{ animation in _stop(animation)}
@@ -421,6 +569,10 @@ public class RiveView: UIView {
         }
     }
     
+    /// Stops all matching animations or statemachines.
+    /// - Parameters:
+    ///   - animationNames: the names of the animation or state machine to stop.
+    ///   - isStateMachine: a flag to signify if the animations are state machines.
     public func stop(animationNames:[String], isStateMachine:Bool=false) {
         if (isStateMachine){
             _stateMachines(animationNames: animationNames).forEach{ animation in _stop(animation)}
@@ -429,9 +581,52 @@ public class RiveView: UIView {
         }
     }
     
-    /// - Returns true if there's an animation with the given name
-    public func isAnimation(name: String) {
-        return
+    
+    /// `fire` a state machien `Trigger` input on a specific state machine.
+    ///
+    /// The state machine will be played as a side effect of this.
+    /// - Parameters:
+    ///   - stateMachineName: the state machine that this input belongs to
+    ///   - inputName: the name of the `Trigger` input
+    open func fireState(_ stateMachineName: String, inputName: String) {
+        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
+        stateMachineInstances.forEach { stateMachine in
+            stateMachine.getTrigger(inputName).fire()
+            _play(stateMachine)
+        }
+        runTimer()
+    }
+    
+    /// Update a state machines `Boolean` input state to true or false.
+    ///
+    /// The state machine will be played as a side effect of this.
+    /// - Parameters:
+    ///   - stateMachineName: the state machine that this input belongs to
+    ///   - inputName: the name of the `Boolean` input
+    ///   - value: true or false
+    open func setBooleanState(_ stateMachineName: String, inputName: String, value: Bool) {
+        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
+        stateMachineInstances.forEach { stateMachine in
+            stateMachine.getBool(inputName).setValue(value)
+            _play(stateMachine)
+        }
+        runTimer()
+    }
+    
+    /// Update a state machines `Number` input state to true or false.
+    ///
+    /// The state machine will be played as a side effect of this.
+    /// - Parameters:
+    ///   - stateMachineName: the state machine that this input belongs to
+    ///   - inputName: the name of the `Number` input
+    ///   - value: the new value for the state to hold
+    open func setNumberState(_ stateMachineName: String, inputName: String, value: Float) {
+        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
+        stateMachineInstances.forEach { stateMachine in
+            stateMachine.getNumber(inputName).setValue(value)
+            _play(stateMachine)
+        }
+        runTimer()
     }
     
     private func _getOrCreateStateMachines(
@@ -485,7 +680,7 @@ public class RiveView: UIView {
             }
         }
     }
-        
+    
     private func _animations(animationName: String)->[RiveLinearAnimationInstance] {
         return _animations(animationNames:[animationName])
     }
@@ -505,7 +700,7 @@ public class RiveView: UIView {
             animationNames.contains(stateMachineInstance.stateMachine().name())
         }
     }
-
+    
     private func _play(
         animation animationInstance: RiveLinearAnimationInstance,
         loop: Loop,
@@ -527,14 +722,11 @@ public class RiveView: UIView {
         }else if (direction == .directionBackwards) {
             animationInstance.direction(-1)
         }
-    
+        
         playingAnimations.insert(animationInstance)
         eventQueue.add( { self.playDelegate?.play(animationInstance.name(), isStateMachine:false) } )
     }
-        
-    /// Pauses a playing animation
-    ///
-    /// - Parameter animation: the animation to pause
+    
     private func _pause(_ animation: RiveLinearAnimationInstance) {
         let removed = playingAnimations.remove(animation)
         if removed != nil {
@@ -563,7 +755,7 @@ public class RiveView: UIView {
                 stateMachineInstance
             )
         }
-    
+        
         playingStateMachines.insert(stateMachineInstance)
         eventQueue.add( { self.playDelegate?.play(stateMachineInstance.name(),isStateMachine:true) } )
         eventQueue.add( { self.inputsDelegate?.inputs(self.stateMachineInputs()) } )
@@ -592,115 +784,5 @@ public class RiveView: UIView {
         if (initialCount != stateMachines.count){
             eventQueue.add( { self.stopDelegate?.stop(stateMachine.name(),isStateMachine:true) } )
         }
-    }
-    
-    open func fireState(_ stateMachineName: String, inputName: String) {
-        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
-        stateMachineInstances.forEach { stateMachine in
-            stateMachine.getTrigger(inputName).fire()
-            _play(stateMachine)
-        }
-        runTimer()
-    }
-
-    open func setBooleanState(_ stateMachineName: String, inputName: String, value: Bool) {
-        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
-        stateMachineInstances.forEach { stateMachine in
-            stateMachine.getBool(inputName).setValue(value)
-            _play(stateMachine)
-        }
-        runTimer()
-    }
-
-    open func setNumberState(_ stateMachineName: String, inputName: String, value: Float) {
-        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
-        stateMachineInstances.forEach { stateMachine in
-            stateMachine.getNumber(inputName).setValue(value)
-            _play(stateMachine)
-        }
-        runTimer()
-    }
-    
-    /// Returns a list of artboard names in the rive file
-    /// - Returns a list of artboard names
-    open func artboardNames() -> [String] {
-        if let names = riveFile?.artboardNames() {
-            return names
-        } else {
-            return []
-        }
-    }
-    
-    /// Returns a list of animation names for the active artboard
-    /// - Returns a list of animation names
-    open func animationNames() -> [String] {
-        if let names = _artboard?.animationNames() {
-            return names
-        } else {
-            return []
-        }
-    }
-    
-    /// Returns a list of state machine names for the active artboard
-    /// - Returns a list of state machine names
-    open func stateMachineNames() -> [String] {
-        if let names = _artboard?.stateMachineNames() {
-            return names
-        } else {
-            return []
-        }
-    }
-    
-    /// Returns true if the active artboard has the specified name
-    /// - Parameter name: the artboard name to check
-    open func isArtboard(name: String) -> Bool {
-        return _artboard?.name() == name
-    }
-
-    /// Returns a list of valid state machine inputs for any instanced state machine
-    /// - Returns a list of valid state machine inputs and thir types
-    open func stateMachineInputs() -> [StateMachineInput] {
-        var inputs: [StateMachineInput] = []
-        stateMachines.forEach({ machine in
-            let inputCount = machine.inputCount()
-            for i in 0...inputCount-1 {
-                let input = machine.input(from: i)
-                var type = StateMachineInputType.boolean
-                if input.isTrigger() { type = StateMachineInputType.trigger }
-                else if input.isNumber() { type = StateMachineInputType.number }
-                inputs.append(StateMachineInput(name: input.name(), type: type))
-            }
-        });
-        return inputs
-    }
-}
-
-/// State machine input types
-public enum StateMachineInputType {
-    case trigger
-    case number
-    case boolean
-}
-
-/// Simple data type for passing state machine input names and their types
-public struct StateMachineInput: Hashable {
-    public let name: String
-    public let type: StateMachineInputType
-}
-
-// Tracks a queue of events that haven't been fired yet. We do this so
-// that we're not calling delegates and modifying state while a view is
-// updating (e.g. being initialized, as we autoplay and fire play events
-// during the view's init otherwise
-class EventQueue {
-    var events:[() -> Void] = []
-    
-    func add(_ event: @escaping () -> Void) {
-        events.append(event)
-    }
-    
-    func fireAll() {
-        events.forEach { $0() }
-        events.removeAll()
     }
 }
