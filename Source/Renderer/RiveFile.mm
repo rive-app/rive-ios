@@ -49,15 +49,22 @@
     }
 }
 
-- (nullable instancetype)initWithByteArray:(NSMutableArray *)array {
+- (nullable instancetype)initWithByteArray:(NSArray *)array {
     if (self = [super init]) {
-        UInt8* bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
-        [array enumerateObjectsUsingBlock:^(NSNumber* number, NSUInteger index, BOOL* stop){
-            bytes[index] = number.unsignedIntValue;
-        }];
-        rive::BinaryReader reader = [self getReader:bytes byteLength:array.count];
-        free(bytes);
-        [self import:reader];
+        UInt8* bytes;
+        @try {
+            bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
+            
+            [array enumerateObjectsUsingBlock:^(NSNumber* number, NSUInteger index, BOOL* stop){
+                bytes[index] = number.unsignedIntValue;
+            }];
+            rive::BinaryReader reader = [self getReader:bytes byteLength:array.count];
+            [self import:reader];
+        }
+        @finally {
+            free(bytes);
+        }
+        
         return self;
     }
     return nil;
