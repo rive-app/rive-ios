@@ -10,6 +10,13 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
+@interface RiveFile ()
+
+- (rive::BinaryReader) getReader:(UInt8 *)bytes byteLength:(UInt64)length;
+- (void) import:(rive::BinaryReader)reader;
+
+@end
+
 /*
  * RiveFile
  */
@@ -17,26 +24,50 @@
     rive::File* riveFile;
 }
 
+- (rive::BinaryReader) getReader:(UInt8 *)bytes byteLength:(UInt64)length {
+    return rive::BinaryReader(bytes, length);
+}
+
+
 + (uint)majorVersion { return UInt8(rive::File::majorVersion); }
 + (uint)minorVersion { return UInt8(rive::File::minorVersion); }
 
+- (void) import:(rive::BinaryReader)reader {
+    rive::ImportResult result = rive::File::import(reader, &riveFile);
+    if (result == rive::ImportResult::success) {
+        return;
+    }
+    else if(result == rive::ImportResult::unsupportedVersion){
+        @throw [[RiveException alloc] initWithName:@"UnsupportedVersion" reason:@"Unsupported Rive File Version." userInfo:nil];
+        
+    }
+    else if(result == rive::ImportResult::malformed){
+        @throw [[RiveException alloc] initWithName:@"Malformed" reason:@"Malformed Rive File." userInfo:nil];
+    }
+    else {
+        @throw [[RiveException alloc] initWithName:@"Unknown" reason:@"Unknown error loading file." userInfo:nil];
+    }
+}
+
+- (nullable instancetype)initWithByteArray:(NSMutableArray *)array {
+    if (self = [super init]) {
+        UInt8* bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
+        [array enumerateObjectsUsingBlock:^(NSNumber* number, NSUInteger index, BOOL* stop){
+            bytes[index] = number.unsignedIntValue;
+        }];
+        rive::BinaryReader reader = [self getReader:bytes byteLength:array.count];
+        free(bytes);
+        [self import:reader];
+        return self;
+    }
+    return nil;
+}
+
 - (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length {
     if (self = [super init]) {
-        rive::BinaryReader reader = rive::BinaryReader(bytes, length);
-        rive::ImportResult result = rive::File::import(reader, &riveFile);
-        if (result == rive::ImportResult::success) {
-            return self;
-        }
-        else if(result == rive::ImportResult::unsupportedVersion){
-            @throw [[RiveException alloc] initWithName:@"UnsupportedVersion" reason:@"Unsupported Rive File Version." userInfo:nil];
-            
-        }
-        else if(result == rive::ImportResult::malformed){
-            @throw [[RiveException alloc] initWithName:@"Malformed" reason:@"Malformed Rive File." userInfo:nil];
-        }
-        else {
-            @throw [[RiveException alloc] initWithName:@"Unknown" reason:@"Unknown error loading file." userInfo:nil];
-        }
+        rive::BinaryReader reader = [self getReader:bytes byteLength:length];
+        [self import:reader];
+        return self;
     }
     return nil;
 }

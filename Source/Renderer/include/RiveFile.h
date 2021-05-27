@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly) uint majorVersion;
 @property (class, readonly) uint minorVersion;
 
+- (nullable instancetype)initWithByteArray:(NSArray *)bytes;
 - (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length;
 
 // Returns a reference to the default artboard
