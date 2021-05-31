@@ -98,7 +98,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
         - name: Register trunk session
           run: |
-            pod trunk register 'luigi@erive.app' 'Luigi' --description="Session no.${{ github.run_number }}"
+            pod trunk register 'luigi@rive.app' 'Luigi' --description="Session no.${{ github.run_number }}"
 
         - name: Publish pod to the CocoaPods
           uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
