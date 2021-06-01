@@ -96,8 +96,8 @@ jobs:
           git push
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
-        - name: Publish pod to the CocoaPods
-          uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
-          env:
-            COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      - name: Publish pod to the CocoaPods
+        uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
