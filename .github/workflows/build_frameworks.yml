@@ -94,6 +94,8 @@ jobs:
           git add .
           git commit -m "Update podspec repo tag:${{ github.event.release.tag_name }}"
           git push
+          git tag ${{ github.event.release.tag_name }}
+          git push origin ${{ github.event.release.tag_name }}
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
       - name: Publish pod to the CocoaPods
