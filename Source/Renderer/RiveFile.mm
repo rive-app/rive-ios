@@ -32,23 +32,6 @@
 + (uint)majorVersion { return UInt8(rive::File::majorVersion); }
 + (uint)minorVersion { return UInt8(rive::File::minorVersion); }
 
-- (void) import:(rive::BinaryReader)reader {
-    rive::ImportResult result = rive::File::import(reader, &riveFile);
-    if (result == rive::ImportResult::success) {
-        return;
-    }
-    else if(result == rive::ImportResult::unsupportedVersion){
-        @throw [[RiveException alloc] initWithName:@"UnsupportedVersion" reason:@"Unsupported Rive File Version." userInfo:nil];
-        
-    }
-    else if(result == rive::ImportResult::malformed){
-        @throw [[RiveException alloc] initWithName:@"Malformed" reason:@"Malformed Rive File." userInfo:nil];
-    }
-    else {
-        @throw [[RiveException alloc] initWithName:@"Unknown" reason:@"Unknown error loading file." userInfo:nil];
-    }
-}
-
 - (nullable instancetype)initWithByteArray:(NSArray *)array {
     if (self = [super init]) {
         UInt8* bytes;
@@ -77,6 +60,42 @@
         return self;
     }
     return nil;
+}
+
+/*
+ * Creates a RiveFile from a binary resource
+ */
+- (nullable instancetype)initWithResource:(NSString *)resourceName withExtension:(NSString *)extension {
+    NSString *filepath = [[NSBundle mainBundle] pathForResource:resourceName ofType:extension];
+    NSURL *fileUrl = [NSURL fileURLWithPath:filepath];
+    NSData *fileData = [NSData dataWithContentsOfURL:fileUrl];
+    UInt8 *bytePtr = (UInt8 *)[fileData bytes];
+    
+    return [[RiveFile alloc] initWithBytes:bytePtr byteLength:fileData.length];
+}
+
+/*
+ * Creates a RiveFile from a binary resource, and assumes the resource extension is '.riv'
+ */
+- (nullable instancetype)initWithResource:(NSString *)resourceName {
+    return [[RiveFile alloc] initWithResource:resourceName withExtension:@"riv"];
+}
+
+- (void) import:(rive::BinaryReader)reader {
+    rive::ImportResult result = rive::File::import(reader, &riveFile);
+    if (result == rive::ImportResult::success) {
+        return;
+    }
+    else if(result == rive::ImportResult::unsupportedVersion){
+        @throw [[RiveException alloc] initWithName:@"UnsupportedVersion" reason:@"Unsupported Rive File Version." userInfo:nil];
+        
+    }
+    else if(result == rive::ImportResult::malformed){
+        @throw [[RiveException alloc] initWithName:@"Malformed" reason:@"Malformed Rive File." userInfo:nil];
+    }
+    else {
+        @throw [[RiveException alloc] initWithName:@"Unknown" reason:@"Unknown error loading file." userInfo:nil];
+    }
 }
 
 - (RiveArtboard *)artboard {

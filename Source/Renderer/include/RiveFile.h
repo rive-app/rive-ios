@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithByteArray:(NSArray *)bytes;
 - (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length;
+- (nullable instancetype)initWithResource:(NSString *)resourceName withExtension:(NSString *)extension;
+- (nullable instancetype)initWithResource:(NSString *)resourceName;
 
 // Returns a reference to the default artboard
 - (RiveArtboard *)artboard;
