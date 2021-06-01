@@ -48,7 +48,7 @@ jobs:
           path: .github/workflows/podspec.txt
       - name: Create *.podspec
         run: |
-          cat > RiveRuntime.podspec <<-EOF                      
+          cat > RiveRuntime.podspec <<-EOF
           ${{ steps.podspec.outputs.text }}
           EOF
         env:
@@ -93,6 +93,11 @@ jobs:
           git config --local user.name ${{ github.actor }}
           git add .
           git commit -m "Update podspec repo tag:${{ github.event.release.tag_name }}"
-          git push 
+          git push
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
+      - name: Publish pod to the CocoaPods
+        uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
