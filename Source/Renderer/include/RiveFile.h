@@ -15,6 +15,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class RiveArtboard;
+@protocol RiveFileDelegate;
 
 /*
  * RiveFile
@@ -24,8 +25,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly) uint majorVersion;
 @property (class, readonly) uint minorVersion;
 
+// Is the Rive file loaded and ready for use?
+@property bool isLoaded;
+
+// Delegate for calling when a file has finished loading
+@property id delegate;
+
 - (nullable instancetype)initWithByteArray:(NSArray *)bytes;
 - (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length;
+- (nullable instancetype)initWithResource:(NSString *)resourceName withExtension:(NSString *)extension;
+- (nullable instancetype)initWithResource:(NSString *)resourceName;
+- (nullable instancetype)initWithHttpUrl:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate;
 
 // Returns a reference to the default artboard
 - (RiveArtboard *)artboard;
@@ -42,7 +52,13 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns the names of all artboards in the file.
 - (NSArray<NSString *> *)artboardNames;
 
+@end
 
+/*
+ * Delegate to inform when a rive file is loaded
+ */
+@protocol RiveFileDelegate <NSObject>
+- (void)riveFileDidLoad:(RiveFile *)riveFile;
 @end
 
 NS_ASSUME_NONNULL_END

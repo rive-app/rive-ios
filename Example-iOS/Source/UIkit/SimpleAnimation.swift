@@ -9,19 +9,6 @@
 import UIKit
 import RiveRuntime
 
-func getResourceBytes(resourceName: String, resourceExt: String=".riv") -> [UInt8] {
-    guard let url = Bundle.main.url(forResource: resourceName, withExtension: resourceExt) else {
-        fatalError("Failed to locate \(resourceName) in bundle.")
-    }
-    guard let data = try? Data(contentsOf: url) else {
-        fatalError("Failed to load \(url) from bundle.")
-    }
-    
-    // Import the data into a RiveFile
-    return [UInt8](data)
-}
-
-
 class SimpleAnimationViewController: UIViewController {
     let resourceName = "truck_v7"
     
@@ -29,11 +16,29 @@ class SimpleAnimationViewController: UIViewController {
         super.loadView()
         
         let view = RiveView()
-        guard let riveFile = RiveFile(byteArray: getResourceBytes(resourceName: resourceName)) else {
+        guard let riveFile = RiveFile(resource: resourceName) else {
             fatalError("Failed to load RiveFile")
         }
+
         view.configure(riveFile)
-        
         self.view = view
     }
 }
+
+/*
+class SimpleAnimationViewController: UIViewController {
+     let url = "https://cdn.rive.app/animations/truck.riv"
+     
+     override public func loadView() {
+         super.loadView()
+         
+         let view = RiveView()
+         guard let riveFile = RiveFile(httpUrl: url, with: view) else {
+             fatalError("Unable to load RiveFile")
+         }
+         
+         view.configure(riveFile)
+         self.view = view
+     }
+ }
+ */

@@ -84,6 +84,15 @@ class EventQueue {
     }
 }
 
+/// Stores config options for a RiveFile when rive files load async
+struct ConfigOptions {
+    let riveFile: RiveFile
+    var artboard: String? = nil
+    var animation: String? = nil
+    var stateMachine: String?
+    var autoPlay: Bool = true
+}
+
 public class RiveView: UIView {
     // Configuration
     private var riveFile: RiveFile?
@@ -107,6 +116,9 @@ public class RiveView: UIView {
     public weak var stopDelegate: StopDelegate?
     public weak var inputsDelegate: InputsDelegate?
     public weak var stateChangeDelegate: StateChangeDelegate?
+    
+    // Tracks config options when rive files load asynchronously
+    private var configOptions: ConfigOptions?
     
     // Queue of events that need to be done outside view updates
     private var eventQueue = EventQueue()
@@ -150,7 +162,7 @@ public class RiveView: UIView {
         self.stopDelegate = stopDelegate
         self.inputsDelegate = inputsDelegate
         self.stateChangeDelegate = stateChangeDelegate
-        self.configure(riveFile, andArtboard: artboard, andAnimation:animation, andStateMachine: stateMachine, andAutoPlay: autoplay)
+        self.configure(riveFile, andArtboard: artboard, andAnimation: animation, andStateMachine: stateMachine, andAutoPlay: autoplay)
     }
     
     /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
@@ -160,6 +172,13 @@ public class RiveView: UIView {
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+}
+
+// Handle when a Rive file is asynchronously loaded
+extension RiveView: RiveFileDelegate {
+    public func riveFileDidLoad(_ riveFile: RiveFile) {
+        self.configure(riveFile);
     }
 }
 
@@ -206,6 +225,18 @@ extension RiveView {
         andStateMachine stateMachine: String?=nil,
         andAutoPlay autoPlay: Bool=true
     ) {
+        if !riveFile.isLoaded {
+            // Save the config details for async call
+            self.configOptions = ConfigOptions(
+                riveFile: riveFile,
+                artboard: artboard,
+                animation: animation,
+                stateMachine: stateMachine,
+                autoPlay: autoPlay
+            );
+            return;
+        }
+        
         clear()
         // Testing stuff
         NotificationCenter.default.addObserver(self, selector: #selector(animationWillEnterForeground),
@@ -217,9 +248,9 @@ extension RiveView {
         self.isOpaque = false
         
         self.riveFile = riveFile
-        self.autoPlay = autoPlay
+        self.autoPlay = configOptions?.autoPlay ?? autoPlay
         
-        if let artboardName = artboard {
+        if let artboardName = configOptions?.artboard ?? artboard {
             self._artboard = riveFile.artboard(fromName:artboardName)
         }else {
             self._artboard = riveFile.artboard()
@@ -239,16 +270,18 @@ extension RiveView {
         
         // Start the animation loop
         if autoPlay {
-            if let animationName = animation {
+            if let animationName = configOptions?.animation ?? animation {
                 play(animationName: animationName)
-            }else if let stateMachineName = stateMachine {
+            }else if let stateMachineName = configOptions?.stateMachine ?? stateMachine {
                 play(animationName: stateMachineName, isStateMachine: true)
             }else {
                 play()
             }
-        }else {
+        } else {
             advance(delta: 0)
         }
+        // Clear out any config options
+        self.configOptions = nil
     }
     
     /// Stop playback, clear any created animation or state machine instances.
