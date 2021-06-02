@@ -19,8 +19,26 @@ class SimpleAnimationViewController: UIViewController {
         guard let riveFile = RiveFile(resource: resourceName) else {
             fatalError("Failed to load RiveFile")
         }
+
         view.configure(riveFile)
-        
         self.view = view
     }
 }
+
+/*
+class SimpleAnimationViewController: UIViewController {
+     let url = "https://cdn.rive.app/animations/truck.riv"
+     
+     override public func loadView() {
+         super.loadView()
+         
+         let view = RiveView()
+         guard let riveFile = RiveFile(httpUrl: url, with: view) else {
+             fatalError("Unable to load RiveFile")
+         }
+         
+         view.configure(riveFile)
+         self.view = view
+     }
+ }
+ */
