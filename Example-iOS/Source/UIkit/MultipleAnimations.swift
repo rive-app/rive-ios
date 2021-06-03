@@ -47,7 +47,7 @@ class MultipleAnimationsController: UIViewController {
     }
     
     override public func viewDidDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        super.viewDidDisappear(animated)
         (view as! MultipleAnimations).squareGoAround.stop()
         (view as! MultipleAnimations).squareRollAround.stop()
         (view as! MultipleAnimations).circle.stop()

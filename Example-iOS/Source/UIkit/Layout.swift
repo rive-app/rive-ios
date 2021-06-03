@@ -93,7 +93,7 @@ class LayoutViewController: UIViewController {
     }
     
     override public func viewDidDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        super.viewDidDisappear(animated)
         (view as! LayoutView).riveView.stop()
     }
 }
