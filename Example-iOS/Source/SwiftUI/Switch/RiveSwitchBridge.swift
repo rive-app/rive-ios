@@ -35,4 +35,8 @@ struct RiveSwitchBridge: UIViewRepresentable {
             riveView.play(animationName: offAnimation)
         }
     }
+    
+    static func dismantleUIView(_ riveView: RiveView, coordinator: Self.Coordinator) {
+        riveView.stop()
+    }
 }

@@ -182,4 +182,9 @@
     return artboardNames;
 }
 
+/// Clean up rive file
+- (void)dealloc {
+    delete riveFile;
+}
+
 @end

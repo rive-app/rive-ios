@@ -250,7 +250,7 @@ void RiveRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, fl
  */
 
 RiveRenderer::~RiveRenderer() {
-    // NSLog(@"Releasing renderer c++");
+//    NSLog(@"Releasing renderer c++");
 }
 
 void RiveRenderer::save() {

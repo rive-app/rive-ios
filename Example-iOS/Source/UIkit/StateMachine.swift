@@ -65,4 +65,9 @@ class StateMachineViewController: UIViewController {
             )
         }
     }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        (view as! StateMachineView).riveView.stop()
+    }
 }
