@@ -30,10 +30,12 @@
 		042C88EA2644447500E7DBB2 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D82644447500E7DBB2 /* skills.riv */; };
 		042C88EB2644447500E7DBB2 /* clipping.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D92644447500E7DBB2 /* clipping.riv */; };
 		042C88EC2644447500E7DBB2 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
-		04A8F6C126452E31002C909A /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		04A8F6C526454711002C909A /* LoopMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A8F6C426454711002C909A /* LoopMode.swift */; };
 		04BE5438264D604500427B39 /* iosPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5437264D604500427B39 /* iosPlayer.swift */; };
 		04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C4C83D2646FE410047E614 /* StateMachine.swift */; };
+		04D5B06C266A460C004ACA5B /* nothing.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04D5B069266A460C004ACA5B /* nothing.riv */; };
+		04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
+		04DB5938266A348C0020A7E8 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C9A84F38264495600014D8E0 /* RiveExplorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F37264495600014D8E0 /* RiveExplorer.swift */; };
 		C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */; };
 		C9A84F602644AB6B0014D8E0 /* RiveExplorerBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5F2644AB6B0014D8E0 /* RiveExplorerBridge.swift */; };
@@ -79,6 +81,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				04DB5938266A348C0020A7E8 /* RiveRuntime.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -113,6 +116,7 @@
 		04A8F6C426454711002C909A /* LoopMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopMode.swift; sourceTree = "<group>"; };
 		04BE5437264D604500427B39 /* iosPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosPlayer.swift; sourceTree = "<group>"; };
 		04C4C83D2646FE410047E614 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
+		04D5B069266A460C004ACA5B /* nothing.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nothing.riv; sourceTree = "<group>"; };
 		C9A84F37264495600014D8E0 /* RiveExplorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveExplorer.swift; sourceTree = "<group>"; };
 		C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesViewController.swift; sourceTree = "<group>"; };
 		C9A84F5F2644AB6B0014D8E0 /* RiveExplorerBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveExplorerBridge.swift; sourceTree = "<group>"; };
@@ -141,7 +145,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04A8F6C126452E31002C909A /* RiveRuntime.framework in Frameworks */,
+				04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -182,6 +186,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				04D5B069266A460C004ACA5B /* nothing.riv */,
 				042C88D42644447500E7DBB2 /* artboard_animations.riv */,
 				042C88CF2644447500E7DBB2 /* basketball.riv */,
 				042C88D92644447500E7DBB2 /* clipping.riv */,
@@ -398,6 +403,7 @@
 				042C88E42644447500E7DBB2 /* neostream.riv in Resources */,
 				042C88E82644447500E7DBB2 /* loopy.riv in Resources */,
 				042C88E02644447500E7DBB2 /* progress.riv in Resources */,
+				04D5B06C266A460C004ACA5B /* nothing.riv in Resources */,
 				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
 				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
@@ -569,7 +575,6 @@
 		C9C73EBF24FC471E00EF9516 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
@@ -588,7 +593,6 @@
 		C9C73EC024FC471E00EF9516 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
