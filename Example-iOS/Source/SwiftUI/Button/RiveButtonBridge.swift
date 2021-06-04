@@ -30,6 +30,10 @@ struct RiveButtonBridge: UIViewRepresentable {
         play ? riveView.play() : riveView.pause()
     }
 
+    static func dismantleUIView(_ riveView: RiveView, coordinator: Self.Coordinator) {
+        riveView.stop()
+    }
+    
     func makeCoordinator() -> Coordinator {
         return Coordinator(self)
     }

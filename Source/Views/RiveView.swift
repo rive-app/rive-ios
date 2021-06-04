@@ -331,7 +331,7 @@ extension RiveView {
     }
     
     /// Returns a list of valid state machine inputs for any instanced state machine
-    /// - Returns a list of valid state machine inputs and thir types
+    /// - Returns a list of valid state machine inputs and their types
     open func stateMachineInputs() -> [StateMachineInput] {
         var inputs: [StateMachineInput] = []
         stateMachines.forEach({ machine in
@@ -419,7 +419,7 @@ extension RiveView {
         let elapsedTime = timestamp - lastTime;
         lastTime = timestamp;
         advance(delta: elapsedTime)
-        if(!isPlaying){
+        if(!isPlaying) {
             stopTimer()
         }
     }

@@ -124,7 +124,6 @@ struct RiveExplorerBridge: UIViewRepresentable {
             if uiView.animationNames().contains(playAnimation) {
                 uiView.play(animationName: playAnimation)
             } else if uiView.stateMachineNames().contains(playAnimation) {
-                print("3")
                 uiView.play(animationName: playAnimation, isStateMachine: true)
             }
         } else {
@@ -134,6 +133,10 @@ struct RiveExplorerBridge: UIViewRepresentable {
                 uiView.pause()
             }
         }
+    }
+    
+    static func dismantleUIView(_ uiView: RiveView, coordinator: Self.Coordinator) {
+        uiView.stop()
     }
     
     // Constructs a coordinator for managing updating state

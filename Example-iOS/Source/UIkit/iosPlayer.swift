@@ -331,4 +331,9 @@ class IOSPlayerViewController: UIViewController {
         load(name:fileChoices.chosen)
         
     }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        (view as! IOSPlayerView).riveView.stop()
+    }
 }

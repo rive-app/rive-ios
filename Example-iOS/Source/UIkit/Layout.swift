@@ -91,4 +91,9 @@ class LayoutViewController: UIViewController {
         layoutView.fitButtonAction = setFit
         layoutView.alignmentButtonAction = setAlignmnet
     }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        (view as! LayoutView).riveView.stop()
+    }
 }

@@ -9,6 +9,13 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
+@interface RiveStateMachineInstance ()
+
+/// Holds references to SMIInputs
+@property NSMutableDictionary *inputs;
+
+@end
+
 /*
  * RiveStateMachineInstance
  */
@@ -22,6 +29,7 @@
     if (self = [super init]) {
         self->stateMachine = stateMachine;
         instance = new rive::StateMachineInstance(stateMachine);
+        _inputs = [[NSMutableDictionary alloc] init];
         return self;
     } else {
         return nil;
@@ -38,33 +46,60 @@
     return [[RiveStateMachine alloc] initWithStateMachine: stateMachine];
 }
 
-- (RiveSMIBool *)getBool:(NSString *) name {
+- (RiveSMIBool *)getBool:(NSString *)name {
+    // Create a unique dictionary name for numbers;
+    // this lets us use one dictionary for the three different types
+    NSString * dictName = [NSString stringWithFormat:@"%@%s", name, "_boo"];
+    // Check if the input is already instanced
+    if ([_inputs objectForKey:dictName] != nil) {
+        return _inputs[dictName];
+    }
+    // Otherwise, try to retrieve from runtime
     std::string stdName = std::string([name UTF8String]);
     rive::SMIBool *smi = instance->getBool(stdName);
     if (smi == nullptr) {
         return NULL;
     } else {
-        return [[RiveSMIBool alloc] initWithSMIInput: smi];
+        _inputs[dictName] = [[RiveSMIBool alloc] initWithSMIInput: smi];
+        return _inputs[dictName];
     }
 }
 
-- (RiveSMITrigger *)getTrigger:(NSString *) name {
+- (RiveSMITrigger *)getTrigger:(NSString *)name {
+    // Create a unique dictionary name for numbers;
+    // this lets us use one dictionary for the three different types
+    NSString * dictName = [NSString stringWithFormat:@"%@%s", name, "_trg"];
+    // Check if the input is already instanced
+    if ([_inputs objectForKey:dictName] != nil) {
+        return _inputs[dictName];
+    }
+    // Otherwise, try to retrieve from runtime
     std::string stdName = std::string([name UTF8String]);
     rive::SMITrigger *smi = instance->getTrigger(stdName);
     if (smi == nullptr) {
         return NULL;
     } else {
-        return [[RiveSMITrigger alloc] initWithSMIInput: smi];
+        _inputs[dictName] = [[RiveSMITrigger alloc] initWithSMIInput: smi];
+        return _inputs[dictName];
     }
 }
 
-- (RiveSMINumber *)getNumber:(NSString *) name {
+- (RiveSMINumber *)getNumber:(NSString *)name {
+    // Create a unique dictionary name for numbers;
+    // this lets us use one dictionary for the three different types
+    NSString * dictName = [NSString stringWithFormat:@"%@%s", name, "_num"];
+    // Check if the input is already instanced
+    if ([_inputs objectForKey:dictName] != nil) {
+        return _inputs[dictName];
+    }
+    // Otherwise, try to retrieve from runtime
     std::string stdName = std::string([name UTF8String]);
     rive::SMINumber *smi = instance->getNumber(stdName);
     if (smi == nullptr) {
         return NULL;
     } else {
-        return [[RiveSMINumber alloc] initWithSMIInput: smi];
+        _inputs[dictName] = [[RiveSMINumber alloc] initWithSMIInput: smi];;
+        return _inputs[dictName];
     }
 }
 
@@ -161,6 +196,10 @@
         [inputNames addObject:[[self stateChangedFromIndex: i] name]];
     }
     return inputNames;
+}
+
+- (void)dealloc {
+    delete instance;
 }
 
 @end

@@ -28,11 +28,12 @@ struct RiveProgressBarBridge: UIViewRepresentable {
         
         // Always keep the 100 set; just how this state machine works
         riveView.setBooleanState(stateMachine, inputName: input100Name, value: true)
-        
         return riveView
     }
 
-    
+    static func dismantleUIView(_ riveView: RiveView, coordinator: Self.Coordinator) {
+        riveView.stop()
+    }
     
     func updateUIView(_ riveView: RiveView, context: UIViewRepresentableContext<RiveProgressBarBridge>) {
         riveView.setBooleanState(stateMachine, inputName: input75Name, value: health < 100)

@@ -45,4 +45,13 @@ class MultipleAnimationsController: UIViewController {
             andArtboard: "Star"
         )
     }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        (view as! MultipleAnimations).squareGoAround.stop()
+        (view as! MultipleAnimations).squareRollAround.stop()
+        (view as! MultipleAnimations).circle.stop()
+        (view as! MultipleAnimations).star.stop()
+        
+    }
 }

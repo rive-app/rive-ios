@@ -68,4 +68,9 @@
     std::string str = instance->animation()->name();
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
+
+- (void)dealloc {
+    delete instance;
+}
+
 @end

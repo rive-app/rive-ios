@@ -16,12 +16,18 @@ class SimpleAnimationViewController: UIViewController {
         super.loadView()
         
         let view = RiveView()
+        view.fit = Fit.fitCover
         guard let riveFile = RiveFile(resource: resourceName) else {
             fatalError("Failed to load RiveFile")
         }
 
         view.configure(riveFile)
         self.view = view
+    }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        (view as! RiveView).stop()
     }
 }
 

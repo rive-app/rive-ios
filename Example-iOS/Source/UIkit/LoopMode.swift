@@ -160,8 +160,11 @@ class LoopModeController: UIViewController {
         loopModeView.triggeredLtrPingPongButton = {
             loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopPingPong, direction: self.direction)
         }
-
-        
+    }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        (view as! LoopMode).riveView.stop()
     }
 }
 
