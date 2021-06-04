@@ -94,6 +94,9 @@ struct ConfigOptions {
 }
 
 public class RiveView: UIView {
+    
+    deinit { print("RiveView is being de initialized") }
+    
     // Configuration
     private var riveFile: RiveFile?
     private var _fit: Fit = .fitContain
@@ -255,7 +258,6 @@ extension RiveView {
         }else {
             self._artboard = riveFile.artboard()
         }
-        
         guard let artboard = self._artboard else {
             fatalError("No default artboard exists")
         }
@@ -394,8 +396,8 @@ extension RiveView {
     
     // Stops the animation timer
     private func stopTimer() {
-        // should we pause or invalidate?
-        displayLink?.isPaused = true
+        displayLink?.invalidate()
+        displayLink = nil;
     }
     
     /// Start a redraw:
