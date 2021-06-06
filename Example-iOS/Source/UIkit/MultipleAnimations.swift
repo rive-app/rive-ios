@@ -17,6 +17,7 @@ class MultipleAnimations: UIView {
 }
 
 class MultipleAnimationsController: UIViewController {
+    
     let loopResourceName = "artboard_animations"
     
     override public func loadView() {

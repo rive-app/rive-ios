@@ -18,7 +18,7 @@ class IOSPlayerView: UIView {
 class FileChoiceDelegate: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
     let choices = ["artboard_animations", "basketball", "clipping", "explorer", "f22", "flux_capacitor", "loopy", "mascot", "neostream", "off_road_car_blog", "progress", "pull", "rope", "skills", "trailblaze", "ui_swipe_left_to_delete", "vader", "wacky", "juice_v7", "truck_v7"]
     var chosen = "skills"
-    var viewController:IOSPlayerViewController?
+    weak var viewController:IOSPlayerViewController?
     //MARK: - Pickerview method
    func numberOfComponents(in pickerView: UIPickerView) -> Int {
     return 1
@@ -38,7 +38,7 @@ class FileChoiceDelegate: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
 class ArtboardChoicesDelegate: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
     var choices = [""]
     var chosen:String?
-    var viewController:IOSPlayerViewController?
+    weak var viewController:IOSPlayerViewController?
     
    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -118,20 +118,20 @@ class IOSPlayerViewController: UIViewController {
                 let play = UIButton(
                     type: .system,
                     primaryAction:
-                        UIAction(title: ">", handler: { _ in
+                        UIAction(title: ">", handler: { [unowned self] _ in
                             self.playerView?.riveView?.play(animationName: name)
                         }))
                 let pause = UIButton(
                     type: .system,
                     primaryAction:
-                        UIAction(title: "||", handler: { _ in
+                        UIAction(title: "||", handler: { [unowned self] _ in
                             self.playerView?.riveView?.pause(animationName: name)
                         }))
                 
                 let stop = UIButton(
                     type: .system,
                     primaryAction:
-                        UIAction(title: "[]", handler: { _ in
+                        UIAction(title: "[]", handler: { [unowned self] _ in
                             self.playerView?.riveView?.stop(animationName: name)
                         }))
                 
@@ -193,20 +193,20 @@ class IOSPlayerViewController: UIViewController {
                 let play = UIButton(
                     type: .system,
                     primaryAction:
-                        UIAction(title: ">", handler: { _ in
+                        UIAction(title: ">", handler: { [unowned self] _ in
                             self.playerView?.riveView?.play(animationName: name, isStateMachine: true)
                         }))
                 let pause = UIButton(
                     type: .system,
                     primaryAction:
-                        UIAction(title: "||", handler: { _ in
+                        UIAction(title: "||", handler: { [unowned self] _ in
                             self.playerView?.riveView?.pause(animationName: name, isStateMachine: true)
                         }))
                 
                 let stop = UIButton(
                     type: .system,
                     primaryAction:
-                        UIAction(title: "[]", handler: { _ in
+                        UIAction(title: "[]", handler: { [unowned self] _ in
                             self.playerView?.riveView?.stop(animationName: name, isStateMachine: true)
                         }))
                 
@@ -249,7 +249,7 @@ class IOSPlayerViewController: UIViewController {
                         let switchToggle = UISwitch(
                             frame: CGRect(),
                             primaryAction: UIAction(
-                                handler: { this in
+                                handler: { [unowned self] this in
                                     if ((this.sender as! UISwitch).isOn){
                                         self.playerView?.riveView.setBooleanState(name, inputName: inputName, value: true)
                                     }
@@ -265,7 +265,7 @@ class IOSPlayerViewController: UIViewController {
                         let fireButton = UIButton(
                             type: .system,
                             primaryAction:
-                                UIAction(title: "fire", handler: { _ in
+                                UIAction(title: "fire", handler: { [unowned self] _ in
                                     self.playerView?.riveView.fireState(name, inputName: inputName)
                                 }))
                         stackView.addArrangedSubview(fireButton)
@@ -279,7 +279,7 @@ class IOSPlayerViewController: UIViewController {
                         let downButton = UIButton(
                             type: .system,
                             primaryAction:
-                                UIAction(title: "-", handler: { _ in
+                                UIAction(title: "-", handler: { [unowned self] _ in
                                     let currentValue = (valueLabel.text! as NSString)
                                     let currentFloat = currentValue.floatValue - 1
                                     valueLabel.text = NSString(format: "%.2f", currentFloat) as String
@@ -289,7 +289,7 @@ class IOSPlayerViewController: UIViewController {
                         let upButton = UIButton(
                             type: .system,
                             primaryAction:
-                                UIAction(title: "+", handler: { _ in
+                                UIAction(title: "+", handler: { [unowned self] _ in
                                     let currentValue = (valueLabel.text! as NSString)
                                     let currentFloat = currentValue.floatValue + 1
                                     valueLabel.text = NSString(format: "%.2f", currentFloat) as String
