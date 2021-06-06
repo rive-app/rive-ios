@@ -72,14 +72,14 @@
     NSData *fileData = [NSData dataWithContentsOfURL:fileUrl];
     UInt8 *bytePtr = (UInt8 *)[fileData bytes];
     
-    return [[RiveFile alloc] initWithBytes:bytePtr byteLength:fileData.length];
+    return [self initWithBytes:bytePtr byteLength:fileData.length];
 }
 
 /*
  * Creates a RiveFile from a binary resource, and assumes the resource extension is '.riv'
  */
 - (nullable instancetype)initWithResource:(NSString *)resourceName {
-    return [[RiveFile alloc] initWithResource:resourceName withExtension:@"riv"];
+    return [self initWithResource:resourceName withExtension:@"riv"];
 }
 
 /*
