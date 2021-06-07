@@ -130,7 +130,7 @@
 // Creates a new instance of this state machine
 - (RiveSMIInput *)inputFromIndex:(NSInteger)index {
     if (index >= [self inputCount]) {
-        @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No Input found at index %ld.", index] userInfo:nil];
+        @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No Input found at index %ld.", (long)index] userInfo:nil];
     }
     return [self _convertInput: instance->input(index) ];
 }
@@ -184,7 +184,7 @@
 - (RiveLayerState *)stateChangedFromIndex:(NSInteger)index{
     const rive::LayerState *layerState = instance->stateChangedByIndex(index);
     if (layerState == nullptr) {
-        @throw [[RiveException alloc] initWithName:@"NoStateChangeFound" reason:[NSString stringWithFormat: @"No State Changed found at index %lu.", index] userInfo:nil];
+        @throw [[RiveException alloc] initWithName:@"NoStateChangeFound" reason:[NSString stringWithFormat: @"No State Changed found at index %ld.", (long)index] userInfo:nil];
     } else {
         return [self _convertLayerState: layerState];
     }

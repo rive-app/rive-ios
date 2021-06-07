@@ -156,7 +156,7 @@
 
 - (RiveArtboard *)artboardFromIndex:(NSInteger)index {
     if (index >= [self artboardCount]) {
-        @throw [[RiveException alloc] initWithName:@"NoArtboardFound" reason:[NSString stringWithFormat: @"No Artboard Found at index %ld.", index] userInfo:nil];
+        @throw [[RiveException alloc] initWithName:@"NoArtboardFound" reason:[NSString stringWithFormat: @"No Artboard Found at index %ld.", (long)index] userInfo:nil];
     }
     return [[RiveArtboard alloc]
             initWithArtboard: reinterpret_cast<rive::Artboard *>(riveFile->artboard(index))];

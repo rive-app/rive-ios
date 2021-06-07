@@ -41,7 +41,7 @@
 
 - (RiveLinearAnimation *)animationFromIndex:(NSInteger)index {
     if (index < 0 || index >= [self animationCount]) {
-        @throw [[RiveException alloc] initWithName:@"NoAnimationFound" reason:[NSString stringWithFormat: @"No Animation found at index %ld.", index] userInfo:nil];
+        @throw [[RiveException alloc] initWithName:@"NoAnimationFound" reason:[NSString stringWithFormat: @"No Animation found at index %ld.", (long)index] userInfo:nil];
     }
     return [[RiveLinearAnimation alloc] initWithAnimation: _artboard->animation(index)];
 }
@@ -82,7 +82,7 @@
 // Returns a state machine at the given index, or null if the index is invalid
 - (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index {
     if (index < 0 || index >= [self stateMachineCount]) {
-        @throw [[RiveException alloc] initWithName:@"NoStateMachineFound" reason:[NSString stringWithFormat: @"No State Machine found at index %ld.", index] userInfo:nil];
+        @throw [[RiveException alloc] initWithName:@"NoStateMachineFound" reason:[NSString stringWithFormat: @"No State Machine found at index %ld.", (long)index] userInfo:nil];
     }
     return [[RiveStateMachine alloc] initWithStateMachine: _artboard->stateMachine(index)];
 }
