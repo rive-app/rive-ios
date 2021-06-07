@@ -164,7 +164,6 @@ class LoopModeController: UIViewController {
     
     override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        (view as! LoopMode).riveView.stop()
         (view as! LoopMode).triggeredResetButton = nil
         (view as! LoopMode).triggeredForwardsButton = nil
         (view as! LoopMode).triggeredAutoButton = nil

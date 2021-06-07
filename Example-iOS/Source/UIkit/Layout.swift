@@ -92,7 +92,6 @@ class LayoutViewController: UIViewController {
     
     override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        (view as! LayoutView).riveView.stop()
         (view as! LayoutView).fitButtonAction = nil
         (view as! LayoutView).alignmentButtonAction = nil
     }

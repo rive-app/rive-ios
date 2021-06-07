@@ -334,6 +334,5 @@ class IOSPlayerViewController: UIViewController {
     
     override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        (view as! IOSPlayerView).riveView.stop()
     }
 }
