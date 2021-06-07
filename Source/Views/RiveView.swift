@@ -413,12 +413,13 @@ extension RiveView {
     // Starts the animation timer
     private func runTimer() {
         if displayLink == nil {
-//            displayLinkProxy = CADisplayLinkProxy(
-//                handle: { [weak self] in
-//                    self?.tick()
-//                }, to: .main, forMode: .common)
-            displayLink = CADisplayLink(target: self, selector: #selector(tick))
-            displayLink?.add(to: .main, forMode: .common)
+            displayLinkProxy = CADisplayLinkProxy(
+                handle: { [weak self] in
+                    self?.tick()
+                }, to: .main, forMode: .common)
+//            TODO: delete after talking about it.
+//            displayLink = CADisplayLink(target: self, selector: #selector(tick))
+//            displayLink?.add(to: .main, forMode: .common)
         }
         if displayLinkProxy?.displayLink?.isPaused == true {
             lastTime = 0
@@ -443,16 +444,16 @@ extension RiveView {
     /// - if the artboard has come to a stop, stop.
     @objc func tick() {
         print("tick")
-//        guard let displayLink = displaylinkProxy?.displaylink else {
-//            // Something's gone wrong, clean up and bug out
-//            stopTimer()
-//            return
-//        }
-        guard let displayLink = displayLink else {
+        guard let displayLink = displayLinkProxy?.displayLink else {
             // Something's gone wrong, clean up and bug out
             stopTimer()
             return
         }
+//        guard let displayLink = displayLink else {
+//            // Something's gone wrong, clean up and bug out
+//            stopTimer()
+//            return
+//        }
         
         let timestamp = displayLink.timestamp
         // last time needs to be set on the first tick
