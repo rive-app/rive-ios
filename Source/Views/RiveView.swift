@@ -137,7 +137,6 @@ public class RiveView: UIView {
     public var stateMachines: [RiveStateMachineInstance] = []
     public var playingStateMachines: Set<RiveStateMachineInstance> = []
     private var lastTime: CFTimeInterval = 0
-    private var displayLink: CADisplayLink?
     private var displayLinkProxy: CADisplayLinkProxy?
     
     // Delegates
@@ -256,6 +255,7 @@ extension RiveView {
         andStateMachine stateMachine: String?=nil,
         andAutoPlay autoPlay: Bool=true
     ) {
+        clear()
         if !riveFile.isLoaded {
             // Save the config details for async call
             self.configOptions = ConfigOptions(
@@ -268,7 +268,7 @@ extension RiveView {
             return;
         }
         
-        clear()
+        
         // Testing stuff
         NotificationCenter.default.addObserver(self, selector: #selector(animationWillEnterForeground),
                                                name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -316,6 +316,7 @@ extension RiveView {
     
     /// Stop playback, clear any created animation or state machine instances.
     private func clear() {
+        stop()
         playingAnimations.removeAll()
         playingStateMachines.removeAll()
         animations.removeAll()
@@ -412,30 +413,22 @@ extension RiveView {
 
     // Starts the animation timer
     private func runTimer() {
-        if displayLink == nil {
+        if displayLinkProxy == nil {
             displayLinkProxy = CADisplayLinkProxy(
                 handle: { [weak self] in
                     self?.tick()
                 }, to: .main, forMode: .common)
-//            TODO: delete after talking about it.
-//            displayLink = CADisplayLink(target: self, selector: #selector(tick))
-//            displayLink?.add(to: .main, forMode: .common)
         }
         if displayLinkProxy?.displayLink?.isPaused == true {
-            lastTime = 0
             displayLinkProxy?.displayLink?.isPaused = false
-        }
-        if displayLink?.isPaused == true {
-            lastTime = 0
-            displayLink!.isPaused = false
         }
     }
     
     // Stops the animation timer
     private func stopTimer() {
         displayLinkProxy?.invalidate()
-        displayLink?.invalidate()
-        displayLink = nil;
+        displayLinkProxy = nil
+        lastTime = 0
     }
     
     /// Start a redraw:
@@ -443,17 +436,11 @@ extension RiveView {
     /// - advance the artbaord, which will invalidate the display.
     /// - if the artboard has come to a stop, stop.
     @objc func tick() {
-        print("tick")
         guard let displayLink = displayLinkProxy?.displayLink else {
             // Something's gone wrong, clean up and bug out
             stopTimer()
             return
         }
-//        guard let displayLink = displayLink else {
-//            // Something's gone wrong, clean up and bug out
-//            stopTimer()
-//            return
-//        }
         
         let timestamp = displayLink.timestamp
         // last time needs to be set on the first tick
