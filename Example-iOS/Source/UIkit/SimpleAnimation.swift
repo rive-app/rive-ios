@@ -27,7 +27,7 @@ class SimpleAnimationViewController: UIViewController {
     
     override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        (view as! RiveView).stop()
+//        (view as! RiveView).stop()
     }
 }
 

@@ -59,7 +59,7 @@ class LayoutViewController: UIViewController {
             layoutView.riveView.fit = fit
         }
         
-        func setAlignmnet(name:String) {
+        func setAlignmnet(name:String) { 
             var alignment: Alignment = .alignmentCenter
             switch name {
             case "Top Left":
