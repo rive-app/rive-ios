@@ -164,7 +164,25 @@ class LoopModeController: UIViewController {
     
     override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        (view as! LoopMode).riveView.stop()
+        (view as! LoopMode).triggeredResetButton = nil
+        (view as! LoopMode).triggeredForwardsButton = nil
+        (view as! LoopMode).triggeredAutoButton = nil
+        (view as! LoopMode).triggeredBackwardsButton = nil
+        
+        (view as! LoopMode).triggeredRotatePlayButton = nil
+        (view as! LoopMode).triggeredRotateOneShotButton = nil
+        (view as! LoopMode).triggeredRotateLoopButton = nil
+        (view as! LoopMode).triggeredRotatePingPongButton = nil
+        
+        (view as! LoopMode).triggeredLoopDownPlayButton = nil
+        (view as! LoopMode).triggeredLoopDownOneShotButton = nil
+        (view as! LoopMode).triggeredLoopDownLoopButton = nil
+        (view as! LoopMode).triggeredLoopDownPingPongButton = nil
+        
+        (view as! LoopMode).triggeredLtrPlayButton = nil
+        (view as! LoopMode).triggeredLtrLoopButton = nil
+        (view as! LoopMode).triggeredLtrOneShotButton = nil
+        (view as! LoopMode).triggeredLtrPingPongButton = nil
     }
 }
 

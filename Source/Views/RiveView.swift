@@ -93,6 +93,33 @@ struct ConfigOptions {
     var autoPlay: Bool = true
 }
 
+
+class CADisplayLinkProxy {
+
+    var displayLink: CADisplayLink?
+    var handle: (() -> Void)?
+    private var runloop: RunLoop
+    private var mode: RunLoop.Mode
+
+    init(handle: (() -> Void)?, to runloop: RunLoop, forMode mode: RunLoop.Mode) {
+        self.handle = handle
+        self.runloop = runloop
+        self.mode = mode
+        displayLink = CADisplayLink(target: self, selector: #selector(updateHandle))
+        displayLink?.add(to: runloop, forMode: mode)
+    }
+
+    @objc func updateHandle() {
+        handle?()
+    }
+
+    func invalidate() {
+        displayLink?.remove(from: runloop, forMode: mode)
+        displayLink?.invalidate()
+        displayLink = nil
+    }
+}
+
 public class RiveView: UIView {
     
     deinit { print("RiveView is being de initialized") }
@@ -110,7 +137,7 @@ public class RiveView: UIView {
     public var stateMachines: [RiveStateMachineInstance] = []
     public var playingStateMachines: Set<RiveStateMachineInstance> = []
     private var lastTime: CFTimeInterval = 0
-    private var displayLink: CADisplayLink?
+    private var displayLinkProxy: CADisplayLinkProxy?
     
     // Delegates
     public weak var loopDelegate: LoopDelegate?
@@ -228,6 +255,7 @@ extension RiveView {
         andStateMachine stateMachine: String?=nil,
         andAutoPlay autoPlay: Bool=true
     ) {
+        clear()
         if !riveFile.isLoaded {
             // Save the config details for async call
             self.configOptions = ConfigOptions(
@@ -240,7 +268,7 @@ extension RiveView {
             return;
         }
         
-        clear()
+        
         // Testing stuff
         NotificationCenter.default.addObserver(self, selector: #selector(animationWillEnterForeground),
                                                name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -288,6 +316,7 @@ extension RiveView {
     
     /// Stop playback, clear any created animation or state machine instances.
     private func clear() {
+        stop()
         playingAnimations.removeAll()
         playingStateMachines.removeAll()
         animations.removeAll()
@@ -381,23 +410,25 @@ extension RiveView {
         artboard.draw(renderer)
     }
     
+
     // Starts the animation timer
     private func runTimer() {
-        if displayLink == nil {
-            displayLink = CADisplayLink(target: self, selector: #selector(tick));
-            // Note: common didnt pause on scroll.
-            displayLink?.add(to: .main, forMode: .common)
+        if displayLinkProxy == nil {
+            displayLinkProxy = CADisplayLinkProxy(
+                handle: { [weak self] in
+                    self?.tick()
+                }, to: .main, forMode: .common)
         }
-        if displayLink?.isPaused == true {
-            lastTime = 0
-            displayLink!.isPaused = false
+        if displayLinkProxy?.displayLink?.isPaused == true {
+            displayLinkProxy?.displayLink?.isPaused = false
         }
     }
     
     // Stops the animation timer
     private func stopTimer() {
-        displayLink?.invalidate()
-        displayLink = nil;
+        displayLinkProxy?.invalidate()
+        displayLinkProxy = nil
+        lastTime = 0
     }
     
     /// Start a redraw:
@@ -405,7 +436,7 @@ extension RiveView {
     /// - advance the artbaord, which will invalidate the display.
     /// - if the artboard has come to a stop, stop.
     @objc func tick() {
-        guard let displayLink = displayLink else {
+        guard let displayLink = displayLinkProxy?.displayLink else {
             // Something's gone wrong, clean up and bug out
             stopTimer()
             return

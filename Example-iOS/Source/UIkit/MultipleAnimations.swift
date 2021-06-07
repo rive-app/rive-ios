@@ -17,6 +17,7 @@ class MultipleAnimations: UIView {
 }
 
 class MultipleAnimationsController: UIViewController {
+    
     let loopResourceName = "artboard_animations"
     
     override public func loadView() {
@@ -48,10 +49,6 @@ class MultipleAnimationsController: UIViewController {
     
     override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        (view as! MultipleAnimations).squareGoAround.stop()
-        (view as! MultipleAnimations).squareRollAround.stop()
-        (view as! MultipleAnimations).circle.stop()
-        (view as! MultipleAnimations).star.stop()
         
     }
 }
