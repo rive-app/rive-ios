@@ -37,7 +37,8 @@ class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, State
     var linearAnimaitonPauses = [String]()
     var linearAnimaitonStops = [String]()
     var loops = [String]()
-    var states = [String]()
+    var stateMachineNames = [String]()
+    var stateMachineStates = [String]()
     
     func loop(_ animationName: String, type: Int) {
         loops.append(animationName)
@@ -72,8 +73,9 @@ class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, State
         
     }
     
-    func stateChange(_ stateName: String) {
-        states.append(stateName)
+    func stateChange(_ stateMachineName:String, _ stateName: String) {
+        stateMachineNames.append(stateMachineName)
+        stateMachineStates.append(stateName)
     }
     
     
@@ -245,11 +247,13 @@ class DelegatesTest: XCTestCase {
     
         view.advance(delta:0.1)
         XCTAssertEqual(delegate.stateMachinePlays.count, 1)
-        XCTAssertEqual(delegate.states.count, 1)
-        XCTAssertEqual(delegate.states[0], "go right")
+        XCTAssertEqual(delegate.stateMachineStates.count, 1)
+        XCTAssertEqual(delegate.stateMachineNames[0], "State Machine 2")
+        XCTAssertEqual(delegate.stateMachineStates[0], "go right")
         view.advance(delta:1.1)
-        XCTAssertEqual(delegate.states.count, 2)
-        XCTAssertEqual(delegate.states[1], "ExitState")
+        XCTAssertEqual(delegate.stateMachineStates.count, 2)
+        XCTAssertEqual(delegate.stateMachineNames[1], "State Machine 2")
+        XCTAssertEqual(delegate.stateMachineStates[1], "ExitState")
         // takes an extra advance to trigger
         view.advance(delta:0)
         XCTAssertEqual(delegate.stateMachinePauses.count, 1)
@@ -264,7 +268,7 @@ class DelegatesTest: XCTestCase {
         )
     
         view.advance(delta:0.0)
-        XCTAssertEqual(delegate.states.count, 0)
+        XCTAssertEqual(delegate.stateMachineStates.count, 0)
         
         // lets just start, expect 1 change.
         view.fireState("State Machine 1", inputName: "right")
@@ -273,51 +277,53 @@ class DelegatesTest: XCTestCase {
         // how the 
         view.advance(delta:0.0)
         view.advance(delta:0.4)
-        XCTAssertEqual(delegate.states.count, 1)
-        XCTAssertEqual(delegate.states[0], "go right")
-        delegate.states.removeAll()
+        XCTAssertEqual(delegate.stateMachineStates.count, 1)
+        XCTAssertEqual(delegate.stateMachineStates[0], "go right")
+        XCTAssertEqual(delegate.stateMachineNames.count, 1)
+        XCTAssertEqual(delegate.stateMachineNames[0], "State Machine 1")
+        delegate.stateMachineStates.removeAll()
         
         
         // should be in same animation still. no state change
         view.advance(delta:0.4)
-        XCTAssertEqual(0, delegate.states.count)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
         XCTAssertEqual(true, view.isPlaying)
 
         // animation came to an end inside this time period, this still means no state change
         view.advance(delta:0.4)
         XCTAssertEqual(false, view.isPlaying)
-        XCTAssertEqual(0, delegate.states.count)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
 
         // animation is just kinda stuck there. no change no happening.
         view.advance(delta:0.4)
         XCTAssertEqual(false, view.isPlaying)
-        XCTAssertEqual(0, delegate.states.count)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
 
         // ok lets change thigns up again.
         view.fireState("State Machine 1", inputName: "change")
         view.advance(delta:0.0)
         view.advance(delta:0.4)
         XCTAssertEqual(true, view.isPlaying)
-        XCTAssertEqual(1, delegate.states.count)
+        XCTAssertEqual(1, delegate.stateMachineStates.count)
         
-        XCTAssertEqual("change!", delegate.states[0])
-        delegate.states.removeAll()
+        XCTAssertEqual("change!", delegate.stateMachineStates[0])
+        delegate.stateMachineStates.removeAll()
 
         // as before lets advance inside the animation -> no change
         view.advance(delta:0.4)
         XCTAssertEqual(true, view.isPlaying)
-        XCTAssertEqual(0, delegate.states.count)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
 
         // as before lets advance beyond the end of the animaiton, in this case change to exit!
         view.advance(delta:0.4)
         XCTAssertEqual(false, view.isPlaying)
-        XCTAssertEqual(1, delegate.states.count)
-        XCTAssertEqual("ExitState", delegate.states[0])
-        delegate.states.removeAll()
+        XCTAssertEqual(1, delegate.stateMachineStates.count)
+        XCTAssertEqual("ExitState", delegate.stateMachineStates[0])
+        delegate.stateMachineStates.removeAll()
 
         // chill on exit. no change.
         view.advance(delta:0.4)
         XCTAssertEqual(false, view.isPlaying)
-        XCTAssertEqual(0, delegate.states.count)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
     }
 }
