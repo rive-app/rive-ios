@@ -44,7 +44,7 @@ public protocol InputsDelegate: AnyObject {
 
 /// Delegate for new input states
 public protocol StateChangeDelegate: AnyObject {
-    func stateChange(_ stateName: String)
+    func stateChange(_ stateMachineName: String, _ stateName: String)
 }
 
 /// Playback states for a Rive file
@@ -490,7 +490,7 @@ extension RiveView {
                 
                 
                 stateMachine.stateChanges().forEach{
-                    stateChangeName in stateChangeDelegate?.stateChange(stateChangeName)}
+                    stateChangeName in stateChangeDelegate?.stateChange(stateMachine.name(), stateChangeName)}
                 
                 if !stillPlaying {
                     _pause(stateMachine)
