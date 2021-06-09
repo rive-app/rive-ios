@@ -125,4 +125,16 @@
     return CGRectMake(aabb.minX, aabb.minY, aabb.width(), aabb.height());
 }
 
+// Creates an instance of the artboard
+- (RiveArtboard *)instance {
+    rive::Artboard *instance = _artboard->instance();
+    return [[RiveArtboard alloc] initWithArtboard: instance];
+}
+
+- (void)dealloc {
+     if (_artboard->isInstance()) {
+       delete _artboard;
+     }
+}
+
 @end

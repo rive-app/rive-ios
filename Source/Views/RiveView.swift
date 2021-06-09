@@ -122,7 +122,9 @@ class CADisplayLinkProxy {
 
 public class RiveView: UIView {
     
-    deinit { print("RiveView is being de initialized") }
+    deinit {
+        // print("RiveView is being de initialized")
+    }
     
     // Configuration
     private var riveFile: RiveFile?
@@ -281,18 +283,23 @@ extension RiveView {
         self.riveFile = riveFile
         self.autoPlay = configOptions?.autoPlay ?? autoPlay
         
+        let rootArtboard: RiveArtboard?
+        
         if let artboardName = configOptions?.artboard ?? artboard {
-            self._artboard = riveFile.artboard(fromName:artboardName)
-        }else {
-            self._artboard = riveFile.artboard()
+            rootArtboard = riveFile.artboard(fromName:artboardName)
+        } else {
+            rootArtboard = riveFile.artboard()
         }
-        guard let artboard = self._artboard else {
+        guard let artboard = rootArtboard else {
             fatalError("No default artboard exists")
         }
         
         if (artboard.animationCount() == 0) {
             fatalError("No animations in the file.")
         }
+        
+        // Make an instance of the artboard and use that
+        self._artboard = artboard.instance();
         
         // Advance the artboard, this will ensure the first
         // frame is displayed when the artboard is drawn
