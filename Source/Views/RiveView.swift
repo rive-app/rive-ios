@@ -260,11 +260,11 @@ extension RiveView {
         clear()
         
         // Always save the config options to preserve for reset
-        self.configOptions = ConfigOptions(
+        configOptions = ConfigOptions(
             riveFile: riveFile,
-            artboard: artboard ?? self.configOptions?.artboard,
-            animation: animation ?? self.configOptions?.animation,
-            stateMachine: stateMachine ?? self.configOptions?.stateMachine,
+            artboard: artboard ?? configOptions?.artboard,
+            animation: animation ?? configOptions?.animation,
+            stateMachine: stateMachine ?? configOptions?.stateMachine,
             autoPlay: autoPlay // has a default setting
         );
         
@@ -284,11 +284,11 @@ extension RiveView {
         self.isOpaque = false
         
         self.riveFile = riveFile
-        self.autoPlay = configOptions?.autoPlay ?? autoPlay
+        self.autoPlay = configOptions!.autoPlay
         
         let rootArtboard: RiveArtboard?
         
-        if let artboardName = configOptions?.artboard ?? artboard {
+        if let artboardName = configOptions?.artboard {
             rootArtboard = riveFile.artboard(fromName:artboardName)
         } else {
             rootArtboard = riveFile.artboard()
@@ -303,25 +303,19 @@ extension RiveView {
         
         // Make an instance of the artboard and use that
         self._artboard = artboard.instance();
-        
-        // Advance the artboard, this will ensure the first
-        // frame is displayed when the artboard is drawn
-        // artboard.advance(by: 0)
-        
+
         // Start the animation loop
         if autoPlay {
-            if let animationName = configOptions?.animation ?? animation {
+            if let animationName = configOptions?.animation {
                 play(animationName: animationName)
-            }else if let stateMachineName = configOptions?.stateMachine ?? stateMachine {
+            } else if let stateMachineName = configOptions?.stateMachine {
                 play(animationName: stateMachineName, isStateMachine: true)
-            }else {
+            } else {
                 play()
             }
         } else {
             advance(delta: 0)
         }
-        // Clear out any config options
-        self.configOptions = nil
     }
     
     /// Stop playback, clear any created animation or state machine instances.

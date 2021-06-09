@@ -584,6 +584,14 @@
                                     <constraint firstAttribute="trailing" secondItem="H4O-e0-nOc" secondAttribute="trailing" id="rDz-3V-Uzb"/>
                                 </constraints>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yVd-BM-Sxu">
+                                <rect key="frame" x="188" y="440" width="39" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Reset"/>
+                                <connections>
+                                    <action selector="resetButtonTriggered:" destination="EmG-VF-nMb" eventType="touchUpInside" id="Oet-uP-EGz"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="4ah-AH-K39"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>

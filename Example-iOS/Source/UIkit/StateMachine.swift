@@ -17,6 +17,7 @@ class StateMachineView: UIView {
     var beginnerButtonAction: ButtonAction?
     var intermediateButtonAction: ButtonAction?
     var expertButtonAction: ButtonAction?
+    var resetButtonAction: ButtonAction?
     
     @IBAction func beginnerButtonTriggered(_ sender: UIButton) {
         beginnerButtonAction?()
@@ -27,6 +28,10 @@ class StateMachineView: UIView {
     
     @IBAction func expertButtonTriggered(_ sender: UIButton) {
         expertButtonAction?()
+    }
+    
+    @IBAction func resetButtonTriggered(_ sender: UIButton) {
+        resetButtonAction?()
     }
 }
 class StateMachineViewController: UIViewController {
@@ -63,6 +68,9 @@ class StateMachineViewController: UIViewController {
                 inputName: "Level",
                 value: 2.0
             )
+        }
+        stateMachineView.resetButtonAction = {
+            stateMachineView.riveView.reset()
         }
     }
     
