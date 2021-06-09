@@ -8,7 +8,7 @@ iOS runtime for [Rive](https://rive.app/)
 
 ## Beta Release
 
-This is the Android runtime for [Rive](https://rive.app), currently in beta. The api is subject to change as we continue to improve it. Please file issues and PRs for anything busted, missing, or just wrong.
+This is the iOS runtime for [Rive](https://rive.app), currently in beta. The api is subject to change as we continue to improve it. Please file issues and PRs for anything busted, missing, or just wrong.
 
 # Installing rive-ios
 
