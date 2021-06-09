@@ -41,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer *)renderer;
 
+// Creates an instance of the artboard
+- (RiveArtboard *)instance;
+
 @end
 
 NS_ASSUME_NONNULL_END
