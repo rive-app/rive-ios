@@ -256,15 +256,18 @@ extension RiveView {
         andAutoPlay autoPlay: Bool=true
     ) {
         clear()
+        
+        // Always save the config options to preserve for reset
+        self.configOptions = ConfigOptions(
+            riveFile: riveFile,
+            artboard: artboard ?? self.configOptions?.artboard,
+            animation: animation ?? self.configOptions?.animation,
+            stateMachine: stateMachine ?? self.configOptions?.stateMachine,
+            autoPlay: autoPlay // has a default setting
+        );
+        
+        // If it isn't loaded, early out
         if !riveFile.isLoaded {
-            // Save the config details for async call
-            self.configOptions = ConfigOptions(
-                riveFile: riveFile,
-                artboard: artboard,
-                animation: animation,
-                stateMachine: stateMachine,
-                autoPlay: autoPlay
-            );
             return;
         }
         
@@ -508,12 +511,15 @@ extension RiveView {
 extension RiveView {
     
     /// Reset the rive view & reload any provided `riveFile`
-    public func reset() {
-        clear()
+    public func reset(artboard: String? = nil, animation: String? = nil, stateMachine: String? = nil) {
         stopTimer()
         if let riveFile = self.riveFile {
-            // TODO: this is totally not enough to reset the file. i guess its because the file's artboard is already changed.
-            configure(riveFile, andAutoPlay: autoPlay)
+            // Calling configure will create a new artboard instance, reseting the animation
+            configure(riveFile,
+                      andArtboard: artboard,
+                      andAnimation: animation,
+                      andStateMachine: stateMachine,
+                      andAutoPlay: autoPlay)
         }
     }
     
