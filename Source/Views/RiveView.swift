@@ -258,15 +258,18 @@ extension RiveView {
         andAutoPlay autoPlay: Bool=true
     ) {
         clear()
+        
+        // Always save the config options to preserve for reset
+        configOptions = ConfigOptions(
+            riveFile: riveFile,
+            artboard: artboard ?? configOptions?.artboard,
+            animation: animation ?? configOptions?.animation,
+            stateMachine: stateMachine ?? configOptions?.stateMachine,
+            autoPlay: autoPlay // has a default setting
+        );
+        
+        // If it isn't loaded, early out
         if !riveFile.isLoaded {
-            // Save the config details for async call
-            self.configOptions = ConfigOptions(
-                riveFile: riveFile,
-                artboard: artboard,
-                animation: animation,
-                stateMachine: stateMachine,
-                autoPlay: autoPlay
-            );
             return;
         }
         
@@ -281,11 +284,11 @@ extension RiveView {
         self.isOpaque = false
         
         self.riveFile = riveFile
-        self.autoPlay = configOptions?.autoPlay ?? autoPlay
+        self.autoPlay = configOptions!.autoPlay
         
         let rootArtboard: RiveArtboard?
         
-        if let artboardName = configOptions?.artboard ?? artboard {
+        if let artboardName = configOptions?.artboard {
             rootArtboard = riveFile.artboard(fromName:artboardName)
         } else {
             rootArtboard = riveFile.artboard()
@@ -300,25 +303,19 @@ extension RiveView {
         
         // Make an instance of the artboard and use that
         self._artboard = artboard.instance();
-        
-        // Advance the artboard, this will ensure the first
-        // frame is displayed when the artboard is drawn
-        // artboard.advance(by: 0)
-        
+
         // Start the animation loop
         if autoPlay {
-            if let animationName = configOptions?.animation ?? animation {
+            if let animationName = configOptions?.animation {
                 play(animationName: animationName)
-            }else if let stateMachineName = configOptions?.stateMachine ?? stateMachine {
+            } else if let stateMachineName = configOptions?.stateMachine {
                 play(animationName: stateMachineName, isStateMachine: true)
-            }else {
+            } else {
                 play()
             }
         } else {
             advance(delta: 0)
         }
-        // Clear out any config options
-        self.configOptions = nil
     }
     
     /// Stop playback, clear any created animation or state machine instances.
@@ -515,12 +512,15 @@ extension RiveView {
 extension RiveView {
     
     /// Reset the rive view & reload any provided `riveFile`
-    public func reset() {
-        clear()
+    public func reset(artboard: String? = nil, animation: String? = nil, stateMachine: String? = nil) {
         stopTimer()
         if let riveFile = self.riveFile {
-            // TODO: this is totally not enough to reset the file. i guess its because the file's artboard is already changed.
-            configure(riveFile, andAutoPlay: autoPlay)
+            // Calling configure will create a new artboard instance, reseting the animation
+            configure(riveFile,
+                      andArtboard: artboard,
+                      andAnimation: animation,
+                      andStateMachine: stateMachine,
+                      andAutoPlay: autoPlay)
         }
     }
     
