@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="wRo-9V-rXR">
-                                <rect key="frame" x="0.0" y="88" width="414" height="281"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="311"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UIKit examples" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C8u-cc-gX1">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="20.5"/>
@@ -68,21 +68,28 @@
                                             <segue destination="bLr-Sd-R4P" kind="show" id="cqv-jB-x3e"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PZ2-v5-w29">
+                                        <rect key="frame" x="0.0" y="200.5" width="414" height="30"/>
+                                        <state key="normal" title="Blend Modes"/>
+                                        <connections>
+                                            <segue destination="6Y6-o9-aZy" kind="show" id="sFN-gS-xr4"/>
+                                        </connections>
+                                    </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SwiftUI examples" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wyj-7w-GPq">
-                                        <rect key="frame" x="0.0" y="200.5" width="414" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="230.5" width="414" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrC-Ng-Q2K">
-                                        <rect key="frame" x="0.0" y="221" width="414" height="30"/>
+                                        <rect key="frame" x="0.0" y="251" width="414" height="30"/>
                                         <state key="normal" title="Rive Explorer"/>
                                         <connections>
                                             <segue destination="w39-2n-FCH" kind="presentation" destinationCreationSelector="hostingAction:" id="SeF-el-OxU"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5d-hg-cnK">
-                                        <rect key="frame" x="0.0" y="251" width="414" height="30"/>
+                                        <rect key="frame" x="0.0" y="281" width="414" height="30"/>
                                         <state key="normal" title="SwiftUI Components"/>
                                         <connections>
                                             <segue destination="yNC-ze-bA4" kind="presentation" destinationCreationSelector="hostingActionStateMachine:" id="9dn-S5-TjE"/>
@@ -298,6 +305,22 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iPR-UO-vO8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2741" y="-692"/>
+        </scene>
+        <!--Blend Modes-->
+        <scene sceneID="JXR-CF-wxg">
+            <objects>
+                <viewController id="6Y6-o9-aZy" customClass="BlendModeViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="nG9-ag-3SU">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="m6u-Ig-qqu"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Blend Modes" id="DFg-Gs-kEt"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0JN-k1-xkH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-587" y="1130"/>
         </scene>
         <!--Loop Mode-->
         <scene sceneID="iqU-00-Krb">
