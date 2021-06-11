@@ -219,3 +219,15 @@ or attach it later
 ```swift
 view.loopDelegate = delegate
 ```
+
+## Blend modes 
+
+Rive allows the artist to set blend modes on shapes to determine how they are to be merged with the rest of the animation.
+
+Each runtime is supporting the various blend modes natively, this means that there are some discrepancies in how blend modes end up being applied, we have a test file that is shipped inside the application that highlights the differences.
+
+For ios, hue and saturation blend modes do not match the original.
+
+Original | iOS             |  
+:-------------------------:|:-------------------------:
+![Source](images/editor.png ) | ![iOS](images/ios.png)  
