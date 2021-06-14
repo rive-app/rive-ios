@@ -35,7 +35,7 @@ We are in the process of getting a pod available in [cocoapods](https://cocoapod
 While we are working out any kinks, we are publishing our pod to a temporary github repo, which you can install by including placeholder while we finalize any kinks.
 
 ```ruby
-pod 'RiveRuntime', :git => 'git@github.com:rive-app/test-ios.git'
+pod 'RiveRuntime'
 ```
 
 Once you have installed the pod, you can run

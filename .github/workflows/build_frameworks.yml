@@ -69,7 +69,7 @@ jobs:
       - name: Checkout podspec repo
         uses: actions/checkout@v2
         with:
-          repository: rive-app/test-ios
+          repository: rive-app/rive-ios-pod
           token: ${{ secrets.RIVE_REPO_PAT }}
       - name: Clean
         run: |
@@ -86,7 +86,7 @@ jobs:
           name: RiveRuntime.podspec
       - name: Lint pod
         run: pod lib lint --allow-warnings
-      - name: Push pod to test-ios repo
+      - name: Push pod to rive-ios-pod repo
         run: |
           git status
           git config --local user.email 'hello@rive.app'
