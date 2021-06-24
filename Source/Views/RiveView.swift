@@ -184,7 +184,7 @@ public class RiveView: UIView {
         stopDelegate: StopDelegate? = nil,
         inputsDelegate: InputsDelegate? = nil,
         stateChangeDelegate: StateChangeDelegate? = nil
-    ) {
+    ) throws {
         super.init(frame: .zero)
         self.fit = fit
         self.alignment = alignment
@@ -194,7 +194,7 @@ public class RiveView: UIView {
         self.stopDelegate = stopDelegate
         self.inputsDelegate = inputsDelegate
         self.stateChangeDelegate = stateChangeDelegate
-        self.configure(riveFile, andArtboard: artboard, andAnimation: animation, andStateMachine: stateMachine, andAutoPlay: autoplay)
+        try self.configure(riveFile, andArtboard: artboard, andAnimation: animation, andStateMachine: stateMachine, andAutoPlay: autoplay)
     }
     
     /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
@@ -209,8 +209,8 @@ public class RiveView: UIView {
 
 // Handle when a Rive file is asynchronously loaded
 extension RiveView: RiveFileDelegate {
-    public func riveFileDidLoad(_ riveFile: RiveFile) {
-        self.configure(riveFile);
+    public func riveFileDidLoad(_ riveFile: RiveFile) throws {
+        try self.configure(riveFile)
     }
 }
 
@@ -256,7 +256,7 @@ extension RiveView {
         andAnimation animation: String?=nil,
         andStateMachine stateMachine: String?=nil,
         andAutoPlay autoPlay: Bool=true
-    ) {
+    ) throws {
         clear()
         
         // Always save the config options to preserve for reset
@@ -289,9 +289,9 @@ extension RiveView {
         let rootArtboard: RiveArtboard?
         
         if let artboardName = configOptions?.artboard {
-            rootArtboard = riveFile.artboard(fromName:artboardName)
+            rootArtboard = try riveFile.artboard(fromName:artboardName)
         } else {
-            rootArtboard = riveFile.artboard()
+            rootArtboard = try riveFile.artboard()
         }
         guard let artboard = rootArtboard else {
             fatalError("No default artboard exists")
@@ -307,11 +307,11 @@ extension RiveView {
         // Start the animation loop
         if autoPlay {
             if let animationName = configOptions?.animation {
-                play(animationName: animationName)
+                try play(animationName: animationName)
             } else if let stateMachineName = configOptions?.stateMachine {
-                play(animationName: stateMachineName, isStateMachine: true)
+                try play(animationName: stateMachineName, isStateMachine: true)
             } else {
-                play()
+                try play()
             }
         } else {
             advance(delta: 0)
@@ -367,12 +367,12 @@ extension RiveView {
     
     /// Returns a list of valid state machine inputs for any instanced state machine
     /// - Returns a list of valid state machine inputs and their types
-    open func stateMachineInputs() -> [StateMachineInput] {
+    open func stateMachineInputs() throws -> [StateMachineInput] {
         var inputs: [StateMachineInput] = []
-        stateMachines.forEach({ machine in
+        try stateMachines.forEach({ machine in
             let inputCount = machine.inputCount()
-            for i in 0...inputCount-1 {
-                let input = machine.input(from: i)
+            for i in 0..<inputCount {
+                let input = try machine.input(from: i)
                 var type = StateMachineInputType.boolean
                 if input.isTrigger() { type = StateMachineInputType.trigger }
                 else if input.isNumber() { type = StateMachineInputType.number }
@@ -512,11 +512,11 @@ extension RiveView {
 extension RiveView {
     
     /// Reset the rive view & reload any provided `riveFile`
-    public func reset(artboard: String? = nil, animation: String? = nil, stateMachine: String? = nil) {
+    public func reset(artboard: String? = nil, animation: String? = nil, stateMachine: String? = nil) throws {
         stopTimer()
         if let riveFile = self.riveFile {
             // Calling configure will create a new artboard instance, reseting the animation
-            configure(riveFile,
+            try configure(riveFile,
                       andArtboard: artboard,
                       andAnimation: animation,
                       andStateMachine: stateMachine,
@@ -532,12 +532,12 @@ extension RiveView {
     public func play(
         loop: Loop = .loopAuto,
         direction: Direction = .directionAuto
-    ) {
+    ) throws {
         guard let guardedArtboard=_artboard else {
             return;
         }
         
-        _playAnimation(
+        try _playAnimation(
             animationName:guardedArtboard.firstAnimation().name(),
             loop:loop,
             direction:direction
@@ -556,8 +556,8 @@ extension RiveView {
         loop: Loop = .loopAuto,
         direction: Direction = .directionAuto,
         isStateMachine: Bool = false
-    ) {
-        _playAnimation(
+    ) throws {
+        try _playAnimation(
             animationName:animationName,
             loop:loop,
             direction:direction,
@@ -577,9 +577,9 @@ extension RiveView {
         loop: Loop = .loopAuto,
         direction: Direction = .directionAuto,
         isStateMachine: Bool = false
-    ) {
-        animationNames.forEach{ animationName in
-            _playAnimation(
+    ) throws {
+        try animationNames.forEach{ animationName in
+           try _playAnimation(
                 animationName:animationName,
                 loop:loop,
                 direction:direction,
@@ -661,11 +661,11 @@ extension RiveView {
     /// - Parameters:
     ///   - stateMachineName: the state machine that this input belongs to
     ///   - inputName: the name of the `Trigger` input
-    open func fireState(_ stateMachineName: String, inputName: String) {
-        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
-        stateMachineInstances.forEach { stateMachine in
+    open func fireState(_ stateMachineName: String, inputName: String) throws {
+        let stateMachineInstances = try _getOrCreateStateMachines(animationName: stateMachineName)
+        try stateMachineInstances.forEach { stateMachine in
             stateMachine.getTrigger(inputName).fire()
-            _play(stateMachine)
+            try _play(stateMachine)
         }
         runTimer()
     }
@@ -677,11 +677,11 @@ extension RiveView {
     ///   - stateMachineName: the state machine that this input belongs to
     ///   - inputName: the name of the `Boolean` input
     ///   - value: true or false
-    open func setBooleanState(_ stateMachineName: String, inputName: String, value: Bool) {
-        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
-        stateMachineInstances.forEach { stateMachine in
+    open func setBooleanState(_ stateMachineName: String, inputName: String, value: Bool) throws {
+        let stateMachineInstances = try _getOrCreateStateMachines(animationName: stateMachineName)
+        try stateMachineInstances.forEach { stateMachine in
             stateMachine.getBool(inputName).setValue(value)
-            _play(stateMachine)
+            try _play(stateMachine)
         }
         runTimer()
     }
@@ -693,24 +693,24 @@ extension RiveView {
     ///   - stateMachineName: the state machine that this input belongs to
     ///   - inputName: the name of the `Number` input
     ///   - value: the new value for the state to hold
-    open func setNumberState(_ stateMachineName: String, inputName: String, value: Float) {
-        let stateMachineInstances = _getOrCreateStateMachines(animationName: stateMachineName)
-        stateMachineInstances.forEach { stateMachine in
+    open func setNumberState(_ stateMachineName: String, inputName: String, value: Float) throws {
+        let stateMachineInstances = try _getOrCreateStateMachines(animationName: stateMachineName)
+        try stateMachineInstances.forEach { stateMachine in
             stateMachine.getNumber(inputName).setValue(value)
-            _play(stateMachine)
+            try _play(stateMachine)
         }
         runTimer()
     }
     
     private func _getOrCreateStateMachines(
         animationName: String
-    ) -> [RiveStateMachineInstance]{
+    ) throws -> [RiveStateMachineInstance]{
         let stateMachineInstances = _stateMachines(animationName: animationName)
         if (stateMachineInstances.isEmpty){
             guard let guardedArtboard=_artboard else {
                 return []
             }
-            let stateMachineInstance = guardedArtboard.stateMachine(fromName: animationName).instance()
+            let stateMachineInstance = try guardedArtboard.stateMachine(fromName: animationName).instance()
             return [stateMachineInstance]
         }
         return stateMachineInstances
@@ -718,14 +718,14 @@ extension RiveView {
     
     private func _getOrCreateLinearAnimationInstances(
         animationName: String
-    ) -> [RiveLinearAnimationInstance]{
+    ) throws -> [RiveLinearAnimationInstance] {
         let animationInstances = _animations(animationName: animationName)
         
         if (animationInstances.isEmpty){
             guard let guardedArtboard=_artboard else {
                 return []
             }
-            let animationInstance = guardedArtboard.animation(fromName:animationName).instance()
+            let animationInstance = try guardedArtboard.animation(fromName:animationName).instance()
             return [animationInstance]
         }
         return animationInstances
@@ -736,14 +736,14 @@ extension RiveView {
         loop: Loop = .loopAuto,
         direction: Direction = .directionAuto,
         isStateMachine: Bool = false
-    ){
+    ) throws {
         if (isStateMachine) {
-            let stateMachineInstances = _getOrCreateStateMachines(animationName:animationName)
-            stateMachineInstances.forEach { stateMachineInstance in
-                _play(stateMachineInstance)
+            let stateMachineInstances = try _getOrCreateStateMachines(animationName:animationName)
+            try stateMachineInstances.forEach { stateMachineInstance in
+                try _play(stateMachineInstance)
             }
         } else {
-            let animationInstances = _getOrCreateLinearAnimationInstances(animationName: animationName)
+            let animationInstances = try _getOrCreateLinearAnimationInstances(animationName: animationName)
             
             animationInstances.forEach { animationInstance in
                 _play(
@@ -822,7 +822,7 @@ extension RiveView {
         }
     }
     
-    private func _play(_ stateMachineInstance: RiveStateMachineInstance) {
+    private func _play(_ stateMachineInstance: RiveStateMachineInstance) throws {
         if (!stateMachines.contains(stateMachineInstance)) {
             stateMachines.append(
                 stateMachineInstance
@@ -831,7 +831,8 @@ extension RiveView {
         
         playingStateMachines.insert(stateMachineInstance)
         eventQueue.add( { self.playDelegate?.play(stateMachineInstance.name(),isStateMachine:true) } )
-        eventQueue.add( { self.inputsDelegate?.inputs(self.stateMachineInputs()) } )
+        let inputs = try self.stateMachineInputs()
+        eventQueue.add( { self.inputsDelegate?.inputs(inputs) } )
     }
     
     /// Pauses a playing state machine

@@ -21,9 +21,10 @@
  * Test loop mode -> loop
  */
 - (void)testLoop {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations"];
-    RiveArtboard* artboard = [file artboard];
-    RiveLinearAnimation* animation = [artboard animationFromName:@"loop"];
+    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+
+    RiveLinearAnimation* animation = [artboard animationFromName:@"loop" error:nil];
 
     XCTAssertEqual([animation loop], Loop::loopLoop);
 }
@@ -32,10 +33,11 @@
  * Test loop mode -> pingpong
  */
 - (void)testPingPong {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations"];
-    RiveArtboard* artboard = [file artboard];
-    RiveLinearAnimation* animation = [artboard animationFromName:@"pingpong"];
+    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
 
+    RiveLinearAnimation* animation = [artboard animationFromName:@"pingpong" error:nil];
+    
     XCTAssertEqual([animation loop], Loop::loopPingPong);
 }
 
@@ -43,9 +45,10 @@
  * Test loop mode -> oneShot
  */
 - (void)testOneShot {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations"];
-    RiveArtboard* artboard = [file artboard];
-    RiveLinearAnimation* animation = [artboard animationFromName:@"oneshot"];
+    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+
+    RiveLinearAnimation* animation = [artboard animationFromName:@"oneshot" error:nil];
 
     XCTAssertEqual([animation loop], Loop::loopOneShot);
 }
@@ -54,9 +57,10 @@
  * Test duration -> 1sec/ 60fps
  */
 - (void)testDuration1sec60fps {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations"];
-    RiveArtboard* artboard = [file artboard];
-    RiveLinearAnimation* animation = [artboard animationFromName:@"1sec60fps"];
+    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+    
+    RiveLinearAnimation* animation = [artboard animationFromName:@"1sec60fps" error:nil];
 
     XCTAssertEqual([animation duration], 60);
     XCTAssertEqual([animation effectiveDuration], 60);
@@ -69,9 +73,10 @@
  * Test duration -> 1sec/ 120fps
  */
 - (void)testDuration1sec120fps {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations"];
-    RiveArtboard* artboard = [file artboard];
-    RiveLinearAnimation* animation = [artboard animationFromName:@"1sec120fps"];
+    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+    
+    RiveLinearAnimation* animation = [artboard animationFromName:@"1sec120fps" error:nil];
 
     XCTAssertEqual([animation duration], 120);
     XCTAssertEqual([animation effectiveDuration], 120);
@@ -84,9 +89,10 @@
  * Test duration -> 1sec/ 60fps f30->f50
  */
 - (void)testDuration1sec60fpsf30f50 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations"];
-    RiveArtboard* artboard = [file artboard];
-    RiveLinearAnimation* animation = [artboard animationFromName:@"1sec60fps_f30f50"];
+    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+    
+    RiveLinearAnimation* animation = [artboard animationFromName:@"1sec60fps_f30f50" error:nil];
 
     XCTAssertEqual([animation duration], 60);
     XCTAssertEqual([animation effectiveDuration], 20);
@@ -99,9 +105,10 @@
  * Test duration -> 1sec/ 120fps f50->f80
  */
 - (void)testDuration1sec120fpsf50f80 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations"];
-    RiveArtboard* artboard = [file artboard];
-    RiveLinearAnimation* animation = [artboard animationFromName:@"1sec120fps_f50f80"];
+    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+    
+    RiveLinearAnimation* animation = [artboard animationFromName:@"1sec120fps_f50f80" error:nil];
 
     XCTAssertEqual([animation duration], 120);
     XCTAssertEqual([animation effectiveDuration], 30);
@@ -109,7 +116,5 @@
     XCTAssertEqual([animation workStart], 50);
     XCTAssertEqual([animation workEnd], 80);
 }
-
-
 
 @end

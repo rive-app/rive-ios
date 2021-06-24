@@ -47,7 +47,7 @@
     return [[RiveStateMachineInstance alloc] initWithStateMachine: stateMachine];
 }
 
-- (RiveStateMachineInput *)_convertInput:(const rive::StateMachineInput *)input{
+- (RiveStateMachineInput *)_convertInput:(const rive::StateMachineInput *)input error:(NSError**)error {
     if (input->is<rive::StateMachineBool>()){
         return [[RiveStateMachineBoolInput alloc] initWithStateMachineInput: input];
     }
@@ -58,35 +58,36 @@
         return [[RiveStateMachineTriggerInput alloc] initWithStateMachineInput: input];
     }
     else {
-        @throw [[RiveException alloc] initWithName:@"UnkownInput" reason: @"Unknown State Machine Input" userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnknownStateMachineInput userInfo:@{NSLocalizedDescriptionKey: @"Unknown State Machine Input", @"name": @"UnknownStateMachineInput"}];
+        return nil;
     }
 }
 
 // Creates a new instance of this state machine
-- (RiveStateMachineInput *)inputFromIndex:(NSInteger)index {
+- (RiveStateMachineInput *)inputFromIndex:(NSInteger)index error:(NSError**)error {
     if (index >= [self inputCount]) {
-        @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No Input found at index %ld.", (long)index] userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineInputFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Input found at index %ld.", (long)index], @"name": @"NoStateMachineInputFound"}];
+        return nil;
     }
-    return [self _convertInput: stateMachine->input(index) ];
+    return [self _convertInput: stateMachine->input(index) error:error];
 }
 
 // Creates a new instance of this state machine
-- (RiveStateMachineInput *)inputFromName:(NSString*)name {
-    
+- (RiveStateMachineInput *)inputFromName:(NSString*)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
     const rive::StateMachineInput *stateMachineInput = stateMachine->input(stdName);
     if (stateMachineInput == nullptr) {
-        @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No State Machine Input found with name %@.", name] userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineInputFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Machine Input found with name %@.", name], @"name": @"NoStateMachineInputFound"}];
+        return nil;
     } else {
-        return [self _convertInput: stateMachineInput];
+        return [self _convertInput: stateMachineInput error:error];
     }
 }
 
 - (NSArray *)inputNames{
     NSMutableArray *inputNames = [NSMutableArray array];
-    
     for (NSUInteger i=0; i<[self inputCount]; i++){
-        [inputNames addObject:[[self inputFromIndex: i] name]];
+        [inputNames addObject:[[self inputFromIndex:i error:nil] name]];
     }
     return inputNames;
 }

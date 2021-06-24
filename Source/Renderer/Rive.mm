@@ -10,8 +10,7 @@
 #import "RivePrivateHeaders.h"
 #import "RiveRenderer.hpp"
 
-@implementation RiveException
-@end
+NSString *const RiveErrorDomain = @"rive.app.ios.runtime";
 
 /*
  * RiveRenderer
