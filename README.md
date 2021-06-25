@@ -1,3 +1,6 @@
+![Build Status](https://github.com/rive-app/rive-ios/actions/workflows/build_frameworks.yml/badge.svg) 
+![Discord badge](https://img.shields.io/discord/532365473602600965)
+![Twitter handle](https://img.shields.io/twitter/follow/rive_app.svg?style=social&label=Follow)
 # rive-ios
 
 iOS runtime for [Rive](https://rive.app/)
