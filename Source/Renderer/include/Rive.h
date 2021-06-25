@@ -74,8 +74,22 @@ typedef NS_ENUM(NSInteger, Alignment) {
     alignmentBottomRight
 };
 
-@interface RiveException : NSException
-@end
+FOUNDATION_EXPORT NSString *const RiveErrorDomain;
+
+typedef NS_ENUM(NSInteger, RiveErrorCode) {
+    RiveNoArtboardsFound = 100,
+    RiveNoArtboardFound = 101,
+    RiveNoAnimations = 200,
+    RiveNoAnimationFound = 201,
+    RiveNoStateMachines = 300,
+    RiveNoStateMachineFound = 301,
+    RiveNoStateMachineInputFound = 400,
+    RiveUnknownStateMachineInput = 401,
+    RiveNoStateChangeFound = 402,
+    RiveUnsupportedVersion = 500,
+    RiveMalformedFile = 600,
+    RiveUnknownError = 700,
+};
 
 /*
  * RiveRenderer

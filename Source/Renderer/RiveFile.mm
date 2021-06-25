@@ -31,7 +31,7 @@
 + (uint)majorVersion { return UInt8(rive::File::majorVersion); }
 + (uint)minorVersion { return UInt8(rive::File::minorVersion); }
 
-- (nullable instancetype)initWithByteArray:(NSArray *)array {
+- (nullable instancetype)initWithByteArray:(NSArray *)array error:(NSError**)error {
     if (self = [super init]) {
         UInt8* bytes;
         @try {
@@ -41,7 +41,10 @@
                 bytes[index] = number.unsignedIntValue;
             }];
             rive::BinaryReader reader = [self getReader:bytes byteLength:array.count];
-            [self import:reader];
+            BOOL ok = [self import:reader error:error];
+            if (!ok) {
+                return nil;
+            }
             self.isLoaded = true;
         }
         @finally {
@@ -53,10 +56,13 @@
     return nil;
 }
 
-- (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length {
+- (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length error:(NSError**)error {
     if (self = [super init]) {
         rive::BinaryReader reader = [self getReader:bytes byteLength:length];
-        [self import:reader];
+        BOOL ok = [self import:reader error:error];
+        if (!ok) {
+            return nil;
+        }
         self.isLoaded = true;
         return self;
     }
@@ -66,20 +72,19 @@
 /*
  * Creates a RiveFile from a binary resource
  */
-- (nullable instancetype)initWithResource:(NSString *)resourceName withExtension:(NSString *)extension {
+- (nullable instancetype)initWithResource:(NSString *)resourceName withExtension:(NSString *)extension error:(NSError**)error {
     NSString *filepath = [[NSBundle mainBundle] pathForResource:resourceName ofType:extension];
     NSURL *fileUrl = [NSURL fileURLWithPath:filepath];
     NSData *fileData = [NSData dataWithContentsOfURL:fileUrl];
     UInt8 *bytePtr = (UInt8 *)[fileData bytes];
-    
-    return [self initWithBytes:bytePtr byteLength:fileData.length];
+    return [self initWithBytes:bytePtr byteLength:fileData.length error:error];
 }
 
 /*
  * Creates a RiveFile from a binary resource, and assumes the resource extension is '.riv'
  */
-- (nullable instancetype)initWithResource:(NSString *)resourceName {
-    return [self initWithResource:resourceName withExtension:@"riv"];
+- (nullable instancetype)initWithResource:(NSString *)resourceName error:(NSError**)error {
+    return [self initWithResource:resourceName withExtension:@"riv" error:error];
 }
 
 /*
@@ -100,12 +105,15 @@
                 NSData *data = [NSData dataWithContentsOfURL: location];
                 UInt8 *bytes = (UInt8 *)[data bytes];
                 rive::BinaryReader reader = [self getReader:bytes byteLength:[data length]];
-                [self import:reader];
+                // TODO: Do something with this error the proper way with delegates.
+                NSError* error = nil;
+                [self import:reader error:&error];
                 self.isLoaded = true;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([[NSThread currentThread] isMainThread]) {
                         if ([self.delegate respondsToSelector:@selector(riveFileDidLoad:)]) {
-                            [self.delegate riveFileDidLoad:self];
+                            NSError * error = nil;
+                            [self.delegate riveFileDidLoad:self error:&error];
                         }
                     }
                 });
@@ -122,51 +130,55 @@
     return nil;
 }
 
-- (void) import:(rive::BinaryReader)reader {
+- (BOOL) import:(rive::BinaryReader)reader error:(NSError**)error {
     rive::ImportResult result = rive::File::import(reader, &riveFile);
     if (result == rive::ImportResult::success) {
-        return;
+        return true;
     }
     else if(result == rive::ImportResult::unsupportedVersion){
-        @throw [[RiveException alloc] initWithName:@"UnsupportedVersion" reason:@"Unsupported Rive File Version." userInfo:nil];
-        
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnsupportedVersion userInfo:@{NSLocalizedDescriptionKey: @"Unsupported Rive File Version", @"name": @"UnsupportedVersion"}];
+        return false;
     }
     else if(result == rive::ImportResult::malformed){
-        @throw [[RiveException alloc] initWithName:@"Malformed" reason:@"Malformed Rive File." userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveMalformedFile userInfo:@{NSLocalizedDescriptionKey: @"Malformed Rive File.", @"name": @"Malformed"}];
+        return false;
     }
     else {
-        @throw [[RiveException alloc] initWithName:@"Unknown" reason:@"Unknown error loading file." userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnknownError userInfo:@{NSLocalizedDescriptionKey: @"Unknown error loading file.", @"name": @"Unknown"}];
+        return false;
     }
 }
 
-- (RiveArtboard *)artboard {
+- (RiveArtboard *)artboard:(NSError**)error {
     rive::Artboard *artboard = riveFile->artboard();
     if (artboard == nullptr) {
-        @throw [[RiveException alloc] initWithName:@"NoArtboardsFound" reason: @"No Artboards Found." userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardsFound userInfo:@{NSLocalizedDescriptionKey: @"No Artboards Found.", @"name": @"NoArtboardsFound"}];
+        return nil;
     }
     else {
         return [[RiveArtboard alloc] initWithArtboard: artboard];
     }
-    
 }
 
 - (NSInteger)artboardCount {
     return riveFile->artboardCount();
 }
 
-- (RiveArtboard *)artboardFromIndex:(NSInteger)index {
+- (RiveArtboard *)artboardFromIndex:(NSInteger)index error:(NSError**)error {
     if (index >= [self artboardCount]) {
-        @throw [[RiveException alloc] initWithName:@"NoArtboardFound" reason:[NSString stringWithFormat: @"No Artboard Found at index %ld.", (long)index] userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Artboard Found at index %ld.", (long)index], @"name": @"NoArtboardFound"}];
+        return nil;
     }
     return [[RiveArtboard alloc]
             initWithArtboard: reinterpret_cast<rive::Artboard *>(riveFile->artboard(index))];
 }
 
-- (RiveArtboard *)artboardFromName:(NSString *)name {
+- (RiveArtboard *)artboardFromName:(NSString *)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
     rive::Artboard *artboard = riveFile->artboard(stdName);
     if (artboard == nullptr) {
-        @throw [[RiveException alloc] initWithName:@"NoArtboardFound" reason:[NSString stringWithFormat: @"No Artboard Found with name %@.", name] userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Artboard Found with name %@.", name], @"name": @"NoArtboardFound"}];
+        return nil;
     } else {
         return [[RiveArtboard alloc] initWithArtboard: artboard];
     }
@@ -176,8 +188,7 @@
     NSMutableArray *artboardNames = [NSMutableArray array];
     
     for (NSUInteger i=0; i<[self artboardCount]; i++) {
-        NSString* name = [[self artboardFromIndex: i] name];
-        [artboardNames addObject:name];
+        [artboardNames addObject:[[self artboardFromIndex: i error:nil] name]];
     }
     return artboardNames;
 }

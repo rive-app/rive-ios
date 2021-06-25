@@ -112,7 +112,7 @@
     return instance->inputCount();
 }
 
-- (RiveSMIInput *)_convertInput:(const rive::SMIInput *)input{
+- (RiveSMIInput *)_convertInput:(const rive::SMIInput *)input error:(NSError**)error {
     if (input->input()->is<rive::StateMachineBool>()){
         return [[RiveSMIBool alloc] initWithSMIInput: input];
     }
@@ -123,37 +123,43 @@
         return [[RiveSMITrigger alloc] initWithSMIInput: input];
     }
     else {
-        @throw [[RiveException alloc] initWithName:@"UnkownInput" reason: @"Unknown State Machine Input" userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnknownStateMachineInput userInfo:@{NSLocalizedDescriptionKey: @"Unknown State Machine Input", @"name": @"UnknownStateMachineInput"}];
+        return nil;
     }
 }
 
 // Creates a new instance of this state machine
-- (RiveSMIInput *)inputFromIndex:(NSInteger)index {
+- (RiveSMIInput *)inputFromIndex:(NSInteger)index error:(NSError**)error {
     if (index >= [self inputCount]) {
-        @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No Input found at index %ld.", (long)index] userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineInputFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Input found at index %ld.", (long)index], @"name": @"NoStateMachineInputFound"}];
+        return nil;
     }
-    return [self _convertInput: instance->input(index) ];
+    return [self _convertInput: instance->input(index) error:error];
 }
 
 // Creates a new instance of this state machine
-- (RiveSMIInput *)inputFromName:(NSString*)name {
+- (RiveSMIInput *)inputFromName:(NSString*)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
     
     RiveSMIInput* input = [RiveSMIInput alloc];
     for (int i=0; i< [self inputCount]; i++) {
-        input = [self inputFromIndex: i];
+        input = [self inputFromIndex: i error:error];
+        if (input == nil) {
+            return nil;
+        }
         if ([[input name] isEqualToString: name]){
             return input;
         }
     }
-    @throw [[RiveException alloc] initWithName:@"NoStateMachineInputFound" reason:[NSString stringWithFormat: @"No State Machine Input found with name %@.", name] userInfo:nil];
+    *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineInputFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Machine Input found with name %@.", name], @"name": @"NoStateMachineInputFound"}];
+    return nil;
 }
 
 - (NSArray *)inputNames{
     NSMutableArray *inputNames = [NSMutableArray array];
     
     for (NSUInteger i=0; i<[self inputCount]; i++){
-        [inputNames addObject:[[self inputFromIndex: i] name]];
+        [inputNames addObject:[[self inputFromIndex: i error:nil] name]];
     }
     return inputNames;
 }
@@ -177,14 +183,14 @@
     }
     else {
         return [[RiveUnknownState alloc] initWithLayerState: layerState];
-        // @throw [[RiveException alloc] initWithName:@"UnknownLayerState" reason: @"Unknown Layer State" userInfo:nil];
     }
 }
 
-- (RiveLayerState *)stateChangedFromIndex:(NSInteger)index{
+- (RiveLayerState *)stateChangedFromIndex:(NSInteger)index error:(NSError**)error {
     const rive::LayerState *layerState = instance->stateChangedByIndex(index);
     if (layerState == nullptr) {
-        @throw [[RiveException alloc] initWithName:@"NoStateChangeFound" reason:[NSString stringWithFormat: @"No State Changed found at index %ld.", (long)index] userInfo:nil];
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateChangeFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Changed found at index %ld.", (long)index], @"name": @"NoStateChangeFound"}];
+        return nil;
     } else {
         return [self _convertLayerState: layerState];
     }
@@ -193,7 +199,7 @@
     NSMutableArray *inputNames = [NSMutableArray array];
     
     for (NSUInteger i=0; i<[self stateChangedCount]; i++){
-        [inputNames addObject:[[self stateChangedFromIndex: i] name]];
+        [inputNames addObject:[[self stateChangedFromIndex: i error:nil] name]];
     }
     return inputNames;
 }

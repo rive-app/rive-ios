@@ -21,11 +21,9 @@ func getBytes(resourceName: String, resourceExt: String=".riv") -> [UInt8] {
     return [UInt8](data)
 }
 
-func getRiveFile(resourceName: String, resourceExt: String=".riv") -> RiveFile{
+func getRiveFile(resourceName: String, resourceExt: String=".riv") throws -> RiveFile {
     let byteArray = getBytes(resourceName: resourceName, resourceExt: resourceExt)
-    guard let riveFile = RiveFile(byteArray: byteArray) else {
-        fatalError("Failed to import Rive File.")
-    }
+    let riveFile = try RiveFile(byteArray: byteArray)
     return riveFile
 }
 
@@ -82,47 +80,47 @@ class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, State
 }
 
 class DelegatesTest: XCTestCase {
-    func testPlay(){
+    func testPlay() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             playDelegate: delegate
         )
-        view.play(animationName: "one")
+        try view.play(animationName: "one")
         view.advance(delta:0)
         XCTAssertEqual(delegate.linearAnimaitonPlays.count, 1)
     }
     
-    func testPlayTwice(){
+    func testPlayTwice() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             playDelegate: delegate
         )
-        view.play(animationName: "one")
-        view.play(animationName: "one")
+        try view.play(animationName: "one")
+        try view.play(animationName: "one")
         view.advance(delta:0)
         XCTAssertEqual(delegate.linearAnimaitonPlays.count, 2)
     }
     
-    func testPause(){
+    func testPause() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             pauseDelegate: delegate
         )
-        view.play(animationName: "one")
+        try view.play(animationName: "one")
         view.pause(animationName: "one")
         view.advance(delta:0)
         XCTAssertEqual(delegate.linearAnimaitonPauses.count, 1)
     }
     
-    func testPauseWhenNotPlaying(){
+    func testPauseWhenNotPlaying() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             pauseDelegate: delegate
@@ -132,22 +130,22 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.linearAnimaitonPauses.count, 0)
     }
     
-    func testStop(){
+    func testStop() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             stopDelegate: delegate
         )
-        view.play(animationName: "one")
+        try view.play(animationName: "one")
         view.stop(animationName: "one")
         view.advance(delta:0)
         XCTAssertEqual(delegate.linearAnimaitonStops.count, 1)
     }
     
-    func testStopNotMounted(){
+    func testStopNotMounted() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             stopDelegate: delegate
@@ -158,23 +156,23 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.linearAnimaitonStops.count, 0)
     }
     
-    func testStopPaused(){
+    func testStopPaused() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             stopDelegate: delegate
         )
-        view.play(animationName: "one")
+        try view.play(animationName: "one")
         view.pause(animationName: "one")
         view.stop(animationName: "one")
         view.advance(delta:0)
         XCTAssertEqual(delegate.linearAnimaitonStops.count, 1)
     }
         
-    func testLoopOneShot(){
+    func testLoopOneShot() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             loopDelegate: delegate,
@@ -183,7 +181,7 @@ class DelegatesTest: XCTestCase {
             stopDelegate: delegate
         )
         
-        view.play(animationName: "one", loop: .loopOneShot)
+        try view.play(animationName: "one", loop: .loopOneShot)
         view.advance(delta:Double(view.animations.first!.animation().effectiveDurationInSeconds()+0.1))
         // rough. we need an extra advance to flush the stop.
         view.advance(delta:0.1)
@@ -194,9 +192,9 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.linearAnimaitonStops.count, 1)
     }
     
-    func testLoopLoop(){
+    func testLoopLoop() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             loopDelegate: delegate,
@@ -205,7 +203,7 @@ class DelegatesTest: XCTestCase {
             stopDelegate: delegate
         )
         
-        view.play(animationName: "one", loop: .loopLoop)
+        try view.play(animationName: "one", loop: .loopLoop)
         view.advance(delta:Double(view.animations.first!.animation().effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 1)
@@ -214,9 +212,9 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.linearAnimaitonStops.count, 0)
     }
     
-    func testLoopPingPong(){
+    func testLoopPingPong() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
             loopDelegate: delegate,
@@ -225,7 +223,7 @@ class DelegatesTest: XCTestCase {
             stopDelegate: delegate
         )
         
-        view.play(animationName: "one", loop: .loopPingPong)
+        try view.play(animationName: "one", loop: .loopPingPong)
         view.advance(delta:Double(view.animations.first!.animation().effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 1)
@@ -234,17 +232,16 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.linearAnimaitonStops.count, 0)
     }
     
-    func testStateMachineLayerStates(){
+    func testStateMachineLayerStates() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"what_a_state"),
             stateMachine: "State Machine 2",
             playDelegate: delegate,
             pauseDelegate: delegate,
             stateChangeDelegate: delegate
-            
         )
-    
+
         view.advance(delta:0.1)
         XCTAssertEqual(delegate.stateMachinePlays.count, 1)
         XCTAssertEqual(delegate.stateMachineStates.count, 1)
@@ -259,9 +256,9 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.stateMachinePauses.count, 1)
     }
     
-    func testStateMachineLayerStatesComplex(){
+    func testStateMachineLayerStatesComplex() throws {
         let delegate = MrDelegate()
-        let view = RiveView.init(
+        let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"what_a_state"),
             stateMachine: "State Machine 1",
             stateChangeDelegate: delegate
@@ -271,7 +268,7 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.stateMachineStates.count, 0)
         
         // lets just start, expect 1 change.
-        view.fireState("State Machine 1", inputName: "right")
+        try view.fireState("State Machine 1", inputName: "right")
         // TODO: looks like we got a bit of a bug here. if we do not call this advance,
         // the first animation doesnt seem to get the delta applied. i think its all because of
         // how the 
@@ -300,7 +297,7 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(0, delegate.stateMachineStates.count)
 
         // ok lets change thigns up again.
-        view.fireState("State Machine 1", inputName: "change")
+        try view.fireState("State Machine 1", inputName: "change")
         view.advance(delta:0.0)
         view.advance(delta:0.4)
         XCTAssertEqual(true, view.isPlaying)

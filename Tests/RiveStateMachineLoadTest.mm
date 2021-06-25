@@ -21,12 +21,16 @@
  * Test first StateMachine
  */
 - (void)testStateMachineFirstStateMachine {
-    RiveFile* file = [Util loadTestFile:@"multipleartboards"];
-    RiveArtboard* artboard = [file artboardFromName:@"artboard1"];
+    NSError* error = nil;
+    RiveFile* file = [Util loadTestFile:@"multipleartboards" error:&error];
+    RiveArtboard* artboard = [file artboardFromName:@"artboard1" error:&error];
     
-    RiveStateMachine* animation = [artboard firstStateMachine];
-    RiveStateMachine* animationByIndex = [artboard stateMachineFromIndex:0];
-    RiveStateMachine* animationByName = [artboard stateMachineFromName:@"artboard1stateMachine1"];
+    RiveStateMachine* animation = [artboard firstStateMachine:&error];
+    XCTAssertNil(error);
+    RiveStateMachine* animationByIndex = [artboard stateMachineFromIndex:0 error:&error];
+    XCTAssertNil(error);
+    RiveStateMachine* animationByName = [artboard stateMachineFromName:@"artboard1stateMachine1" error:&error];
+    XCTAssertNil(error);
     
     XCTAssertTrue([animation.name isEqualToString:animationByIndex.name]);
     XCTAssertTrue([animation.name isEqualToString:animationByName.name]);
@@ -39,19 +43,24 @@
  * Test second StateMachine
  */
 - (void)testStateMachineSecondStateMachine {
-    RiveFile* file = [Util loadTestFile:@"multipleartboards"];
-    RiveArtboard* artboard = [file artboardFromName:@"artboard2"];
+    NSError* error = nil;
+    RiveFile* file = [Util loadTestFile:@"multipleartboards" error:&error];
+    RiveArtboard* artboard = [file artboardFromName:@"artboard2" error:&error];
     
-    RiveStateMachine* animation = [artboard firstStateMachine];
-    RiveStateMachine* animationByIndex = [artboard stateMachineFromIndex:0];
-    RiveStateMachine* animationByName = [artboard stateMachineFromName:@"artboard2stateMachine1"];
+    RiveStateMachine* animation = [artboard firstStateMachine:&error];
+    XCTAssertNil(error);
+    RiveStateMachine* animationByIndex = [artboard stateMachineFromIndex:0 error:&error];
+    XCTAssertNil(error);
+    RiveStateMachine* animationByName = [artboard stateMachineFromName:@"artboard2stateMachine1" error:&error];
+    XCTAssertNil(error);
     
     XCTAssertTrue([animation.name isEqualToString:animationByIndex.name]);
     XCTAssertTrue([animation.name isEqualToString:animationByName.name]);
     
-    
-    RiveStateMachine* animation2ByIndex = [artboard stateMachineFromIndex:1];
-    RiveStateMachine* animation2ByName = [artboard stateMachineFromName:@"artboard2stateMachine2"];
+    RiveStateMachine* animation2ByIndex = [artboard stateMachineFromIndex:1 error:&error];
+    XCTAssertNil(error);
+    RiveStateMachine* animation2ByName = [artboard stateMachineFromName:@"artboard2stateMachine2" error:&error];
+    XCTAssertNil(error);
     
     XCTAssertTrue([animation2ByIndex.name isEqualToString:animation2ByName.name]);
     
@@ -64,8 +73,8 @@
  * Test no state machines
  */
 - (void)testArtboardHasNoStateMachine {
-    RiveFile* file = [Util loadTestFile:@"noanimation"];
-    RiveArtboard* artboard = [file artboard];
+    RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
     
     XCTAssertEqual([artboard animationCount], 0);
     
@@ -73,47 +82,50 @@
 }
 
 /*
- * Test access nothing
- */
+* Test access nothing
+*/
 - (void)testArtboardStateMachineDoesntExist {
-    RiveFile* file = [Util loadTestFile:@"noanimation"];
-    RiveArtboard* artboard = [file artboard];
+    RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+
+    NSError* error = nil;
+    RiveStateMachine* stateMachine = [artboard firstStateMachine:&error];
     
-    XCTAssertThrowsSpecificNamed(
-         [artboard firstStateMachine],
-         RiveException,
-         @"NoStateMachines"
-    );
+    XCTAssertNil(stateMachine);
+    XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
+    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoStateMachines");
+    XCTAssertEqual([error code], 300);
 }
 
 /*
- * Test access index doesnt exist
- */
+* Test access index doesnt exist
+*/
 - (void)testArtboardStateMachineAtIndexDoesntExist {
-    RiveFile* file = [Util loadTestFile:@"noanimation"];
-    RiveArtboard* artboard = [file artboard];
-    
-    
-    XCTAssertThrowsSpecificNamed(
-         [artboard stateMachineFromIndex:0],
-         RiveException,
-         @"NoStateMachineFound"
-    );
+    RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+
+    NSError* error = nil;
+    RiveStateMachine* stateMachine = [artboard stateMachineFromIndex:0 error:&error];
+
+    XCTAssertNil(stateMachine);
+    XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
+    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoStateMachineFound");
+    XCTAssertEqual([error code], 301);
 }
 
 /*
- * Test access name doesnt exist
- */
+* Test access name doesnt exist
+*/
 - (void)testArtboardStateMachineWithNameDoesntExist {
-    RiveFile* file = [Util loadTestFile:@"noanimation"];
-    RiveArtboard* artboard = [file artboard];
-    
-    
-    XCTAssertThrowsSpecificNamed(
-         [artboard stateMachineFromName:@"boo"],
-         RiveException,
-         @"NoStateMachineFound"
-    );
+    RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
+    RiveArtboard* artboard = [file artboard:nil];
+
+    NSError* error = nil;
+    RiveStateMachine* stateMachine = [artboard stateMachineFromName:@"boo" error:&error];
+    XCTAssertNil(stateMachine);
+    XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
+    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoStateMachineFound");
+    XCTAssertEqual([error code], 301);
 }
 
 @end

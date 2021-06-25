@@ -34,10 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (const RiveSMINumber *)getNumber:(NSString*)name;
 - (NSArray<NSString *> *)inputNames;
 - (NSInteger)inputCount;
-- (RiveSMIInput *)inputFromIndex:(NSInteger)index;
-- (RiveSMIInput *)inputFromName:(NSString*)name;
+- (RiveSMIInput * __nullable)inputFromIndex:(NSInteger)index error:(NSError**)error;
+- (RiveSMIInput * __nullable)inputFromName:(NSString*)name error:(NSError**)error;
 - (NSInteger)stateChangedCount;
-- (RiveLayerState *)stateChangedFromIndex:(NSInteger)index;
+- (RiveLayerState * __nullable)stateChangedFromIndex:(NSInteger)index error:(NSError**)error;
 - (NSArray<NSString *> *)stateChanges;
 
 @end

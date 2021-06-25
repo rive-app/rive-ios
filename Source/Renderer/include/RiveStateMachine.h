@@ -26,8 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)inputCount;
 - (RiveStateMachineInstance *)instance;
 - (NSArray<NSString *> *)inputNames;
-- (RiveStateMachineInput *)inputFromIndex:(NSInteger)index;
-- (RiveStateMachineInput *)inputFromName:(NSString*)name;
+- (RiveStateMachineInput * __nullable)inputFromIndex:(NSInteger)index error:(NSError**)error;
+- (RiveStateMachineInput * __nullable)inputFromName:(NSString*)name error:(NSError**)error;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -28,15 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)animationCount;
 - (NSArray<NSString *> *)animationNames;
-- (RiveLinearAnimation *)firstAnimation;
-- (RiveLinearAnimation *)animationFromIndex:(NSInteger)index;
-- (RiveLinearAnimation *)animationFromName:(NSString *)name;
+- (RiveLinearAnimation * __nullable)firstAnimation:(NSError **)error;
+- (RiveLinearAnimation * __nullable)animationFromIndex:(NSInteger)index error:(NSError **)error;
+- (RiveLinearAnimation * __nullable)animationFromName:(NSString *)name error:(NSError **)error;
 
 - (NSInteger)stateMachineCount;
 - (NSArray<NSString *> *)stateMachineNames;
-- (RiveStateMachine *)firstStateMachine;
-- (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index;
-- (RiveStateMachine *)stateMachineFromName:(NSString *)name;
+- (RiveStateMachine * __nullable)firstStateMachine:(NSError **)error;
+- (RiveStateMachine * __nullable)stateMachineFromIndex:(NSInteger)index error:(NSError **)error;
+- (RiveStateMachine * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
 
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer *)renderer;
