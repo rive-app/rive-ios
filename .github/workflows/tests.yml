@@ -1,0 +1,20 @@
+name: Run Rive tests
+
+on:
+  push:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  run_tests:
+    name: Run Rive tests
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.RIVE_REPO_PAT }}
+          submodules: recursive
+      - name: Testing iOS app
+        run: sh ./scripts/test.sh
