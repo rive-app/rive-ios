@@ -52,8 +52,8 @@ You can also privately share the `.riv`/`.rev` file with us at hello@rive.app.
 ![Screenshot](url)
 
 ### Device & Versions (please complete the following information)
-- Device: [e.g. Android Emulator, Pixel 4a] 
-- SDK Level [e.g. Android SDK API Level 30]
+- Device: [e.g. iOS Simulator, iPhone 12] 
+- iOS version [e.g. iOS 15]
 
 #### Additional context
 <-- Add any other context about the problem here. -->
