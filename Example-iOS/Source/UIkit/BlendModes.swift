@@ -17,13 +17,13 @@ class BlendModeViewController: UIViewController {
         
         let view = RiveView()
         view.fit = Fit.fitContain
-        guard let riveFile = RiveFile(resource: resourceName) else {
-            fatalError("Failed to load RiveFile")
+        
+        guard let riveFile = try? RiveFile(resource: resourceName) else {
+            fatalError("Failed to import Rive file.")
         }
-
-        view.configure(riveFile)
-//        self.view.addSubview(view)
+        try? view.configure(riveFile)
         self.view = view
+        
     }
     
     override public func viewDidDisappear(_ animated: Bool) {

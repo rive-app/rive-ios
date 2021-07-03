@@ -13,23 +13,30 @@ struct RiveButtonBridge: UIViewRepresentable {
     
     /// Constructs the view
     func makeUIView(context: Context) -> RiveView {
-        let riveView = RiveView(
-            riveFile: getRiveFile(resourceName: resource),
-            fit: fit,
-            alignment: alignment,
-            artboard: artboard,
-            animation: animation,
-            playDelegate: context.coordinator,
-            pauseDelegate: context.coordinator,
-            stopDelegate: context.coordinator
-        )
-        return riveView
+        
+        do {
+            let riveView = try RiveView(
+                riveFile: getRiveFile(resourceName: resource),
+                fit: fit,
+                alignment: alignment,
+                artboard: artboard,
+                animation: animation,
+                playDelegate: context.coordinator,
+                pauseDelegate: context.coordinator,
+                stopDelegate: context.coordinator
+            )
+            return riveView
+        }
+        catch {
+            print(error)
+            return RiveView()
+        }
     }
-
+    
     func updateUIView(_ riveView: RiveView, context: UIViewRepresentableContext<RiveButtonBridge>) {
-        play ? riveView.play() : riveView.pause()
+        play ? try? riveView.play() : riveView.pause()
     }
-
+    
     static func dismantleUIView(_ riveView: RiveView, coordinator: Self.Coordinator) {
         riveView.stop()
     }

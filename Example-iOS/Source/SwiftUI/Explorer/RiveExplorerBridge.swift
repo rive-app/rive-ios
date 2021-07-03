@@ -21,12 +21,13 @@ class RiveController: ObservableObject {
         alignment: RiveRuntime.Alignment = .alignmentCenter,
         autoplay: Bool = false,
         playAnimation: String? = nil
-    ) {
+    )  {
         self.fit = fit
         self.alignment = alignment
         self.playback = autoplay ? .play : .stop
         self.resource = resource
-        self.rive = getRiveFile(resourceName: resource)
+        // TODO: fix this
+        self.rive = (try? getRiveFile(resourceName: resource))!
         self.playAnimation = playAnimation
     }
     
@@ -81,26 +82,30 @@ struct RiveExplorerBridge: UIViewRepresentable {
     
     /// Constructs the view
     func makeUIView(context: Context) -> RiveView {
-        let riveView = RiveView(
-            riveFile: controller.rive,
-            fit: controller.fit,
-            alignment: controller.alignment,
-            autoplay: controller.playback == Playback.play,
-            artboard: controller.activeArtboard,
-            loopDelegate: context.coordinator,
-            playDelegate: context.coordinator,
-            pauseDelegate: context.coordinator,
-            inputsDelegate: context.coordinator
-        )
         
-        // Update the controller with the correct artboard
-        if let artboard = riveView.artboard {
-            controller.artboard = artboard
+        do {
+            let riveView = try RiveView(
+                riveFile: controller.rive,
+                fit: controller.fit,
+                alignment: controller.alignment,
+                autoplay: controller.playback == Playback.play,
+                artboard: controller.activeArtboard,
+                loopDelegate: context.coordinator,
+                playDelegate: context.coordinator,
+                pauseDelegate: context.coordinator,
+                inputsDelegate: context.coordinator
+            )
+            // Update the controller with the correct artboard
+            if let artboard = riveView.artboard {
+                controller.artboard = artboard
+            }
+            return riveView
         }
-        
-        return riveView
+        catch {
+            return RiveView()
+        }
     }
- 
+    
     /// Called when the view model changes
     func updateUIView(_ uiView: RiveView, context: UIViewRepresentableContext<RiveExplorerBridge>) {
         // Set the properties
@@ -113,7 +118,7 @@ struct RiveExplorerBridge: UIViewRepresentable {
                 // Pause all playback
                 uiView.pause()
                 // Reconfigure with the new artboard
-                uiView.configure(controller.rive, andArtboard: artboardName, andAutoPlay: false)
+                try? uiView.configure(controller.rive, andArtboard: artboardName, andAutoPlay: false)
                 controller.artboard = uiView.artboard
             }
         }
@@ -122,13 +127,13 @@ struct RiveExplorerBridge: UIViewRepresentable {
         if let playAnimation = controller.playAnimation {
             uiView.pause()
             if uiView.animationNames().contains(playAnimation) {
-                uiView.play(animationName: playAnimation)
+                try? uiView.play(animationName: playAnimation)
             } else if uiView.stateMachineNames().contains(playAnimation) {
-                uiView.play(animationName: playAnimation, isStateMachine: true)
+                try? uiView.play(animationName: playAnimation, isStateMachine: true)
             }
         } else {
             if controller.playback == .play {
-                uiView.play()
+                try? uiView.play()
             } else {
                 uiView.pause()
             }
@@ -167,23 +172,23 @@ extension RiveExplorerBridge {
             self.inputsAction = inputsAction
             
             // This stuff is all experimental and may get removed
-//            let fitSubscription = controller.$fit.receive(on: RunLoop.main).sink(receiveValue: fitDidChange)
-//            subscribers.append(fitSubscription)
+            //            let fitSubscription = controller.$fit.receive(on: RunLoop.main).sink(receiveValue: fitDidChange)
+            //            subscribers.append(fitSubscription)
         }
         
         // Cancel subscribers when Coordinator is deinitialized
-//        deinit {
-//            subscribers.forEach { $0.cancel() }
-//        }
-//
-//        var fitDidChange: (Fit) -> Void = { fit in
-//            print("Fit changed to \(fit)")
-//        }
+        //        deinit {
+        //            subscribers.forEach { $0.cancel() }
+        //        }
+        //
+        //        var fitDidChange: (Fit) -> Void = { fit in
+        //            print("Fit changed to \(fit)")
+        //        }
         
         func loop(_ animationName: String, type: Int) {
-                loopAction?(animationName, type)
-            }
-
+            loopAction?(animationName, type)
+        }
+        
         func play(_ animationName: String, isStateMachine: Bool) {
             controller.playback = .play
             playAction?(animationName)

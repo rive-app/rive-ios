@@ -12,7 +12,6 @@
 @interface RiveFile ()
 
 - (rive::BinaryReader) getReader:(UInt8 *)bytes byteLength:(UInt64)length;
-- (void) import:(rive::BinaryReader)reader;
 
 @end
 
@@ -100,6 +99,7 @@
                               [NSURLSessionConfiguration defaultSessionConfiguration]];
         NSURLSessionTask  *task = [session downloadTaskWithURL:URL
            completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+
             if (!error) {
                 // Load the data into the reader
                 NSData *data = [NSData dataWithContentsOfURL: location];
@@ -111,7 +111,7 @@
                 self.isLoaded = true;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([[NSThread currentThread] isMainThread]) {
-                        if ([self.delegate respondsToSelector:@selector(riveFileDidLoad:)]) {
+                        if ([self.delegate respondsToSelector:@selector(riveFileDidLoad:error:)]) {
                             NSError * error = nil;
                             [self.delegate riveFileDidLoad:self error:&error];
                         }
