@@ -20,19 +20,19 @@ class FileChoiceDelegate: NSObject, UIPickerViewDataSource, UIPickerViewDelegate
     var chosen = "skills"
     weak var viewController:IOSPlayerViewController?
     //MARK: - Pickerview method
-   func numberOfComponents(in pickerView: UIPickerView) -> Int {
-    return 1
-   }
-   func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-       return choices.count
-   }
-   func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-       return choices[row]
-   }
-   func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return choices.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return choices[row]
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.chosen = choices[row]
-        viewController?.load(name:choices[row])
-   }
+        try? viewController?.load(name:choices[row])
+    }
 }
 
 class ArtboardChoicesDelegate: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
@@ -40,19 +40,19 @@ class ArtboardChoicesDelegate: NSObject, UIPickerViewDataSource, UIPickerViewDel
     var chosen:String?
     weak var viewController:IOSPlayerViewController?
     
-   func numberOfComponents(in pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
-   }
-   func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-       return choices.count
-   }
-   func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-       return choices[row]
-   }
-   func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return choices.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return choices[row]
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.chosen = choices[row]
-        viewController?.loadArtboard(name:choices[row])
-   }
+        try? viewController?.loadArtboard(name:choices[row])
+    }
 }
 
 class IOSPlayerViewController: UIViewController {
@@ -66,22 +66,22 @@ class IOSPlayerViewController: UIViewController {
     @IBOutlet var FileChoicePicker: UIPickerView!
     @IBOutlet var ArtboardPicker: UIPickerView!
     
-    func load(name:String){
-        riveFile = getRiveFile(resourceName: name)
-        playerView?.riveView.configure(
+    func load(name:String) throws {
+        riveFile = try getRiveFile(resourceName: name)
+        try playerView?.riveView.configure(
             riveFile!
         )
         artboardChoices.choices = riveFile!.artboardNames()
         ArtboardPicker.reloadComponent(0)
-        loadAnimations()
+        try loadAnimations()
     }
     
-    func loadArtboard(name:String){
-        playerView?.riveView.configure(
+    func loadArtboard(name:String) throws {
+        try playerView?.riveView.configure(
             riveFile!, andArtboard: name
         )
         artboardName=name
-        loadAnimations()
+        try loadAnimations()
     }
     
     func _clearOld(){
@@ -93,11 +93,11 @@ class IOSPlayerViewController: UIViewController {
         }
     }
     
-    func _loadAnimations(){
+    func _loadAnimations() throws {
         
         if #available(iOS 14.0, *) {
             
-            let artboard = _getArtbaord()
+            let artboard = try _getArtbaord()
             let animationNames = artboard.animationNames()
             
             if (animationNames.count > 0){
@@ -119,7 +119,7 @@ class IOSPlayerViewController: UIViewController {
                     type: .system,
                     primaryAction:
                         UIAction(title: ">", handler: { [unowned self] _ in
-                            self.playerView?.riveView?.play(animationName: name)
+                            try? self.playerView?.riveView?.play(animationName: name)
                         }))
                 let pause = UIButton(
                     type: .system,
@@ -142,7 +142,7 @@ class IOSPlayerViewController: UIViewController {
                 play.widthAnchor.constraint(equalToConstant: 40).isActive = true
                 pause.widthAnchor.constraint(equalToConstant: 40).isActive = true
                 stop.widthAnchor.constraint(equalToConstant: 40).isActive = true
-
+                
                 
                 let stackView = UIStackView()
                 stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -160,19 +160,19 @@ class IOSPlayerViewController: UIViewController {
         }
     }
     
-    func _getArtbaord()->RiveArtboard{
+    func _getArtbaord() throws ->RiveArtboard{
         if let name=artboardName{
-            return riveFile!.artboard(fromName:name)
+            return try riveFile!.artboard(fromName:name)
         }
         else {
-            return riveFile!.artboard()
+            return try riveFile!.artboard()
         }
     }
     
-    func _loadStateMachines(){
-
+    func _loadStateMachines() throws {
+        
         if #available(iOS 14.0, *) {
-            let artboard = _getArtbaord()
+            let artboard = try _getArtbaord()
             let stateMachineNames = artboard.stateMachineNames()
             
             if(stateMachineNames.count > 0){
@@ -183,7 +183,7 @@ class IOSPlayerViewController: UIViewController {
                 PlayerStack.addArrangedSubview(label)
             }
             
-            stateMachineNames.forEach({name in
+            try stateMachineNames.forEach({name in
                 
                 let label = UILabel()
                 label.text = name
@@ -194,7 +194,7 @@ class IOSPlayerViewController: UIViewController {
                     type: .system,
                     primaryAction:
                         UIAction(title: ">", handler: { [unowned self] _ in
-                            self.playerView?.riveView?.play(animationName: name, isStateMachine: true)
+                            try? self.playerView?.riveView?.play(animationName: name, isStateMachine: true)
                         }))
                 let pause = UIButton(
                     type: .system,
@@ -217,7 +217,7 @@ class IOSPlayerViewController: UIViewController {
                 play.widthAnchor.constraint(equalToConstant: 40).isActive = true
                 pause.widthAnchor.constraint(equalToConstant: 40).isActive = true
                 stop.widthAnchor.constraint(equalToConstant: 40).isActive = true
-
+                
                 
                 let stackView = UIStackView()
                 stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -232,8 +232,8 @@ class IOSPlayerViewController: UIViewController {
                 PlayerStack.addArrangedSubview(stackView)
                 // time to add buttons for all the states :P
                 
-                let stateMachine = artboard.stateMachine(fromName: name)
-                stateMachine.inputNames().forEach{inputName in
+                let stateMachine = try artboard.stateMachine(fromName: name)
+                try stateMachine.inputNames().forEach{inputName in
                     let label = UILabel()
                     label.text = inputName
                     label.textColor = .black
@@ -244,17 +244,17 @@ class IOSPlayerViewController: UIViewController {
                     stackView.alignment = .trailing
                     stackView.addArrangedSubview(label)
                     
-                    let input = stateMachine.input(fromName: inputName)
+                    let input = try stateMachine.input(fromName: inputName)
                     if (input.isBoolean()){
                         let switchToggle = UISwitch(
                             frame: CGRect(),
                             primaryAction: UIAction(
                                 handler: { [unowned self] this in
                                     if ((this.sender as! UISwitch).isOn){
-                                        self.playerView?.riveView.setBooleanState(name, inputName: inputName, value: true)
+                                        try? self.playerView?.riveView.setBooleanState(name, inputName: inputName, value: true)
                                     }
                                     else {
-                                        self.playerView?.riveView.setBooleanState(name, inputName: inputName, value: false)
+                                        try? self.playerView?.riveView.setBooleanState(name, inputName: inputName, value: false)
                                     }
                                 }
                             )
@@ -266,12 +266,12 @@ class IOSPlayerViewController: UIViewController {
                             type: .system,
                             primaryAction:
                                 UIAction(title: "fire", handler: { [unowned self] _ in
-                                    self.playerView?.riveView.fireState(name, inputName: inputName)
+                                    try? self.playerView?.riveView.fireState(name, inputName: inputName)
                                 }))
                         stackView.addArrangedSubview(fireButton)
                     }
                     else if (input.isNumber()){
-                                
+                        
                         let valueLabel = UILabel()
                         valueLabel.text = NSString(format: "%.2f", (input as! RiveStateMachineNumberInput).value()) as String
                         valueLabel.textColor = .black
@@ -284,7 +284,7 @@ class IOSPlayerViewController: UIViewController {
                                     let currentFloat = currentValue.floatValue - 1
                                     valueLabel.text = NSString(format: "%.2f", currentFloat) as String
                                     
-                                    self.playerView?.riveView.setNumberState(name, inputName: inputName, value: currentFloat)
+                                    try? self.playerView?.riveView.setNumberState(name, inputName: inputName, value: currentFloat)
                                 }))
                         let upButton = UIButton(
                             type: .system,
@@ -294,26 +294,23 @@ class IOSPlayerViewController: UIViewController {
                                     let currentFloat = currentValue.floatValue + 1
                                     valueLabel.text = NSString(format: "%.2f", currentFloat) as String
                                     
-                                    self.playerView?.riveView.setNumberState(name, inputName: inputName, value: currentFloat)
+                                    try? self.playerView?.riveView.setNumberState(name, inputName: inputName, value: currentFloat)
                                 }))
                         stackView.addArrangedSubview(downButton)
                         stackView.addArrangedSubview(valueLabel)
                         stackView.addArrangedSubview(upButton)
                     }
-                    
-                    
-                    
-                    
-                    PlayerStack.addArrangedSubview(stackView)
                 }
-            })
+                PlayerStack.addArrangedSubview(stackView)
+            }
+            )
         }
     }
     
-    func loadAnimations(){
+    func loadAnimations() throws {
         _clearOld()
-        _loadStateMachines()
-        _loadAnimations()
+        try _loadStateMachines()
+        try _loadAnimations()
         PlayerStack.reloadInputViews()
     }
     
@@ -328,7 +325,7 @@ class IOSPlayerViewController: UIViewController {
         artboardChoices.viewController = self
         
         playerView = view as? IOSPlayerView
-        load(name:fileChoices.chosen)
+        try? load(name:fileChoices.chosen)
         
     }
     

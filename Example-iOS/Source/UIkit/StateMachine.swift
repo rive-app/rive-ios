@@ -44,33 +44,34 @@ class StateMachineViewController: UIViewController {
             fatalError("Could not find StateMachineView")
         }
         
-        stateMachineView.riveView.configure(
+        try? stateMachineView.riveView.configure(
             getRiveFile(resourceName: resourceName),
             andStateMachine: "Designer's Test"
         )
+        
         stateMachineView.beginnerButtonAction = {
-            stateMachineView.riveView.setNumberState(
+            try? stateMachineView.riveView.setNumberState(
                 "Designer's Test",
                 inputName: "Level",
                 value: 0.0
             )
         }
         stateMachineView.intermediateButtonAction = {
-            stateMachineView.riveView.setNumberState(
+            try? stateMachineView.riveView.setNumberState(
                 "Designer's Test",
                 inputName: "Level",
                 value: 1.0
             )
         }
         stateMachineView.expertButtonAction = {
-            stateMachineView.riveView.setNumberState(
+            try? stateMachineView.riveView.setNumberState(
                 "Designer's Test",
                 inputName: "Level",
                 value: 2.0
             )
         }
         stateMachineView.resetButtonAction = {
-            stateMachineView.riveView.reset()
+            try? stateMachineView.riveView.reset()
         }
     }
     

@@ -97,17 +97,16 @@ class LoopModeController: UIViewController {
         guard let loopModeView = view as? LoopMode else {
             fatalError("Could not find LayoutView")
         }
-        
-        loopModeView.riveView.configure(
+        try? loopModeView.riveView.configure(
             getRiveFile(resourceName: loopResourceName),
             andAutoPlay: false
         )
         
         loopModeView.triggeredResetButton = {
-            loopModeView.riveView.reset()
+            try? loopModeView.riveView.reset()
             
             // TODO: just calling reset on an existing file is really not so hot.
-            loopModeView.riveView.configure(
+            try? loopModeView.riveView.configure(
                 getRiveFile(resourceName: self.loopResourceName),
                 andAutoPlay: false
             )
@@ -123,42 +122,42 @@ class LoopModeController: UIViewController {
         }
         
         loopModeView.triggeredRotatePlayButton = {
-            loopModeView.riveView.play(animationName:"oneshot", direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"oneshot", direction: self.direction)
         }
         loopModeView.triggeredRotateOneShotButton = {
-            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopOneShot, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopOneShot, direction: self.direction)
         }
         loopModeView.triggeredRotateLoopButton = {
-            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopLoop, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopLoop, direction: self.direction)
         }
         loopModeView.triggeredRotatePingPongButton = {
-            loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopPingPong, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"oneshot", loop: Loop.loopPingPong, direction: self.direction)
         }
         
         loopModeView.triggeredLoopDownPlayButton = {
-            loopModeView.riveView.play(animationName:"loop", direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"loop", direction: self.direction)
         }
         loopModeView.triggeredLoopDownOneShotButton = {
-            loopModeView.riveView.play(animationName:"loop", loop: Loop.loopOneShot, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"loop", loop: Loop.loopOneShot, direction: self.direction)
         }
         loopModeView.triggeredLoopDownLoopButton = {
-            loopModeView.riveView.play(animationName:"loop", loop: Loop.loopLoop, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"loop", loop: Loop.loopLoop, direction: self.direction)
         }
         loopModeView.triggeredLoopDownPingPongButton = {
-            loopModeView.riveView.play(animationName:"loop", loop: Loop.loopPingPong, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"loop", loop: Loop.loopPingPong, direction: self.direction)
         }
         
         loopModeView.triggeredLtrPlayButton = {
-            loopModeView.riveView.play(animationName:"pingpong", direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"pingpong", direction: self.direction)
         }
         loopModeView.triggeredLtrLoopButton = {
-            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopLoop, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopLoop, direction: self.direction)
         }
         loopModeView.triggeredLtrOneShotButton = {
-            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopOneShot, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopOneShot, direction: self.direction)
         }
         loopModeView.triggeredLtrPingPongButton = {
-            loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopPingPong, direction: self.direction)
+            try? loopModeView.riveView.play(animationName:"pingpong", loop: Loop.loopPingPong, direction: self.direction)
         }
     }
     

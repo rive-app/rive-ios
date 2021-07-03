@@ -21,10 +21,8 @@ func getBytes(resourceName: String, resourceExt: String=".riv") -> [UInt8] {
     return [UInt8](data)
 }
 
-func getRiveFile(resourceName: String, resourceExt: String=".riv") -> RiveFile{
+
+func getRiveFile(resourceName: String, resourceExt: String=".riv") throws -> RiveFile{
     let byteArray = getBytes(resourceName: resourceName, resourceExt: resourceExt)
-    guard let riveFile = RiveFile(byteArray: byteArray) else {
-        fatalError("Failed to import Rive File.")
-    }
-    return riveFile
+    return try RiveFile(byteArray: byteArray)
 }

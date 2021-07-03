@@ -136,7 +136,11 @@ struct RiveExplorer: View {
                         case .pause, .stop:
                             Image(systemName: "play.circle")
                             Text("Play")
+                        @unknown default:
+                            fatalError("Unknown playback value")
                         }
+                        
+                        
                     }
                     Spacer()
                     Button(action: dismiss, label: {

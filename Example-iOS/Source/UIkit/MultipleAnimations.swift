@@ -20,28 +20,27 @@ class MultipleAnimationsController: UIViewController {
     
     let loopResourceName = "artboard_animations"
     
-    override public func loadView() {
+    override public func loadView()  {
         super.loadView()
         
         guard let multipleAnimationView = view as? MultipleAnimations else {
             fatalError("Could not find LayoutView")
         }
-
-        multipleAnimationView.squareGoAround.configure(
+        try? multipleAnimationView.squareGoAround.configure(
             getRiveFile(resourceName: loopResourceName),
             andArtboard: "Square",
             andAnimation: "goaround"
         )
-        multipleAnimationView.squareRollAround.configure(
+        try? multipleAnimationView.squareRollAround.configure(
             getRiveFile(resourceName: loopResourceName),
             andArtboard: "Square",
             andAnimation: "rollaround"
         )
-        multipleAnimationView.circle.configure(
+        try? multipleAnimationView.circle.configure(
             getRiveFile(resourceName: loopResourceName),
             andArtboard: "Circle"
         )
-        multipleAnimationView.star?.configure(
+        try? multipleAnimationView.star?.configure(
             getRiveFile(resourceName: loopResourceName),
             andArtboard: "Star"
         )

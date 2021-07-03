@@ -18,27 +18,33 @@ struct RiveProgressBarBridge: UIViewRepresentable {
     
     /// Constructs the view
     func makeUIView(context: Context) -> RiveView {
-        let riveView = RiveView(
-            riveFile: getRiveFile(resourceName: resource),
-            fit: fit,
-            alignment: alignment,
-            autoplay: true,
-            stateMachine: stateMachine
-        )
+        do {
+            let riveView = try RiveView(
+                riveFile: getRiveFile(resourceName: resource),
+                fit: fit,
+                alignment: alignment,
+                autoplay: true,
+                stateMachine: stateMachine
+            )
+            // Always keep the 100 set; just how this state machine works
+            try? riveView.setBooleanState(stateMachine, inputName: input100Name, value: true)
+            return riveView
+        }
+        catch{
+            print(error)
+            return RiveView()
+        }
         
-        // Always keep the 100 set; just how this state machine works
-        riveView.setBooleanState(stateMachine, inputName: input100Name, value: true)
-        return riveView
     }
-
+    
     static func dismantleUIView(_ riveView: RiveView, coordinator: Self.Coordinator) {
         riveView.stop()
     }
     
     func updateUIView(_ riveView: RiveView, context: UIViewRepresentableContext<RiveProgressBarBridge>) {
-        riveView.setBooleanState(stateMachine, inputName: input75Name, value: health < 100)
-        riveView.setBooleanState(stateMachine, inputName: input50Name, value: health <= 66)
-        riveView.setBooleanState(stateMachine, inputName: input25Name, value: health <= 33)
-        riveView.setBooleanState(stateMachine, inputName: input0Name, value: health <= 0)
+        try? riveView.setBooleanState(stateMachine, inputName: input75Name, value: health < 100)
+        try? riveView.setBooleanState(stateMachine, inputName: input50Name, value: health <= 66)
+        try? riveView.setBooleanState(stateMachine, inputName: input25Name, value: health <= 33)
+        try? riveView.setBooleanState(stateMachine, inputName: input0Name, value: health <= 0)
     }
 }

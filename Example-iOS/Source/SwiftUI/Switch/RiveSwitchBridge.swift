@@ -16,23 +16,27 @@ struct RiveSwitchBridge: UIViewRepresentable {
     
     /// Constructs the view
     func makeUIView(context: Context) -> RiveView {
-        let riveView = RiveView(
-            riveFile: getRiveFile(resourceName: resource),
-            fit: fit,
-            alignment: alignment,
-            artboard: artboard,
-            animation: startAnimation
-        )
-        return riveView
+        do {
+            let riveView = try RiveView(
+                riveFile: getRiveFile(resourceName: resource),
+                fit: fit,
+                alignment: alignment,
+                artboard: artboard,
+                animation: startAnimation
+            )
+            return riveView
+        } catch {
+            return RiveView()
+        }
     }
-
+    
     func updateUIView(_ riveView: RiveView, context: UIViewRepresentableContext<RiveSwitchBridge>) {
         riveView.stop()
         if switchToOn {
-            riveView.play(animationName: onAnimation)
+            try? riveView.play(animationName: onAnimation)
         }
         if switchToOff {
-            riveView.play(animationName: offAnimation)
+            try? riveView.play(animationName: offAnimation)
         }
     }
     

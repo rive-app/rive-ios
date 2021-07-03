@@ -33,7 +33,7 @@ class LayoutViewController: UIViewController {
             fatalError("Could not find LayoutView")
         }
         
-        layoutView.riveView.configure(getRiveFile(resourceName: resourceName))
+        try? layoutView.riveView.configure(getRiveFile(resourceName: resourceName))
         
         func setFit(name:String) {
             var fit: Fit = .fitContain
