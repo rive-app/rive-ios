@@ -1,10 +1,12 @@
 {
   "git": {
     "commitMessage": "chore: release v${version}",
+    "tagName": "${version}",
     "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
   },
   "github": {
-    "release": false
+    "release": true,
+    "releaseName": "${version}"
   },
   "npm": {
     "publish": false,
@@ -23,6 +25,10 @@
     }
   },
   "hooks": {
-    "after:bump": "npx auto-changelog -p --starting-version 0.3.0 -o ../../../CHANGELOG.md"
+    "after:bump": [
+      "npx auto-changelog -p --starting-version 0.3.0 -o ../../../CHANGELOG.md",
+      "git add ../../../CHANGELOG.md",
+      "git add ../../../VERSION"
+    ]
   }
 }
