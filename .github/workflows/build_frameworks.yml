@@ -1,10 +1,11 @@
 name: Publish to Cocoapods
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
+  push:
+  # pull_request:
+  #   types: [closed]
+  #   branches:
+  #     - main
 
 jobs:
   determine_version:
@@ -20,136 +21,136 @@ jobs:
         run: npm run release -- --ci --release-version | tail -n 1 > RELEASE_VERSION
         working-directory: ./.github/scripts/release
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RIVE_REPO_PAT }}
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: RELEASE_VERSION
           path: ./.github/scripts/release/RELEASE_VERSION
 
-  create_podspec_file:
-    name: Create RiveRuntime.podspec
-    runs-on: ubuntu-latest
-    needs: [determine_version]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Download RELEASE_VERSION
-        uses: actions/download-artifact@v2
-        with:
-          name: RELEASE_VERSION
-      - name: Add RELEASE_VERSION to env
-        run: echo "RELEASE_VERSION=$(cat RELEASE_VERSION)" >> $GITHUB_ENV
-      - name: Read podspec.txt file
-        uses: pCYSl5EDgo/cat@master
-        id: podspec
-        with:
-          path: .github/workflows/podspec.txt
-      - name: Create *.podspec
-        run: |
-          cat > RiveRuntime.podspec <<-EOF
-          ${{ steps.podspec.outputs.text }}
-          EOF
-        env:
-          GITHUB_AUTHOR: ${{ github.actor }}
-          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: RiveRuntime.podspec
-          path: RiveRuntime.podspec
+  # create_podspec_file:
+  #   name: Create RiveRuntime.podspec
+  #   runs-on: ubuntu-latest
+  #   needs: [determine_version]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Download RELEASE_VERSION
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: RELEASE_VERSION
+  #     - name: Add RELEASE_VERSION to env
+  #       run: echo "RELEASE_VERSION=$(cat RELEASE_VERSION)" >> $GITHUB_ENV
+  #     - name: Read podspec.txt file
+  #       uses: pCYSl5EDgo/cat@master
+  #       id: podspec
+  #       with:
+  #         path: .github/workflows/podspec.txt
+  #     - name: Create *.podspec
+  #       run: |
+  #         cat > RiveRuntime.podspec <<-EOF
+  #         ${{ steps.podspec.outputs.text }}
+  #         EOF
+  #       env:
+  #         GITHUB_AUTHOR: ${{ github.actor }}
+  #         RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: RiveRuntime.podspec
+  #         path: RiveRuntime.podspec
 
-  build_framework:
-    name: Create RiveRuntime.xcframework
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.RIVE_REPO_PAT }}
-          submodules: recursive
-      - name: Init submodule
-        run: git submodule update --init
-      - id: build_iphoneos
-        name: Build release iphoneos framework
-        run: sh ./.github/scripts/buildFramework.sh  -t iphoneos -c Release
-      - id: build_iphonesimulator
-        name: Build release iphonesimulator framework
-        run: sh ./.github/scripts/buildFramework.sh  -t iphonesimulator -c Release
-      - id: merge_frameworks
-        if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
-        name: Merge created frameworks
-        run: sh ./.github/scripts/mergeFrameworks.sh -c Release
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: RiveRuntime.xcframework
-          path: build/RiveRuntime.xcframework
+  # build_framework:
+  #   name: Create RiveRuntime.xcframework
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         token: ${{ secrets.RIVE_REPO_PAT }}
+  #         submodules: recursive
+  #     - name: Init submodule
+  #       run: git submodule update --init
+  #     - id: build_iphoneos
+  #       name: Build release iphoneos framework
+  #       run: sh ./.github/scripts/buildFramework.sh  -t iphoneos -c Release
+  #     - id: build_iphonesimulator
+  #       name: Build release iphonesimulator framework
+  #       run: sh ./.github/scripts/buildFramework.sh  -t iphonesimulator -c Release
+  #     - id: merge_frameworks
+  #       if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
+  #       name: Merge created frameworks
+  #       run: sh ./.github/scripts/mergeFrameworks.sh -c Release
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: RiveRuntime.xcframework
+  #         path: build/RiveRuntime.xcframework
 
 
-  upload_cocoapods:
-    name: Update podspec repository
-    runs-on: macos-latest
-    timeout-minutes: 10
-    needs: [create_podspec_file, build_framework]
-    steps:
-      - name: Checkout podspec repo
-        uses: actions/checkout@v2
-        with:
-          repository: rive-app/rive-ios-pod
-          token: ${{ secrets.RIVE_REPO_PAT }}
-      - name: Clean
-        run: |
-          rm -rf RiveRuntime.podspec
-          rm -rf RiveRuntime.xcframework
-      - name: Download framework artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: RiveRuntime.xcframework
-          path: RiveRuntime.xcframework
-      - name: Download podspec artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: RiveRuntime.podspec
-      - name: Lint pod
-        run: pod lib lint --allow-warnings
-      - name: Download RELEASE_VERSION
-        uses: actions/download-artifact@v2
-        with:
-          name: RELEASE_VERSION
-      - name: Add RELEASE_VERSION to env
-        run: echo "RELEASE_VERSION=$(cat RELEASE_VERSION)" >> $GITHUB_ENV
-      - name: Push pod to rive-ios-pod repo
-        run: |
-          git status
-          git config --local user.email 'hello@rive.app'
-          git config --local user.name ${{ github.actor }}
-          git add .
-          git commit -m "Update podspec repo tag:${{ env.RELEASE_VERSION }}"
-          git push
-          git tag v${{ env.RELEASE_VERSION }}
-          git push origin v${{ env.RELEASE_VERSION }}
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
-      - name: Publish pod to the CocoaPods
-        uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
-        env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+  # upload_cocoapods:
+  #   name: Update podspec repository
+  #   runs-on: macos-latest
+  #   timeout-minutes: 10
+  #   needs: [create_podspec_file, build_framework]
+  #   steps:
+  #     - name: Checkout podspec repo
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: rive-app/rive-ios-pod
+  #         token: ${{ secrets.RIVE_REPO_PAT }}
+  #     - name: Clean
+  #       run: |
+  #         rm -rf RiveRuntime.podspec
+  #         rm -rf RiveRuntime.xcframework
+  #     - name: Download framework artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: RiveRuntime.xcframework
+  #         path: RiveRuntime.xcframework
+  #     - name: Download podspec artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: RiveRuntime.podspec
+  #     - name: Lint pod
+  #       run: pod lib lint --allow-warnings
+  #     - name: Download RELEASE_VERSION
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: RELEASE_VERSION
+  #     - name: Add RELEASE_VERSION to env
+  #       run: echo "RELEASE_VERSION=$(cat RELEASE_VERSION)" >> $GITHUB_ENV
+  #     - name: Push pod to rive-ios-pod repo
+  #       run: |
+  #         git status
+  #         git config --local user.email 'hello@rive.app'
+  #         git config --local user.name ${{ github.actor }}
+  #         git add .
+  #         git commit -m "Update podspec repo tag:${{ env.RELEASE_VERSION }}"
+  #         git push
+  #         git tag v${{ env.RELEASE_VERSION }}
+  #         git push origin v${{ env.RELEASE_VERSION }}
+  #       env:
+  #         API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
+  #     - name: Publish pod to the CocoaPods
+  #       uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
+  #       env:
+  #         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
-  complete_release:
-    name: Update the repo with the release details.
-    runs-on: ubuntu-latest
-    needs: [upload_cocoapods]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./.github/scripts/release
-      - name: Bump version number, update changelog, push and tag
-        run: npm run release -- --ci
-        working-directory: ./.github/scripts/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+  # complete_release:
+  #   name: Update the repo with the release details.
+  #   runs-on: ubuntu-latest
+  #   needs: [upload_cocoapods]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Install dependencies
+  #       run: npm ci
+  #       working-directory: ./.github/scripts/release
+  #     - name: Bump version number, update changelog, push and tag
+  #       run: npm run release -- --ci
+  #       working-directory: ./.github/scripts/release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.RIVE_REPO_PAT }}
