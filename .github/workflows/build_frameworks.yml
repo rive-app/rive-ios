@@ -148,6 +148,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
         working-directory: ./.github/scripts/release
+      - name: Git config
+        run: |
+          git config --local user.email 'hello@rive.app'
+          git config --local user.name ${{ github.actor }}
       - name: Bump version number, update changelog, push and tag
         run: npm run release -- --ci
         working-directory: ./.github/scripts/release
