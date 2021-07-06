@@ -19,6 +19,8 @@ jobs:
       - name: Get Version
         run: npm run release -- --ci --release-version | tail -n 1 > RELEASE_VERSION
         working-directory: ./.github/scripts/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
