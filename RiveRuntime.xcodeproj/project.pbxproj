@@ -49,6 +49,21 @@
 		04BE5434264D267900427B39 /* LayerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5431264D243D00427B39 /* LayerState.mm */; };
 		04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */; };
 		04C8D517265BFE3500508ACB /* runtime_header.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9C740EF24FC4F0400EF9516 /* runtime_header.hpp */; };
+		04F1C92426A84B5200CEE6BE /* constraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92126A84B5200CEE6BE /* constraint.cpp */; };
+		04F1C92526A84B5200CEE6BE /* ik_constraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92226A84B5200CEE6BE /* ik_constraint.cpp */; };
+		04F1C92626A84B5200CEE6BE /* targeted_constraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92326A84B5200CEE6BE /* targeted_constraint.cpp */; };
+		04F1C92926A84B7B00CEE6BE /* ik_constraint_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92826A84B7B00CEE6BE /* ik_constraint_base.cpp */; };
+		04F1C92F26A84B8700CEE6BE /* blend_animation_direct_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92A26A84B8700CEE6BE /* blend_animation_direct_base.cpp */; };
+		04F1C93026A84B8700CEE6BE /* blend_animation_1d_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92B26A84B8700CEE6BE /* blend_animation_1d_base.cpp */; };
+		04F1C93126A84B8700CEE6BE /* blend_state_transition_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92C26A84B8700CEE6BE /* blend_state_transition_base.cpp */; };
+		04F1C93226A84B8700CEE6BE /* blend_state_1d_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92D26A84B8700CEE6BE /* blend_state_1d_base.cpp */; };
+		04F1C93326A84B8700CEE6BE /* blend_state_direct_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04F1C92E26A84B8700CEE6BE /* blend_state_direct_base.cpp */; };
+		04F1C93826A84BB400CEE6BE /* targeted_constraint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 04F1C93526A84BB400CEE6BE /* targeted_constraint.hpp */; };
+		04F1C93926A84BB400CEE6BE /* constraint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 04F1C93626A84BB400CEE6BE /* constraint.hpp */; };
+		04F1C93A26A84BB400CEE6BE /* ik_constraint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 04F1C93726A84BB400CEE6BE /* ik_constraint.hpp */; };
+		04F1C93F26A84BD900CEE6BE /* constraint_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 04F1C93C26A84BD900CEE6BE /* constraint_base.hpp */; };
+		04F1C94026A84BD900CEE6BE /* targeted_constraint_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 04F1C93D26A84BD900CEE6BE /* targeted_constraint_base.hpp */; };
+		04F1C94126A84BD900CEE6BE /* ik_constraint_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 04F1C93E26A84BD900CEE6BE /* ik_constraint_base.hpp */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
@@ -468,6 +483,21 @@
 		04BE542F264D1F4100427B39 /* LayerState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayerState.h; sourceTree = "<group>"; };
 		04BE5431264D243D00427B39 /* LayerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LayerState.mm; sourceTree = "<group>"; };
 		04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RivePrivateHeaders.h; sourceTree = "<group>"; };
+		04F1C92126A84B5200CEE6BE /* constraint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = constraint.cpp; sourceTree = "<group>"; };
+		04F1C92226A84B5200CEE6BE /* ik_constraint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ik_constraint.cpp; sourceTree = "<group>"; };
+		04F1C92326A84B5200CEE6BE /* targeted_constraint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = targeted_constraint.cpp; sourceTree = "<group>"; };
+		04F1C92826A84B7B00CEE6BE /* ik_constraint_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ik_constraint_base.cpp; sourceTree = "<group>"; };
+		04F1C92A26A84B8700CEE6BE /* blend_animation_direct_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_animation_direct_base.cpp; sourceTree = "<group>"; };
+		04F1C92B26A84B8700CEE6BE /* blend_animation_1d_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_animation_1d_base.cpp; sourceTree = "<group>"; };
+		04F1C92C26A84B8700CEE6BE /* blend_state_transition_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state_transition_base.cpp; sourceTree = "<group>"; };
+		04F1C92D26A84B8700CEE6BE /* blend_state_1d_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state_1d_base.cpp; sourceTree = "<group>"; };
+		04F1C92E26A84B8700CEE6BE /* blend_state_direct_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = blend_state_direct_base.cpp; sourceTree = "<group>"; };
+		04F1C93526A84BB400CEE6BE /* targeted_constraint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = targeted_constraint.hpp; sourceTree = "<group>"; };
+		04F1C93626A84BB400CEE6BE /* constraint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = constraint.hpp; sourceTree = "<group>"; };
+		04F1C93726A84BB400CEE6BE /* ik_constraint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ik_constraint.hpp; sourceTree = "<group>"; };
+		04F1C93C26A84BD900CEE6BE /* constraint_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = constraint_base.hpp; sourceTree = "<group>"; };
+		04F1C93D26A84BD900CEE6BE /* targeted_constraint_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = targeted_constraint_base.hpp; sourceTree = "<group>"; };
+		04F1C93E26A84BD900CEE6BE /* ik_constraint_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ik_constraint_base.hpp; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
@@ -963,6 +993,44 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		04F1C92026A84B5200CEE6BE /* constraints */ = {
+			isa = PBXGroup;
+			children = (
+				04F1C92126A84B5200CEE6BE /* constraint.cpp */,
+				04F1C92226A84B5200CEE6BE /* ik_constraint.cpp */,
+				04F1C92326A84B5200CEE6BE /* targeted_constraint.cpp */,
+			);
+			path = constraints;
+			sourceTree = "<group>";
+		};
+		04F1C92726A84B7B00CEE6BE /* constraints */ = {
+			isa = PBXGroup;
+			children = (
+				04F1C92826A84B7B00CEE6BE /* ik_constraint_base.cpp */,
+			);
+			path = constraints;
+			sourceTree = "<group>";
+		};
+		04F1C93426A84BB400CEE6BE /* constraints */ = {
+			isa = PBXGroup;
+			children = (
+				04F1C93526A84BB400CEE6BE /* targeted_constraint.hpp */,
+				04F1C93626A84BB400CEE6BE /* constraint.hpp */,
+				04F1C93726A84BB400CEE6BE /* ik_constraint.hpp */,
+			);
+			path = constraints;
+			sourceTree = "<group>";
+		};
+		04F1C93B26A84BD900CEE6BE /* constraints */ = {
+			isa = PBXGroup;
+			children = (
+				04F1C93C26A84BD900CEE6BE /* constraint_base.hpp */,
+				04F1C93D26A84BD900CEE6BE /* targeted_constraint_base.hpp */,
+				04F1C93E26A84BD900CEE6BE /* ik_constraint_base.hpp */,
+			);
+			path = constraints;
+			sourceTree = "<group>";
+		};
 		C9601F2C251004770032AA07 /* math */ = {
 			isa = PBXGroup;
 			children = (
@@ -1068,6 +1136,7 @@
 		C9A9DA25265C51A40005DB1F /* generated */ = {
 			isa = PBXGroup;
 			children = (
+				04F1C92726A84B7B00CEE6BE /* constraints */,
 				C9A9DA26265C51A40005DB1F /* draw_target_base.cpp */,
 				C9A9DA27265C51A40005DB1F /* backboard_base.cpp */,
 				C9A9DA28265C51A40005DB1F /* animation */,
@@ -1083,6 +1152,11 @@
 		C9A9DA28265C51A40005DB1F /* animation */ = {
 			isa = PBXGroup;
 			children = (
+				04F1C92B26A84B8700CEE6BE /* blend_animation_1d_base.cpp */,
+				04F1C92A26A84B8700CEE6BE /* blend_animation_direct_base.cpp */,
+				04F1C92D26A84B8700CEE6BE /* blend_state_1d_base.cpp */,
+				04F1C92E26A84B8700CEE6BE /* blend_state_direct_base.cpp */,
+				04F1C92C26A84B8700CEE6BE /* blend_state_transition_base.cpp */,
 				C9A9DA29265C51A40005DB1F /* any_state_base.cpp */,
 				C9A9DA2A265C51A40005DB1F /* state_machine_trigger_base.cpp */,
 				C9A9DA2B265C51A40005DB1F /* state_machine_base.cpp */,
@@ -1276,6 +1350,7 @@
 		C9C7406D24FC4F0400EF9516 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				04F1C92026A84B5200CEE6BE /* constraints */,
 				C9A9DA25265C51A40005DB1F /* generated */,
 				C9C7407A24FC4F0400EF9516 /* animation */,
 				C9C740A624FC4F0400EF9516 /* bones */,
@@ -1430,6 +1505,7 @@
 		C9C740AD24FC4F0400EF9516 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				04F1C93426A84BB400CEE6BE /* constraints */,
 				C9BD38B9263B5E0D00696C37 /* importers */,
 				C9AEB7E725C8903C00AE9C43 /* polygon_base.hpp */,
 				C9AEB7E625C8903C00AE9C43 /* star_base.hpp */,
@@ -1477,6 +1553,7 @@
 		C9C740AE24FC4F0400EF9516 /* generated */ = {
 			isa = PBXGroup;
 			children = (
+				04F1C93B26A84BD900CEE6BE /* constraints */,
 				C9C740AF24FC4F0400EF9516 /* core_registry.hpp */,
 				C9C740B024FC4F0400EF9516 /* node_base.hpp */,
 				C9C740B124FC4F0400EF9516 /* transform_component_base.hpp */,
@@ -1758,6 +1835,7 @@
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
 				046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */,
 				046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */,
+				04F1C93F26A84BD900CEE6BE /* constraint_base.hpp in Headers */,
 				046FB7F3264EAA60000129B1 /* RiveStateMachineInput.h in Headers */,
 				046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */,
 				04BE5430264D1F4100427B39 /* LayerState.h in Headers */,
@@ -1780,6 +1858,7 @@
 				04C8D517265BFE3500508ACB /* runtime_header.hpp in Headers */,
 				C9A9D9F7265C50930005DB1F /* blend_state_1d.hpp in Headers */,
 				C9601F82251004780032AA07 /* straight_vertex.hpp in Headers */,
+				04F1C93A26A84BB400CEE6BE /* ik_constraint.hpp in Headers */,
 				C9601F73251004780032AA07 /* stroke_cap.hpp in Headers */,
 				C9601F84251004780032AA07 /* gradient_stop.hpp in Headers */,
 				C9601F75251004780032AA07 /* stroke.hpp in Headers */,
@@ -1826,6 +1905,7 @@
 				C9BD3893263B5D8300696C37 /* state_machine_number_base.hpp in Headers */,
 				C9601F71251004780032AA07 /* command_path.hpp in Headers */,
 				C9BD38F1263B5E4000696C37 /* state_machine_component.hpp in Headers */,
+				04F1C93826A84BB400CEE6BE /* targeted_constraint.hpp in Headers */,
 				C9BD38C3263B5E0D00696C37 /* state_transition_importer.hpp in Headers */,
 				C9C7419A24FC4F0500EF9516 /* tendon_base.hpp in Headers */,
 				C9BD38AC263B5D9000696C37 /* transition_value_condition_base.hpp in Headers */,
@@ -1833,6 +1913,7 @@
 				C9C741EA24FC4F0500EF9516 /* core.hpp in Headers */,
 				C9BD38A7263B5D9000696C37 /* transition_trigger_condition_base.hpp in Headers */,
 				C9A9D9FE265C50930005DB1F /* blend_state_1d_instance.hpp in Headers */,
+				04F1C94126A84BD900CEE6BE /* ik_constraint_base.hpp in Headers */,
 				C9A9DA07265C50CA0005DB1F /* blend_state_direct_base.hpp in Headers */,
 				C9C741A624FC4F0500EF9516 /* status_code.hpp in Headers */,
 				C9BD38E3263B5E4000696C37 /* transition_condition.hpp in Headers */,
@@ -1846,6 +1927,7 @@
 				C9A9D9F5265C50930005DB1F /* blend_animation.hpp in Headers */,
 				C9C7419424FC4F0500EF9516 /* component_base.hpp in Headers */,
 				C9BD38B0263B5D9000696C37 /* any_state_base.hpp in Headers */,
+				04F1C93926A84BB400CEE6BE /* constraint.hpp in Headers */,
 				C9C741A324FC4F0500EF9516 /* core_string_type.hpp in Headers */,
 				C9C7417D24FC4F0500EF9516 /* linear_gradient_base.hpp in Headers */,
 				C9C7418424FC4F0500EF9516 /* parametric_path_base.hpp in Headers */,
@@ -1963,6 +2045,7 @@
 				C9C741A124FC4F0500EF9516 /* core_uint_type.hpp in Headers */,
 				C9C7417124FC4F0500EF9516 /* transform_component_base.hpp in Headers */,
 				C9C7418C24FC4F0500EF9516 /* rectangle_base.hpp in Headers */,
+				04F1C94026A84BD900CEE6BE /* targeted_constraint_base.hpp in Headers */,
 				C9A9D9F4265C50930005DB1F /* blend_animation_direct.hpp in Headers */,
 				C9C7418B24FC4F0500EF9516 /* shape_base.hpp in Headers */,
 				C9C741B724FC4F0500EF9516 /* keyframe_color.hpp in Headers */,
@@ -2115,6 +2198,7 @@
 				C9C7416924FC4F0500EF9516 /* root_bone.cpp in Sources */,
 				C9A9DA7C265C51A40005DB1F /* polygon_base.cpp in Sources */,
 				C9A9DA23265C51100005DB1F /* state_instance.cpp in Sources */,
+				04F1C92F26A84B8700CEE6BE /* blend_animation_direct_base.cpp in Sources */,
 				C9C7413E24FC4F0500EF9516 /* component.cpp in Sources */,
 				C9BD3904263B5E7600696C37 /* state_machine_importer.cpp in Sources */,
 				C9A9DA7E265C51A40005DB1F /* clipping_shape_base.cpp in Sources */,
@@ -2133,6 +2217,7 @@
 				C9BD3908263B5E7600696C37 /* state_transition_importer.cpp in Sources */,
 				C9A9DA5E265C51A40005DB1F /* backboard_base.cpp in Sources */,
 				C9C7415724FC4F0500EF9516 /* cubic_vertex.cpp in Sources */,
+				04F1C92426A84B5200CEE6BE /* constraint.cpp in Sources */,
 				C9A9DA61265C51A40005DB1F /* state_machine_base.cpp in Sources */,
 				C9BD391D263B5E9000696C37 /* state_machine_layer.cpp in Sources */,
 				C9C7414E24FC4F0500EF9516 /* fill.cpp in Sources */,
@@ -2179,6 +2264,7 @@
 				C9BD3903263B5E7600696C37 /* artboard_importer.cpp in Sources */,
 				046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */,
 				C9C7414224FC4F0500EF9516 /* keyed_object.cpp in Sources */,
+				04F1C92926A84B7B00CEE6BE /* ik_constraint_base.cpp in Sources */,
 				C9A9DA76265C51A40005DB1F /* gradient_stop_base.cpp in Sources */,
 				C9C7416C24FC4F0500EF9516 /* weight.cpp in Sources */,
 				C9A9DA8E265C51A40005DB1F /* cubic_weight_base.cpp in Sources */,
@@ -2186,12 +2272,17 @@
 				C9601FBA251004950032AA07 /* stroke.cpp in Sources */,
 				C9A9DA75265C51A40005DB1F /* radial_gradient_base.cpp in Sources */,
 				C9A9DA83265C51A40005DB1F /* points_path_base.cpp in Sources */,
+				04F1C93126A84B8700CEE6BE /* blend_state_transition_base.cpp in Sources */,
+				04F1C93326A84B8700CEE6BE /* blend_state_direct_base.cpp in Sources */,
 				C9BD3921263B5E9000696C37 /* state_machine_instance.cpp in Sources */,
 				C9C7414324FC4F0500EF9516 /* linear_animation.cpp in Sources */,
+				04F1C93026A84B8700CEE6BE /* blend_animation_1d_base.cpp in Sources */,
 				C9C7416B24FC4F0500EF9516 /* skinnable.cpp in Sources */,
 				C9C7413824FC4F0500EF9516 /* core_uint_type.cpp in Sources */,
 				C9A9DA8D265C51A40005DB1F /* root_bone_base.cpp in Sources */,
 				C9A9DA1B265C51100005DB1F /* animation_state_instance.cpp in Sources */,
+				04F1C92626A84B5200CEE6BE /* targeted_constraint.cpp in Sources */,
+				04F1C93226A84B8700CEE6BE /* blend_state_1d_base.cpp in Sources */,
 				C9C7414824FC4F0500EF9516 /* keyed_property.cpp in Sources */,
 				046FB7F6264EAA60000129B1 /* RiveStateMachineInput.mm in Sources */,
 				C9A9DA65265C51A40005DB1F /* keyframe_double_base.cpp in Sources */,
@@ -2206,6 +2297,7 @@
 				C9C7415D24FC4F0500EF9516 /* straight_vertex.cpp in Sources */,
 				C9BD3917263B5E9000696C37 /* animation_state.cpp in Sources */,
 				C9A9DA60265C51A40005DB1F /* state_machine_trigger_base.cpp in Sources */,
+				04F1C92526A84B5200CEE6BE /* ik_constraint.cpp in Sources */,
 				C9BD3920263B5E9000696C37 /* state_machine_input.cpp in Sources */,
 				C9A9DA22265C51100005DB1F /* blend_state_direct_instance.cpp in Sources */,
 				C9A9DA78265C51A40005DB1F /* trim_path_base.cpp in Sources */,

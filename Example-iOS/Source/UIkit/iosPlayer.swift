@@ -16,7 +16,7 @@ class IOSPlayerView: UIView {
 }
 
 class FileChoiceDelegate: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
-    let choices = ["artboard_animations", "basketball", "clipping", "explorer", "f22", "flux_capacitor", "loopy", "mascot", "neostream", "off_road_car_blog", "progress", "pull", "rope", "skills", "trailblaze", "ui_swipe_left_to_delete", "vader", "wacky", "juice_v7", "truck_v7"]
+    let choices = ["artboard_animations", "basketball", "clipping", "explorer", "f22", "flux_capacitor", "loopy", "mascot", "neostream", "off_road_car_blog", "progress", "pull", "rope", "skills", "trailblaze", "ui_swipe_left_to_delete", "vader", "wacky", "juice_v7", "truck_v7", "two_bone_ik"]
     var chosen = "skills"
     weak var viewController:IOSPlayerViewController?
     //MARK: - Pickerview method
