@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0450446426B3F74A007B25CA /* transform_constraint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0450446226B3F74A007B25CA /* transform_constraint.hpp */; };
+		0450446526B3F74A007B25CA /* distance_constraint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0450446326B3F74A007B25CA /* distance_constraint.hpp */; };
+		0450446826B3F7A5007B25CA /* distance_constraint_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0450446626B3F7A5007B25CA /* distance_constraint_base.hpp */; };
+		0450446926B3F7A5007B25CA /* transform_constraint_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0450446726B3F7A5007B25CA /* transform_constraint_base.hpp */; };
+		0450446B26B3F7C1007B25CA /* transform_space.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0450446A26B3F7C1007B25CA /* transform_space.hpp */; };
+		0450446E26B3F82D007B25CA /* distance_constraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0450446C26B3F82D007B25CA /* distance_constraint.cpp */; };
+		0450446F26B3F82D007B25CA /* transform_constraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0450446D26B3F82D007B25CA /* transform_constraint.cpp */; };
+		0450447226B3F83C007B25CA /* distance_constraint_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0450447026B3F83C007B25CA /* distance_constraint_base.cpp */; };
+		0450447326B3F83C007B25CA /* transform_constraint_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0450447126B3F83C007B25CA /* transform_constraint_base.cpp */; };
 		046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */; };
 		046FB7F3264EAA60000129B1 /* RiveStateMachineInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7E3264EAA5F000129B1 /* RiveStateMachineInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -441,6 +450,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0450446226B3F74A007B25CA /* transform_constraint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = transform_constraint.hpp; sourceTree = "<group>"; };
+		0450446326B3F74A007B25CA /* distance_constraint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = distance_constraint.hpp; sourceTree = "<group>"; };
+		0450446626B3F7A5007B25CA /* distance_constraint_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = distance_constraint_base.hpp; sourceTree = "<group>"; };
+		0450446726B3F7A5007B25CA /* transform_constraint_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = transform_constraint_base.hpp; sourceTree = "<group>"; };
+		0450446A26B3F7C1007B25CA /* transform_space.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = transform_space.hpp; sourceTree = "<group>"; };
+		0450446C26B3F82D007B25CA /* distance_constraint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = distance_constraint.cpp; sourceTree = "<group>"; };
+		0450446D26B3F82D007B25CA /* transform_constraint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transform_constraint.cpp; sourceTree = "<group>"; };
+		0450447026B3F83C007B25CA /* distance_constraint_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = distance_constraint_base.cpp; sourceTree = "<group>"; };
+		0450447126B3F83C007B25CA /* transform_constraint_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transform_constraint_base.cpp; sourceTree = "<group>"; };
 		046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveLinearAnimationInstance.h; sourceTree = "<group>"; };
 		046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveArtboard.mm; sourceTree = "<group>"; };
 		046FB7E3264EAA5F000129B1 /* RiveStateMachineInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachineInput.h; sourceTree = "<group>"; };
@@ -996,6 +1014,8 @@
 		04F1C92026A84B5200CEE6BE /* constraints */ = {
 			isa = PBXGroup;
 			children = (
+				0450446C26B3F82D007B25CA /* distance_constraint.cpp */,
+				0450446D26B3F82D007B25CA /* transform_constraint.cpp */,
 				04F1C92126A84B5200CEE6BE /* constraint.cpp */,
 				04F1C92226A84B5200CEE6BE /* ik_constraint.cpp */,
 				04F1C92326A84B5200CEE6BE /* targeted_constraint.cpp */,
@@ -1006,6 +1026,8 @@
 		04F1C92726A84B7B00CEE6BE /* constraints */ = {
 			isa = PBXGroup;
 			children = (
+				0450447026B3F83C007B25CA /* distance_constraint_base.cpp */,
+				0450447126B3F83C007B25CA /* transform_constraint_base.cpp */,
 				04F1C92826A84B7B00CEE6BE /* ik_constraint_base.cpp */,
 			);
 			path = constraints;
@@ -1014,6 +1036,8 @@
 		04F1C93426A84BB400CEE6BE /* constraints */ = {
 			isa = PBXGroup;
 			children = (
+				0450446326B3F74A007B25CA /* distance_constraint.hpp */,
+				0450446226B3F74A007B25CA /* transform_constraint.hpp */,
 				04F1C93526A84BB400CEE6BE /* targeted_constraint.hpp */,
 				04F1C93626A84BB400CEE6BE /* constraint.hpp */,
 				04F1C93726A84BB400CEE6BE /* ik_constraint.hpp */,
@@ -1024,6 +1048,8 @@
 		04F1C93B26A84BD900CEE6BE /* constraints */ = {
 			isa = PBXGroup;
 			children = (
+				0450446626B3F7A5007B25CA /* distance_constraint_base.hpp */,
+				0450446726B3F7A5007B25CA /* transform_constraint_base.hpp */,
 				04F1C93C26A84BD900CEE6BE /* constraint_base.hpp */,
 				04F1C93D26A84BD900CEE6BE /* targeted_constraint_base.hpp */,
 				04F1C93E26A84BD900CEE6BE /* ik_constraint_base.hpp */,
@@ -1505,6 +1531,7 @@
 		C9C740AD24FC4F0400EF9516 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				0450446A26B3F7C1007B25CA /* transform_space.hpp */,
 				04F1C93426A84BB400CEE6BE /* constraints */,
 				C9BD38B9263B5E0D00696C37 /* importers */,
 				C9AEB7E725C8903C00AE9C43 /* polygon_base.hpp */,
@@ -1829,6 +1856,7 @@
 			files = (
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
+				0450446B26B3F7C1007B25CA /* transform_space.hpp in Headers */,
 				C9A9DA09265C50CA0005DB1F /* blend_animation_base.hpp in Headers */,
 				046FB7FD264EAA61000129B1 /* RiveLinearAnimation.h in Headers */,
 				C9A9D9FC265C50930005DB1F /* state_instance.hpp in Headers */,
@@ -1865,6 +1893,7 @@
 				C9601F86251004780032AA07 /* shape_paint_mutator.hpp in Headers */,
 				C9601F87251004780032AA07 /* blend_mode.hpp in Headers */,
 				C9601F88251004780032AA07 /* shape_paint.hpp in Headers */,
+				0450446826B3F7A5007B25CA /* distance_constraint_base.hpp in Headers */,
 				C9601F79251004780032AA07 /* stroke_join.hpp in Headers */,
 				C9601F7A251004780032AA07 /* fill.hpp in Headers */,
 				C9601F8B251004780032AA07 /* radial_gradient.hpp in Headers */,
@@ -1894,6 +1923,7 @@
 				C9BD38CB263B5E0D00696C37 /* state_machine_importer.hpp in Headers */,
 				C9C741E524FC4F0500EF9516 /* skin.hpp in Headers */,
 				C9BD3894263B5D8300696C37 /* state_transition_base.hpp in Headers */,
+				0450446426B3F74A007B25CA /* transform_constraint.hpp in Headers */,
 				C9BD38EA263B5E4000696C37 /* animation_state.hpp in Headers */,
 				C9BD38AE263B5D9000696C37 /* state_machine_bool_base.hpp in Headers */,
 				C9BD38C8263B5E0D00696C37 /* import_stack.hpp in Headers */,
@@ -1966,6 +1996,7 @@
 				C9A9DA0A265C50CA0005DB1F /* blend_state_1d_base.hpp in Headers */,
 				C9A9D9F8265C50930005DB1F /* blend_animation_1d.hpp in Headers */,
 				C9BD38CA263B5E0D00696C37 /* artboard_importer.hpp in Headers */,
+				0450446526B3F74A007B25CA /* distance_constraint.hpp in Headers */,
 				C9C7419324FC4F0500EF9516 /* container_component_base.hpp in Headers */,
 				C9C7419524FC4F0500EF9516 /* weight_base.hpp in Headers */,
 				C9BD38A6263B5D9000696C37 /* transition_bool_condition_base.hpp in Headers */,
@@ -2011,6 +2042,7 @@
 				C9BD38E4263B5E4000696C37 /* state_transition_flags.hpp in Headers */,
 				C9BD38A8263B5D9000696C37 /* state_machine_base.hpp in Headers */,
 				C9BD3895263B5D8300696C37 /* transition_number_condition_base.hpp in Headers */,
+				0450446926B3F7A5007B25CA /* transform_constraint_base.hpp in Headers */,
 				C9C7417424FC4F0500EF9516 /* keyed_property_base.hpp in Headers */,
 				C9BD38C9263B5E0D00696C37 /* layer_state_importer.hpp in Headers */,
 				C9C7419824FC4F0500EF9516 /* bone_base.hpp in Headers */,
@@ -2207,6 +2239,7 @@
 				C9BD3909263B5E7600696C37 /* state_machine_layer_importer.cpp in Sources */,
 				C9002A20263C76080011556B /* RiveView.swift in Sources */,
 				C9A9DA1C265C51100005DB1F /* blend_state_1d.cpp in Sources */,
+				0450447326B3F83C007B25CA /* transform_constraint_base.cpp in Sources */,
 				C9C7415E24FC4F0500EF9516 /* path_composer.cpp in Sources */,
 				C9C7413924FC4F0500EF9516 /* core_double_type.cpp in Sources */,
 				C9C7413A24FC4F0500EF9516 /* core_string_type.cpp in Sources */,
@@ -2215,6 +2248,7 @@
 				C9A9DA85265C51A40005DB1F /* shape_base.cpp in Sources */,
 				C9C741F524FC510200EF9516 /* Rive.mm in Sources */,
 				C9BD3908263B5E7600696C37 /* state_transition_importer.cpp in Sources */,
+				0450446E26B3F82D007B25CA /* distance_constraint.cpp in Sources */,
 				C9A9DA5E265C51A40005DB1F /* backboard_base.cpp in Sources */,
 				C9C7415724FC4F0500EF9516 /* cubic_vertex.cpp in Sources */,
 				04F1C92426A84B5200CEE6BE /* constraint.cpp in Sources */,
@@ -2240,6 +2274,7 @@
 				C9BD3906263B5E7600696C37 /* layer_state_importer.cpp in Sources */,
 				C9A9DA69265C51A40005DB1F /* transition_number_condition_base.cpp in Sources */,
 				C9C7415524FC4F0500EF9516 /* cubic_asymmetric_vertex.cpp in Sources */,
+				0450446F26B3F82D007B25CA /* transform_constraint.cpp in Sources */,
 				C98F29842513FAC30076E802 /* keyframe_id.cpp in Sources */,
 				C9C7416824FC4F0500EF9516 /* file.cpp in Sources */,
 				C9C7415F24FC4F0500EF9516 /* shape_paint_container.cpp in Sources */,
@@ -2270,6 +2305,7 @@
 				C9A9DA8E265C51A40005DB1F /* cubic_weight_base.cpp in Sources */,
 				C9A9DA8A265C51A40005DB1F /* skin_base.cpp in Sources */,
 				C9601FBA251004950032AA07 /* stroke.cpp in Sources */,
+				0450447226B3F83C007B25CA /* distance_constraint_base.cpp in Sources */,
 				C9A9DA75265C51A40005DB1F /* radial_gradient_base.cpp in Sources */,
 				C9A9DA83265C51A40005DB1F /* points_path_base.cpp in Sources */,
 				04F1C93126A84B8700CEE6BE /* blend_state_transition_base.cpp in Sources */,
