@@ -8,7 +8,7 @@
 
 
 #include "RiveRenderer.hpp"
-#include "renderer.hpp"
+#include "rive/renderer.hpp"
 
 using namespace rive;
 

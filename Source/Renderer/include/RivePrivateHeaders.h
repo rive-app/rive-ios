@@ -9,23 +9,23 @@
 #ifndef RivePrivateHeaders_h
 #define RivePrivateHeaders_h
 
-#import "file.hpp"
-#import "artboard.hpp"
-#import "animation.hpp"
-#import "linear_animation.hpp"
-#import "linear_animation_instance.hpp"
-#import "state_machine.hpp"
-#import "state_machine_instance.hpp"
-#import "state_machine_input.hpp"
-#import "state_machine_bool.hpp"
-#import "state_machine_number.hpp"
-#import "state_machine_trigger.hpp"
-#import "state_machine_input_instance.hpp"
-#import "layer_state.hpp"
-#import <entry_state.hpp>
-#import <any_state.hpp>
-#import <exit_state.hpp>
-#import <animation_state.hpp>
+#import "rive/file.hpp"
+#import "rive/artboard.hpp"
+#import "rive/animation/animation.hpp"
+#import "rive/animation/linear_animation.hpp"
+#import "rive/animation/linear_animation_instance.hpp"
+#import "rive/animation/state_machine.hpp"
+#import "rive/animation/state_machine_instance.hpp"
+#import "rive/animation/state_machine_input.hpp"
+#import "rive/animation/state_machine_bool.hpp"
+#import "rive/animation/state_machine_number.hpp"
+#import "rive/animation/state_machine_trigger.hpp"
+#import "rive/animation/state_machine_input_instance.hpp"
+#import "rive/animation/layer_state.hpp"
+#import <rive/animation/entry_state.hpp>
+#import <rive/animation/any_state.hpp>
+#import <rive/animation/exit_state.hpp>
+#import <rive/animation/animation_state.hpp>
 
 /*
  * RiveStateMachineInstance interface

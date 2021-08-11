@@ -12,7 +12,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <vector>
-#import "renderer.hpp"
+#import "rive/renderer.hpp"
 
 namespace rive
 {
