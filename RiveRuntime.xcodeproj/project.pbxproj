@@ -458,7 +458,6 @@
 		C9C741F424FC510200EF9516 /* Rive.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C741F224FC510200EF9516 /* Rive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C741F524FC510200EF9516 /* Rive.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C741F324FC510200EF9516 /* Rive.mm */; };
 		C9CE8253263B716F00F98DDB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9CE8252263B716F00F98DDB /* UIKit.framework */; };
-		C9CE8260263B7CC200F98DDB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9CE825F263B7CC200F98DDB /* SwiftUI.framework */; };
 		C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */; };
 		C9D60DAC2512B04B00AAA3A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
@@ -940,7 +939,6 @@
 		C9C741F224FC510200EF9516 /* Rive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rive.h; sourceTree = "<group>"; };
 		C9C741F324FC510200EF9516 /* Rive.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Rive.mm; sourceTree = "<group>"; };
 		C9CE8252263B716F00F98DDB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		C9CE825F263B7CC200F98DDB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -950,7 +948,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9CE8260263B7CC200F98DDB /* SwiftUI.framework in Frameworks */,
 				C9D60DAC2512B04B00AAA3A6 /* QuartzCore.framework in Frameworks */,
 				C9CE8253263B716F00F98DDB /* UIKit.framework in Frameworks */,
 				C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */,
@@ -1782,7 +1779,6 @@
 		C9D60DA62512AFE900AAA3A6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C9CE825F263B7CC200F98DDB /* SwiftUI.framework */,
 				C9CE8252263B716F00F98DDB /* UIKit.framework */,
 				C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */,
 				C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */,
