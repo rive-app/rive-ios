@@ -405,24 +405,31 @@ extension RiveView {
     return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
   }
 
-    override public func drawRive(_ rect:CGRect, at:CGSize) {
-        guard let artboard = self._artboard else {
-          return
-        }
-        align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
-        draw(with:artboard)
+  override public func isPaused() -> Bool {
+    return !isPlaying
+  }
+
+  override public func drawRive(_ rect: CGRect, at: CGSize) {
+    guard let artboard = self._artboard else {
+      return
     }
+
+    align(
+      with: CGRect(x: rect.origin.x, y: rect.origin.y, width: at.width, height: at.height),
+      withContentRect: artboard.bounds(), with: alignment, with: fit)
+    draw(with: artboard)
+  }
 
   /// Creates a Rive renderer and applies the currently animating artboard to it
   /// - Parameter rect: the `GCRect` that we will fit the artboard into.
-  override public func draw(_ rect: CGRect) {
-    guard let context = UIGraphicsGetCurrentContext(), let artboard = self._artboard else {
-      return
-    }
-    let renderer = RiveRenderer(context: context)
-    renderer.align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
-    artboard.draw(renderer)
-  }
+  //  override public func draw(_ rect: CGRect) {
+  //    guard let context = UIGraphicsGetCurrentContext(), let artboard = self._artboard else {
+  //      return
+  //    }
+  //    let renderer = RiveRenderer(context: context)
+  //    renderer.align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
+  //    artboard.draw(renderer)
+  //  }
 
   // Starts the animation timer
   private func runTimer() {
@@ -435,6 +442,7 @@ extension RiveView {
     if displayLinkProxy?.displayLink?.isPaused == true {
       displayLinkProxy?.displayLink?.isPaused = false
     }
+
   }
 
   // Stops the animation timer

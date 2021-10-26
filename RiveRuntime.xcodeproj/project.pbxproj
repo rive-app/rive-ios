@@ -772,6 +772,11 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					"submodules/rive-cpp/include",
 					"submodules/rive-cpp/skia/dependencies/skia",
+					"submodules/rive-cpp/skia/renderer/include",
+					"submodules/rive-cpp/skia/dependencies/skia/include/core",
+					"submodules/rive-cpp/skia/dependencies/skia/include/effects",
+					"submodules/rive-cpp/skia/dependencies/skia/include/gpu",
+					"submodules/rive-cpp/skia/dependencies/skia/include/config",
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -821,6 +826,11 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					"submodules/rive-cpp/include",
 					"submodules/rive-cpp/skia/dependencies/skia",
+					"submodules/rive-cpp/skia/renderer/include",
+					"submodules/rive-cpp/skia/dependencies/skia/include/core",
+					"submodules/rive-cpp/skia/dependencies/skia/include/effects",
+					"submodules/rive-cpp/skia/dependencies/skia/include/gpu",
+					"submodules/rive-cpp/skia/dependencies/skia/include/config",
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
