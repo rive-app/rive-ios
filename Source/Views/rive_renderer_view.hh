@@ -11,4 +11,5 @@
     - (void)alignWithRect:(CGRect)rect withContentRect:(CGRect)contentRect withAlignment:(Alignment)alignment withFit:(Fit)fit;
     - (void)drawWithArtboard:(RiveArtboard*)artboard;
     - (void)drawRive:(CGRect)rect atSize:(CGSize)size;
+    - (bool)isPaused;
 @end
