@@ -27,6 +27,30 @@
 		046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7EE264EAA60000129B1 /* RiveStateMachine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7EF264EAA60000129B1 /* RiveFile.mm */; };
 		046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		048002592729A84800F7132B /* nested_artboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002582729A84800F7132B /* nested_artboard.cpp */; };
+		0480025B2729A87500F7132B /* nested_artboard_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480025A2729A87500F7132B /* nested_artboard_base.cpp */; };
+		0480025F2729A88C00F7132B /* nested_simple_animation_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480025C2729A88C00F7132B /* nested_simple_animation_base.cpp */; };
+		048002602729A88C00F7132B /* nested_remap_animation_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480025D2729A88C00F7132B /* nested_remap_animation_base.cpp */; };
+		048002612729A88C00F7132B /* nested_state_machine_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480025E2729A88C00F7132B /* nested_state_machine_base.cpp */; };
+		048002672729A8C100F7132B /* nested_remap_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002622729A8C100F7132B /* nested_remap_animation.cpp */; };
+		048002682729A8C100F7132B /* nested_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002632729A8C100F7132B /* nested_animation.cpp */; };
+		048002692729A8C100F7132B /* nested_simple_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002642729A8C100F7132B /* nested_simple_animation.cpp */; };
+		0480026A2729A8C100F7132B /* nested_state_machine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002652729A8C100F7132B /* nested_state_machine.cpp */; };
+		0480026B2729A8C100F7132B /* nested_linear_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002662729A8C100F7132B /* nested_linear_animation.cpp */; };
+		0480026D2729A91B00F7132B /* backboard_importer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480026C2729A91B00F7132B /* backboard_importer.cpp */; };
+		048002702729A94D00F7132B /* nested_artboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480026E2729A94D00F7132B /* nested_artboard.hpp */; };
+		048002712729A94D00F7132B /* nested_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480026F2729A94D00F7132B /* nested_animation.hpp */; };
+		048002742729A95900F7132B /* nested_artboard_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002722729A95900F7132B /* nested_artboard_base.hpp */; };
+		048002752729A95900F7132B /* nested_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002732729A95900F7132B /* nested_animation_base.hpp */; };
+		0480027A2729A97400F7132B /* nested_simple_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002762729A97300F7132B /* nested_simple_animation_base.hpp */; };
+		0480027B2729A97400F7132B /* nested_linear_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002772729A97300F7132B /* nested_linear_animation_base.hpp */; };
+		0480027C2729A97400F7132B /* nested_remap_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002782729A97300F7132B /* nested_remap_animation_base.hpp */; };
+		0480027D2729A97400F7132B /* nested_state_machine_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002792729A97400F7132B /* nested_state_machine_base.hpp */; };
+		048002822729A99E00F7132B /* nested_remap_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480027E2729A99E00F7132B /* nested_remap_animation.hpp */; };
+		048002832729A99E00F7132B /* nested_state_machine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480027F2729A99E00F7132B /* nested_state_machine.hpp */; };
+		048002842729A99E00F7132B /* nested_simple_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002802729A99E00F7132B /* nested_simple_animation.hpp */; };
+		048002852729A99E00F7132B /* nested_linear_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002812729A99E00F7132B /* nested_linear_animation.hpp */; };
+		048002872729A9CF00F7132B /* backboard_importer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002862729A9CF00F7132B /* backboard_importer.hpp */; };
 		04BE54042649403600427B39 /* shapes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53F82649403500427B39 /* shapes.riv */; };
 		04BE54052649403600427B39 /* noartboard.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53F92649403500427B39 /* noartboard.riv */; };
 		04BE54062649403600427B39 /* off_road_car_blog.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53FA2649403600427B39 /* off_road_car_blog.riv */; };
@@ -493,6 +517,30 @@
 		046FB7EE264EAA60000129B1 /* RiveStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachine.h; sourceTree = "<group>"; };
 		046FB7EF264EAA60000129B1 /* RiveFile.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveFile.mm; sourceTree = "<group>"; };
 		046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachineInstance.h; sourceTree = "<group>"; };
+		048002582729A84800F7132B /* nested_artboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_artboard.cpp; sourceTree = "<group>"; };
+		0480025A2729A87500F7132B /* nested_artboard_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_artboard_base.cpp; sourceTree = "<group>"; };
+		0480025C2729A88C00F7132B /* nested_simple_animation_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_simple_animation_base.cpp; sourceTree = "<group>"; };
+		0480025D2729A88C00F7132B /* nested_remap_animation_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_remap_animation_base.cpp; sourceTree = "<group>"; };
+		0480025E2729A88C00F7132B /* nested_state_machine_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_state_machine_base.cpp; sourceTree = "<group>"; };
+		048002622729A8C100F7132B /* nested_remap_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_remap_animation.cpp; sourceTree = "<group>"; };
+		048002632729A8C100F7132B /* nested_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_animation.cpp; sourceTree = "<group>"; };
+		048002642729A8C100F7132B /* nested_simple_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_simple_animation.cpp; sourceTree = "<group>"; };
+		048002652729A8C100F7132B /* nested_state_machine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_state_machine.cpp; sourceTree = "<group>"; };
+		048002662729A8C100F7132B /* nested_linear_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_linear_animation.cpp; sourceTree = "<group>"; };
+		0480026C2729A91B00F7132B /* backboard_importer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = backboard_importer.cpp; sourceTree = "<group>"; };
+		0480026E2729A94D00F7132B /* nested_artboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_artboard.hpp; sourceTree = "<group>"; };
+		0480026F2729A94D00F7132B /* nested_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_animation.hpp; sourceTree = "<group>"; };
+		048002722729A95900F7132B /* nested_artboard_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_artboard_base.hpp; sourceTree = "<group>"; };
+		048002732729A95900F7132B /* nested_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_animation_base.hpp; sourceTree = "<group>"; };
+		048002762729A97300F7132B /* nested_simple_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_simple_animation_base.hpp; sourceTree = "<group>"; };
+		048002772729A97300F7132B /* nested_linear_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_linear_animation_base.hpp; sourceTree = "<group>"; };
+		048002782729A97300F7132B /* nested_remap_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_remap_animation_base.hpp; sourceTree = "<group>"; };
+		048002792729A97400F7132B /* nested_state_machine_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_state_machine_base.hpp; sourceTree = "<group>"; };
+		0480027E2729A99E00F7132B /* nested_remap_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_remap_animation.hpp; sourceTree = "<group>"; };
+		0480027F2729A99E00F7132B /* nested_state_machine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_state_machine.hpp; sourceTree = "<group>"; };
+		048002802729A99E00F7132B /* nested_simple_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_simple_animation.hpp; sourceTree = "<group>"; };
+		048002812729A99E00F7132B /* nested_linear_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_linear_animation.hpp; sourceTree = "<group>"; };
+		048002862729A9CF00F7132B /* backboard_importer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = backboard_importer.hpp; sourceTree = "<group>"; };
 		04BE53F82649403500427B39 /* shapes.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = shapes.riv; sourceTree = "<group>"; };
 		04BE53F92649403500427B39 /* noartboard.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = noartboard.riv; sourceTree = "<group>"; };
 		04BE53FA2649403600427B39 /* off_road_car_blog.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = off_road_car_blog.riv; sourceTree = "<group>"; };
@@ -1044,6 +1092,8 @@
 		04F4636F26C510E0007CEEAB /* rive */ = {
 			isa = PBXGroup;
 			children = (
+				0480026F2729A94D00F7132B /* nested_animation.hpp */,
+				0480026E2729A94D00F7132B /* nested_artboard.hpp */,
 				04F4637026C510E0007CEEAB /* generated */,
 				04F463CF26C510E0007CEEAB /* backboard.hpp */,
 				04F463D026C510E0007CEEAB /* core */,
@@ -1081,6 +1131,8 @@
 		04F4637026C510E0007CEEAB /* generated */ = {
 			isa = PBXGroup;
 			children = (
+				048002732729A95900F7132B /* nested_animation_base.hpp */,
+				048002722729A95900F7132B /* nested_artboard_base.hpp */,
 				04F4637126C510E0007CEEAB /* core_registry.hpp */,
 				04F4637226C510E0007CEEAB /* node_base.hpp */,
 				04F4637326C510E0007CEEAB /* transform_component_base.hpp */,
@@ -1121,6 +1173,10 @@
 		04F4638326C510E0007CEEAB /* animation */ = {
 			isa = PBXGroup;
 			children = (
+				048002772729A97300F7132B /* nested_linear_animation_base.hpp */,
+				048002782729A97300F7132B /* nested_remap_animation_base.hpp */,
+				048002762729A97300F7132B /* nested_simple_animation_base.hpp */,
+				048002792729A97400F7132B /* nested_state_machine_base.hpp */,
 				04F4638426C510E0007CEEAB /* blend_animation_base.hpp */,
 				04F4638526C510E0007CEEAB /* keyframe_bool_base.hpp */,
 				04F4638626C510E0007CEEAB /* keyframe_color_base.hpp */,
@@ -1257,6 +1313,7 @@
 		04F463E926C510E0007CEEAB /* importers */ = {
 			isa = PBXGroup;
 			children = (
+				048002862729A9CF00F7132B /* backboard_importer.hpp */,
 				04F463EA26C510E0007CEEAB /* state_transition_importer.hpp */,
 				04F463EB26C510E0007CEEAB /* state_machine_layer_importer.hpp */,
 				04F463EC26C510E0007CEEAB /* keyed_property_importer.hpp */,
@@ -1273,6 +1330,10 @@
 		04F463F826C510E0007CEEAB /* animation */ = {
 			isa = PBXGroup;
 			children = (
+				048002812729A99E00F7132B /* nested_linear_animation.hpp */,
+				0480027E2729A99E00F7132B /* nested_remap_animation.hpp */,
+				048002802729A99E00F7132B /* nested_simple_animation.hpp */,
+				0480027F2729A99E00F7132B /* nested_state_machine.hpp */,
 				04F463F926C510E0007CEEAB /* transition_bool_condition.hpp */,
 				04F463FA26C510E0007CEEAB /* cubic_interpolator.hpp */,
 				04F463FB26C510E0007CEEAB /* keyed_property.hpp */,
@@ -1423,6 +1484,7 @@
 		C9A9DA25265C51A40005DB1F /* generated */ = {
 			isa = PBXGroup;
 			children = (
+				0480025A2729A87500F7132B /* nested_artboard_base.cpp */,
 				04F1C92726A84B7B00CEE6BE /* constraints */,
 				C9A9DA26265C51A40005DB1F /* draw_target_base.cpp */,
 				C9A9DA27265C51A40005DB1F /* backboard_base.cpp */,
@@ -1439,6 +1501,9 @@
 		C9A9DA28265C51A40005DB1F /* animation */ = {
 			isa = PBXGroup;
 			children = (
+				0480025D2729A88C00F7132B /* nested_remap_animation_base.cpp */,
+				0480025C2729A88C00F7132B /* nested_simple_animation_base.cpp */,
+				0480025E2729A88C00F7132B /* nested_state_machine_base.cpp */,
 				04F4656126C514AC007CEEAB /* keyframe_bool_base.cpp */,
 				04F1C92B26A84B8700CEE6BE /* blend_animation_1d_base.cpp */,
 				04F1C92A26A84B8700CEE6BE /* blend_animation_direct_base.cpp */,
@@ -1520,6 +1585,7 @@
 		C9BD38FA263B5E7600696C37 /* importers */ = {
 			isa = PBXGroup;
 			children = (
+				0480026C2729A91B00F7132B /* backboard_importer.cpp */,
 				C9BD38FB263B5E7600696C37 /* artboard_importer.cpp */,
 				C9BD38FC263B5E7600696C37 /* state_machine_importer.cpp */,
 				C9BD38FD263B5E7600696C37 /* linear_animation_importer.cpp */,
@@ -1622,6 +1688,7 @@
 		C9C7406D24FC4F0400EF9516 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				048002582729A84800F7132B /* nested_artboard.cpp */,
 				04F4655926C51422007CEEAB /* world_transform_component.cpp */,
 				04F1C92026A84B5200CEE6BE /* constraints */,
 				C9A9DA25265C51A40005DB1F /* generated */,
@@ -1675,6 +1742,11 @@
 		C9C7407A24FC4F0400EF9516 /* animation */ = {
 			isa = PBXGroup;
 			children = (
+				048002632729A8C100F7132B /* nested_animation.cpp */,
+				048002662729A8C100F7132B /* nested_linear_animation.cpp */,
+				048002622729A8C100F7132B /* nested_remap_animation.cpp */,
+				048002642729A8C100F7132B /* nested_simple_animation.cpp */,
+				048002652729A8C100F7132B /* nested_state_machine.cpp */,
 				04F4656326C514B7007CEEAB /* keyframe_bool.cpp */,
 				C9A9DA0F265C510F0005DB1F /* animation_state_instance.cpp */,
 				C9A9DA12265C510F0005DB1F /* blend_animation_1d.cpp */,
@@ -1806,12 +1878,14 @@
 				04F4646D26C510E0007CEEAB /* constraint_base.hpp in Headers */,
 				04F4651C26C510E1007CEEAB /* shape_paint_mutator.hpp in Headers */,
 				04F464A426C510E1007CEEAB /* radial_gradient_base.hpp in Headers */,
+				048002742729A95900F7132B /* nested_artboard_base.hpp in Headers */,
 				04F4647026C510E0007CEEAB /* scale_constraint_base.hpp in Headers */,
 				04F464D726C510E1007CEEAB /* renderer.hpp in Headers */,
 				04F4655126C510E1007CEEAB /* core.hpp in Headers */,
 				04F4654826C510E1007CEEAB /* tendon.hpp in Headers */,
 				04F4646C26C510E0007CEEAB /* rotation_constraint_base.hpp in Headers */,
 				04F464A126C510E1007CEEAB /* shape_paint_base.hpp in Headers */,
+				048002712729A94D00F7132B /* nested_animation.hpp in Headers */,
 				04F4647E26C510E1007CEEAB /* keyframe_base.hpp in Headers */,
 				04F4647F26C510E1007CEEAB /* animation_state_base.hpp in Headers */,
 				04F4654B26C510E1007CEEAB /* skin.hpp in Headers */,
@@ -1845,6 +1919,8 @@
 				04F4650326C510E1007CEEAB /* transition_condition.hpp in Headers */,
 				04F464FA26C510E1007CEEAB /* state_machine_bool.hpp in Headers */,
 				04F4649626C510E1007CEEAB /* state_machine_component_base.hpp in Headers */,
+				048002752729A95900F7132B /* nested_animation_base.hpp in Headers */,
+				0480027B2729A97400F7132B /* nested_linear_animation_base.hpp in Headers */,
 				04F4654626C510E1007CEEAB /* dependency_sorter.hpp in Headers */,
 				04F4647726C510E1007CEEAB /* artboard_base.hpp in Headers */,
 				046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */,
@@ -1902,6 +1978,7 @@
 				04F4647126C510E1007CEEAB /* ik_constraint_base.hpp in Headers */,
 				04F4650526C510E1007CEEAB /* animation_state_instance.hpp in Headers */,
 				04F464AE26C510E1007CEEAB /* cubic_mirrored_vertex_base.hpp in Headers */,
+				048002872729A9CF00F7132B /* backboard_importer.hpp in Headers */,
 				04F464D326C510E1007CEEAB /* transform_component_constraint_y.hpp in Headers */,
 				04F464A926C510E1007CEEAB /* ellipse_base.hpp in Headers */,
 				04F464C726C510E1007CEEAB /* core_string_type.hpp in Headers */,
@@ -1919,6 +1996,7 @@
 				04F464F726C510E1007CEEAB /* blend_animation_1d.hpp in Headers */,
 				04F464E726C510E1007CEEAB /* transition_bool_condition.hpp in Headers */,
 				04F4651326C510E1007CEEAB /* any_state.hpp in Headers */,
+				048002852729A99E00F7132B /* nested_linear_animation.hpp in Headers */,
 				04F4649726C510E1007CEEAB /* any_state_base.hpp in Headers */,
 				04F464BC26C510E1007CEEAB /* skin_base.hpp in Headers */,
 				04F4648C26C510E1007CEEAB /* keyed_object_base.hpp in Headers */,
@@ -1948,6 +2026,7 @@
 				04F4651B26C510E1007CEEAB /* stroke.hpp in Headers */,
 				04F4651E26C510E1007CEEAB /* shape_paint.hpp in Headers */,
 				04F4653C26C510E1007CEEAB /* aabb.hpp in Headers */,
+				0480027A2729A97400F7132B /* nested_simple_animation_base.hpp in Headers */,
 				04F4649126C510E1007CEEAB /* state_machine_bool_base.hpp in Headers */,
 				04F4651D26C510E1007CEEAB /* blend_mode.hpp in Headers */,
 				04F4652526C510E1007CEEAB /* linear_gradient.hpp in Headers */,
@@ -1992,8 +2071,11 @@
 				04F4648426C510E1007CEEAB /* linear_animation_base.hpp in Headers */,
 				04F4654426C510E1007CEEAB /* drawable.hpp in Headers */,
 				04F4654926C510E1007CEEAB /* skeletal_component.hpp in Headers */,
+				048002832729A99E00F7132B /* nested_state_machine.hpp in Headers */,
+				048002822729A99E00F7132B /* nested_remap_animation.hpp in Headers */,
 				04F4648826C510E1007CEEAB /* blend_state_direct_base.hpp in Headers */,
 				04F464DA26C510E1007CEEAB /* state_machine_layer_importer.hpp in Headers */,
+				048002702729A94D00F7132B /* nested_artboard.hpp in Headers */,
 				04F4648526C510E1007CEEAB /* entry_state_base.hpp in Headers */,
 				04F4647326C510E1007CEEAB /* transform_component_constraint_y_base.hpp in Headers */,
 				04F4652A26C510E1007CEEAB /* path_space.hpp in Headers */,
@@ -2010,6 +2092,7 @@
 				04F4655226C510E1007CEEAB /* transform_component.hpp in Headers */,
 				04F464C126C510E1007CEEAB /* drawable_base.hpp in Headers */,
 				04F464AA26C510E1007CEEAB /* points_path_base.hpp in Headers */,
+				0480027D2729A97400F7132B /* nested_state_machine_base.hpp in Headers */,
 				04F4652226C510E1007CEEAB /* trim_path.hpp in Headers */,
 				04F4647926C510E1007CEEAB /* world_transform_component_base.hpp in Headers */,
 				04F4648126C510E1007CEEAB /* blend_state_base.hpp in Headers */,
@@ -2019,6 +2102,7 @@
 				04F4649B26C510E1007CEEAB /* state_machine_trigger_base.hpp in Headers */,
 				04F464E026C510E1007CEEAB /* artboard_importer.hpp in Headers */,
 				04F464F626C510E1007CEEAB /* state_machine_layer.hpp in Headers */,
+				0480027C2729A97400F7132B /* nested_remap_animation_base.hpp in Headers */,
 				C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */,
 				04F464F326C510E1007CEEAB /* animation.hpp in Headers */,
 				04F4649526C510E1007CEEAB /* transition_trigger_condition_base.hpp in Headers */,
@@ -2031,6 +2115,7 @@
 				04F4654526C510E1007CEEAB /* artboard.hpp in Headers */,
 				04F464FB26C510E1007CEEAB /* blend_state_1d.hpp in Headers */,
 				04F4653E26C510E1007CEEAB /* transform_components.hpp in Headers */,
+				048002842729A99E00F7132B /* nested_simple_animation.hpp in Headers */,
 				04F464CE26C510E1007CEEAB /* constraint.hpp in Headers */,
 				04F464CF26C510E1007CEEAB /* rotation_constraint.hpp in Headers */,
 				04F4652D26C510E1007CEEAB /* metrics_path.hpp in Headers */,
@@ -2174,6 +2259,7 @@
 				C9C7416424FC4F0500EF9516 /* vec2d.cpp in Sources */,
 				C9C7416E24FC4F0500EF9516 /* tendon.cpp in Sources */,
 				C9A9DA1F265C51100005DB1F /* blend_state_transition.cpp in Sources */,
+				048002612729A88C00F7132B /* nested_state_machine_base.cpp in Sources */,
 				046FB7F5264EAA60000129B1 /* RiveSMIInput.mm in Sources */,
 				C9A9DA19265C51100005DB1F /* blend_animation_direct.cpp in Sources */,
 				04F4656026C514A4007CEEAB /* scale_constraint_base.cpp in Sources */,
@@ -2194,6 +2280,7 @@
 				C9C7416924FC4F0500EF9516 /* root_bone.cpp in Sources */,
 				C9A9DA7C265C51A40005DB1F /* polygon_base.cpp in Sources */,
 				C9A9DA23265C51100005DB1F /* state_instance.cpp in Sources */,
+				0480026D2729A91B00F7132B /* backboard_importer.cpp in Sources */,
 				04F1C92F26A84B8700CEE6BE /* blend_animation_direct_base.cpp in Sources */,
 				C9C7413E24FC4F0500EF9516 /* component.cpp in Sources */,
 				C9BD3904263B5E7600696C37 /* state_machine_importer.cpp in Sources */,
@@ -2207,6 +2294,7 @@
 				C9C7415E24FC4F0500EF9516 /* path_composer.cpp in Sources */,
 				C9C7413924FC4F0500EF9516 /* core_double_type.cpp in Sources */,
 				C9C7413A24FC4F0500EF9516 /* core_string_type.cpp in Sources */,
+				0480026B2729A8C100F7132B /* nested_linear_animation.cpp in Sources */,
 				C9C7415B24FC4F0500EF9516 /* path_vertex.cpp in Sources */,
 				C9C7414B24FC4F0500EF9516 /* solid_color.cpp in Sources */,
 				C9A9DA85265C51A40005DB1F /* shape_base.cpp in Sources */,
@@ -2216,8 +2304,10 @@
 				0450446E26B3F82D007B25CA /* distance_constraint.cpp in Sources */,
 				C9A9DA5E265C51A40005DB1F /* backboard_base.cpp in Sources */,
 				C9C7415724FC4F0500EF9516 /* cubic_vertex.cpp in Sources */,
+				048002672729A8C100F7132B /* nested_remap_animation.cpp in Sources */,
 				04F1C92426A84B5200CEE6BE /* constraint.cpp in Sources */,
 				04F4656226C514AC007CEEAB /* keyframe_bool_base.cpp in Sources */,
+				048002602729A88C00F7132B /* nested_remap_animation_base.cpp in Sources */,
 				C9A9DA61265C51A40005DB1F /* state_machine_base.cpp in Sources */,
 				C9BD391D263B5E9000696C37 /* state_machine_layer.cpp in Sources */,
 				C9C7414E24FC4F0500EF9516 /* fill.cpp in Sources */,
@@ -2240,6 +2330,7 @@
 				C9A9DA8C265C51A40005DB1F /* weight_base.cpp in Sources */,
 				C9C7414C24FC4F0500EF9516 /* linear_gradient.cpp in Sources */,
 				C9BD3906263B5E7600696C37 /* layer_state_importer.cpp in Sources */,
+				0480025B2729A87500F7132B /* nested_artboard_base.cpp in Sources */,
 				C9A9DA69265C51A40005DB1F /* transition_number_condition_base.cpp in Sources */,
 				C9C7415524FC4F0500EF9516 /* cubic_asymmetric_vertex.cpp in Sources */,
 				0450446F26B3F82D007B25CA /* transform_constraint.cpp in Sources */,
@@ -2253,6 +2344,7 @@
 				C9A9DA79265C51A40005DB1F /* linear_gradient_base.cpp in Sources */,
 				C9A9DA67265C51A40005DB1F /* transition_bool_condition_base.cpp in Sources */,
 				C9601FB9251004950032AA07 /* gradient_stop.cpp in Sources */,
+				048002592729A84800F7132B /* nested_artboard.cpp in Sources */,
 				C9C7416A24FC4F0500EF9516 /* bone.cpp in Sources */,
 				C9C7415824FC4F0500EF9516 /* shape.cpp in Sources */,
 				C9601FB0251004950032AA07 /* metrics_path.cpp in Sources */,
@@ -2275,6 +2367,7 @@
 				C9601FBA251004950032AA07 /* stroke.cpp in Sources */,
 				0450447226B3F83C007B25CA /* distance_constraint_base.cpp in Sources */,
 				C9A9DA75265C51A40005DB1F /* radial_gradient_base.cpp in Sources */,
+				048002682729A8C100F7132B /* nested_animation.cpp in Sources */,
 				C9A9DA83265C51A40005DB1F /* points_path_base.cpp in Sources */,
 				04F1C93126A84B8700CEE6BE /* blend_state_transition_base.cpp in Sources */,
 				04F1C93326A84B8700CEE6BE /* blend_state_direct_base.cpp in Sources */,
@@ -2323,6 +2416,7 @@
 				C9C7415A24FC4F0500EF9516 /* parametric_path.cpp in Sources */,
 				C9A9DA8B265C51A40005DB1F /* bone_base.cpp in Sources */,
 				C9A9DA6F265C51A40005DB1F /* keyframe_id_base.cpp in Sources */,
+				048002692729A8C100F7132B /* nested_simple_animation.cpp in Sources */,
 				C9A9DA6D265C51A40005DB1F /* state_machine_layer_base.cpp in Sources */,
 				C9C3E4902565BA400051D67C /* triangle.cpp in Sources */,
 				C9A9DA24265C51100005DB1F /* blend_state_1d_instance.cpp in Sources */,
@@ -2334,11 +2428,13 @@
 				C9A9DA71265C51A40005DB1F /* keyed_property_base.cpp in Sources */,
 				C9A9DA86265C51A40005DB1F /* cubic_asymmetric_vertex_base.cpp in Sources */,
 				C9C7416224FC4F0500EF9516 /* clipping_shape.cpp in Sources */,
+				0480026A2729A8C100F7132B /* nested_state_machine.cpp in Sources */,
 				C9BD391C263B5E9000696C37 /* layer_state.cpp in Sources */,
 				C9C7416724FC4F0500EF9516 /* artboard.cpp in Sources */,
 				C9A9DA63265C51A40005DB1F /* state_machine_number_base.cpp in Sources */,
 				C9C7415624FC4F0500EF9516 /* cubic_detached_vertex.cpp in Sources */,
 				C9A9DA88265C51A40005DB1F /* draw_rules_base.cpp in Sources */,
+				0480025F2729A88C00F7132B /* nested_simple_animation_base.cpp in Sources */,
 				C98F29852513FAC30076E802 /* draw_rules.cpp in Sources */,
 				C9A9DA77265C51A40005DB1F /* solid_color_base.cpp in Sources */,
 				C9A9DA70265C51A40005DB1F /* keyframe_color_base.cpp in Sources */,
