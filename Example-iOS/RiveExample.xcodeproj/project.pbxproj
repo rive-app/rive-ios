@@ -34,6 +34,7 @@
 		0450446126B3F71E007B25CA /* constrained.riv in Resources */ = {isa = PBXBuildFile; fileRef = 0450445E26B3F71E007B25CA /* constrained.riv */; };
 		046AFA712673AF04004ED497 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		046AFA732673B00B004ED497 /* BlendModes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046AFA722673B00B004ED497 /* BlendModes.swift */; };
+		0480028B2729AA4400F7132B /* clean_icon_set.riv in Resources */ = {isa = PBXBuildFile; fileRef = 048002882729AA4400F7132B /* clean_icon_set.riv */; };
 		04A8F6C526454711002C909A /* LoopMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A8F6C426454711002C909A /* LoopMode.swift */; };
 		04BE5438264D604500427B39 /* iosPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5437264D604500427B39 /* iosPlayer.swift */; };
 		04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C4C83D2646FE410047E614 /* StateMachine.swift */; };
@@ -121,6 +122,7 @@
 		0450445E26B3F71E007B25CA /* constrained.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = constrained.riv; sourceTree = "<group>"; };
 		046AFA6E2673AF04004ED497 /* blendmodes.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = blendmodes.riv; sourceTree = "<group>"; };
 		046AFA722673B00B004ED497 /* BlendModes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlendModes.swift; sourceTree = "<group>"; };
+		048002882729AA4400F7132B /* clean_icon_set.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = clean_icon_set.riv; sourceTree = "<group>"; };
 		04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RiveRuntime.xcodeproj; path = ../RiveRuntime.xcodeproj; sourceTree = "<group>"; };
 		04A8F6C426454711002C909A /* LoopMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopMode.swift; sourceTree = "<group>"; };
 		04BE5437264D604500427B39 /* iosPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosPlayer.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				04D5B069266A460C004ACA5B /* nothing.riv */,
 				042C88D42644447500E7DBB2 /* artboard_animations.riv */,
 				042C88CF2644447500E7DBB2 /* basketball.riv */,
+				048002882729AA4400F7132B /* clean_icon_set.riv */,
 				042C88D92644447500E7DBB2 /* clipping.riv */,
 				042C88D32644447500E7DBB2 /* explorer.riv */,
 				042C88D02644447500E7DBB2 /* f22.riv */,
@@ -428,6 +431,7 @@
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
 				042C88E12644447500E7DBB2 /* basketball.riv in Resources */,
 				042C88DE2644447500E7DBB2 /* rope.riv in Resources */,
+				0480028B2729AA4400F7132B /* clean_icon_set.riv in Resources */,
 				04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */,
 				C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */,
 				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
