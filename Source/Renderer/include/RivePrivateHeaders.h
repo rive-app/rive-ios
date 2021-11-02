@@ -22,10 +22,10 @@
 #import "rive/animation/state_machine_trigger.hpp"
 #import "rive/animation/state_machine_input_instance.hpp"
 #import "rive/animation/layer_state.hpp"
-#import <rive/animation/entry_state.hpp>
-#import <rive/animation/any_state.hpp>
-#import <rive/animation/exit_state.hpp>
-#import <rive/animation/animation_state.hpp>
+#import "rive/animation/entry_state.hpp"
+#import "rive/animation/any_state.hpp"
+#import "rive/animation/exit_state.hpp"
+#import "rive/animation/animation_state.hpp"
 
 /*
  * RiveStateMachineInstance interface
