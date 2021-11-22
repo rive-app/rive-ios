@@ -29,4 +29,4 @@ if [ -z "$CONFIGURATION" ]; then usage "Configuration is not set."; fi;
 echo -e "Build Rive Framework"
 echo -e "Configuration -> ${CONFIGURATION}, target -> ${TARGET}"
 
-xcodebuild -project RiveRuntime.xcodeproj -scheme RiveRuntime -sdk ${TARGET} -derivedDataPath build -configuration ${CONFIGURATION} | xcpretty
+xcodebuild -project RiveRuntime.xcodeproj -scheme RiveRuntime -sdk ${TARGET} -derivedDataPath archive -configuration ${CONFIGURATION} | xcpretty

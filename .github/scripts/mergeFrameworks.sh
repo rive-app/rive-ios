@@ -23,4 +23,4 @@ while [[ "$#" > 0 ]]; do case $1 in
 esac; done
 
 echo -e "Merge Rive Frameworks"
-xcodebuild -create-xcframework -framework "${BASEDIR}/build/Build/Products/${CONFIGURATION}-iphoneos/RiveRuntime.framework" -framework "${BASEDIR}/build/Build/Products/${CONFIGURATION}-iphonesimulator/RiveRuntime.framework" -output "${BASEDIR}/build/RiveRuntime.xcframework" | xcpretty
+xcodebuild -create-xcframework -framework "${BASEDIR}/archive/Build/Products/${CONFIGURATION}-iphoneos/RiveRuntime.framework" -framework "${BASEDIR}/archive/Build/Products/${CONFIGURATION}-iphonesimulator/RiveRuntime.framework" -output "${BASEDIR}/archive/RiveRuntime.xcframework" | xcpretty
