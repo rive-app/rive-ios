@@ -35,7 +35,7 @@ git submodule update --init
 
 ## Via Pods
 
-To insatll our pod, simply add the following to [cocoapods](https://cocoapods.org/) and run `pod install`.
+To install our pod, simply add the following to [cocoapods](https://cocoapods.org/) and run `pod install`.
 
 ```ruby
 pod 'RiveRuntime'
