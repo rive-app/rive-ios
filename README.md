@@ -35,9 +35,7 @@ git submodule update --init
 
 ## Via Pods
 
-We are in the process of getting a pod available in [cocoapods](https://cocoapods.org/).
-
-While we are working out any kinks, we are publishing our pod to a temporary github repo, which you can install by including placeholder while we finalize any kinks.
+To insatll our pod, simply add the following to [cocoapods](https://cocoapods.org/) and run `pod install`.
 
 ```ruby
 pod 'RiveRuntime'
@@ -225,6 +223,20 @@ or attach it later
 view.loopDelegate = delegate
 ```
 
+## Building & testing cocoapods locally. 
+
+- cd into checked out directory 
+- build the framework (check `build_frameworks.yml`)
+    - `sh ./.github/scripts/buildFramework.sh  -t iphoneos -c Release`
+    - `sh ./.github/scripts/buildFramework.sh  -t iphonesimulator -c Release`
+- create a podfile in the build directory.
+    - look at `podspec.txt` & replace `$RELEASE_VERSION` with something custom
+    - `cp .github/workflows/podspec.txt archive/RiveRuntime.podspec`
+
+- check its fine running `pod lib lint --allow-warnings`
+- now you can include a reference to the archive in your podfile 
+    - ` pod 'RiveRuntime', :path => '/Users/maxwelltalbot/development/rive/rive-ios/archive/'`
+
 ## Blend modes 
 
 Rive allows the artist to set blend modes on shapes to determine how they are to be merged with the rest of the animation.
@@ -236,3 +248,5 @@ For ios, hue and saturation blend modes do not match the original.
 Original | iOS             |  
 :-------------------------:|:-------------------------:
 ![Source](images/editor.png ) | ![iOS](images/ios.png)  
+
+
