@@ -9,8 +9,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Add RELEASE_VERSION to env
-        run: echo "RELEASE_VERSION=0.0.9" >> $GITHUB_ENV
       - name: Read podspec.txt file
         uses: pCYSl5EDgo/cat@master
         id: podspec
@@ -84,12 +82,6 @@ jobs:
           name: RiveRuntime.podspec
       - name: Lint pod
         run: pod lib lint --allow-warnings
-      - name: Download RELEASE_VERSION
-        uses: actions/download-artifact@v2
-        with:
-          name: RELEASE_VERSION
-      - name: Add RELEASE_VERSION to env
-        run: echo "RELEASE_VERSION=$(cat RELEASE_VERSION)" >> $GITHUB_ENV
       - name: Push pod to test-ios repo
         run: |
           git status
@@ -102,3 +94,4 @@ jobs:
           git push origin v${{ env.RELEASE_VERSION }}
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
+          RELEASE_VERSION: 0.0.1
