@@ -1,4 +1,4 @@
-name: Build test Framework
+name: Build test pod
 
 on: workflow_dispatch
 
