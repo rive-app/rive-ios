@@ -237,6 +237,12 @@ view.loopDelegate = delegate
 - now you can include a reference to the archive in your podfile 
     - ` pod 'RiveRuntime', :path => '/Users/maxwelltalbot/development/rive/rive-ios/archive/'`
 
+### Testing pod build remotely
+
+There is a `test_build_pod` workflow. This workflow builds a pod & pushes it to `https://github.com/rive-app/test-ios.git`. 
+To test this pod, update the reference in your podfile to:
+    - `pod 'RiveRuntime', :git => 'https://github.com/rive-app/test-ios.git'`
+
 ## Blend modes 
 
 Rive allows the artist to set blend modes on shapes to determine how they are to be merged with the rest of the animation.
