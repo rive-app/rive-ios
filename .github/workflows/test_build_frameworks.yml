@@ -1,4 +1,4 @@
-name: Publish to Cocoapods
+name: Build test Framework
 
 on: workflow_dispatch
 
