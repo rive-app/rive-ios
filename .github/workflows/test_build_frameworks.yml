@@ -1,5 +1,6 @@
 name: Publish to Cocoapods
 
+on: workflow_dispatch
 
 jobs:
   create_podspec_file:
