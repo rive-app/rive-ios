@@ -84,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: RiveRuntime.xcframework
-          path: build/RiveRuntime.xcframework
+          path: archive/RiveRuntime.xcframework
 
 
   upload_cocoapods:
