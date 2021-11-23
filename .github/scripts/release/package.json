@@ -1,6 +1,6 @@
 {
   "name": "release",
-  "version": "0.15.13",
+  "version": "0.15.14",
   "description": "",
   "scripts": {
     "release": "release-it"
