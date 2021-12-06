@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0450446E26B3F82D007B25CA /* distance_constraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0450446C26B3F82D007B25CA /* distance_constraint.cpp */; };
-		0450446F26B3F82D007B25CA /* transform_constraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0450446D26B3F82D007B25CA /* transform_constraint.cpp */; };
-		0450447226B3F83C007B25CA /* distance_constraint_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0450447026B3F83C007B25CA /* distance_constraint_base.cpp */; };
-		0450447326B3F83C007B25CA /* transform_constraint_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0450447126B3F83C007B25CA /* transform_constraint_base.cpp */; };
 		046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */; };
 		046FB7F3264EAA60000129B1 /* RiveStateMachineInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7E3264EAA5F000129B1 /* RiveStateMachineInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -27,29 +23,10 @@
 		046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7EE264EAA60000129B1 /* RiveStateMachine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7EF264EAA60000129B1 /* RiveFile.mm */; };
 		046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		048002592729A84800F7132B /* nested_artboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002582729A84800F7132B /* nested_artboard.cpp */; };
-		0480025B2729A87500F7132B /* nested_artboard_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480025A2729A87500F7132B /* nested_artboard_base.cpp */; };
-		0480025F2729A88C00F7132B /* nested_simple_animation_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480025C2729A88C00F7132B /* nested_simple_animation_base.cpp */; };
-		048002602729A88C00F7132B /* nested_remap_animation_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480025D2729A88C00F7132B /* nested_remap_animation_base.cpp */; };
-		048002612729A88C00F7132B /* nested_state_machine_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480025E2729A88C00F7132B /* nested_state_machine_base.cpp */; };
-		048002672729A8C100F7132B /* nested_remap_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002622729A8C100F7132B /* nested_remap_animation.cpp */; };
-		048002682729A8C100F7132B /* nested_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002632729A8C100F7132B /* nested_animation.cpp */; };
-		048002692729A8C100F7132B /* nested_simple_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002642729A8C100F7132B /* nested_simple_animation.cpp */; };
-		0480026A2729A8C100F7132B /* nested_state_machine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002652729A8C100F7132B /* nested_state_machine.cpp */; };
-		0480026B2729A8C100F7132B /* nested_linear_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048002662729A8C100F7132B /* nested_linear_animation.cpp */; };
-		0480026D2729A91B00F7132B /* backboard_importer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0480026C2729A91B00F7132B /* backboard_importer.cpp */; };
-		048002702729A94D00F7132B /* nested_artboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480026E2729A94D00F7132B /* nested_artboard.hpp */; };
 		048002712729A94D00F7132B /* nested_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480026F2729A94D00F7132B /* nested_animation.hpp */; };
 		048002742729A95900F7132B /* nested_artboard_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002722729A95900F7132B /* nested_artboard_base.hpp */; };
 		048002752729A95900F7132B /* nested_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002732729A95900F7132B /* nested_animation_base.hpp */; };
-		0480027A2729A97400F7132B /* nested_simple_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002762729A97300F7132B /* nested_simple_animation_base.hpp */; };
 		0480027B2729A97400F7132B /* nested_linear_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002772729A97300F7132B /* nested_linear_animation_base.hpp */; };
-		0480027C2729A97400F7132B /* nested_remap_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002782729A97300F7132B /* nested_remap_animation_base.hpp */; };
-		0480027D2729A97400F7132B /* nested_state_machine_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002792729A97400F7132B /* nested_state_machine_base.hpp */; };
-		048002822729A99E00F7132B /* nested_remap_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480027E2729A99E00F7132B /* nested_remap_animation.hpp */; };
-		048002832729A99E00F7132B /* nested_state_machine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480027F2729A99E00F7132B /* nested_state_machine.hpp */; };
-		048002842729A99E00F7132B /* nested_simple_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002802729A99E00F7132B /* nested_simple_animation.hpp */; };
-		048002852729A99E00F7132B /* nested_linear_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002812729A99E00F7132B /* nested_linear_animation.hpp */; };
 		048002872729A9CF00F7132B /* backboard_importer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002862729A9CF00F7132B /* backboard_importer.hpp */; };
 		04BE54042649403600427B39 /* shapes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53F82649403500427B39 /* shapes.riv */; };
 		04BE54052649403600427B39 /* noartboard.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53F92649403500427B39 /* noartboard.riv */; };
@@ -104,10 +81,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0450446C26B3F82D007B25CA /* distance_constraint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = distance_constraint.cpp; sourceTree = "<group>"; };
-		0450446D26B3F82D007B25CA /* transform_constraint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transform_constraint.cpp; sourceTree = "<group>"; };
-		0450447026B3F83C007B25CA /* distance_constraint_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = distance_constraint_base.cpp; sourceTree = "<group>"; };
-		0450447126B3F83C007B25CA /* transform_constraint_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transform_constraint_base.cpp; sourceTree = "<group>"; };
 		046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveLinearAnimationInstance.h; sourceTree = "<group>"; };
 		046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveArtboard.mm; sourceTree = "<group>"; };
 		046FB7E3264EAA5F000129B1 /* RiveStateMachineInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachineInput.h; sourceTree = "<group>"; };
@@ -124,29 +97,10 @@
 		046FB7EE264EAA60000129B1 /* RiveStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachine.h; sourceTree = "<group>"; };
 		046FB7EF264EAA60000129B1 /* RiveFile.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveFile.mm; sourceTree = "<group>"; };
 		046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachineInstance.h; sourceTree = "<group>"; };
-		048002582729A84800F7132B /* nested_artboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_artboard.cpp; sourceTree = "<group>"; };
-		0480025A2729A87500F7132B /* nested_artboard_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_artboard_base.cpp; sourceTree = "<group>"; };
-		0480025C2729A88C00F7132B /* nested_simple_animation_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_simple_animation_base.cpp; sourceTree = "<group>"; };
-		0480025D2729A88C00F7132B /* nested_remap_animation_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_remap_animation_base.cpp; sourceTree = "<group>"; };
-		0480025E2729A88C00F7132B /* nested_state_machine_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_state_machine_base.cpp; sourceTree = "<group>"; };
-		048002622729A8C100F7132B /* nested_remap_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_remap_animation.cpp; sourceTree = "<group>"; };
-		048002632729A8C100F7132B /* nested_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_animation.cpp; sourceTree = "<group>"; };
-		048002642729A8C100F7132B /* nested_simple_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_simple_animation.cpp; sourceTree = "<group>"; };
-		048002652729A8C100F7132B /* nested_state_machine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_state_machine.cpp; sourceTree = "<group>"; };
-		048002662729A8C100F7132B /* nested_linear_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nested_linear_animation.cpp; sourceTree = "<group>"; };
-		0480026C2729A91B00F7132B /* backboard_importer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = backboard_importer.cpp; sourceTree = "<group>"; };
-		0480026E2729A94D00F7132B /* nested_artboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_artboard.hpp; sourceTree = "<group>"; };
 		0480026F2729A94D00F7132B /* nested_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_animation.hpp; sourceTree = "<group>"; };
 		048002722729A95900F7132B /* nested_artboard_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_artboard_base.hpp; sourceTree = "<group>"; };
 		048002732729A95900F7132B /* nested_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_animation_base.hpp; sourceTree = "<group>"; };
-		048002762729A97300F7132B /* nested_simple_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_simple_animation_base.hpp; sourceTree = "<group>"; };
 		048002772729A97300F7132B /* nested_linear_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_linear_animation_base.hpp; sourceTree = "<group>"; };
-		048002782729A97300F7132B /* nested_remap_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_remap_animation_base.hpp; sourceTree = "<group>"; };
-		048002792729A97400F7132B /* nested_state_machine_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_state_machine_base.hpp; sourceTree = "<group>"; };
-		0480027E2729A99E00F7132B /* nested_remap_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_remap_animation.hpp; sourceTree = "<group>"; };
-		0480027F2729A99E00F7132B /* nested_state_machine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_state_machine.hpp; sourceTree = "<group>"; };
-		048002802729A99E00F7132B /* nested_simple_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_simple_animation.hpp; sourceTree = "<group>"; };
-		048002812729A99E00F7132B /* nested_linear_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_linear_animation.hpp; sourceTree = "<group>"; };
 		048002862729A9CF00F7132B /* backboard_importer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = backboard_importer.hpp; sourceTree = "<group>"; };
 		04BE53F82649403500427B39 /* shapes.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = shapes.riv; sourceTree = "<group>"; };
 		04BE53F92649403500427B39 /* noartboard.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = noartboard.riv; sourceTree = "<group>"; };
@@ -203,7 +157,6 @@
 				2A70792F27260F5C00C035A1 /* librive_skia_renderer_fat.a in Frameworks */,
 				2A70792D27260F3100C035A1 /* librive_fat.a in Frameworks */,
 				2A70792B27260D3800C035A1 /* libskia_ios.a in Frameworks */,
-				C9CE8260263B7CC200F98DDB /* SwiftUI.framework in Frameworks */,
 				C9D60DAC2512B04B00AAA3A6 /* QuartzCore.framework in Frameworks */,
 				C9CE8253263B716F00F98DDB /* UIKit.framework in Frameworks */,
 				C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */,
@@ -260,6 +213,18 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		2AAC7C27275ECB2300FBCA8E /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				048002722729A95900F7132B /* nested_artboard_base.hpp */,
+				0480026F2729A94D00F7132B /* nested_animation.hpp */,
+				048002732729A95900F7132B /* nested_animation_base.hpp */,
+				048002772729A97300F7132B /* nested_linear_animation_base.hpp */,
+				048002862729A9CF00F7132B /* backboard_importer.hpp */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		C9BD3927263B64B100696C37 /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
@@ -296,6 +261,7 @@
 				C9C73EDE24FC478900EF9516 /* Tests */,
 				C9C73ED224FC478800EF9516 /* Products */,
 				C9D60DA62512AFE900AAA3A6 /* Frameworks */,
+				2AAC7C27275ECB2300FBCA8E /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -345,7 +311,6 @@
 				2A70792E27260F5C00C035A1 /* librive_skia_renderer_fat.a */,
 				2A70792C27260F3100C035A1 /* librive_fat.a */,
 				2A70792A27260D3800C035A1 /* libskia_ios.a */,
-				C9CE825F263B7CC200F98DDB /* SwiftUI.framework */,
 				C9CE8252263B716F00F98DDB /* UIKit.framework */,
 				C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */,
 				C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */,
@@ -367,104 +332,20 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04F4650726C510E1007CEEAB /* linear_animation_instance.hpp in Headers */,
-				04F464A526C510E1007CEEAB /* gradient_stop_base.hpp in Headers */,
-				04F4648E26C510E1007CEEAB /* state_machine_number_base.hpp in Headers */,
-				04F4646D26C510E0007CEEAB /* constraint_base.hpp in Headers */,
-				04F4651C26C510E1007CEEAB /* shape_paint_mutator.hpp in Headers */,
-				04F464A426C510E1007CEEAB /* radial_gradient_base.hpp in Headers */,
 				048002742729A95900F7132B /* nested_artboard_base.hpp in Headers */,
-				04F4647026C510E0007CEEAB /* scale_constraint_base.hpp in Headers */,
-				04F464D726C510E1007CEEAB /* renderer.hpp in Headers */,
-				04F4655126C510E1007CEEAB /* core.hpp in Headers */,
-				04F4654826C510E1007CEEAB /* tendon.hpp in Headers */,
-				04F4646C26C510E0007CEEAB /* rotation_constraint_base.hpp in Headers */,
-				04F464A126C510E1007CEEAB /* shape_paint_base.hpp in Headers */,
 				048002712729A94D00F7132B /* nested_animation.hpp in Headers */,
-				04F4647E26C510E1007CEEAB /* keyframe_base.hpp in Headers */,
-				04F4647F26C510E1007CEEAB /* animation_state_base.hpp in Headers */,
-				04F4654B26C510E1007CEEAB /* skin.hpp in Headers */,
-				04F4652126C510E1007CEEAB /* radial_gradient.hpp in Headers */,
-				04F464C426C510E1007CEEAB /* core_color_type.hpp in Headers */,
-				04F464AF26C510E1007CEEAB /* star_base.hpp in Headers */,
-				04F4649426C510E1007CEEAB /* transition_bool_condition_base.hpp in Headers */,
-				04F4646F26C510E0007CEEAB /* translation_constraint_base.hpp in Headers */,
-				04F464DF26C510E1007CEEAB /* layer_state_importer.hpp in Headers */,
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
-				04F464B426C510E1007CEEAB /* clipping_shape_base.hpp in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
 				2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */,
 				046FB7FD264EAA61000129B1 /* RiveLinearAnimation.h in Headers */,
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
-				04F4647526C510E1007CEEAB /* distance_constraint_base.hpp in Headers */,
-				04F4650326C510E1007CEEAB /* transition_condition.hpp in Headers */,
-				04F464FA26C510E1007CEEAB /* state_machine_bool.hpp in Headers */,
-				04F4649626C510E1007CEEAB /* state_machine_component_base.hpp in Headers */,
 				048002752729A95900F7132B /* nested_animation_base.hpp in Headers */,
 				0480027B2729A97400F7132B /* nested_linear_animation_base.hpp in Headers */,
-				04F4654626C510E1007CEEAB /* dependency_sorter.hpp in Headers */,
-				04F4647726C510E1007CEEAB /* artboard_base.hpp in Headers */,
 				046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */,
-				04F464EA26C510E1007CEEAB /* state_machine_input.hpp in Headers */,
 				046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */,
-				04F4653D26C510E1007CEEAB /* color.hpp in Headers */,
-				04F464B626C510E1007CEEAB /* container_component_base.hpp in Headers */,
-				04F464B526C510E1007CEEAB /* path_vertex_base.hpp in Headers */,
-				04F464C626C510E1007CEEAB /* core_double_type.hpp in Headers */,
-				04F464E326C510E1007CEEAB /* draw_target.hpp in Headers */,
-				04F464CA26C510E1007CEEAB /* status_code.hpp in Headers */,
-				04F4653526C510E1007CEEAB /* rectangle.hpp in Headers */,
-				04F4654026C510E1007CEEAB /* command_path.hpp in Headers */,
-				04F4650A26C510E1007CEEAB /* keyframe_double.hpp in Headers */,
 				046FB7F3264EAA60000129B1 /* RiveStateMachineInput.h in Headers */,
-				04F464F226C510E1007CEEAB /* state_machine_number.hpp in Headers */,
-				04F464AB26C510E1007CEEAB /* triangle_base.hpp in Headers */,
-				04F4654A26C510E1007CEEAB /* weight.hpp in Headers */,
-				04F4646E26C510E0007CEEAB /* targeted_constraint_base.hpp in Headers */,
-				04F464D626C510E1007CEEAB /* component_dirt.hpp in Headers */,
-				04F4651626C510E1007CEEAB /* transition_trigger_condition.hpp in Headers */,
-				04F4647826C510E1007CEEAB /* draw_rules_base.hpp in Headers */,
-				04F4650426C510E1007CEEAB /* transition_value_condition.hpp in Headers */,
-				04F464F826C510E1007CEEAB /* state_machine_layer_component.hpp in Headers */,
-				04F4653A26C510E1007CEEAB /* vec2d.hpp in Headers */,
-				04F464C326C510E1007CEEAB /* reader.h in Headers */,
-				04F4651F26C510E1007CEEAB /* stroke_join.hpp in Headers */,
-				04F4651726C510E1007CEEAB /* transform_space.hpp in Headers */,
-				04F4649E26C510E1007CEEAB /* linear_gradient_base.hpp in Headers */,
-				04F464EE26C510E1007CEEAB /* state_machine_trigger.hpp in Headers */,
-				04F4652F26C510E1007CEEAB /* shape.hpp in Headers */,
-				04F4651126C510E1007CEEAB /* state_transition_flags.hpp in Headers */,
-				04F464E826C510E1007CEEAB /* cubic_interpolator.hpp in Headers */,
-				04F464C826C510E1007CEEAB /* core_bool_type.hpp in Headers */,
-				04F4654E26C510E1007CEEAB /* skinnable.hpp in Headers */,
-				04F4654D26C510E1007CEEAB /* bone.hpp in Headers */,
-				04F4646A26C510E0007CEEAB /* node_base.hpp in Headers */,
-				04F4647426C510E1007CEEAB /* transform_space_constraint_base.hpp in Headers */,
-				04F4648626C510E1007CEEAB /* layer_state_base.hpp in Headers */,
-				04F4649C26C510E1007CEEAB /* state_machine_base.hpp in Headers */,
-				04F464ED26C510E1007CEEAB /* system_state_instance.hpp in Headers */,
-				04F4647A26C510E1007CEEAB /* blend_animation_base.hpp in Headers */,
-				04F4652726C510E1007CEEAB /* path_composer.hpp in Headers */,
 				046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */,
-				04F464FE26C510E1007CEEAB /* state_machine_component.hpp in Headers */,
-				04F4651926C510E1007CEEAB /* stroke_cap.hpp in Headers */,
-				04F464D226C510E1007CEEAB /* ik_constraint.hpp in Headers */,
-				04F4653926C510E1007CEEAB /* cubic_detached_vertex.hpp in Headers */,
-				04F4654F26C510E1007CEEAB /* cubic_weight.hpp in Headers */,
-				04F464E626C510E1007CEEAB /* container_component.hpp in Headers */,
-				04F464CB26C510E1007CEEAB /* translation_constraint.hpp in Headers */,
-				04F4654226C510E1007CEEAB /* node.hpp in Headers */,
-				04F4654126C510E1007CEEAB /* component.hpp in Headers */,
-				04F4648F26C510E1007CEEAB /* state_transition_base.hpp in Headers */,
-				04F4647126C510E1007CEEAB /* ik_constraint_base.hpp in Headers */,
-				04F4650526C510E1007CEEAB /* animation_state_instance.hpp in Headers */,
-				04F464AE26C510E1007CEEAB /* cubic_mirrored_vertex_base.hpp in Headers */,
 				048002872729A9CF00F7132B /* backboard_importer.hpp in Headers */,
-				04F464D326C510E1007CEEAB /* transform_component_constraint_y.hpp in Headers */,
-				04F464A926C510E1007CEEAB /* ellipse_base.hpp in Headers */,
-				04F464C726C510E1007CEEAB /* core_string_type.hpp in Headers */,
-				04F4646926C510E0007CEEAB /* core_registry.hpp in Headers */,
-				04F464D426C510E1007CEEAB /* transform_constraint.hpp in Headers */,
 				04BE5430264D1F4100427B39 /* LayerState.h in Headers */,
 				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
 				04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */,
@@ -518,7 +399,7 @@
 		C9C73EC824FC478800EF9516 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1310;
 				ORGANIZATIONNAME = Rive;
 				TargetAttributes = {
 					C9C73ED024FC478800EF9516 = {
@@ -683,7 +564,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -742,11 +623,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -760,7 +642,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = NJ3JMFUNS9;
@@ -814,7 +696,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = NJ3JMFUNS9;
