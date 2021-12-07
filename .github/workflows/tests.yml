@@ -16,6 +16,6 @@ jobs:
       - name: Setup Ninja
         uses: ashutoshvarma/setup-ninja@v1.1
       - name: Build dependencies
-        run: ./make_dependencies.sh
+        run: sh ./make_dependencies.sh
       - name: Testing iOS app
         run: sh ./.github/scripts/test.sh
