@@ -13,5 +13,7 @@ jobs:
         with:
           token: ${{ secrets.RIVE_REPO_PAT }}
           submodules: recursive
+      - name: Build dependencies
+        run: ./make_dependencies.sh
       - name: Testing iOS app
         run: sh ./.github/scripts/test.sh
