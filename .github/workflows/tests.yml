@@ -13,9 +13,5 @@ jobs:
         with:
           token: ${{ secrets.RIVE_REPO_PAT }}
           submodules: recursive
-      - name: Setup Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Make Dependencies
-        run: sh ./make_dependencies.sh
       - name: Testing iOS app
         run: sh ./.github/scripts/test.sh
