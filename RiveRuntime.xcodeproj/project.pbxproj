@@ -670,8 +670,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"${PROJECT_DIR}/dependencies/ios/bin/debug",
 					"${PROJECT_DIR}/submodules/rive-cpp/skia/renderer/build/ios/bin/debug",
-					"${PROJECT_DIR}/submodules/rive-cpp/skia/dependencies/skia/out",
-					"$(PROJECT_DIR)/submodules/rive-cpp/skia/dependencies/skia/out",
+					"${PROJECT_DIR}/dependencies",
 					"$(PROJECT_DIR)/dependencies/ios/bin/release",
 					"$(PROJECT_DIR)/submodules/rive-cpp/skia/renderer/build/ios/bin/release",
 				);
@@ -724,8 +723,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"${PROJECT_DIR}/dependencies/ios/bin/release",
 					"${PROJECT_DIR}/submodules/rive-cpp/skia/renderer/build/ios/bin/release",
-					"${PROJECT_DIR}/submodules/rive-cpp/skia/dependencies/skia/out",
-					"$(PROJECT_DIR)/submodules/rive-cpp/skia/dependencies/skia/out",
+					"${PROJECT_DIR}/dependencies",
 					"$(PROJECT_DIR)/dependencies/ios/bin/release",
 					"$(PROJECT_DIR)/submodules/rive-cpp/skia/renderer/build/ios/bin/release",
 				);

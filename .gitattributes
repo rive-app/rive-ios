@@ -2,3 +2,4 @@ dependencies/ios/bin/debug/librive_fat.a filter=lfs diff=lfs merge=lfs -text
 dependencies/ios/bin/release/librive_fat.a filter=lfs diff=lfs merge=lfs -text
 dependencies/ios/bin/debug/librive_skia_renderer_fat.a filter=lfs diff=lfs merge=lfs -text
 dependencies/ios/bin/fat/librive_skia_renderer_fat.a filter=lfs diff=lfs merge=lfs -text
+dependencies/libskia_ios.a filter=lfs diff=lfs merge=lfs -text
