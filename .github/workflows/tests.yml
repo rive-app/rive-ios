@@ -13,5 +13,7 @@ jobs:
         with:
           token: ${{ secrets.RIVE_REPO_PAT }}
           submodules: recursive
+      - name: Get Skia Headers
+        run: sh ./.github/scripts/get_skia.sh
       - name: Testing iOS app
         run: sh ./.github/scripts/test.sh
