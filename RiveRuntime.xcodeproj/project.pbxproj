@@ -668,11 +668,11 @@
 					"@loader_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"${PROJECT_DIR}/submodules/rive-cpp/build/ios/bin/debug",
+					"${PROJECT_DIR}/dependencies/ios/bin/debug",
 					"${PROJECT_DIR}/submodules/rive-cpp/skia/renderer/build/ios/bin/debug",
 					"${PROJECT_DIR}/submodules/rive-cpp/skia/dependencies/skia/out",
 					"$(PROJECT_DIR)/submodules/rive-cpp/skia/dependencies/skia/out",
-					"$(PROJECT_DIR)/submodules/rive-cpp/build/ios/bin/release",
+					"$(PROJECT_DIR)/dependencies/ios/bin/release",
 					"$(PROJECT_DIR)/submodules/rive-cpp/skia/renderer/build/ios/bin/release",
 				);
 				MARKETING_VERSION = 0.6.5;
@@ -722,11 +722,11 @@
 					"@loader_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"${PROJECT_DIR}/submodules/rive-cpp/build/ios/bin/release",
+					"${PROJECT_DIR}/dependencies/ios/bin/release",
 					"${PROJECT_DIR}/submodules/rive-cpp/skia/renderer/build/ios/bin/release",
 					"${PROJECT_DIR}/submodules/rive-cpp/skia/dependencies/skia/out",
 					"$(PROJECT_DIR)/submodules/rive-cpp/skia/dependencies/skia/out",
-					"$(PROJECT_DIR)/submodules/rive-cpp/build/ios/bin/release",
+					"$(PROJECT_DIR)/dependencies/ios/bin/release",
 					"$(PROJECT_DIR)/submodules/rive-cpp/skia/renderer/build/ios/bin/release",
 				);
 				MARKETING_VERSION = 0.6.5;
