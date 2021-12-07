@@ -16,3 +16,4 @@ rm -fr dependencies
 mkdir dependencies
 cp -r submodules/rive-cpp/build/ios* dependencies
 cp -r submodules/rive-cpp/skia/renderer/build/ios* dependencies
+cp -r submodules/rive-cpp/skia/dependencies/skia/out/libskia_ios.a dependencies
