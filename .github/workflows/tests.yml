@@ -13,6 +13,8 @@ jobs:
         with:
           token: ${{ secrets.RIVE_REPO_PAT }}
           submodules: recursive
+      - name: Setup Ninja
+        uses: ashutoshvarma/setup-ninja@v1.1
       - name: Build dependencies
         run: ./make_dependencies.sh
       - name: Testing iOS app
