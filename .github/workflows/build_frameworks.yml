@@ -68,6 +68,7 @@ jobs:
         with:
           token: ${{ secrets.RIVE_REPO_PAT }}
           submodules: recursive
+          lfs: true
       - name: Init submodule
         run: git submodule update --init
       - name: Get Skia Headers
