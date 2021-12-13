@@ -70,6 +70,8 @@ jobs:
           submodules: recursive
       - name: Init submodule
         run: git submodule update --init
+      - name: Get Skia Headers
+        run: sh ./.github/scripts/get_skia.sh
       - id: build_iphoneos
         name: Build release iphoneos framework
         run: sh ./.github/scripts/buildFramework.sh  -t iphoneos -c Release
