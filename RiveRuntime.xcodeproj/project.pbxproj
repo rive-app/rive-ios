@@ -53,9 +53,6 @@
 		04BE5430264D1F4100427B39 /* LayerState.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE542F264D1F4100427B39 /* LayerState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04BE5434264D267900427B39 /* LayerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5431264D243D00427B39 /* LayerState.mm */; };
 		04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */; };
-		2A70792B27260D3800C035A1 /* libskia_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A70792A27260D3800C035A1 /* libskia_ios.a */; };
-		2A70792D27260F3100C035A1 /* librive_fat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A70792C27260F3100C035A1 /* librive_fat.a */; };
-		2A70792F27260F5C00C035A1 /* librive_skia_renderer_fat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A70792E27260F5C00C035A1 /* librive_skia_renderer_fat.a */; };
 		2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */ = {isa = PBXBuildFile; fileRef = 2A7079342726277C00C035A1 /* rive_renderer_view.hh */; settings = {ATTRIBUTES = (Public, ); }; };
 		2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2A707936272628AD00C035A1 /* rive_renderer_view.mm */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
@@ -154,9 +151,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A70792F27260F5C00C035A1 /* librive_skia_renderer_fat.a in Frameworks */,
-				2A70792D27260F3100C035A1 /* librive_fat.a in Frameworks */,
-				2A70792B27260D3800C035A1 /* libskia_ios.a in Frameworks */,
 				C9D60DAC2512B04B00AAA3A6 /* QuartzCore.framework in Frameworks */,
 				C9CE8253263B716F00F98DDB /* UIKit.framework in Frameworks */,
 				C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */,
@@ -548,7 +542,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -614,7 +607,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -670,14 +662,23 @@
 					"@loader_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"${PROJECT_DIR}/dependencies/ios/bin/debug",
+					"${PROJECT_DIR}/dependencies/debug",
 					"${PROJECT_DIR}/dependencies",
-					"$(PROJECT_DIR)/dependencies/ios/bin/release",
 				);
 				MARKETING_VERSION = 0.6.5;
 				OTHER_CFLAGS = (
 					"-fembed-bitcode",
 					"-DSK_METAL",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"-lskia_ios",
+					"-lrive",
+					"-lrive_skia_renderer",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"-lskia_ios_sim",
+					"-lrive_sim",
+					"-lrive_skia_renderer_sim",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -721,9 +722,8 @@
 					"@loader_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"${PROJECT_DIR}/dependencies/ios/bin/release",
+					"${PROJECT_DIR}/dependencies/release",
 					"${PROJECT_DIR}/dependencies",
-					"$(PROJECT_DIR)/dependencies/ios/bin/release",
 				);
 				MARKETING_VERSION = 0.6.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -731,6 +731,16 @@
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-fembed-bitcode",
 					"-DSK_METAL",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"-lskia_ios",
+					"-lrive",
+					"-lrive_skia_renderer",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"-lskia_ios_sim",
+					"-lrive_sim",
+					"-lrive_skia_renderer_sim",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
