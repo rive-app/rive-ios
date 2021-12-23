@@ -35,6 +35,4 @@ Pod::Spec.new do |spec|
     :tag => "v#{spec.version}"
   }
   spec.ios.vendored_frameworks = 'RiveRuntime.xcframework'
-  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
-  spec.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
 end
