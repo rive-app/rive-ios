@@ -647,12 +647,12 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					"submodules/rive-cpp/include",
-					"submodules/rive-cpp/skia/dependencies/skia",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized",
 					"submodules/rive-cpp/skia/renderer/include",
-					"submodules/rive-cpp/skia/dependencies/skia/include/core",
-					"submodules/rive-cpp/skia/dependencies/skia/include/effects",
-					"submodules/rive-cpp/skia/dependencies/skia/include/gpu",
-					"submodules/rive-cpp/skia/dependencies/skia/include/config",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/core",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/effects",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/gpu",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/config",
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -707,12 +707,12 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					"submodules/rive-cpp/include",
-					"submodules/rive-cpp/skia/dependencies/skia",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized",
 					"submodules/rive-cpp/skia/renderer/include",
-					"submodules/rive-cpp/skia/dependencies/skia/include/core",
-					"submodules/rive-cpp/skia/dependencies/skia/include/effects",
-					"submodules/rive-cpp/skia/dependencies/skia/include/gpu",
-					"submodules/rive-cpp/skia/dependencies/skia/include/config",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/core",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/effects",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/gpu",
+					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/config",
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
