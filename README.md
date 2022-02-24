@@ -33,6 +33,12 @@ When updating, remember to also update the submodule with the same command.
 git submodule update --init
 ```
 
+Before you can run the examples, you need to build ...
+```sh
+cd rive-ios
+./make_dependencies.sh
+```
+
 ## Via Pods
 
 To install our pod, simply add the following to [cocoapods](https://cocoapods.org/) and run `pod install`.
