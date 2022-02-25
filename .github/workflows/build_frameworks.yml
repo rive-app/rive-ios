@@ -130,8 +130,8 @@ jobs:
           git add .
           git commit -m "Update podspec repo tag:${{ env.RELEASE_VERSION }}"
           git push
-          git tag v${{ env.RELEASE_VERSION }}
-          git push origin v${{ env.RELEASE_VERSION }}
+          git tag ${{ env.RELEASE_VERSION }}
+          git push origin ${{ env.RELEASE_VERSION }}
         env:
           API_TOKEN_GITHUB: ${{ secrets.RIVE_REPO_PAT }}
       - name: Publish pod to the CocoaPods
