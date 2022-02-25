@@ -32,7 +32,7 @@ Pod::Spec.new do |spec|
   spec.swift_version          = '5.0'
   spec.source       = { 
     :git => "https://github.com/rive-app/rive-ios-pod.git",
-    :tag => "v#{spec.version}"
+    :tag => "#{spec.version}"
   }
   spec.ios.vendored_frameworks = 'RiveRuntime.xcframework'
 end
