@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04026DC427CE3ED6002B3DBF /* SwiftSimpleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */; };
+		04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */; };
+		04026DCA27CE3EF6002B3DBF /* SwiftMultipleAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */; };
+		04026DCC27CE3F03002B3DBF /* SwiftLoopMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */; };
+		04026DCE27CE3F0F002B3DBF /* SwiftStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DCD27CE3F0F002B3DBF /* SwiftStateMachine.swift */; };
 		042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 042C88822643D6B900E7DBB2 /* Main.storyboard */; };
 		042C88882643DB7100E7DBB2 /* SimpleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */; };
 		042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042C888B2643EEE300E7DBB2 /* Layout.swift */; };
@@ -95,6 +100,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftSimpleAnimation.swift; sourceTree = "<group>"; };
+		04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLayout.swift; sourceTree = "<group>"; };
+		04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMultipleAnimations.swift; sourceTree = "<group>"; };
+		04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLoopMode.swift; sourceTree = "<group>"; };
+		04026DCD27CE3F0F002B3DBF /* SwiftStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftStateMachine.swift; sourceTree = "<group>"; };
 		042C88822643D6B900E7DBB2 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleAnimation.swift; sourceTree = "<group>"; };
 		042C888B2643EEE300E7DBB2 /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
@@ -240,6 +250,11 @@
 				C9D3DE58264F308B001BA265 /* Switch */,
 				C9D3DE55264F3080001BA265 /* Button */,
 				C9CB2F12264C92D200E7FF0D /* RiveComponents.swift */,
+				04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */,
+				04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */,
+				04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */,
+				04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */,
+				04026DCD27CE3F0F002B3DBF /* SwiftStateMachine.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -461,6 +476,8 @@
 				C9D3DE5E264F3B72001BA265 /* RiveProgressBar.swift in Sources */,
 				042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */,
 				C9E040A7264DF95C009ABC7C /* RiveSwitchBridge.swift in Sources */,
+				04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */,
+				04026DCC27CE3F03002B3DBF /* SwiftLoopMode.swift in Sources */,
 				C9A84F38264495600014D8E0 /* RiveExplorer.swift in Sources */,
 				04A8F6C526454711002C909A /* LoopMode.swift in Sources */,
 				C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */,
@@ -472,7 +489,10 @@
 				C9A84F602644AB6B0014D8E0 /* RiveExplorerBridge.swift in Sources */,
 				046AFA732673B00B004ED497 /* BlendModes.swift in Sources */,
 				C9D3DE60264F3B84001BA265 /* RiveProgressBarBridge.swift in Sources */,
+				04026DCA27CE3EF6002B3DBF /* SwiftMultipleAnimations.swift in Sources */,
 				042C88882643DB7100E7DBB2 /* SimpleAnimation.swift in Sources */,
+				04026DC427CE3ED6002B3DBF /* SwiftSimpleAnimation.swift in Sources */,
+				04026DCE27CE3F0F002B3DBF /* SwiftStateMachine.swift in Sources */,
 				C9E0409D264DEAA2009ABC7C /* RiveButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

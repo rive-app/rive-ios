@@ -197,6 +197,97 @@ public class RiveView: RiveRendererView {
       riveFile, andArtboard: artboard, andAnimation: animation, andStateMachine: stateMachine,
       andAutoPlay: autoplay)
   }
+    
+    /// Constructor with a resource file.
+    /// - Parameters:
+    ///   - resource: the resource to load the rive file from
+    ///   - fit: to specify how and if the animation should be resized to fit its container.
+    ///   - alignment: to specify how the animation should be aligned to its container.
+    ///   - autoplay: play as soon as the animaiton is loaded.
+    ///   - artboard: determine the `Artboard`to use, by default the first Artboard in the riveFile is picked.
+    ///   - animation: determine the `Animation`to play, by default the first Animation/StateMachine in the riveFile is picked.
+    ///   - stateMachine: determine the `StateMachine`to play, ignored if `animation` is set. By default the first Animation/StateMachine in the riveFile is picked.
+    ///   - loopDelegate: to get callbacks when an `Animation` Loops
+    ///   - playDelegate: to get callbacks when an `Animation` or  a `StateMachine`'s playback starts, or restarts.
+    ///   - pauseDelegate: to get callbacks when an `Animation` or  a `StateMachine`'s playback pauses.
+    ///   - stopDelegate: to get callbacks when an `Animation` or  a `StateMachine` is stopped.
+    ///   - inputsDelegate: to get callbacks for inputs relevant to a loaded `StateMachine`.
+    ///   - stateChangeDelegate: to get callbacks for when the current state of a StateMachine chagnes.
+    public init(
+        resource: String,
+        fit: Fit = .fitContain,
+        alignment: Alignment = .alignmentCenter,
+        autoplay: Bool = true,
+        artboard: String? = nil,
+        animation: String? = nil,
+        stateMachine: String? = nil,
+        loopDelegate: LoopDelegate? = nil,
+        playDelegate: PlayDelegate? = nil,
+        pauseDelegate: PauseDelegate? = nil,
+        stopDelegate: StopDelegate? = nil,
+        inputsDelegate: InputsDelegate? = nil,
+        stateChangeDelegate: StateChangeDelegate? = nil
+    ) throws {
+        super.init(frame: .zero)
+        let riveFile = try getRiveFile(resourceName: resource)
+        self.fit = fit
+        self.alignment = alignment
+        self.loopDelegate = loopDelegate
+        self.playDelegate = playDelegate
+        self.pauseDelegate = pauseDelegate
+        self.stopDelegate = stopDelegate
+        self.inputsDelegate = inputsDelegate
+        self.stateChangeDelegate = stateChangeDelegate
+        try self.configure(
+            riveFile, andArtboard: artboard, andAnimation: animation, andStateMachine: stateMachine,
+            andAutoPlay: autoplay)
+    }
+    
+    
+    /// Constructor with a resource file.
+    /// - Parameters:
+    ///   - httpUrl: the url to load the file from
+    ///   - fit: to specify how and if the animation should be resized to fit its container.
+    ///   - alignment: to specify how the animation should be aligned to its container.
+    ///   - autoplay: play as soon as the animaiton is loaded.
+    ///   - artboard: determine the `Artboard`to use, by default the first Artboard in the riveFile is picked.
+    ///   - animation: determine the `Animation`to play, by default the first Animation/StateMachine in the riveFile is picked.
+    ///   - stateMachine: determine the `StateMachine`to play, ignored if `animation` is set. By default the first Animation/StateMachine in the riveFile is picked.
+    ///   - loopDelegate: to get callbacks when an `Animation` Loops
+    ///   - playDelegate: to get callbacks when an `Animation` or  a `StateMachine`'s playback starts, or restarts.
+    ///   - pauseDelegate: to get callbacks when an `Animation` or  a `StateMachine`'s playback pauses.
+    ///   - stopDelegate: to get callbacks when an `Animation` or  a `StateMachine` is stopped.
+    ///   - inputsDelegate: to get callbacks for inputs relevant to a loaded `StateMachine`.
+    ///   - stateChangeDelegate: to get callbacks for when the current state of a StateMachine chagnes.
+    public init(
+        httpUrl: String,
+        fit: Fit = .fitContain,
+        alignment: Alignment = .alignmentCenter,
+        autoplay: Bool = true,
+        artboard: String? = nil,
+        animation: String? = nil,
+        stateMachine: String? = nil,
+        loopDelegate: LoopDelegate? = nil,
+        playDelegate: PlayDelegate? = nil,
+        pauseDelegate: PauseDelegate? = nil,
+        stopDelegate: StopDelegate? = nil,
+        inputsDelegate: InputsDelegate? = nil,
+        stateChangeDelegate: StateChangeDelegate? = nil
+    ) throws {
+        super.init(frame: .zero)
+        let riveFile = RiveFile(httpUrl: httpUrl, with:self)!
+        self.fit = fit
+        self.alignment = alignment
+        self.loopDelegate = loopDelegate
+        self.playDelegate = playDelegate
+        self.pauseDelegate = pauseDelegate
+        self.stopDelegate = stopDelegate
+        self.inputsDelegate = inputsDelegate
+        self.stateChangeDelegate = stateChangeDelegate
+        try self.configure(
+            riveFile, andArtboard: artboard, andAnimation: animation, andStateMachine: stateMachine,
+            andAutoPlay: autoplay)
+    }
 
   /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
   public init() {
@@ -878,4 +969,23 @@ extension RiveView {
       eventQueue.add({ self.stopDelegate?.stop(stateMachine.name(), isStateMachine: true) })
     }
   }
+}
+
+
+func getBytes(resourceName: String, resourceExt: String=".riv") -> [UInt8] {
+    guard let url = Bundle.main.url(forResource: resourceName, withExtension: resourceExt) else {
+        fatalError("Failed to locate \(resourceName) in bundle.")
+    }
+    guard let data = try? Data(contentsOf: url) else {
+        fatalError("Failed to load \(url) from bundle.")
+    }
+    
+    // Import the data into a RiveFile
+    return [UInt8](data)
+}
+
+
+func getRiveFile(resourceName: String, resourceExt: String=".riv") throws -> RiveFile{
+    let byteArray = getBytes(resourceName: resourceName, resourceExt: resourceExt)
+    return try RiveFile(byteArray: byteArray)
 }

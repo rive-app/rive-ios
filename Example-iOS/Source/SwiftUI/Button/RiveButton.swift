@@ -7,19 +7,31 @@
 //
 
 import SwiftUI
+import RiveRuntime
 
 struct RiveButton: View {
-    @State var play: Bool = false
-    
-    let resource: String
+    public init(
+        resource: String,
+        action: (() -> Void)?
+    ) {
+        self.view = try?
+        RiveView(resource: resource, fit: .fitCover, autoplay: false)
+        self.action = action
+        
+    }
+    var view: RiveView?
     var action: (() -> Void)? = nil
     
     var body: some View {
-        RiveButtonBridge(resource: resource, fit: .fitCover, play: $play)
+        RiveViewSwift(
+            riveView: view!
+        )
             .frame(width: 100, height: 20)
             .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
             .onTapGesture {
-                play = true
+                self.view!.stop()
+                try? self.view!.play()
+                
                 action?()
             }
     }
@@ -27,6 +39,6 @@ struct RiveButton: View {
 
 struct RiveButton_Previews: PreviewProvider {
     static var previews: some View {
-        RiveButton(resource: "pull") {}
+        RiveButton(resource: "pull"){}
     }
 }
