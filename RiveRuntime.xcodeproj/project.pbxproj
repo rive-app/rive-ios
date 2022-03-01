@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04026DC027CCDADB002B3DBF /* RiveViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DBF27CCDADB002B3DBF /* RiveViewSwift.swift */; };
 		046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */; };
 		046FB7F3264EAA60000129B1 /* RiveStateMachineInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7E3264EAA5F000129B1 /* RiveStateMachineInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -78,6 +79,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04026DBF27CCDADB002B3DBF /* RiveViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveViewSwift.swift; sourceTree = "<group>"; };
 		046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveLinearAnimationInstance.h; sourceTree = "<group>"; };
 		046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveArtboard.mm; sourceTree = "<group>"; };
 		046FB7E3264EAA5F000129B1 /* RiveStateMachineInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachineInput.h; sourceTree = "<group>"; };
@@ -244,6 +246,7 @@
 				2A707936272628AD00C035A1 /* rive_renderer_view.mm */,
 				2A7079342726277C00C035A1 /* rive_renderer_view.hh */,
 				C9002A1F263C76080011556B /* RiveView.swift */,
+				04026DBF27CCDADB002B3DBF /* RiveViewSwift.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -460,6 +463,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04026DC027CCDADB002B3DBF /* RiveViewSwift.swift in Sources */,
 				046FB7F9264EAA60000129B1 /* RiveStateMachine.mm in Sources */,
 				2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,

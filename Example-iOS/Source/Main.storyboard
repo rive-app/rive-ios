@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FPy-V6-MlI">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FPy-V6-MlI">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="wRo-9V-rXR">
-                                <rect key="frame" x="0.0" y="88" width="414" height="311"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="461"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UIKit examples" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C8u-cc-gX1">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="20.5"/>
@@ -85,14 +85,49 @@
                                         <rect key="frame" x="0.0" y="251" width="414" height="30"/>
                                         <state key="normal" title="Rive Explorer"/>
                                         <connections>
-                                            <segue destination="w39-2n-FCH" kind="presentation" destinationCreationSelector="hostingAction:" id="SeF-el-OxU"/>
+                                            <segue destination="w39-2n-FCH" kind="show" destinationCreationSelector="showRiveExplorer:" id="SeF-el-OxU"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5d-hg-cnK">
                                         <rect key="frame" x="0.0" y="281" width="414" height="30"/>
                                         <state key="normal" title="SwiftUI Components"/>
                                         <connections>
-                                            <segue destination="yNC-ze-bA4" kind="presentation" destinationCreationSelector="hostingActionStateMachine:" id="9dn-S5-TjE"/>
+                                            <segue destination="yNC-ze-bA4" kind="show" destinationCreationSelector="showRiveComponents:" id="9dn-S5-TjE"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Beu-Ih-RHj">
+                                        <rect key="frame" x="0.0" y="311" width="414" height="30"/>
+                                        <state key="normal" title="SimpleAnimation"/>
+                                        <connections>
+                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showSimpleAnimation:" id="Bb7-l1-qUL"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AaE-4k-lRG">
+                                        <rect key="frame" x="0.0" y="341" width="414" height="30"/>
+                                        <state key="normal" title="Layout"/>
+                                        <connections>
+                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showLayout:" id="QnL-BI-j2Y"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3XF-q3-7am">
+                                        <rect key="frame" x="0.0" y="371" width="414" height="30"/>
+                                        <state key="normal" title="Multiple Animations"/>
+                                        <connections>
+                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showMultipleAnimations:" id="KB7-jS-ZRo"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mrA-Za-9Mv">
+                                        <rect key="frame" x="0.0" y="401" width="414" height="30"/>
+                                        <state key="normal" title="Loop Mode"/>
+                                        <connections>
+                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showLoopMode:" id="pGf-IT-DMh"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eie-9o-eWU">
+                                        <rect key="frame" x="0.0" y="431" width="414" height="30"/>
+                                        <state key="normal" title="State Machine"/>
+                                        <connections>
+                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showStateMachine:" id="vXr-uV-fEd"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -110,7 +145,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1047.8260869565217" y="138.61607142857142"/>
+            <point key="canvasLocation" x="1039" y="151"/>
         </scene>
         <!--Layout-->
         <scene sceneID="f8y-qg-uzH">
@@ -304,7 +339,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iPR-UO-vO8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2741" y="-692"/>
+            <point key="canvasLocation" x="2516" y="-984"/>
         </scene>
         <!--Blend Modes-->
         <scene sceneID="JXR-CF-wxg">
@@ -320,7 +355,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0JN-k1-xkH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-587" y="1130"/>
+            <point key="canvasLocation" x="6045" y="-984"/>
         </scene>
         <!--Loop Mode-->
         <scene sceneID="iqU-00-Krb">
@@ -548,7 +583,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ozx-fu-trC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="181" y="1130"/>
+            <point key="canvasLocation" x="3914" y="-984"/>
         </scene>
         <!--State Machine-->
         <scene sceneID="sMa-mk-G4H">
@@ -631,7 +666,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qYD-XH-vp4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1324.6376811594205" y="1129.6875"/>
+            <point key="canvasLocation" x="4599" y="-984"/>
         </scene>
         <!--iOS Player-->
         <scene sceneID="8FV-8I-h1w">
@@ -714,15 +749,17 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jt7-3l-j1T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2101.449275362319" y="1068.75"/>
+            <point key="canvasLocation" x="5325" y="-984"/>
         </scene>
         <!--Hosting Controller-->
         <scene sceneID="FCb-Pg-8ib">
             <objects>
-                <hostingController id="yNC-ze-bA4" sceneMemberID="viewController"/>
+                <hostingController id="yNC-ze-bA4" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="gnB-w3-z8e"/>
+                </hostingController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SUL-R1-Glq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2829" y="978"/>
+            <point key="canvasLocation" x="138" y="1501"/>
         </scene>
         <!--Multiple Animations-->
         <scene sceneID="RWJ-v9-IHm">
@@ -883,7 +920,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yc7-ml-Tkq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3603" y="-222"/>
+            <point key="canvasLocation" x="3229" y="-984"/>
         </scene>
         <!--Simple Animation Example-->
         <scene sceneID="b8F-wH-PQu">
@@ -899,7 +936,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xxk-hl-V9T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1822" y="-879"/>
+            <point key="canvasLocation" x="1842" y="-984"/>
         </scene>
         <!--Hosting Controller-->
         <scene sceneID="ywB-z0-0QJ">
@@ -909,7 +946,7 @@
                 </hostingController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tzM-Rx-Bel" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3565" y="553"/>
+            <point key="canvasLocation" x="-664" y="1501"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Vw7-FC-sqO">
@@ -929,7 +966,20 @@
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="138.61607142857142"/>
         </scene>
+        <!--Hosting Controller-->
+        <scene sceneID="iwq-aZ-Vk6">
+            <objects>
+                <hostingController id="uUT-OA-tcC" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="Db7-UM-aVi"/>
+                </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Wo1-9T-STv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1912" y="847"/>
+        </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="vXr-uV-fEd"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
