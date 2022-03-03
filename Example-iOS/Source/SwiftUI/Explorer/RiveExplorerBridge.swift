@@ -3,7 +3,7 @@ import Combine
 import RiveRuntime
 
 /// Controller manages the state of the Rive animation
-class RiveController: ObservableObject {
+class RiveExplorerController: ObservableObject {
     let rive: RiveFile
     
     private let resource: String
@@ -70,7 +70,7 @@ struct RiveExplorerBridge: UIViewRepresentable {
     
     // MARK: - Properties
     
-    @ObservedObject var controller: RiveController
+    @ObservedObject var controller: RiveExplorerController
     
     // Delegate handlers for loop and play events
     var loopAction: LoopAction = nil
@@ -157,14 +157,14 @@ extension RiveExplorerBridge {
     // Coordinator between RiveView and UIRiveView
     class Coordinator: NSObject, LoopDelegate, PlayDelegate, PauseDelegate, InputsDelegate {
         
-        private var controller: RiveController
+        private var controller: RiveExplorerController
         private var loopAction: LoopAction
         private var playAction: PlaybackAction
         private var pauseAction: PlaybackAction
         private var inputsAction: InputsAction
         var subscribers: [AnyCancellable] = []
         
-        init(controller: RiveController, loopAction: LoopAction, playAction: PlaybackAction, pauseAction: PlaybackAction, inputsAction: InputsAction) {
+        init(controller: RiveExplorerController, loopAction: LoopAction, playAction: PlaybackAction, pauseAction: PlaybackAction, inputsAction: InputsAction) {
             self.controller = controller
             self.loopAction = loopAction
             self.playAction = playAction

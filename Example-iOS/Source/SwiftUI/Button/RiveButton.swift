@@ -10,27 +10,29 @@ import SwiftUI
 import RiveRuntime
 
 struct RiveButton: View {
+    let resource:String
+    let controller: RiveController
     public init(
         resource: String,
         action: (() -> Void)?
     ) {
-        self.view = try?
-        RiveView(resource: resource, fit: .fitCover, autoplay: false)
+        self.resource = resource
         self.action = action
-        
+        self.controller = RiveController()
     }
-    var view: RiveView?
-    var action: (() -> Void)? = nil
     
+    var action: (() -> Void)? = nil
     var body: some View {
         RiveViewSwift(
-            riveView: view!
+            resource: resource,
+            autoplay: false,
+            controller: controller
         )
             .frame(width: 100, height: 20)
             .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
             .onTapGesture {
-                self.view!.stop()
-                try? self.view!.play()
+                controller.stop()
+                try? controller.play()
                 
                 action?()
             }
