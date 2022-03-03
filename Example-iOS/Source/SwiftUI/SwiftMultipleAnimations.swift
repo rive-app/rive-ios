@@ -16,33 +16,25 @@ struct SwiftMultipleAnimations: View {
             VStack {
                 Text("Square - go around")
                 RiveViewSwift(
-                    riveView: try! RiveView(
-                        resource: "artboard_animations",
-                        artboard: "Square",
-                        animation:"goaround"
-                    )
+                    resource: "artboard_animations",
+                    artboard: "Square",
+                    animation:"goaround"
                 ).frame(height:200)
                 Text("Square - roll around")
                 RiveViewSwift(
-                    riveView:try! RiveView(
-                        resource: "artboard_animations",
-                        artboard: "Square",
-                        animation:"rollaround"
-                    )
+                    resource: "artboard_animations",
+                    artboard: "Square",
+                    animation:"rollaround"
                 ).frame(height:200)
                 Text("Circle")
                 RiveViewSwift(
-                    riveView:try! RiveView(
-                        resource: "artboard_animations",
-                        artboard: "Circle"
-                    )
+                    resource: "artboard_animations",
+                    artboard: "Circle"
                 ).frame(height:200)
                 Text("Star")
                 RiveViewSwift(
-                    riveView:try! RiveView(
-                        resource: "artboard_animations",
-                        artboard: "Star"
-                    )
+                    resource: "artboard_animations",
+                    artboard: "Star"
                 ).frame(height:200)
             }
         }
