@@ -2,7 +2,7 @@ import SwiftUI
 import RiveRuntime
 
 struct RiveExplorer: View {
-    @ObservedObject private var riveController = RiveController(
+    @ObservedObject private var riveController = RiveExplorerController(
         "artboard_animations",
         fit: Fit.fitCover
     )

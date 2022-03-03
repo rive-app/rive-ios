@@ -12,7 +12,9 @@ import RiveRuntime
 
 struct SwiftSimpleAnimation: View {
     var body: some View {
-        RiveViewSwift(riveView:try!RiveView(httpUrl: "https://cdn.rive.app/animations/truck.riv"))
+        RiveViewSwift(
+            httpUrl: "https://cdn.rive.app/animations/truck.riv"
+        )
     }
 }
 

@@ -10,44 +10,46 @@ import SwiftUI
 import RiveRuntime
 
 struct SwiftLayout: View {
-    var view = try!RiveView(resource: "off_road_car_blog")
+    @State private var fit = Fit.fitContain
+    @State private var alignment = Alignment.alignmentCenter
+    
     var body: some View {
         VStack {
-            RiveViewSwift(riveView:view)
+            RiveViewSwift(resource: "off_road_car_blog", fit: $fit, alignment: $alignment)
         }
         HStack {
             Text("Fit")
         }
         HStack {
-            Button("Fill", action: {view.fit = .fitFill})
-            Button("Contain", action: {view.fit = .fitContain})
-            Button("Cover", action: {view.fit = .fitCover})
+            Button("Fill", action: {fit = .fitFill})
+            Button("Contain", action: {fit = .fitContain})
+            Button("Cover", action: {fit = .fitCover})
         }
         HStack {
-            Button("Fit Width", action: {view.fit = .fitFitWidth})
-            Button("Fit Height", action: {view.fit = .fitFitHeight})
-            Button("Scale Down", action: {view.fit = .fitScaleDown})
+            Button("Fit Width", action: {fit = .fitFitWidth})
+            Button("Fit Height", action: {fit = .fitFitHeight})
+            Button("Scale Down", action: {fit = .fitScaleDown})
         }
         HStack {
-            Button("None", action: {view.fit = .fitNone})
+            Button("None", action: {fit = .fitNone})
         }
         HStack {
             Text("Alignment")
         }
         HStack {
-            Button("Top Left", action: {view.alignment = .alignmentTopLeft})
-            Button("Top Center", action: {view.alignment = .alignmentTopCenter})
-            Button("Top Right", action: {view.alignment = .alignmentTopRight})
+            Button("Top Left", action: {alignment = .alignmentTopLeft})
+            Button("Top Center", action: {alignment = .alignmentTopCenter})
+            Button("Top Right", action: {alignment = .alignmentTopRight})
         }
         HStack {
-            Button("Center Left", action: {view.alignment = .alignmentCenterLeft})
-            Button("Center", action: {view.alignment = .alignmentCenter})
-            Button("Center Right", action: {view.alignment = .alignmentCenterRight})
+            Button("Center Left", action: {alignment = .alignmentCenterLeft})
+            Button("Center", action: {alignment = .alignmentCenter})
+            Button("Center Right", action: {alignment = .alignmentCenterRight})
         }
         HStack {
-            Button("Bottom Left", action: {view.alignment = .alignmentBottomLeft})
-            Button("Bottom Center", action: {view.alignment = .alignmentBottomCenter})
-            Button("Bottom Right", action: {view.alignment = .alignmentBottomRight})
+            Button("Bottom Left", action: {alignment = .alignmentBottomLeft})
+            Button("Bottom Center", action: {alignment = .alignmentBottomCenter})
+            Button("Bottom Right", action: {alignment = .alignmentBottomRight})
         }
     }
 }

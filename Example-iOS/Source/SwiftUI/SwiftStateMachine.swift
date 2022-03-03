@@ -10,31 +10,29 @@ import SwiftUI
 import RiveRuntime
 
 struct SwiftStateMachine: View {
-    let riveView = try! RiveView(
-        resource: "skills",
-        stateMachine: "Designer's Test"
-    )
+    let controller = RiveController();
     
     var body: some View {
         ScrollView{
             VStack {
                 RiveViewSwift(
-                    riveView:riveView
+                    resource: "skills",
+                    stateMachine: "Designer's Test",
+                    controller: controller
                 ).frame(height:200)
                 
                 HStack{
-                    
                     Button(
                         "Beginner",
-                        action:{try! riveView.setNumberState("Designer's Test", inputName: "Level", value: 0.0)}
+                        action:{try? controller.setNumberState("Designer's Test", inputName: "Level", value: 0.0)}
                     )
                     Button(
                         "Intermediate",
-                        action:{try! riveView.setNumberState("Designer's Test", inputName: "Level", value: 1.0)}
+                        action:{try? controller.setNumberState("Designer's Test", inputName: "Level", value: 1.0)}
                     )
                     Button(
                         "Expert",
-                        action:{try! riveView.setNumberState("Designer's Test", inputName: "Level", value: 2.0)}
+                        action:{try? controller.setNumberState("Designer's Test", inputName: "Level", value: 2.0)}
                     )
                 }
                 
