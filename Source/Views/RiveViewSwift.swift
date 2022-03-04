@@ -121,7 +121,7 @@ public class RiveController {
     open func setBooleanState(_ stateMachineName: String, inputName: String, value: Bool) throws {
         try riveView?.setBooleanState(stateMachineName, inputName: inputName, value: value)
     }
-
+    
     open func setNumberState(_ stateMachineName: String, inputName: String, value: Float) throws {
         try riveView?.setNumberState(stateMachineName, inputName: inputName, value: value)
     }
@@ -134,6 +134,10 @@ enum RiveViewError: Error {
 
 @available(iOS 13.0, *)
 public struct RiveViewSwift: UIViewRepresentable {
+    // TODO: do we want to wrap all of this in @ObservableObject?
+    // essentially making our controller, the observableObject
+    // the question will be, what properties of this will end up being @Published
+    
     let resource: String?
     let httpUrl: String?
     let autoplay: Bool
@@ -143,6 +147,16 @@ public struct RiveViewSwift: UIViewRepresentable {
     let controller: RiveController?
     @Binding var fit: Fit
     @Binding var alignment: RiveRuntime.Alignment
+    
+    // Delegate handlers for loop and play events
+    var loopAction: LoopAction = nil
+    var playAction: PlaybackAction = nil
+    var pauseAction: PlaybackAction = nil
+    var inputsAction: InputsAction = nil
+    var stopAction: PlaybackAction = nil
+    var stateChangeAction: StateChangeAction = nil
+    
+    
     
     public init(
         resource: String,
@@ -203,7 +217,13 @@ public struct RiveViewSwift: UIViewRepresentable {
                 autoplay: autoplay,
                 artboard: artboard,
                 animation: animation,
-                stateMachine: stateMachine
+                stateMachine: stateMachine,
+                loopDelegate: context.coordinator,
+                playDelegate: context.coordinator,
+                pauseDelegate: context.coordinator,
+                stopDelegate: context.coordinator,
+                inputsDelegate: context.coordinator,
+                stateChangeDelegate: context.coordinator
             )
         }
         else if let httpUrl = httpUrl {
@@ -214,7 +234,13 @@ public struct RiveViewSwift: UIViewRepresentable {
                 autoplay: autoplay,
                 artboard: artboard,
                 animation: animation,
-                stateMachine: stateMachine
+                stateMachine: stateMachine,
+                loopDelegate: context.coordinator,
+                playDelegate: context.coordinator,
+                pauseDelegate: context.coordinator,
+                stopDelegate: context.coordinator,
+                inputsDelegate: context.coordinator,
+                stateChangeDelegate: context.coordinator
             )
         }
         else {
@@ -235,7 +261,6 @@ public struct RiveViewSwift: UIViewRepresentable {
         if (alignment != riveView.alignment) {
             riveView.alignment = alignment
         }
-        
     }
     
     public static func dismantleUIView(
@@ -244,8 +269,82 @@ public struct RiveViewSwift: UIViewRepresentable {
     ) {
         riveView.stop()
         
-        // TODO: this doesn't work, does the view need a controller ref?
-        // controller?.deregisterView()
+        // TODO: is this neccessary
+        coordinator.controller?.deregisterView()
     }
     
+    // Constructs a coordinator for managing updating state
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(
+            controller: controller,
+            loopAction: loopAction,
+            playAction: playAction,
+            pauseAction: pauseAction,
+            inputsAction: inputsAction,
+            stopAction: stopAction,
+            stateChangeAction: stateChangeAction
+        )
+    }
+    
+}
+
+@available(iOS 13.0, *)
+extension RiveViewSwift {
+    
+    // MARK: - Coordinator
+    
+    // Coordinator between RiveView and UIRiveView
+    public class Coordinator: NSObject, LoopDelegate, PlayDelegate, PauseDelegate, InputsDelegate, StopDelegate, StateChangeDelegate {
+        
+        public var controller: RiveController?
+        private var loopAction: LoopAction
+        private var playAction: PlaybackAction
+        private var pauseAction: PlaybackAction
+        private var inputsAction: InputsAction
+        private var stopAction: PlaybackAction
+        private var stateChangeAction: StateChangeAction
+        
+        init(
+            controller: RiveController?,
+            loopAction: LoopAction,
+            playAction: PlaybackAction,
+            pauseAction: PlaybackAction,
+            inputsAction: InputsAction,
+            stopAction: PlaybackAction,
+            stateChangeAction: StateChangeAction
+        ) {
+            self.controller = controller
+            self.loopAction = loopAction
+            self.playAction = playAction
+            self.pauseAction = pauseAction
+            self.inputsAction = inputsAction
+            self.stopAction = stopAction
+            self.stateChangeAction = stateChangeAction
+            
+        }
+        
+        public func loop(_ animationName: String, type: Int) {
+            loopAction?(animationName, type)
+        }
+        
+        public func play(_ animationName: String, isStateMachine: Bool) {
+            playAction?(animationName, isStateMachine)
+        }
+        
+        public func pause(_ animationName: String, isStateMachine: Bool) {
+            pauseAction?(animationName, isStateMachine)
+        }
+        
+        public func inputs(_ inputs: [StateMachineInput]) {
+            inputsAction?(inputs)
+        }
+        
+        public func stop(_ animationName: String, isStateMachine: Bool) {
+            stopAction?(animationName, isStateMachine)
+        }
+        
+        public func stateChange(_ stateMachineName: String, _ stateName: String) {
+            stateChangeAction?(stateMachineName, stateName)
+        }
+    }
 }
