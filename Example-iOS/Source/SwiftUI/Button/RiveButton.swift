@@ -25,6 +25,7 @@ struct RiveButton: View {
     var body: some View {
         RiveViewSwift(
             resource: resource,
+            fit: .constant(.fitCover),
             autoplay: false,
             controller: controller
         )
