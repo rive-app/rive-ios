@@ -164,7 +164,13 @@ extension RiveExplorerBridge {
         private var inputsAction: InputsAction
         var subscribers: [AnyCancellable] = []
         
-        init(controller: RiveExplorerController, loopAction: LoopAction, playAction: PlaybackAction, pauseAction: PlaybackAction, inputsAction: InputsAction) {
+        init(
+            controller: RiveExplorerController,
+            loopAction: LoopAction,
+            playAction: PlaybackAction,
+            pauseAction: PlaybackAction,
+            inputsAction: InputsAction
+        ) {
             self.controller = controller
             self.loopAction = loopAction
             self.playAction = playAction
@@ -191,12 +197,12 @@ extension RiveExplorerBridge {
         
         func play(_ animationName: String, isStateMachine: Bool) {
             controller.playback = .play
-            playAction?(animationName)
+            playAction?(animationName, isStateMachine)
         }
         
         func pause(_ animationName: String, isStateMachine: Bool) {
             controller.playback = .pause
-            pauseAction?(animationName)
+            pauseAction?(animationName, isStateMachine)
         }
         
         func inputs(_ inputs: [StateMachineInput]) {
