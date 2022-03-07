@@ -11,15 +11,7 @@ import RiveRuntime
 
 struct RiveButton: View {
     let resource:String
-    let controller: RiveController
-    public init(
-        resource: String,
-        action: (() -> Void)?
-    ) {
-        self.resource = resource
-        self.action = action
-        self.controller = RiveController()
-    }
+    let controller: RiveController = RiveController()
     
     var action: (() -> Void)? = nil
     var body: some View {
