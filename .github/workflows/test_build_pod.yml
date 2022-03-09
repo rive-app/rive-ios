@@ -41,14 +41,14 @@ jobs:
         run: git submodule update --init
       - id: build_iphoneos
         name: Build release iphoneos framework
-        run: sh ./.github/scripts/buildFramework.sh  -t iphoneos -c Release
+        run: sh ./scripts/build_framework.sh  -t iphoneos -c Release
       - id: build_iphonesimulator
         name: Build release iphonesimulator framework
-        run: sh ./.github/scripts/buildFramework.sh  -t iphonesimulator -c Release
+        run: sh ./scripts/build_framework.sh  -t iphonesimulator -c Release
       - id: merge_frameworks
         if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
         name: Merge created frameworks
-        run: sh ./.github/scripts/mergeFrameworks.sh -c Release
+        run: sh ./scripts/merge_framework.sh -c Release
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:

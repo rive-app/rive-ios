@@ -15,17 +15,17 @@ jobs:
         uses: actions/checkout@v2
       - name: Install dependencies
         run: npm ci
-        working-directory: ./.github/scripts/release
+        working-directory: ./.github/release
       - name: Get Version
         run: npm run release -- --ci --release-version | tail -n 1 > RELEASE_VERSION
-        working-directory: ./.github/scripts/release
+        working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.RIVE_REPO_PAT }}
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: RELEASE_VERSION
-          path: ./.github/scripts/release/RELEASE_VERSION
+          path: ./.github/release/RELEASE_VERSION
 
   create_podspec_file:
     name: Create RiveRuntime.podspec
@@ -72,17 +72,17 @@ jobs:
       - name: Init submodule
         run: git submodule update --init
       - name: Get Skia Headers
-        run: sh ./.github/scripts/get_skia.sh
+        run: sh ./scripts/configure.sh
       - id: build_iphoneos
         name: Build release iphoneos framework
-        run: sh ./.github/scripts/buildFramework.sh  -t iphoneos -c Release
+        run: sh ./scripts/build_framework.sh  -t iphoneos -c Release
       - id: build_iphonesimulator
         name: Build release iphonesimulator framework
-        run: sh ./.github/scripts/buildFramework.sh  -t iphonesimulator -c Release
+        run: sh ./scripts/build_framework.sh  -t iphonesimulator -c Release
       - id: merge_frameworks
         if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
         name: Merge created frameworks
-        run: sh ./.github/scripts/mergeFrameworks.sh -c Release
+        run: sh ./scripts/merge_framework.sh -c Release
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -150,13 +150,13 @@ jobs:
           fetch-depth: 0
       - name: Install dependencies
         run: npm ci
-        working-directory: ./.github/scripts/release
+        working-directory: ./.github/release
       - name: Git config
         run: |
           git config --local user.email 'hello@rive.app'
           git config --local user.name ${{ github.actor }}
       - name: Bump version number, update changelog, push and tag
         run: npm run release -- --ci
-        working-directory: ./.github/scripts/release
+        working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.RIVE_REPO_PAT }}
