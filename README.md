@@ -228,27 +228,6 @@ or attach it later
 ```swift
 view.loopDelegate = delegate
 ```
-
-## Building & testing cocoapods locally. 
-
-- cd into checked out directory 
-- build the framework (check `build_frameworks.yml`)
-    - `sh ./.github/scripts/buildFramework.sh  -t iphoneos -c Release`
-    - `sh ./.github/scripts/buildFramework.sh  -t iphonesimulator -c Release`
-- create a podfile in the build directory.
-    - look at `podspec.txt` & replace `$RELEASE_VERSION` with something custom
-    - `cp .github/workflows/podspec.txt archive/RiveRuntime.podspec`
-
-- check its fine running `pod lib lint --allow-warnings`
-- now you can include a reference to the archive in your podfile 
-    - ` pod 'RiveRuntime', :path => '/Users/maxwelltalbot/development/rive/rive-ios/archive/'`
-
-### Testing pod build remotely
-
-There is a `test_build_pod` workflow. This workflow builds a pod & pushes it to `https://github.com/rive-app/test-ios.git`. 
-To test this pod, update the reference in your podfile to:
-    - `pod 'RiveRuntime', :git => 'https://github.com/rive-app/test-ios.git'`
-
 ## Blend modes 
 
 Rive allows the artist to set blend modes on shapes to determine how they are to be merged with the rest of the animation.
@@ -262,3 +241,6 @@ Original | iOS             |
 ![Source](images/editor.png ) | ![iOS](images/ios.png)  
 
 
+## Developing `rive-ios`
+
+please see [CONTRIBUTING.md](/CONTRIBUTING.md) for information on how to get setup and running with developing `rive-ios`

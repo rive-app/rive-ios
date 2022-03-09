@@ -596,13 +596,13 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = (
-					"submodules/rive-cpp/include",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized",
-					"submodules/rive-cpp/skia/renderer/include",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/core",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/effects",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/gpu",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/config",
+					dependencies/includes/skia,
+					dependencies/includes/skia/include/core,
+					dependencies/includes/skia/include/effects,
+					dependencies/includes/skia/include/gpu,
+					dependencies/includes/skia/include/config,
+					"dependencies/includes/rive-cpp/include",
+					dependencies/includes/renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -656,13 +656,13 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = (
-					"submodules/rive-cpp/include",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized",
-					"submodules/rive-cpp/skia/renderer/include",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/core",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/effects",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/gpu",
-					"submodules/rive-cpp/skia/dependencies/skia_rive_optimized/include/config",
+					dependencies/includes/skia,
+					dependencies/includes/skia/include/core,
+					dependencies/includes/skia/include/effects,
+					dependencies/includes/skia/include/gpu,
+					dependencies/includes/skia/include/config,
+					"dependencies/includes/rive-cpp/include",
+					dependencies/includes/renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
