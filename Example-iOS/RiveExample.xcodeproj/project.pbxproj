@@ -35,7 +35,6 @@
 		042C88EA2644447500E7DBB2 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D82644447500E7DBB2 /* skills.riv */; };
 		042C88EB2644447500E7DBB2 /* clipping.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D92644447500E7DBB2 /* clipping.riv */; };
 		042C88EC2644447500E7DBB2 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
-		0430312B26CABE4C00FBBEA0 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0430312826CABE4C00FBBEA0 /* SwiftUI.framework */; };
 		0450446126B3F71E007B25CA /* constrained.riv in Resources */ = {isa = PBXBuildFile; fileRef = 0450445E26B3F71E007B25CA /* constrained.riv */; };
 		046AFA712673AF04004ED497 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		046AFA732673B00B004ED497 /* BlendModes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046AFA722673B00B004ED497 /* BlendModes.swift */; };
@@ -127,7 +126,6 @@
 		042C88D82644447500E7DBB2 /* skills.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = skills.riv; sourceTree = "<group>"; };
 		042C88D92644447500E7DBB2 /* clipping.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = clipping.riv; sourceTree = "<group>"; };
 		042C88DA2644447500E7DBB2 /* vader.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = vader.riv; sourceTree = "<group>"; };
-		0430312826CABE4C00FBBEA0 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		0450445E26B3F71E007B25CA /* constrained.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = constrained.riv; sourceTree = "<group>"; };
 		046AFA6E2673AF04004ED497 /* blendmodes.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = blendmodes.riv; sourceTree = "<group>"; };
 		046AFA722673B00B004ED497 /* BlendModes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlendModes.swift; sourceTree = "<group>"; };
@@ -165,7 +163,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0430312B26CABE4C00FBBEA0 /* SwiftUI.framework in Frameworks */,
 				04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -302,7 +299,6 @@
 		C9C741FF24FC53CF00EF9516 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0430312826CABE4C00FBBEA0 /* SwiftUI.framework */,
 				04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */,
 			);
 			name = Frameworks;
