@@ -132,6 +132,7 @@ enum RiveViewError: Error {
     case noResourceOrHttpUrl
 }
 
+//  MARK: RiveViewSwift is highly experimental and subject to change without major version changes
 @available(iOS 13.0, *)
 public struct RiveViewSwift: UIViewRepresentable {
     // TODO: do we want to wrap all of this in @ObservableObject?
