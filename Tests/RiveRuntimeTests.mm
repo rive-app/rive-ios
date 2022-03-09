@@ -194,7 +194,6 @@ UInt8 stateMachineFileBytes[] = {
 - (void)testRetrieveAnimationByIndex {
     RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156 error:nil];
     RiveArtboard* artboard = [file artboard:nil];
-    NSError* error = nil;
     
     RiveLinearAnimation* animation = [artboard animationFromIndex: 0 error:nil];
     XCTAssert(animation != NULL);

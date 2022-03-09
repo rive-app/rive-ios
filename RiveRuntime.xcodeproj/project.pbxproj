@@ -24,11 +24,6 @@
 		046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7EE264EAA60000129B1 /* RiveStateMachine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7EF264EAA60000129B1 /* RiveFile.mm */; };
 		046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		048002712729A94D00F7132B /* nested_animation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0480026F2729A94D00F7132B /* nested_animation.hpp */; };
-		048002742729A95900F7132B /* nested_artboard_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002722729A95900F7132B /* nested_artboard_base.hpp */; };
-		048002752729A95900F7132B /* nested_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002732729A95900F7132B /* nested_animation_base.hpp */; };
-		0480027B2729A97400F7132B /* nested_linear_animation_base.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002772729A97300F7132B /* nested_linear_animation_base.hpp */; };
-		048002872729A9CF00F7132B /* backboard_importer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 048002862729A9CF00F7132B /* backboard_importer.hpp */; };
 		04BE54042649403600427B39 /* shapes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53F82649403500427B39 /* shapes.riv */; };
 		04BE54052649403600427B39 /* noartboard.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53F92649403500427B39 /* noartboard.riv */; };
 		04BE54062649403600427B39 /* off_road_car_blog.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04BE53FA2649403600427B39 /* off_road_car_blog.riv */; };
@@ -63,9 +58,6 @@
 		C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C73ED424FC478800EF9516 /* RiveRuntime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C741F424FC510200EF9516 /* Rive.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C741F224FC510200EF9516 /* Rive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C741F524FC510200EF9516 /* Rive.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C741F324FC510200EF9516 /* Rive.mm */; };
-		C9CE8253263B716F00F98DDB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9CE8252263B716F00F98DDB /* UIKit.framework */; };
-		C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */; };
-		C9D60DAC2512B04B00AAA3A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,11 +88,6 @@
 		046FB7EE264EAA60000129B1 /* RiveStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachine.h; sourceTree = "<group>"; };
 		046FB7EF264EAA60000129B1 /* RiveFile.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveFile.mm; sourceTree = "<group>"; };
 		046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachineInstance.h; sourceTree = "<group>"; };
-		0480026F2729A94D00F7132B /* nested_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_animation.hpp; sourceTree = "<group>"; };
-		048002722729A95900F7132B /* nested_artboard_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_artboard_base.hpp; sourceTree = "<group>"; };
-		048002732729A95900F7132B /* nested_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_animation_base.hpp; sourceTree = "<group>"; };
-		048002772729A97300F7132B /* nested_linear_animation_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nested_linear_animation_base.hpp; sourceTree = "<group>"; };
-		048002862729A9CF00F7132B /* backboard_importer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = backboard_importer.hpp; sourceTree = "<group>"; };
 		04BE53F82649403500427B39 /* shapes.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = shapes.riv; sourceTree = "<group>"; };
 		04BE53F92649403500427B39 /* noartboard.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = noartboard.riv; sourceTree = "<group>"; };
 		04BE53FA2649403600427B39 /* off_road_car_blog.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = off_road_car_blog.riv; sourceTree = "<group>"; };
@@ -127,9 +114,6 @@
 		04BE542F264D1F4100427B39 /* LayerState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayerState.h; sourceTree = "<group>"; };
 		04BE5431264D243D00427B39 /* LayerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LayerState.mm; sourceTree = "<group>"; };
 		04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RivePrivateHeaders.h; sourceTree = "<group>"; };
-		2A70792A27260D3800C035A1 /* libskia_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libskia_ios.a; sourceTree = "<group>"; };
-		2A70792C27260F3100C035A1 /* librive_fat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = librive_fat.a; sourceTree = "<group>"; };
-		2A70792E27260F5C00C035A1 /* librive_skia_renderer_fat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = librive_skia_renderer_fat.a; sourceTree = "<group>"; };
 		2A7079342726277C00C035A1 /* rive_renderer_view.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rive_renderer_view.hh; sourceTree = "<group>"; };
 		2A707936272628AD00C035A1 /* rive_renderer_view.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = rive_renderer_view.mm; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
@@ -143,9 +127,6 @@
 		C9C73EE124FC478900EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9C741F224FC510200EF9516 /* Rive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rive.h; sourceTree = "<group>"; };
 		C9C741F324FC510200EF9516 /* Rive.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Rive.mm; sourceTree = "<group>"; };
-		C9CE8252263B716F00F98DDB /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
-		C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,9 +134,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9D60DAC2512B04B00AAA3A6 /* QuartzCore.framework in Frameworks */,
-				C9CE8253263B716F00F98DDB /* UIKit.framework in Frameworks */,
-				C9D60DAA2512B01600AAA3A6 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,18 +187,6 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
-		2AAC7C27275ECB2300FBCA8E /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				048002722729A95900F7132B /* nested_artboard_base.hpp */,
-				0480026F2729A94D00F7132B /* nested_animation.hpp */,
-				048002732729A95900F7132B /* nested_animation_base.hpp */,
-				048002772729A97300F7132B /* nested_linear_animation_base.hpp */,
-				048002862729A9CF00F7132B /* backboard_importer.hpp */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		C9BD3927263B64B100696C37 /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
@@ -257,8 +223,6 @@
 				C9C73ED324FC478800EF9516 /* Source */,
 				C9C73EDE24FC478900EF9516 /* Tests */,
 				C9C73ED224FC478800EF9516 /* Products */,
-				C9D60DA62512AFE900AAA3A6 /* Frameworks */,
-				2AAC7C27275ECB2300FBCA8E /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -302,19 +266,6 @@
 			path = Tests;
 			sourceTree = "<group>";
 		};
-		C9D60DA62512AFE900AAA3A6 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				2A70792E27260F5C00C035A1 /* librive_skia_renderer_fat.a */,
-				2A70792C27260F3100C035A1 /* librive_fat.a */,
-				2A70792A27260D3800C035A1 /* libskia_ios.a */,
-				C9CE8252263B716F00F98DDB /* UIKit.framework */,
-				C9D60DAB2512B04B00AAA3A6 /* QuartzCore.framework */,
-				C9D60DA92512B01600AAA3A6 /* CoreGraphics.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -329,20 +280,15 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				048002742729A95900F7132B /* nested_artboard_base.hpp in Headers */,
-				048002712729A94D00F7132B /* nested_animation.hpp in Headers */,
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
 				2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */,
 				046FB7FD264EAA61000129B1 /* RiveLinearAnimation.h in Headers */,
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
-				048002752729A95900F7132B /* nested_animation_base.hpp in Headers */,
-				0480027B2729A97400F7132B /* nested_linear_animation_base.hpp in Headers */,
 				046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */,
 				046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */,
 				046FB7F3264EAA60000129B1 /* RiveStateMachineInput.h in Headers */,
 				046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */,
-				048002872729A9CF00F7132B /* backboard_importer.hpp in Headers */,
 				04BE5430264D1F4100427B39 /* LayerState.h in Headers */,
 				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
 				04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */,
@@ -562,7 +508,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -621,7 +567,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
