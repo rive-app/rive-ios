@@ -91,3 +91,6 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+# used for us to put our tar.gz lib cache
+cache/
