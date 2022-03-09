@@ -15,6 +15,6 @@ jobs:
           submodules: recursive
           lfs: true
       - name: Get Skia Headers
-        run: sh ./.github/scripts/get_skia.sh
+        run: sh ./scripts/configure.sh
       - name: Testing iOS app
-        run: sh ./.github/scripts/test.sh
+        run: sh ./scripts/test.sh
