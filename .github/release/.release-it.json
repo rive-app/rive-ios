@@ -6,7 +6,8 @@
   },
   "github": {
     "release": true,
-    "releaseName": "${version}"
+    "releaseName": "${version}",
+    "assets": ["../../archive/RiveRuntime.xcframework.zip"]
   },
   "npm": {
     "publish": false,
@@ -15,20 +16,20 @@
   "plugins": {
     "@release-it/bumper": {
       "in": {
-        "file": "../../../VERSION",
+        "file": "../../VERSION",
         "type": "text/plain"
       },
       "out": {
-        "file": "../../../VERSION",
+        "file": "../../VERSION",
         "type": "text/plain"
       }
     }
   },
   "hooks": {
     "after:bump": [
-      "npx auto-changelog -p --starting-version 0.3.0 -o ../../../CHANGELOG.md",
-      "git add ../../../CHANGELOG.md",
-      "git add ../../../VERSION"
+      "npx auto-changelog -p --starting-version 0.3.0 -o ../../CHANGELOG.md",
+      "git add ../../CHANGELOG.md",
+      "git add ../../VERSION"
     ]
   }
 }

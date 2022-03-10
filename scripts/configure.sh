@@ -57,7 +57,7 @@ cached_build() {
     if curl --output /dev/null --head --silent --fail $ARCHIVE_URL
         then
             echo "$ARCHIVE_URL exists, downloading..."
-            # curl --output cache/$TAR_FILE_NAME $ARCHIVE_URL 
+            curl --output cache/$TAR_FILE_NAME $ARCHIVE_URL 
             rm -rf dependencies/* 
             tar -xf cache/$TAR_FILE_NAME -C dependencies/
         else

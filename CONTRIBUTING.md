@@ -4,7 +4,7 @@ We want this community to be friendly and respectful to each other. Please follo
 
 ## Development workflow
 
-To get started with the project, please install a few pre-requisites: `git-lfs` , `ninja` & [premake5](https://premake.github.io/)). Brew will install both git-lfs and ninja, for premake5 you will need to download the binary, and make sure its available on your path. Moving the executable to `/usr/local/bin/` will work.
+To get started with the project, please install a few pre-requisites:  `ninja` & [premake5](https://premake.github.io/)). Brew will install both git-lfs and ninja, for premake5 you will need to download the binary, and make sure its available on your path. Moving the executable to `/usr/local/bin/` will work.
 
 Check out the repository, making sure to include the submodules. It is important to use ssh to checkout this repo, as the submodules are linked via ssh.
 
