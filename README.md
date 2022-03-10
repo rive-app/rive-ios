@@ -17,29 +17,8 @@ This is the iOS runtime for [Rive](https://rive.app), currently in beta. The api
 
 # Installing rive-ios
 
-## Via github
 
-You can clone this repository and include the RiveRuntime.xcodeproj to build a dynamic or static library.
-
-When pulling down this repo, you'll need to make sure to also pull down the submodule which contains the C++ runtime that our iOS runtime is built upon. The easiest way to do this is to run this:
-
-```sh
-git clone --recurse-submodules git@github.com:rive-app/rive-ios
-```
-
-When updating, remember to also update the submodule with the same command.
-
-```sh
-git submodule update --init
-```
-
-Before you can run the examples, you need to build ...
-```sh
-cd rive-ios
-./make_dependencies.sh
-```
-
-## Via Pods
+## Via Cocoapods
 
 To install our pod, simply add the following to [cocoapods](https://cocoapods.org/) and run `pod install`.
 
