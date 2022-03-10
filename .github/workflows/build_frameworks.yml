@@ -140,7 +140,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: RiveRuntime.xcframework.zip
-          path: archive/RiveRuntime.xcframework.zip
+          path: archive/
       - name: Bump version number, update changelog, push and tag
         run: npm run release -- --ci
         working-directory: ./.github/release
@@ -151,19 +151,17 @@ jobs:
     name: Publish framework to cocoapods
     runs-on: macos-11
     needs: [determine_version, build_framework, do_release]
-    outputs:
-      - name: Download podspec file
-        uses: actions/download-artifact@v2
-        with:
-          name: RiveRuntime.podspec
-          path: RiveRuntime.podspec
+    steps:
       - name: Download framework artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: RiveRuntime.xcframework.zip
-          path: archive/RiveRuntime.xcframework.zip
+      - name: Download podspec file
+        uses: actions/download-artifact@v3
+        with:
+          name: RiveRuntime.podspec
       - name: Extract archive to pass cocoapods validation
-        run: unzip archive/RiveRuntime.xcframework.zip
+        run: unzip RiveRuntime.xcframework.zip
       - name: Publish pod to the CocoaPods
         uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
         env:
