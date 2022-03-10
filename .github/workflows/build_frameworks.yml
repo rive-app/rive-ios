@@ -63,15 +63,15 @@ jobs:
         if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
         name: Merge created frameworks
         run: sh ./scripts/merge_frameworks.sh -c Release
-      - id: zip
-        name: Zip the framework
+      - id: zip 
+        name: Zip the framework 
         run: zip -r RiveRuntime.xcframework.zip RiveRuntime.xcframework
         working-directory: ./archive
       - id: get_checksum
         name: Add the checksum of the zip file into our environment
         run: echo "::set-output name=checksum::$(swift package compute-checksum archive/RiveRuntime.xcframework.zip)"
       - name: Upload xcFramework
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: RiveRuntime.xcframework.zip
           path: archive/RiveRuntime.xcframework.zip
