@@ -9,29 +9,14 @@
 import SwiftUI
 import RiveRuntime
 
-//struct RiveProgressBar: View {
-//
-//    let resource: String
-//
-//    @Binding var health: Double
-//
-//    var body: some View {
-//        VStack {
-//            RiveProgressBarBridge(health: $health)
-//                .frame(width: 300, height: 75)
-//        }
-//    }
-//}
 struct RiveProgressBar: View {
     
-    var resource: String = "life_bar"
-    var controller: RiveController;
-    
-    @Binding var health: Double
+    let resource: String
+    var controller: RiveController
     
     var body: some View {
         VStack {
-            RiveViewSwift(resource: resource, autoplay: true, stateMachine: "Life Machine", controller: controller)
+            RiveViewSwift(resource: resource, fit: Binding.constant(.fitCover), autoplay: true, stateMachine: "State Machine ", controller: controller)
                 .frame(width: 300, height: 75)
         }
     }
@@ -40,6 +25,6 @@ struct RiveProgressBar: View {
 
 struct RiveProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        RiveProgressBar(resource: "life_bar", controller: RiveController(), health: Binding.constant(50.0))
+        RiveProgressBar(resource: "energy_bar_example", controller: RiveController())
     }
 }

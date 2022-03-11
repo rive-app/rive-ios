@@ -26,39 +26,12 @@ struct RiveSwitch: View {
             .frame(width: 100, height: 50)
             .onTapGesture {
                 on = !on
-                try? controller.play(onAnimation)
+                self.controller.stop()
+                try? self.controller.play(on ? onAnimation : offAnimation)
                 action?(on)
             }
     }
 }
-
-//struct RiveSwitch: View {
-//    @State var switchToOn: Bool = false
-//    @State var switchToOff: Bool = false
-//    @State var on: Bool = false
-//
-//    let resource: String
-//    var onAnimation: String = "On"
-//    var offAnimation: String = "Off"
-//    var startAnimation: String = "StartOff"
-//    var action: ((Bool) -> Void)? = nil
-//
-//    var body: some View {
-//        RiveSwitchBridge(resource: resource, fit: .fitCover, switchToOn: $switchToOn, switchToOff: $switchToOff)
-//            .frame(width: 100, height: 50)
-//            .onTapGesture {
-//                switchToOn = false
-//                switchToOff = false
-//                if on {
-//                    switchToOff = true
-//                } else {
-//                    switchToOn = true
-//                }
-//                on = !on
-//                action?(on)
-//            }
-//    }
-//}
 
 struct RiveSwitch_Previews: PreviewProvider {
     static var previews: some View {

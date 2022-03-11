@@ -64,6 +64,7 @@
 		C9E0409F264DF1A3009ABC7C /* RiveSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E0409E264DF1A3009ABC7C /* RiveSwitch.swift */; };
 		C9E040A7264DF95C009ABC7C /* RiveSwitchBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E040A6264DF95C009ABC7C /* RiveSwitchBridge.swift */; };
 		C9E040A9264DFCFD009ABC7C /* switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9E040A8264DFCFD009ABC7C /* switch.riv */; };
+		E5CD7D6827DBF4D500BFE5E2 /* energy_bar_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5CD7D6527DBF4D500BFE5E2 /* energy_bar_example.riv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -156,6 +157,7 @@
 		C9E0409E264DF1A3009ABC7C /* RiveSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitch.swift; sourceTree = "<group>"; };
 		C9E040A6264DF95C009ABC7C /* RiveSwitchBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitchBridge.swift; sourceTree = "<group>"; };
 		C9E040A8264DFCFD009ABC7C /* switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = switch.riv; sourceTree = "<group>"; };
+		E5CD7D6527DBF4D500BFE5E2 /* energy_bar_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = energy_bar_example.riv; path = ../../../../../Downloads/energy_bar_example.riv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +213,7 @@
 				042C88CF2644447500E7DBB2 /* basketball.riv */,
 				048002882729AA4400F7132B /* clean_icon_set.riv */,
 				042C88D92644447500E7DBB2 /* clipping.riv */,
+				E5CD7D6527DBF4D500BFE5E2 /* energy_bar_example.riv */,
 				042C88D32644447500E7DBB2 /* explorer.riv */,
 				042C88D02644447500E7DBB2 /* f22.riv */,
 				042C88D12644447500E7DBB2 /* flux_capacitor.riv */,
@@ -451,6 +454,7 @@
 				0450446126B3F71E007B25CA /* constrained.riv in Resources */,
 				C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */,
 				042C88DB2644447500E7DBB2 /* wacky.riv in Resources */,
+				E5CD7D6827DBF4D500BFE5E2 /* energy_bar_example.riv in Resources */,
 				042C88EB2644447500E7DBB2 /* clipping.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
