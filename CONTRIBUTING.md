@@ -11,11 +11,11 @@ Check out the repository, making sure to include the submodules. It is important
  `git clone --recurse-submodules git@github.com:rive-app/rive-ios.git`
 
 The package relies on skia, as well as rive-cpp in order to be built. To shorten the build cycle, we rely on compiled libraries for skia, rive & rive-skia-renderer.
-Run `./scripts/get_dependencies.sh` from the root folder to get everything that is needed to be set up. typically this will just pull down pre compiled libraries, but it may need to build the libraries if it cannot find them in the cache
+Run `./scripts/configure.sh` from the root folder to get everything that is needed to be set up. typically this will just pull down pre compiled libraries, but it may need to build the libraries if it cannot find them in the cache
 
 ### Uploading caches
 
-If you are contributing and you have access to Rives' aws environment, make you sure install `aws-cli` and configure it with your credentials. Set the `RIVE_UPLOAD_IOS_ARCHIVE` env variable to `TRUE` then you should be able to run `./scripts/get_dependencies.sh`, or `RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/get_dependencies.sh` and you will upload caches when feasible. 
+If you are contributing and you have access to Rives' aws environment, make you sure install `aws-cli` and configure it with your credentials. Set the `RIVE_UPLOAD_IOS_ARCHIVE` env variable to `TRUE` then you should be able to run `./scripts/configure.sh`, or `RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh` and you will upload caches when feasible. 
 
 ## Changing rive-cpp/skia
 
