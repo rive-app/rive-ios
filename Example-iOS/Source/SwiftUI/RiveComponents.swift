@@ -18,7 +18,7 @@ struct RiveComponents: View {
     @State var play: Bool = false
     
     /// Tracks the health value coming from the slide for the progress bar
-    @State var health: Double = 100
+    @State var health: Double = 0
     
     @State var sliderController: RiveController = RiveController()
     
@@ -38,22 +38,13 @@ struct RiveComponents: View {
             }
             VStack {
                 Text("RiveProgressBar:")
-                RiveProgressBar(resource: "life_bar", controller: sliderController, health: $health)
+                RiveProgressBar(resource: "energy_bar_example", controller: sliderController)
             }
-//            Slider(
-//                value: $health,
-//                in: 0...100
-//            )
             Slider(value: Binding(get: {
                 self.health
             }, set: { (newVal) in
                 self.health = newVal
-                print(newVal)
-                try? self.sliderController.setBooleanState("Life Machine", inputName: "100", value: true)
-                try? self.sliderController.setBooleanState("Life Machine", inputName: "75", value: newVal < 100)
-                try? self.sliderController.setBooleanState("Life Machine", inputName: "50", value: newVal <= 66)
-                try? self.sliderController.setBooleanState("Life Machine", inputName: "25", value: newVal <= 33)
-                try? self.sliderController.setBooleanState("Life Machine", inputName: "0", value: newVal <= 0)
+                try? self.sliderController.setNumberState("State Machine ", inputName: "Energy", value: Float(newVal))
             }), in: 0...100)
             .padding()
         }

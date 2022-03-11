@@ -25,7 +25,7 @@ struct RiveButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
             .onTapGesture {
                 controller.stop()
-                try? controller.play()
+                try? controller.play("Pull")
                 
                 action?()
             }
