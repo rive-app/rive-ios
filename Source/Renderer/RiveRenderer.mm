@@ -150,39 +150,6 @@ void RiveRenderPaint::blendMode(BlendMode value) {
     }
 }
 
-void RiveRenderPaint::linearGradient(float sx, float sy, float ex, float ey) {
-//    NSLog(@" --- RenderPaint::linearGradient (%.1f,%.1f), (%.1f,%.1f)", sx, sy, ex, ey);
-    gradientType = RiveGradient::Linear;
-    gradientStart = CGPointMake(sx, sy);
-    gradientEnd = CGPointMake(ex, ey);
-}
-
-void RiveRenderPaint::radialGradient(float sx, float sy, float ex, float ey) {
-//    NSLog(@" --- RenderPaint::radialGradient");
-    gradientType = RiveGradient::Radial;
-    gradientStart = CGPointMake(sx, sy);
-    gradientEnd = CGPointMake(ex, ey);
-}
-
-void RiveRenderPaint::addStop(unsigned int color, float stop) {
-//    NSLog(@" --- RenderPaint::addStop - color %i at %.01f", color, stop);
-    colorStops.emplace_back(((float)((color & 0xFF0000) >> 16))/0xFF);
-    colorStops.emplace_back(((float)((color & 0xFF00) >> 8))/0xFF);
-    colorStops.emplace_back(((float)(color & 0xFF))/0xFF);
-    colorStops.emplace_back(((float)((color & 0xFF000000) >> 24))/0xFF);
-    stops.emplace_back(stop);
-}
-void RiveRenderPaint::completeGradient() {
-//    NSLog(@" --- RenderPaint::completeGradient");
-    // release the previously cached gradient, if any
-    if (gradient != NULL) {
-        CGGradientRelease(gradient);
-    }
-    gradient = CGGradientCreateWithColorComponents(baseSpace, &colorStops[0], &stops[0], stops.size());
-    // clear out the stops
-    stops.clear();
-    colorStops.clear();
-}
 
 /*
  * Render path
@@ -441,6 +408,5 @@ void RiveRenderer::transform(const Mat2D& transform) {
  */
 
 namespace rive {
-    RenderPaint* makeRenderPaint() { return new RiveRenderPaint(); }
     RenderPath* makeRenderPath() { return new RiveRenderPath(); }
 }
