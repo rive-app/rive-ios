@@ -342,7 +342,7 @@
 		C9C73EC824FC478800EF9516 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1310;
+				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = Rive;
 				TargetAttributes = {
 					C9C73ED024FC478800EF9516 = {

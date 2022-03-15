@@ -34,6 +34,9 @@ import RiveRuntime
 
 to have access to our higher level views or build on top of our bindings to control your own animation loop.
 
+## Via Swift Package Manager
+To install via Swift Package Manager, in the package finder in xcode, search with the Github repository name: `https://github.com/rive-app/rive-ios`
+
 # Examples
 
 There is an example project next to the runtimes.
