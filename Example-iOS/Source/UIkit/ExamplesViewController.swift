@@ -47,6 +47,20 @@ class ExamplesViewController: UIViewController {
     @IBSegueAction func showStateMachine(_ coder: NSCoder) -> UIViewController? {
         return StateMachineHostingController(coder: coder)
     }
+    
+    @IBSegueAction func showMeshExample(_ coder: NSCoder) -> UIViewController? {
+        return MeshExampleHostingController(coder: coder)
+    }
+}
+
+class MeshExampleHostingController: UIHostingController<SwiftMeshAnimation> {
+    required init?(coder: NSCoder) {
+        super.init(coder: coder, rootView: SwiftMeshAnimation())
+    }
+    
+    func dismiss() {
+        dismiss(animated: true, completion: nil)
+    }
 }
 
 
