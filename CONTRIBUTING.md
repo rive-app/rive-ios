@@ -11,11 +11,13 @@ Check out the repository, making sure to include the submodules. It is important
  `git clone --recurse-submodules git@github.com:rive-app/rive-ios.git`
 
 The package relies on skia, as well as rive-cpp in order to be built. To shorten the build cycle, we rely on compiled libraries for skia, rive & rive-skia-renderer.
-Run `./scripts/configure.sh` from the root folder to get everything that is needed to be set up. typically this will just pull down pre compiled libraries, but it may need to build the libraries if it cannot find them in the cache
+The `./scripts/configure.sh` script will download or build appropriate libraries, be sure to run configure when making changes to our rive-cpp submodule. 
 
 ### Uploading caches
 
 If you are contributing and you have access to Rives' aws environment, make you sure install `aws-cli` and configure it with your credentials. Set the `RIVE_UPLOAD_IOS_ARCHIVE` env variable to `TRUE` then you should be able to run `./scripts/configure.sh`, or `RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh` and you will upload caches when feasible. 
+
+If you run into permission issues here `aws sts get-caller-identity` can help make sure that your local developer environment is setup to talk to AWS correctly
 
 ## Changing rive-cpp/skia
 
@@ -29,10 +31,14 @@ If you make changes within the `rive-cpp` submodule you will need to compile the
 
 ## Scripts
 
-The `scripts` folder contains a few scripts to manage dependecies and perform builds.
+The `scripts` folder contains a few scripts to manage dependencies and perform builds.
 
 ## FAQ
 
-### Cannot find `Rive.h`
+### `Rive.h` file not found
 
-This is probably because of missing submodules.
+This is probably because of missing submodules. Make sure you check out rive with [submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
+
+### `rive/renderer.hpp` file not found
+
+This is likely because the `script/configure.py` has not been run yet.
