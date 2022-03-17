@@ -1,6 +1,7 @@
 name: Create a Release
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [closed]
     branches:
@@ -63,8 +64,8 @@ jobs:
         if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
         name: Merge created frameworks
         run: sh ./scripts/merge_frameworks.sh -c Release
-      - id: zip 
-        name: Zip the framework 
+      - id: zip
+        name: Zip the framework
         run: zip -r RiveRuntime.xcframework.zip RiveRuntime.xcframework
         working-directory: ./archive
       - id: get_checksum
