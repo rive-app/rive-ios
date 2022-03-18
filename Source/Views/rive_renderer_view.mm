@@ -70,23 +70,27 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
 }
 
 @implementation RiveRendererView {
-  GrDirectContext *_grContext;
-  rive::SkiaRenderer *_renderer;
-  id<MTLCommandQueue> _queue;
+    GrDirectContext *_grContext;
+    rive::SkiaRenderer *_renderer;
+    id<MTLCommandQueue> _queue;
+    NSInteger testImagesSaved;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)decoder {
-  self = [super initWithCoder:decoder];
-
-  self.device = [SkiaContextManager shared].metalDevice;
-  _grContext = [SkiaContextManager shared].grContext.get();
-  _queue = [SkiaContextManager shared].metalQueue;
-
-  [self setDepthStencilPixelFormat:MTLPixelFormatDepth32Float_Stencil8];
-  [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
-  [self setFramebufferOnly:false];
-  [self setSampleCount:1];
-  return self;
+    self = [super initWithCoder:decoder];
+    
+    self.device = [SkiaContextManager shared].metalDevice;
+    _grContext = [SkiaContextManager shared].grContext.get();
+    _queue = [SkiaContextManager shared].metalQueue;
+    
+    [self setDepthStencilPixelFormat:MTLPixelFormatDepth32Float_Stencil8];
+    [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
+    [self setFramebufferOnly:false];
+    [self setSampleCount:1];
+    
+    testImagesSaved = 0;
+    
+    return self;
 }
 
 - (instancetype)initWithFrame:(CGRect)frameRect {
@@ -188,34 +192,81 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
 }
 
 - (void)drawRect:(CGRect)rect {
-  [super drawRect:rect];
-  if (![[self currentDrawable] texture]) {
-    return;
-  }
-  CGSize size = [self drawableSize];
-  sk_sp<SkSurface> surface = SkMtkViewToSurface(self, _grContext);
-  if (!surface) {
-    NSLog(@"error: no sksurface");
-    return;
-  }
-  auto canvas = surface->getCanvas();
-  _renderer = new rive::SkiaRenderer(canvas);
-  canvas->clear(SkColor((0x00000000)));
-  _renderer->save();
-  [self drawRive:rect atSize:size];
-  _renderer->restore();
+    [super drawRect:rect];
+    
+    if (![[self currentDrawable] texture]) {
+        return;
+    }
+    
+    CGSize size = [self drawableSize];
+    sk_sp<SkSurface> surface = SkMtkViewToSurface(self, _grContext);
+    
+    if (!surface) {
+        NSLog(@"error: no sksurface");
+        return;
+    }
+    
+    auto canvas = surface->getCanvas();
+    _renderer = new rive::SkiaRenderer(canvas);
+    canvas->clear(SkColor((0x00000000)));
+    _renderer->save();
+    [self drawRive:rect atSize:size];
+    _renderer->restore();
+    
+    surface->flushAndSubmit();
+    
+    // TODO: Zachary implement testing for png data comparisons
+    Boolean testing = true;
+    if (testing) {
+        [self saveImageData:surface];
+    }
+    
+    surface = nullptr;
+    delete _renderer;
+    _renderer = nullptr;
+    
+    id<MTLCommandBuffer> commandBuffer = [_queue commandBuffer];
+    [commandBuffer presentDrawable:[self currentDrawable]];
+    [commandBuffer commit];
+    bool paused = [self isPaused];
+    [self setEnableSetNeedsDisplay:paused];
+    [self setPaused:paused];
+}
 
-  surface->flushAndSubmit();
-  surface = nullptr;
-  delete _renderer;
-  _renderer = nullptr;
-
-  id<MTLCommandBuffer> commandBuffer = [_queue commandBuffer];
-  [commandBuffer presentDrawable:[self currentDrawable]];
-  [commandBuffer commit];
-  bool paused = [self isPaused];
-  [self setEnableSetNeedsDisplay:paused];
-  [self setPaused:paused];
+// https://github.com/rive-app/rive-recorder/blob/master/src/goldens/goldens.cpp
+/// Takes the image data from the Skia surface and outputs a png file
+- (void)saveImageData:(sk_sp<SkSurface>)surface {
+    if (testImagesSaved > 20) { return; }
+    testImagesSaved++;
+    
+    NSFileManager * fileManager = [NSFileManager defaultManager];
+    NSString * fileName = [NSString stringWithFormat:
+                           @"TestImage%li%@",
+                           (long)testImagesSaved,
+                           @".png"];
+    NSString * filePath = [NSString stringWithFormat:
+                           @"%@%@",
+                           @"/Users/zacharyduncan/Local/Rive/TestImages/",
+                           fileName];
+    Boolean fileNameConflict = [fileManager fileExistsAtPath:filePath];
+    
+    if (fileNameConflict) {
+        NSLog(@"File '%@' already exists", fileName);
+    }
+    else
+    {
+        auto image = surface->makeImageSnapshot();
+        auto skPNGData = image->encodeToData();
+        NSData * pngData = [NSData dataWithBytes:skPNGData->bytes() length:skPNGData->size()];
+        
+        if ([fileManager createFileAtPath:filePath contents:pngData attributes:nil]) {
+            NSLog(@"Successfully created file %@", fileName);
+        }
+        else
+        {
+            NSLog(@"Failed to create new file %@", fileName);
+        }
+    }
 }
 
 @end
