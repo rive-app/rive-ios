@@ -54,7 +54,7 @@ build() {
 
 cached_build() {
     echo "Running cached build, checking $ARCHIVE_URL"
-    if curl --output /dev/null --head --silent --fail $ARCHIVE_URL
+    if curl --output /dev/null --head --silent --fail $ARCHIVE_URL && [ "$1" != "rebuild" ]
         then
             echo "$ARCHIVE_URL exists, downloading..."
             curl --output cache/$TAR_FILE_NAME $ARCHIVE_URL 
@@ -80,9 +80,9 @@ cached_build() {
 }
 
 update_dependencies () {
-    if [ "$RIVE_CPP_CLEAN" == "TRUE" ]
+    if [ "$RIVE_CPP_CLEAN" == "TRUE" ] 
         then
-            cached_build 
+            cached_build $1
         else 
             echo "Rive-cpp has changes, cannot use cached builds"
             build
@@ -90,14 +90,14 @@ update_dependencies () {
 }
 
 check_dependencies () {
-    if [ "$COMMIT_HASH" == "$CACHED_COMMIT_HASH" ] && [ "$RIVE_CPP_CLEAN" == "TRUE" ]
+    if [ "$COMMIT_HASH" == "$CACHED_COMMIT_HASH" ] && [ "$RIVE_CPP_CLEAN" == "TRUE" ] && [ "$1" != "rebuild" ]
     then 
         echo "Cache is up to date & rive_cpp is clean. no need to do anything"
     else  
-        update_dependencies
+        update_dependencies $1
     fi
 }
 
-check_dependencies
+check_dependencies $1
 
 
