@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftUI
+import RiveRuntime
 
 /// Simple way to add SwiftUI to a UIKit app; doesn't have a way to handle dismissing view in SwiftUI
 //class ExamplesViewController: UIViewController {
@@ -18,7 +19,9 @@ import SwiftUI
 //}
 
 // Exposes SwiftUI with the ability to dismiss view from SwiftUI side
-class ExamplesViewController: UIViewController {
+class ExamplesViewController: UIViewController, RViewController {
+    var viewModel: RResourceViewModel!
+    
     
     @IBSegueAction func showRiveExplorer(_ coder: NSCoder) -> UIViewController? {
         return RiveExplorerHostingController(coder: coder)
@@ -50,6 +53,19 @@ class ExamplesViewController: UIViewController {
     
     @IBSegueAction func showMeshExample(_ coder: NSCoder) -> UIViewController? {
         return MeshExampleHostingController(coder: coder)
+    }
+    
+    @IBAction func showNewSwiftUIExample(_ sender: Any) {
+        let healthbar = RResource(
+            resource: "energy_bar_example",
+            stateMachine: "State Machine ")
+        let healthbarView = RiveResource(healthbar)
+        
+        let testView = TestView()
+        //presentRiveResource(testView)
+        
+        let facade = RFacade(RViewModel.riveslider)
+        presentRiveResource(facade.viewSwift)
     }
 }
 

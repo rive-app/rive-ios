@@ -12,17 +12,15 @@ import SwiftUI
 
 // ok we need to structure this a different way. as we're going to leak memory
 public class RiveController {
-    public init(){}
+    var riveView: RiveView? = nil
     
-    var riveView:RiveView? = nil
+    public init() { }
     
-    public func registerView(
-        _ view: RiveView
-    ) {
+    public func registerView(_ view: RiveView) {
         riveView = view
     }
     
-    public func deregisterView(){
+    public func deregisterView() {
         riveView = nil
     }
     
@@ -30,10 +28,7 @@ public class RiveController {
         try riveView?.reset()
     }
     
-    public func play(
-        _ loop: Loop = .loopAuto,
-        _ direction: Direction = .directionAuto
-    ) throws {
+    public func play(_ loop: Loop = .loopAuto, _ direction: Direction = .directionAuto) throws {
         try riveView?.play(loop:loop, direction: direction)
     }
     
@@ -68,24 +63,12 @@ public class RiveController {
         riveView?.pause()
     }
     
-    public func pause(
-        _ animationName: String,
-        _ isStateMachine: Bool = false
-    ) {
-        riveView?.pause(
-            animationName: animationName,
-            isStateMachine: isStateMachine
-        )
+    public func pause(_ animationName: String, _ isStateMachine: Bool = false) {
+        riveView?.pause(animationName: animationName, isStateMachine: isStateMachine)
     }
     
-    public func pause(
-        _ animationNames: [String],
-        _ isStateMachine: Bool = false
-    ) {
-        riveView?.pause(
-            animationNames: animationNames,
-            isStateMachine: isStateMachine
-        )
+    public func pause(_ animationNames: [String], _ isStateMachine: Bool = false) {
+        riveView?.pause(animationNames: animationNames, isStateMachine: isStateMachine)
     }
     
     
@@ -93,25 +76,13 @@ public class RiveController {
         riveView?.stop()
     }
     
-    public func stop(
-        _ animationNames: [String],
-        _ isStateMachine: Bool = false
-    ) {
-        riveView?.stop(
-            animationNames: animationNames,
-            isStateMachine: isStateMachine
-        )
+    public func stop(_ animationNames: [String], _ isStateMachine: Bool = false) {
+        riveView?.stop(animationNames: animationNames, isStateMachine: isStateMachine)
     }
     
     
-    public func stop(
-        _ animationName: String,
-        _ isStateMachine: Bool = false
-    ) {
-        riveView?.stop(
-            animationName: animationName,
-            isStateMachine: isStateMachine
-        )
+    public func stop(_ animationName: String, _ isStateMachine: Bool = false) {
+        riveView?.stop(animationName: animationName, isStateMachine: isStateMachine)
     }
     
     public func fireState(_ stateMachineName: String, inputName: String) throws {
@@ -133,7 +104,6 @@ enum RiveViewError: Error {
 }
 
 //  MARK: RiveViewSwift is highly experimental and subject to change without major version changes
-@available(iOS 13.0, *)
 public struct RiveViewSwift: UIViewRepresentable {
     // TODO: do we want to wrap all of this in @ObservableObject?
     // essentially making our controller, the observableObject
@@ -156,7 +126,6 @@ public struct RiveViewSwift: UIViewRepresentable {
     var inputsAction: InputsAction = nil
     var stopAction: PlaybackAction = nil
     var stateChangeAction: StateChangeAction = nil
-    
     
     
     public init(
@@ -252,13 +221,11 @@ public struct RiveViewSwift: UIViewRepresentable {
         return riveView
     }
     
-    public func updateUIView(
-        _ riveView: RiveView,
-        context: UIViewRepresentableContext<RiveViewSwift>
-    ) {
-        if (fit != riveView.fit){
+    public func updateUIView(_ riveView: RiveView, context: UIViewRepresentableContext<RiveViewSwift>) {
+        if (fit != riveView.fit) {
             riveView.fit = fit
         }
+        
         if (alignment != riveView.alignment) {
             riveView.alignment = alignment
         }
@@ -276,7 +243,7 @@ public struct RiveViewSwift: UIViewRepresentable {
     
     // Constructs a coordinator for managing updating state
     public func makeCoordinator() -> Coordinator {
-        Coordinator(
+        return Coordinator(
             controller: controller,
             loopAction: loopAction,
             playAction: playAction,
@@ -289,7 +256,6 @@ public struct RiveViewSwift: UIViewRepresentable {
     
 }
 
-@available(iOS 13.0, *)
 extension RiveViewSwift {
     
     // MARK: - Coordinator

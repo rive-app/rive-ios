@@ -46,6 +46,8 @@
 		04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		04DB5938266A348C0020A7E8 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
+		C3CDFAB827E445A3005CC341 /* riveslider7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3CDFAB727E445A3005CC341 /* riveslider7.riv */; };
+		C3CDFABA27E82CAA005CC341 /* RiveHealthbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CDFAB927E82CAA005CC341 /* RiveHealthbar.swift */; };
 		C9A84F38264495600014D8E0 /* RiveExplorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F37264495600014D8E0 /* RiveExplorer.swift */; };
 		C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */; };
 		C9A84F602644AB6B0014D8E0 /* RiveExplorerBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5F2644AB6B0014D8E0 /* RiveExplorerBridge.swift */; };
@@ -139,6 +141,8 @@
 		04C4C83D2646FE410047E614 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		04D5B069266A460C004ACA5B /* nothing.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nothing.riv; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
+		C3CDFAB727E445A3005CC341 /* riveslider7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider7.riv; sourceTree = "<group>"; };
+		C3CDFAB927E82CAA005CC341 /* RiveHealthbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveHealthbar.swift; sourceTree = "<group>"; };
 		C9A84F37264495600014D8E0 /* RiveExplorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveExplorer.swift; sourceTree = "<group>"; };
 		C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesViewController.swift; sourceTree = "<group>"; };
 		C9A84F5F2644AB6B0014D8E0 /* RiveExplorerBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveExplorerBridge.swift; sourceTree = "<group>"; };
@@ -187,6 +191,7 @@
 				04C4C83D2646FE410047E614 /* StateMachine.swift */,
 				04BE5437264D604500427B39 /* iosPlayer.swift */,
 				046AFA722673B00B004ED497 /* BlendModes.swift */,
+				C3CDFAB927E82CAA005CC341 /* RiveHealthbar.swift */,
 			);
 			path = UIkit;
 			sourceTree = "<group>";
@@ -211,13 +216,13 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				C3CDFAB727E445A3005CC341 /* riveslider7.riv */,
 				0450445E26B3F71E007B25CA /* constrained.riv */,
 				04D5B069266A460C004ACA5B /* nothing.riv */,
 				042C88D42644447500E7DBB2 /* artboard_animations.riv */,
 				042C88CF2644447500E7DBB2 /* basketball.riv */,
 				048002882729AA4400F7132B /* clean_icon_set.riv */,
 				042C88D92644447500E7DBB2 /* clipping.riv */,
-				E5CD7D6527DBF4D500BFE5E2 /* energy_bar_example.riv */,
 				042C88D32644447500E7DBB2 /* explorer.riv */,
 				042C88D02644447500E7DBB2 /* f22.riv */,
 				042C88D12644447500E7DBB2 /* flux_capacitor.riv */,
@@ -455,6 +460,7 @@
 				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
 				042C88E52644447500E7DBB2 /* explorer.riv in Resources */,
 				042C88E22644447500E7DBB2 /* f22.riv in Resources */,
+				C3CDFAB827E445A3005CC341 /* riveslider7.riv in Resources */,
 				046AFA712673AF04004ED497 /* blendmodes.riv in Resources */,
 				042C88EC2644447500E7DBB2 /* vader.riv in Resources */,
 				C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */,
@@ -497,6 +503,7 @@
 				04026DCA27CE3EF6002B3DBF /* SwiftMultipleAnimations.swift in Sources */,
 				042C88882643DB7100E7DBB2 /* SimpleAnimation.swift in Sources */,
 				04026DC427CE3ED6002B3DBF /* SwiftSimpleAnimation.swift in Sources */,
+				C3CDFABA27E82CAA005CC341 /* RiveHealthbar.swift in Sources */,
 				04026DCE27CE3F0F002B3DBF /* SwiftStateMachine.swift in Sources */,
 				C9E0409D264DEAA2009ABC7C /* RiveButton.swift in Sources */,
 			);
@@ -630,6 +637,7 @@
 				DEVELOPMENT_TEAM = NJ3JMFUNS9;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -650,6 +658,7 @@
 				DEVELOPMENT_TEAM = NJ3JMFUNS9;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
