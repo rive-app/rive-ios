@@ -1,132 +1,25 @@
 //
-//  RiveView.swift
+//  RView.swift
 //  RiveRuntime
 //
-//  Created by Matt Sullivan on 4/30/21.
-//  Copyright © 2021 Rive. All rights reserved.
+//  Created by Zachary Duncan on 3/23/22.
+//  Copyright © 2022 Rive. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
-/// Signature for a loop action delegate function
-public typealias LoopAction = ((String, Int) -> Void)?
-
-/// Delegate for handling loop events
-public protocol LoopDelegate: AnyObject {
-    func loop(_ animationName: String, type: Int)
+public protocol RPlayerDelegate: AnyObject {
+    // This
+//    func stateChanged(animation: String, event: RPlayerEventType, stateMachine: Bool, type: Int)
+    // Or
+    func loop(animation animationName: String, type: Int)
+    func play(animation animationName: String, isStateMachine: Bool)
+    func pause(animation animationName: String, isStateMachine: Bool)
+    func stop(animation animationName: String, isStateMachine: Bool)
 }
 
-/// signature for a play action delegate function
-public typealias PlaybackAction = ((String, Bool) -> Void)?
-
-
-/// Delegate for handling play action
-public protocol PlayDelegate: AnyObject {
-    func play(_ animationName: String, isStateMachine: Bool)
-}
-
-/// Delegate for handling pause action
-public protocol PauseDelegate: AnyObject {
-    func pause(_ animationName: String, isStateMachine: Bool)
-}
-
-/// Delegate for handling stop action
-public protocol StopDelegate: AnyObject {
-    func stop(_ animationName: String, isStateMachine: Bool)
-}
-
-/// signature for inputs action delegate function
-public typealias InputsAction = (([StateMachineInput]) -> Void)?
-
-/// Delegate for reporting changes to available input states
-public protocol InputsDelegate: AnyObject {
-    func inputs(_ inputs: [StateMachineInput])
-}
-
-public typealias StateChangeAction = ((String, String) -> Void)?
-
-/// Delegate for new input states
-public protocol StateChangeDelegate: AnyObject {
-    func stateChange(_ stateMachineName: String, _ stateName: String)
-}
-
-/// Playback states for a Rive file
-public enum Playback {
-    case play
-    case pause
-    case stop
-}
-
-/// State machine input types
-public enum StateMachineInputType {
-    case trigger
-    case number
-    case boolean
-}
-
-/// Simple data type for passing state machine input names and their types
-public struct StateMachineInput: Hashable {
-    public let name: String
-    public let type: StateMachineInputType
-}
-
-// Tracks a queue of events that haven't been fired yet. We do this so
-// that we're not calling delegates and modifying state while a view is
-// updating (e.g. being initialized, as we autoplay and fire play events
-// during the view's init otherwise
-class EventQueue {
-    var events: [() -> Void] = []
-    
-    func add(_ event: @escaping () -> Void) {
-        events.append(event)
-    }
-    
-    func fireAll() {
-        events.forEach { $0() }
-        events.removeAll()
-    }
-}
-
-/// Stores config options for a RiveFile when rive files load async
-struct ConfigOptions {
-    let riveFile: RiveFile
-    var artboard: String? = nil
-    var animation: String? = nil
-    var stateMachine: String?
-    var autoPlay: Bool = true
-}
-
-class CADisplayLinkProxy {
-    
-    var displayLink: CADisplayLink?
-    var handle: (() -> Void)?
-    private var runloop: RunLoop
-    private var mode: RunLoop.Mode
-    
-    init(handle: (() -> Void)?, to runloop: RunLoop, forMode mode: RunLoop.Mode) {
-        self.handle = handle
-        self.runloop = runloop
-        self.mode = mode
-        displayLink = CADisplayLink(target: self, selector: #selector(updateHandle))
-        displayLink?.add(to: runloop, forMode: mode)
-    }
-    
-    @objc func updateHandle() {
-        handle?()
-    }
-    
-    func invalidate() {
-        displayLink?.remove(from: runloop, forMode: mode)
-        displayLink?.invalidate()
-        displayLink = nil
-    }
-}
-
-public class RiveView: RiveRendererView {
-    
-    deinit {
-        // print("RiveView is being de initialized")
-    }
+open class RView: RiveRendererView {
+    deinit { }
     
     // Configuration
     private var riveFile: RiveFile?
@@ -144,10 +37,7 @@ public class RiveView: RiveRendererView {
     private var displayLinkProxy: CADisplayLinkProxy?
     
     // Delegates
-    public weak var loopDelegate: LoopDelegate?
-    public weak var playDelegate: PlayDelegate?
-    public weak var pauseDelegate: PauseDelegate?
-    public weak var stopDelegate: StopDelegate?
+    public weak var playerDelegate: RPlayerDelegate?
     public weak var inputsDelegate: InputsDelegate?
     public weak var stateChangeDelegate: StateChangeDelegate?
     
@@ -180,20 +70,14 @@ public class RiveView: RiveRendererView {
         artboard: String? = nil,
         animation: String? = nil,
         stateMachine: String? = nil,
-        loopDelegate: LoopDelegate? = nil,
-        playDelegate: PlayDelegate? = nil,
-        pauseDelegate: PauseDelegate? = nil,
-        stopDelegate: StopDelegate? = nil,
+        playerDelegate: RPlayerDelegate? = nil,
         inputsDelegate: InputsDelegate? = nil,
         stateChangeDelegate: StateChangeDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         self.fit = fit
         self.alignment = alignment
-        self.loopDelegate = loopDelegate
-        self.playDelegate = playDelegate
-        self.pauseDelegate = pauseDelegate
-        self.stopDelegate = stopDelegate
+        self.playerDelegate = playerDelegate
         self.inputsDelegate = inputsDelegate
         self.stateChangeDelegate = stateChangeDelegate
         try self.configure(
@@ -224,10 +108,7 @@ public class RiveView: RiveRendererView {
         artboard: String? = nil,
         animation: String? = nil,
         stateMachine: String? = nil,
-        loopDelegate: LoopDelegate? = nil,
-        playDelegate: PlayDelegate? = nil,
-        pauseDelegate: PauseDelegate? = nil,
-        stopDelegate: StopDelegate? = nil,
+        playerDelegate: RPlayerDelegate? = nil,
         inputsDelegate: InputsDelegate? = nil,
         stateChangeDelegate: StateChangeDelegate? = nil
     ) throws {
@@ -235,10 +116,7 @@ public class RiveView: RiveRendererView {
         let riveFile = try getRiveFile(resourceName: resource)
         self.fit = fit
         self.alignment = alignment
-        self.loopDelegate = loopDelegate
-        self.playDelegate = playDelegate
-        self.pauseDelegate = pauseDelegate
-        self.stopDelegate = stopDelegate
+        self.playerDelegate = playerDelegate
         self.inputsDelegate = inputsDelegate
         self.stateChangeDelegate = stateChangeDelegate
         try self.configure(
@@ -270,10 +148,7 @@ public class RiveView: RiveRendererView {
         artboard: String? = nil,
         animation: String? = nil,
         stateMachine: String? = nil,
-        loopDelegate: LoopDelegate? = nil,
-        playDelegate: PlayDelegate? = nil,
-        pauseDelegate: PauseDelegate? = nil,
-        stopDelegate: StopDelegate? = nil,
+        playerDelegate: RPlayerDelegate? = nil,
         inputsDelegate: InputsDelegate? = nil,
         stateChangeDelegate: StateChangeDelegate? = nil
     ) throws {
@@ -281,10 +156,7 @@ public class RiveView: RiveRendererView {
         let riveFile = RiveFile(httpUrl: httpUrl, with:self)!
         self.fit = fit
         self.alignment = alignment
-        self.loopDelegate = loopDelegate
-        self.playDelegate = playDelegate
-        self.pauseDelegate = pauseDelegate
-        self.stopDelegate = stopDelegate
+        self.playerDelegate = playerDelegate
         self.inputsDelegate = inputsDelegate
         self.stateChangeDelegate = stateChangeDelegate
         try self.configure(
@@ -292,7 +164,7 @@ public class RiveView: RiveRendererView {
             andAutoPlay: autoplay)
     }
     
-    /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
+    /// Minimalist constructor, call `.configure` to customize the `RView` later.
     public init() {
         super.init(frame: .zero)
     }
@@ -302,15 +174,15 @@ public class RiveView: RiveRendererView {
     }
 }
 
-// Handle when a Rive file is asynchronously loaded
-extension RiveView: RiveFileDelegate {
+// MARK: - Rive file is asynchronously loaded
+extension RView: RiveFileDelegate {
     public func riveFileDidLoad(_ riveFile: RiveFile) throws {
         try self.configure(riveFile)
     }
 }
 
-// MARK:- Configure
-extension RiveView {
+// MARK: - Configure
+extension RView {
     /// Configure fit to specify how and if the animation should be resized to fit its container.
     open var fit: Fit {
         set {
@@ -486,8 +358,8 @@ extension RiveView {
     }
 }
 
-// MARK:- Animation Loop
-extension RiveView {
+// MARK: - Animation Loop
+extension RView {
     /// Are any Animations or State Machines playing.
     open var isPlaying: Bool {
         return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
@@ -507,17 +379,6 @@ extension RiveView {
             withContentRect: artboard.bounds(), with: alignment, with: fit)
         draw(with: artboard)
     }
-    
-    /// Creates a Rive renderer and applies the currently animating artboard to it
-    /// - Parameter rect: the `GCRect` that we will fit the artboard into.
-    //  override public func draw(_ rect: CGRect) {
-    //    guard let context = UIGraphicsGetCurrentContext(), let artboard = self._artboard else {
-    //      return
-    //    }
-    //    let renderer = RiveRenderer(context: context)
-    //    renderer.align(with: rect, withContentRect: artboard.bounds(), with: alignment, with: fit)
-    //    artboard.draw(renderer)
-    //  }
     
     // Starts the animation timer
     private func runTimer() {
@@ -588,7 +449,7 @@ extension RiveView {
                     
                     // Check if the animation looped and if so, call the delegate
                     if animation.didLoop() {
-                        loopDelegate?.loop(animation.name(), type: Int(animation.loop()))
+                        playerDelegate?.loop(animation: animation.name(), type: Int(animation.loop()))
                     }
                 }
             }
@@ -613,13 +474,11 @@ extension RiveView {
     }
 }
 
-// MARK:- Control Animations
-extension RiveView {
+// MARK: - Control Animations
+extension RView {
     
     /// Reset the rive view & reload any provided `riveFile`
-    public func reset(artboard: String? = nil, animation: String? = nil, stateMachine: String? = nil)
-    throws
-    {
+    public func reset(artboard: String? = nil, animation: String? = nil, stateMachine: String? = nil) throws {
         stopTimer()
         if let riveFile = self.riveFile {
             // Calling configure will create a new artboard instance, reseting the animation
@@ -636,19 +495,12 @@ extension RiveView {
     /// - Parameters:
     ///   - loop: provide a `Loop` to overwrite the loop mode used to play the animation.
     ///   - direction: provide a `Direction` to overwrite the direction that the animation plays in.
-    public func play(
-        loop: Loop = .loopAuto,
-        direction: Direction = .directionAuto
-    ) throws {
+    public func play(loop: Loop = .loopAuto, direction: Direction = .directionAuto) throws {
         guard let guardedArtboard = _artboard else {
             return
         }
         
-        try _playAnimation(
-            animationName: guardedArtboard.firstAnimation().name(),
-            loop: loop,
-            direction: direction
-        )
+        try _playAnimation(animationName: guardedArtboard.firstAnimation().name(), loop: loop, direction: direction)
         runTimer()
     }
     
@@ -904,13 +756,13 @@ extension RiveView {
         }
         
         playingAnimations.insert(animationInstance)
-        eventQueue.add({ self.playDelegate?.play(animationInstance.name(), isStateMachine: false) })
+        eventQueue.add({ self.playerDelegate?.play(animation: animationInstance.name(), isStateMachine: false) })
     }
     
     private func _pause(_ animation: RiveLinearAnimationInstance) {
         let removed = playingAnimations.remove(animation)
         if removed != nil {
-            eventQueue.add({ self.pauseDelegate?.pause(animation.name(), isStateMachine: false) })
+            eventQueue.add({ self.playerDelegate?.pause(animation: animation.name(), isStateMachine: false) })
         }
     }
     
@@ -925,7 +777,7 @@ extension RiveView {
         if initialCount != animations.count {
             // eventQueue.add( { self.stopDelegate?.stop(animation.name()) } )
             // Firing this immediately as if it's the only animation stopping, advance won't get called
-            self.stopDelegate?.stop(animation.name(), isStateMachine: false)
+            self.playerDelegate?.stop(animation: animation.name(), isStateMachine: false)
         }
     }
     
@@ -937,7 +789,7 @@ extension RiveView {
         }
         
         playingStateMachines.insert(stateMachineInstance)
-        eventQueue.add({ self.playDelegate?.play(stateMachineInstance.name(), isStateMachine: true) })
+        eventQueue.add({ self.playerDelegate?.play(animation: stateMachineInstance.name(), isStateMachine: true) })
         let inputs = try self.stateMachineInputs()
         eventQueue.add({ self.inputsDelegate?.inputs(inputs) })
     }
@@ -948,7 +800,7 @@ extension RiveView {
     private func _pause(_ stateMachine: RiveStateMachineInstance) {
         let removed = playingStateMachines.remove(stateMachine)
         if removed != nil {
-            eventQueue.add({ self.pauseDelegate?.pause(stateMachine.name(), isStateMachine: true) })
+            eventQueue.add({ self.playerDelegate?.pause(animation: stateMachine.name(), isStateMachine: true) })
         }
     }
     
@@ -963,26 +815,7 @@ extension RiveView {
         }
         playingStateMachines.remove(stateMachine)
         if initialCount != stateMachines.count {
-            eventQueue.add({ self.stopDelegate?.stop(stateMachine.name(), isStateMachine: true) })
+            eventQueue.add({ self.playerDelegate?.stop(animation: stateMachine.name(), isStateMachine: true) })
         }
     }
-}
-
-
-func getBytes(resourceName: String, resourceExt: String=".riv") -> [UInt8] {
-    guard let url = Bundle.main.url(forResource: resourceName, withExtension: resourceExt) else {
-        fatalError("Failed to locate \(resourceName) in bundle.")
-    }
-    guard let data = try? Data(contentsOf: url) else {
-        fatalError("Failed to load \(url) from bundle.")
-    }
-    
-    // Import the data into a RiveFile
-    return [UInt8](data)
-}
-
-
-func getRiveFile(resourceName: String, resourceExt: String=".riv") throws -> RiveFile{
-    let byteArray = getBytes(resourceName: resourceName, resourceExt: resourceExt)
-    return try RiveFile(byteArray: byteArray)
 }

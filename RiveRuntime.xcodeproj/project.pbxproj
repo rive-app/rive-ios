@@ -51,6 +51,11 @@
 		04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */; };
 		2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */ = {isa = PBXBuildFile; fileRef = 2A7079342726277C00C035A1 /* rive_renderer_view.hh */; settings = {ATTRIBUTES = (Public, ); }; };
 		2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2A707936272628AD00C035A1 /* rive_renderer_view.mm */; };
+		C3468E5827EB9887008652FD /* RView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5727EB9887008652FD /* RView.swift */; };
+		C3468E5A27ECC7C6008652FD /* RViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5927ECC7C6008652FD /* RViewModel.swift */; };
+		C3468E5C27ED4C41008652FD /* RModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5B27ED4C41008652FD /* RModel.swift */; };
+		C3468E5E27ED4E69008652FD /* RFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5D27ED4E69008652FD /* RFacade.swift */; };
+		C3CDFAB627E40B56005CC341 /* RController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CDFAB527E40B56005CC341 /* RController.swift */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
@@ -116,6 +121,11 @@
 		04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RivePrivateHeaders.h; sourceTree = "<group>"; };
 		2A7079342726277C00C035A1 /* rive_renderer_view.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rive_renderer_view.hh; sourceTree = "<group>"; };
 		2A707936272628AD00C035A1 /* rive_renderer_view.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = rive_renderer_view.mm; sourceTree = "<group>"; };
+		C3468E5727EB9887008652FD /* RView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RView.swift; sourceTree = "<group>"; };
+		C3468E5927ECC7C6008652FD /* RViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RViewModel.swift; sourceTree = "<group>"; };
+		C3468E5B27ED4C41008652FD /* RModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RModel.swift; sourceTree = "<group>"; };
+		C3468E5D27ED4E69008652FD /* RFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFacade.swift; sourceTree = "<group>"; };
+		C3CDFAB527E40B56005CC341 /* RController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RController.swift; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
@@ -187,6 +197,18 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		C3468E5627EB9858008652FD /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				C3468E5727EB9887008652FD /* RView.swift */,
+				C3CDFAB527E40B56005CC341 /* RController.swift */,
+				C3468E5927ECC7C6008652FD /* RViewModel.swift */,
+				C3468E5B27ED4C41008652FD /* RModel.swift */,
+				C3468E5D27ED4E69008652FD /* RFacade.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		C9BD3927263B64B100696C37 /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
@@ -238,6 +260,7 @@
 		C9C73ED324FC478800EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				C3468E5627EB9858008652FD /* Components */,
 				C9C73ED424FC478800EF9516 /* RiveRuntime.h */,
 				C9BD3928263B65B100696C37 /* Views */,
 				C9BD3927263B64B100696C37 /* Renderer */,
@@ -412,14 +435,19 @@
 				04026DC027CCDADB002B3DBF /* RiveViewSwift.swift in Sources */,
 				046FB7F9264EAA60000129B1 /* RiveStateMachine.mm in Sources */,
 				2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */,
+				C3468E5827EB9887008652FD /* RView.swift in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
 				046FB7FA264EAA60000129B1 /* RiveLinearAnimation.mm in Sources */,
 				C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */,
 				046FB7F5264EAA60000129B1 /* RiveSMIInput.mm in Sources */,
 				C9002A20263C76080011556B /* RiveView.swift in Sources */,
+				C3468E5A27ECC7C6008652FD /* RViewModel.swift in Sources */,
 				C9C741F524FC510200EF9516 /* Rive.mm in Sources */,
 				046FB7F8264EAA60000129B1 /* RiveStateMachineInstance.mm in Sources */,
+				C3468E5C27ED4C41008652FD /* RModel.swift in Sources */,
 				046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */,
+				C3CDFAB627E40B56005CC341 /* RController.swift in Sources */,
+				C3468E5E27ED4E69008652FD /* RFacade.swift in Sources */,
 				046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */,
 				046FB7F6264EAA60000129B1 /* RiveStateMachineInput.mm in Sources */,
 				046FB7F4264EAA60000129B1 /* RiveLinearAnimationInstance.mm in Sources */,
@@ -508,7 +536,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -567,7 +595,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -606,6 +634,7 @@
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -666,6 +695,7 @@
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

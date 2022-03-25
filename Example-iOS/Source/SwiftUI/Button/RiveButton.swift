@@ -34,6 +34,6 @@ struct RiveButton: View {
 
 struct RiveButton_Previews: PreviewProvider {
     static var previews: some View {
-        RiveButton(resource: "pull"){}
+        RiveButton(resource: "pull") { }
     }
 }
