@@ -22,6 +22,10 @@ struct RiveComponents: View {
     
     @State var sliderController: RiveController = RiveController()
     
+    var facade = RFacade("riveslider7")
+    
+    var view = RiveResource("riveslider7")
+    
     var body: some View {
         VStack {
             HStack {
@@ -47,6 +51,9 @@ struct RiveComponents: View {
                 try? self.sliderController.setNumberState("State Machine ", inputName: "Energy", value: Float(newVal))
             }), in: 0...100)
             .padding()
+            
+            //RiveResource("riveslider7")
+            facade.viewSwift
         }
     }
 }
@@ -57,3 +64,25 @@ struct ExampleStateMachineView_Previews: PreviewProvider {
         RiveComponents()
     }
 }
+
+
+public struct TestView: View {
+    var facade: RFacade
+    
+    public init() {
+        facade = RFacade(RViewModel.riveslider)
+    }
+    
+    public var body: some View {
+//        floop {
+            facade.viewSwift
+//        }
+    }
+}
+
+//struct TestView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        TestView()
+//    }
+//}
+
