@@ -54,8 +54,6 @@
 		C3468E5827EB9887008652FD /* RView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5727EB9887008652FD /* RView.swift */; };
 		C3468E5A27ECC7C6008652FD /* RViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5927ECC7C6008652FD /* RViewModel.swift */; };
 		C3468E5C27ED4C41008652FD /* RModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5B27ED4C41008652FD /* RModel.swift */; };
-		C3468E5E27ED4E69008652FD /* RFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5D27ED4E69008652FD /* RFacade.swift */; };
-		C3CDFAB627E40B56005CC341 /* RController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CDFAB527E40B56005CC341 /* RController.swift */; };
 		C9002A20263C76080011556B /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9002A1F263C76080011556B /* RiveView.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
@@ -124,8 +122,6 @@
 		C3468E5727EB9887008652FD /* RView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RView.swift; sourceTree = "<group>"; };
 		C3468E5927ECC7C6008652FD /* RViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RViewModel.swift; sourceTree = "<group>"; };
 		C3468E5B27ED4C41008652FD /* RModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RModel.swift; sourceTree = "<group>"; };
-		C3468E5D27ED4E69008652FD /* RFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFacade.swift; sourceTree = "<group>"; };
-		C3CDFAB527E40B56005CC341 /* RController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RController.swift; sourceTree = "<group>"; };
 		C9002A1F263C76080011556B /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
 		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
@@ -201,10 +197,8 @@
 			isa = PBXGroup;
 			children = (
 				C3468E5727EB9887008652FD /* RView.swift */,
-				C3CDFAB527E40B56005CC341 /* RController.swift */,
 				C3468E5927ECC7C6008652FD /* RViewModel.swift */,
 				C3468E5B27ED4C41008652FD /* RModel.swift */,
-				C3468E5D27ED4E69008652FD /* RFacade.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -446,8 +440,6 @@
 				046FB7F8264EAA60000129B1 /* RiveStateMachineInstance.mm in Sources */,
 				C3468E5C27ED4C41008652FD /* RModel.swift in Sources */,
 				046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */,
-				C3CDFAB627E40B56005CC341 /* RController.swift in Sources */,
-				C3468E5E27ED4E69008652FD /* RFacade.swift in Sources */,
 				046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */,
 				046FB7F6264EAA60000129B1 /* RiveStateMachineInput.mm in Sources */,
 				046FB7F4264EAA60000129B1 /* RiveLinearAnimationInstance.mm in Sources */,
