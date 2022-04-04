@@ -9,9 +9,8 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
-/*
- * RiveArtboard
- */
+
+// MARK: - RiveArtboard
 @implementation RiveArtboard
 
 - (instancetype)initWithArtboard:(rive::ArtboardInstance *)riveArtboard {
@@ -27,7 +26,7 @@
     return _artboardInstance->animationCount();
 }
 
-// Returns the first animation in the artboard, or null if it has none
+/// Returns the first animation in the artboard, or null if it has none
 - (RiveLinearAnimation *)firstAnimation:(NSError**) error {
     rive::LinearAnimation *animation = _artboardInstance->firstAnimation();
     if (animation == nullptr) {
@@ -66,7 +65,7 @@
     return animationNames;
 }
 
-// Returns the number of state machines in the artboard
+/// Returns the number of state machines in the artboard
 - (NSInteger)stateMachineCount {
     return _artboardInstance->stateMachineCount();
 }
@@ -82,7 +81,7 @@
     }
 }
 
-// Returns a state machine at the given index, or null if the index is invalid
+/// Returns a state machine at the given index, or null if the index is invalid
 - (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index error:(NSError**)error {
     if (index < 0 || index >= [self stateMachineCount]) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Machine found at index %ld.", (long)index], @"name": @"NoStateMachineFound"}];
@@ -91,7 +90,7 @@
     return [[RiveStateMachine alloc] initWithStateMachine: _artboardInstance->stateMachine(index)];
 }
 
-// Returns a state machine with the given name, or null if none exists
+/// Returns a state machine with the given name, or null if none exists
 - (RiveStateMachine *)stateMachineFromName:(NSString *)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
     rive::StateMachine *machine = _artboardInstance->stateMachine(stdName);
@@ -113,6 +112,10 @@
 
 - (void)advanceBy:(double)elapsedSeconds {
     _artboardInstance->advance(elapsedSeconds);
+}
+
+- (void)touchedAt:(CGPoint)location info:(int)hitInfo {
+//    delegate.artboardyadayada
 }
 
 - (void)draw:(RiveRenderer *)renderer {
