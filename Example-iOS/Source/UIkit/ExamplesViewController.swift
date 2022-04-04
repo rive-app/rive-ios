@@ -61,11 +61,8 @@ class ExamplesViewController: UIViewController, RViewController {
             stateMachine: "State Machine ")
         let healthbarView = RiveResource(healthbar)
         
-        let testView = TestView()
-        //presentRiveResource(testView)
-        
-        let facade = RFacade(RViewModel.riveslider)
-        presentRiveResource(facade.viewSwift)
+        let sliderViewModel = RViewModel.riveslider
+        presentRiveResource(sliderViewModel.viewSwift)
     }
 }
 

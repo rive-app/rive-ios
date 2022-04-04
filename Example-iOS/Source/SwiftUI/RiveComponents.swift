@@ -22,7 +22,7 @@ struct RiveComponents: View {
     
     @State var sliderController: RiveController = RiveController()
     
-    var facade = RFacade("riveslider7")
+    var slider = RViewModel.riveslider
     
     var view = RiveResource("riveslider7")
     
@@ -44,16 +44,29 @@ struct RiveComponents: View {
                 Text("RiveProgressBar:")
                 RiveProgressBar(resource: "energy_bar_example", controller: sliderController)
             }
+            
+            VStack {
+                Text("New - RiveSlider")
+                slider.viewSwift
+            }
+            
             Slider(value: Binding(get: {
                 self.health
             }, set: { (newVal) in
                 self.health = newVal
-                try? self.sliderController.setNumberState("State Machine ", inputName: "Energy", value: Float(newVal))
+                try? self.sliderController.setNumberState(
+                    "State Machine ",
+                    inputName: "Energy",
+                    value: Float(newVal)
+                )
+                
+                try? slider.setState(
+                    floatValue: Float(newVal),
+                    stateMachineName: "Slide",
+                    inputName: "FillPercent"
+                )
             }), in: 0...100)
             .padding()
-            
-            //RiveResource("riveslider7")
-            facade.viewSwift
         }
     }
 }
@@ -64,25 +77,3 @@ struct ExampleStateMachineView_Previews: PreviewProvider {
         RiveComponents()
     }
 }
-
-
-public struct TestView: View {
-    var facade: RFacade
-    
-    public init() {
-        facade = RFacade(RViewModel.riveslider)
-    }
-    
-    public var body: some View {
-//        floop {
-            facade.viewSwift
-//        }
-    }
-}
-
-//struct TestView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        TestView()
-//    }
-//}
-

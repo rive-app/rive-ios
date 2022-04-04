@@ -9,9 +9,8 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
-/*
- * RiveArtboard
- */
+
+// MARK: - RiveArtboard
 @implementation RiveArtboard
 
 - (instancetype)initWithArtboard:(rive::Artboard *)riveArtboard {
@@ -27,7 +26,7 @@
     return _artboard->animationCount();
 }
 
-// Returns the first animation in the artboard, or null if it has none
+/// Returns the first animation in the artboard, or null if it has none
 - (RiveLinearAnimation *)firstAnimation:(NSError**) error {
     rive::LinearAnimation *animation = _artboard->firstAnimation();
     if (animation == nullptr) {
@@ -66,7 +65,7 @@
     return animationNames;
 }
 
-// Returns the number of state machines in the artboard
+/// Returns the number of state machines in the artboard
 - (NSInteger)stateMachineCount {
     return _artboard->stateMachineCount();
 }
@@ -82,7 +81,7 @@
     }
 }
 
-// Returns a state machine at the given index, or null if the index is invalid
+/// Returns a state machine at the given index, or null if the index is invalid
 - (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index error:(NSError**)error {
     if (index < 0 || index >= [self stateMachineCount]) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Machine found at index %ld.", (long)index], @"name": @"NoStateMachineFound"}];
@@ -91,7 +90,7 @@
     return [[RiveStateMachine alloc] initWithStateMachine: _artboard->stateMachine(index)];
 }
 
-// Returns a state machine with the given name, or null if none exists
+/// Returns a state machine with the given name, or null if none exists
 - (RiveStateMachine *)stateMachineFromName:(NSString *)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
     rive::StateMachine *machine = _artboard->stateMachine(stdName);
@@ -115,8 +114,13 @@
     _artboard->advance(elapsedSeconds);
 }
 
+- (void)touchedAt:(CGPoint)location info:(int)hitInfo {
+//    delegate.artboardyadayada
+}
+
 - (void)draw:(RiveRenderer *)renderer {
     _artboard->draw([renderer renderer]);
+//    _artboard->postPointerEvent(0);
 }
 
 - (NSString *)name {
@@ -129,7 +133,7 @@
     return CGRectMake(aabb.minX, aabb.minY, aabb.width(), aabb.height());
 }
 
-// Creates an instance of the artboard
+/// Creates an instance of the artboard
 - (RiveArtboard *)instance {
     rive::Artboard *instance = _artboard->instance();
     return [[RiveArtboard alloc] initWithArtboard: instance];

@@ -103,9 +103,9 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
 }
 
 - (void)alignWithRect:(CGRect)rect
-      withContentRect:(CGRect)contentRect
-        withAlignment:(Alignment)alignment
-              withFit:(Fit)fit {
+      contentRect:(CGRect)contentRect
+        alignment:(Alignment)alignment
+              fit:(Fit)fit {
 
   rive::AABB frame(rect.origin.x, rect.origin.y,
                    rect.size.width + rect.origin.x,
@@ -179,7 +179,7 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
   [artboard artboard]->draw(_renderer);
 }
 
-- (void)drawRive:(CGRect)rect atSize:(CGSize)size {
+- (void)drawRive:(CGRect)rect size:(CGSize)size {
   // Intended to be overridden.
 }
 
@@ -202,7 +202,7 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
   _renderer = new rive::SkiaRenderer(canvas);
   canvas->clear(SkColor((0x00000000)));
   _renderer->save();
-  [self drawRive:rect atSize:size];
+  [self drawRive:rect size:size];
   _renderer->restore();
 
   surface->flushAndSubmit();

@@ -25,10 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly) uint majorVersion;
 @property (class, readonly) uint minorVersion;
 
-// Is the Rive file loaded and ready for use?
+/// Is the Rive file loaded and ready for use?
 @property bool isLoaded;
 
-// Delegate for calling when a file has finished loading
+/// Delegate for calling when a file has finished loading
 @property id delegate;
 
 - (nullable instancetype)initWithByteArray:(NSArray *)bytes error:(NSError**)error;
@@ -37,19 +37,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithResource:(NSString *)resourceName error:(NSError**)error;
 - (nullable instancetype)initWithHttpUrl:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate;
 
-// Returns a reference to the default artboard
+/// Returns a reference to the default artboard
 - (RiveArtboard * __nullable)artboard:(NSError**)error;
 
-// Returns the number of artboards in the file
+/// Returns the number of artboards in the file
 - (NSInteger)artboardCount;
 
-// Returns the artboard by its index
+/// Returns the artboard by its index
 - (RiveArtboard * __nullable)artboardFromIndex:(NSInteger)index error:(NSError**)error;
 
-// Returns the artboard by its name
+/// Returns the artboard by its name
 - (RiveArtboard * __nullable)artboardFromName:(NSString *)name error:(NSError**)error;
 
-// Returns the names of all artboards in the file.
+/// Returns the names of all artboards in the file.
 - (NSArray<NSString *> *)artboardNames;
 
 @end

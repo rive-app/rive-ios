@@ -33,7 +33,8 @@ protocol RViewController: UIViewController {
 }
 
 extension RViewController {
-    func presentRiveResource(_ resource: RFacade.ViewSwift, navigationController: UINavigationController? = nil) {
+    //
+    func presentRiveResource(_ resource: RViewModel.StandardView, navigationController: UINavigationController? = nil) {
         let controller = UIHostingController(rootView: resource)
         
         if let navController = navigationController {
@@ -187,8 +188,3 @@ class RResourceViewModel {
         try riveView?.setNumberState(resource.stateMachine ?? "", inputName: inputName, value: value)
     }
 }
-
-
-// Potentially can inherit from HostingViewController instead for better SwiftUI interoperability
-
-
