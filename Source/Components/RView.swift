@@ -9,9 +9,6 @@
 import Foundation
 
 public protocol RPlayerDelegate: AnyObject {
-    // This
-//    func stateChanged(animation: String, event: RPlayerEventType, stateMachine: Bool, type: Int)
-    // Or
     func loop(animation animationName: String, type: Int)
     func play(animation animationName: String, isStateMachine: Bool)
     func pause(animation animationName: String, isStateMachine: Bool)
