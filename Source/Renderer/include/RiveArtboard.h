@@ -5,10 +5,7 @@
 //  Created by Maxwell Talbot on 5/14/21.
 //  Copyright © 2021 Rive. All rights reserved.
 //
-
-
-#ifndef rive_artboard_h
-#define rive_artboard_h
+#pragma once
 
 #import <Foundation/Foundation.h>
 
@@ -18,10 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveStateMachine;
 @class RiveRenderer;
 
-/*
- * RiveArtboard
- */
+// MARK: - RiveArtboard
+//
 @interface RiveArtboard : NSObject
+
+
 
 - (NSString *)name;
 - (CGRect)bounds;
@@ -39,10 +37,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (RiveStateMachine * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
 
 - (void)advanceBy:(double)elapsedSeconds;
+- (void)touchedAt: (CGPoint)location info:(int)hitInfo;
 - (void)draw:(RiveRenderer *)renderer;
 
 @end
 
-NS_ASSUME_NONNULL_END
+// MARK: - RiveArtboard Delegate
+//
+@protocol RArtboardDelegate
 
-#endif /* rive_artboard_h */
+- (void)artboard:(RiveArtboard *)artboard didTriggerEvent:(NSString *)event;
+
+@end
+
+NS_ASSUME_NONNULL_END

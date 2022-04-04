@@ -8,235 +8,154 @@
 
 import SwiftUI
 
-open class RFacade {
-    private var systemUIKit = RUIKitSubsystem()
-    private var systemSwiftUI = RSwiftUISubsystem()
-    private var controller: RController
-    
-    // MARK: Inits
-    
-    public init(_ viewModel: RViewModel) {
-        controller = RController(viewModel)
-        //_controller = StateObject(wrappedValue: controller)
-    }
-
-    public convenience init(_ asset: String) {
-        let model = RModel(asset: asset)
-        let viewModel = RViewModel(model)
-        self.init(viewModel)
-    }
-    
-    // MARK: Usable Views
-    
-    public var viewUIKit: UIView {
-        let view = RiveViewSwift(
-            resource: controller.viewModel.model.assetName!,
-            fit: Binding.constant(controller.viewModel.model.fit),
-            alignment: Binding.constant(controller.viewModel.model.alignment),
-            autoplay: controller.viewModel.model.autoplay,
-            artboard: controller.viewModel.model.artboard,
-            animation: controller.viewModel.model.animation,
-            stateMachine: controller.viewModel.model.stateMachine,
-            controller: RiveController()
-        )
-        return UIHostingController(rootView: view).view
-    }
-    
-    public var viewSwift: ViewSwift {
-        return ViewSwift()
-    }
-    
-    // MARK: SwiftUI Util
-    
-    public struct ViewSwift: View {
-        
-        public var body: some View {
-            RViewSwiftUI(model: RViewModel.riveslider)
-        }
-    }
-}
-
-public protocol RSubsystem {
-//    var view: RView { get set }
-}
-
-open class RUIKitSubsystem: RSubsystem {
-//    public lazy var view: RView
-//
-//    init(
-}
-
-open class RSwiftUISubsystem: RSubsystem {
-//    var riveViewSwift: RiveViewSwift
-//
-//    init() {
-//        riveViewSwift = RiveViewSwift(resource: <#T##String#>)
+//open class RFacade {
+//    private var controller: RController
+//    
+//    // MARK: Inits
+//    
+//    public init(_ viewModel: RViewModel) {
+//        if let controller = viewModel.controller {
+//            self.controller = controller
+//        } else {
+//            controller = RController(viewModel)
+//            viewModel.controller = controller
+//        }
 //    }
-}
-
-public struct RViewSwiftUI: UIViewRepresentable {
-    // TODO: do we want to wrap all of this in @ObservableObject?
-    // essentially making our controller, the observableObject
-    // the question will be, what properties of this will end up being @Published
-    
-    let resource: String?
-    let httpUrl: String?
-    let autoplay: Bool
-    let artboard: String?
-    let animation: String?
-    let stateMachine: String?
-    let controller: RController?
-    @Binding var fit: Fit
-    @Binding var alignment: RiveRuntime.Alignment
-    
-    // Delegate handlers for loop and play events
-    var loopAction: LoopAction = nil
-    var playAction: PlaybackAction = nil
-    var pauseAction: PlaybackAction = nil
-    var inputsAction: InputsAction = nil
-    var stopAction: PlaybackAction = nil
-    var stateChangeAction: StateChangeAction = nil
-    
-    
-    public init(model: RViewModel, controller: RController? = nil) {
-        self.resource = model.model.assetName
-        self.httpUrl = nil
-        
-        self.autoplay = model.model.autoplay
-        self.artboard = model.model.artboard
-        self.animation = model.model.animation
-        self.stateMachine = model.model.stateMachine
-        
-        self._fit = Binding.constant(model.model.fit)
-        self._alignment = Binding.constant(model.model.alignment)
-        
-        self.controller = controller
-    }
-    
-    /// Constructs the view
-    public func makeUIView(context: Context) -> RView {
-        var view: RView
-        if let resource = resource {
-            view = try! RView(
-                resource: resource,
-                fit: fit,
-                alignment: alignment,
-                autoplay: autoplay,
-                artboard: artboard,
-                animation: animation,
-                stateMachine: stateMachine,
-                playerDelegate: context.coordinator,
-                inputsDelegate: context.coordinator,
-                stateChangeDelegate: context.coordinator
-            )
-        }
-        else if let httpUrl = httpUrl {
-            view = try! RView(
-                httpUrl: httpUrl,
-                fit: fit,
-                alignment: alignment,
-                autoplay: autoplay,
-                artboard: artboard,
-                animation: animation,
-                stateMachine: stateMachine,
-                playerDelegate: context.coordinator,
-                inputsDelegate: context.coordinator,
-                stateChangeDelegate: context.coordinator
-            )
-        }
-        else {
-            view = RView()
-        }
-        
-        controller?.registerView(view)
-        return view
-    }
-    
-    public func updateUIView(_ view: RView, context: UIViewRepresentableContext<RViewSwiftUI>) {
-        if (fit != view.fit) {
-            view.fit = fit
-        }
-        
-        if (alignment != view.alignment) {
-            view.alignment = alignment
-        }
-    }
-    
-    public static func dismantleUIView(_ view: RView, coordinator: Self.Coordinator) {
-        view.stop()
-        
-        // TODO: is this neccessary
-        coordinator.controller?.deregisterView()
-    }
-    
-    // Constructs a coordinator for managing updating state
-    public func makeCoordinator() -> Coordinator {
-        return Coordinator(
-            controller: controller,
-            loopAction: loopAction,
-            playAction: playAction,
-            pauseAction: pauseAction,
-            inputsAction: inputsAction,
-            stopAction: stopAction,
-            stateChangeAction: stateChangeAction
-        )
-    }
-}
-
-// MARK: - Coordinator
-extension RViewSwiftUI {
-    public class Coordinator: NSObject, RPlayerDelegate, InputsDelegate, StateChangeDelegate {
-        public var controller: RController?
-        private var loopAction: LoopAction
-        private var playAction: PlaybackAction
-        private var pauseAction: PlaybackAction
-        private var inputsAction: InputsAction
-        private var stopAction: PlaybackAction
-        private var stateChangeAction: StateChangeAction
-        
-        init(
-            controller: RController?,
-            loopAction: LoopAction,
-            playAction: PlaybackAction,
-            pauseAction: PlaybackAction,
-            inputsAction: InputsAction,
-            stopAction: PlaybackAction,
-            stateChangeAction: StateChangeAction
-        ) {
-            self.controller = controller
-            self.loopAction = loopAction
-            self.playAction = playAction
-            self.pauseAction = pauseAction
-            self.inputsAction = inputsAction
-            self.stopAction = stopAction
-            self.stateChangeAction = stateChangeAction
-        }
-        
-        public func loop(animation animationName: String, type: Int) {
-            loopAction?(animationName, type)
-        }
-        
-        public func play(animation animationName: String, isStateMachine: Bool) {
-            playAction?(animationName, isStateMachine)
-        }
-        
-        public func pause(animation animationName: String, isStateMachine: Bool) {
-            pauseAction?(animationName, isStateMachine)
-        }
-        
-        public func inputs(_ inputs: [StateMachineInput]) {
-            inputsAction?(inputs)
-        }
-        
-        public func stop(animation animationName: String, isStateMachine: Bool) {
-            stopAction?(animationName, isStateMachine)
-        }
-        
-        public func stateChange(_ stateMachineName: String, _ stateName: String) {
-            stateChangeAction?(stateMachineName, stateName)
-        }
-    }
-}
+//
+//    public convenience init(_ asset: String) {
+//        let model = RModel(assetName: asset)
+//        let viewModel = RViewModel(model)
+//        self.init(viewModel)
+//    }
+//    
+//    // MARK: - Binding
+//    
+//    public func register(viewModel: RViewModel) {
+//        self.controller.register(viewModel: viewModel)
+//    }
+//    
+//    // MARK: Usable Views
+//    
+//    public var viewUIKit: UIView {
+//        let view = RViewSwiftUI(viewModel: RViewModel.riveslider)
+//        
+////        RiveViewSwift(
+////            resource: controller.viewModel.model.assetName!,
+////            fit: Binding.constant(controller.viewModel.model.fit),
+////            alignment: Binding.constant(controller.viewModel.model.alignment),
+////            autoplay: controller.viewModel.model.autoplay,
+////            artboard: controller.viewModel.model.artboard,
+////            animation: controller.viewModel.model.animation,
+////            stateMachine: controller.viewModel.model.stateMachine,
+////            controller: RiveController()
+////        )
+//        return UIHostingController(rootView: view).view
+//        
+//        // Ideal flow: controller.getView() - (Inside RController's getView() is viewModel.getView() )
+//    }
+//    
+//    public var viewSwift: ViewSwift {
+//        return ViewSwift()
+//        
+//        // Ideal flow: controller.getView() - (Inside RController's getView() is viewModel.getView() )
+//    }
+//    
+//    // MARK: SwiftUI Util
+//    
+//    // TODO: Try to make a View that  accepts a closure with the contents being UIHostingViewController
+//    
+//    public struct ViewSwift: View {
+//        
+//        public var body: some View {
+//            RViewSwiftUI(viewModel: RViewModel.riveslider)
+//        }
+//    }
+//}
+//
+//public struct RViewSwiftUI: UIViewRepresentable {
+////    let controller: RController?
+//    
+////    public init(viewModel: RViewModel, controller: RController? = nil) {
+////        self.controller = controller ?? RController(viewModel)
+////    }
+//    
+//    let viewModel: RViewModel
+//    
+//    public init(viewModel: RViewModel) {
+//        self.viewModel = viewModel
+//    }
+//    
+//    /// Constructs the view
+//    public func makeUIView(context: Context) -> RView {
+//        var view: RView
+//        let model = controller!.viewModel.model
+//        
+//        if let resource = controller?.viewModel.model.assetName {
+//            view = try! RView(
+//                resource: resource,
+//                fit: model.fit,
+//                alignment: model.alignment,
+//                autoplay: model.autoplay,
+//                artboard: model.artboard,
+//                animation: model.animation,
+//                stateMachine: model.stateMachine
+//            )
+//        }
+//        else if let httpUrl = controller?.viewModel.model.url {
+//            view = try! RView(
+//                httpUrl: httpUrl,
+//                fit: model.fit,
+//                alignment: model.alignment,
+//                autoplay: model.autoplay,
+//                artboard: model.artboard,
+//                animation: model.animation,
+//                stateMachine: model.stateMachine
+//            )
+//        }
+//        else {
+//            view = RView()
+//        }
+//        
+//        controller?.register(view:view)
+//        return view
+//    }
+//    
+//    public func updateUIView(_ view: RView, context: UIViewRepresentableContext<RViewSwiftUI>) {
+//        let newFit: RiveRuntime.Fit = controller?.viewModel.model.fit ?? .fitContain
+//        let newAlignment: RiveRuntime.Alignment = controller?.viewModel.model.alignment ?? .alignmentCenter
+//        
+//        if (newFit != view.fit) {
+//            view.fit = newFit
+//        }
+//        
+//        if (newAlignment != view.alignment) {
+//            view.alignment = newAlignment
+//        }
+//    }
+//    
+//    public static func dismantleUIView(_ view: RView, coordinator: Self.Coordinator) {
+//        view.stop()
+//        
+//        // TODO: is this neccessary
+//        coordinator.controller?.deregisterView()
+//    }
+//    
+//    // Constructs a coordinator for managing updating state
+//    public func makeCoordinator() -> Coordinator {
+//        return Coordinator(controller: controller)
+//    }
+//}
+//
+//// MARK: - Coordinator
+//extension RViewSwiftUI {
+//    public class Coordinator: NSObject {
+//        public var controller: RController?
+//        
+//        init(controller: RController?) {
+//            self.controller = controller
+//        }
+//    }
+//}
 
 // MARK: - Old experiements
 
@@ -275,7 +194,7 @@ public struct RiveResource: View {
             controller.setBindings(touchEvent: $touchEvent)
         }
         .onTapGesture {
-            touchEvent = RTouchEvent(type: .touchUp, location: CGPoint.zero)
+            touchEvent = RTouchEvent(type: .touchUp, location: CGPoint.zero, index: 0)
         }
     }
 }
