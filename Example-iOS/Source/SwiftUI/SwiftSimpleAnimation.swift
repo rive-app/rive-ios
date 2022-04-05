@@ -10,7 +10,9 @@
 import SwiftUI
 import RiveRuntime
 
-struct SwiftSimpleAnimation: View {
+struct SwiftSimpleAnimation: DismissableView {
+    var dismiss: () -> Void = {}
+    
     var body: some View {
         RiveViewSwift(
             httpUrl: "https://cdn.rive.app/animations/truck.riv"

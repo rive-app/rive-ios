@@ -9,8 +9,9 @@
 import SwiftUI
 import RiveRuntime
 
-struct SwiftStateMachine: View {
+struct SwiftStateMachine: DismissableView {
     let controller = RiveController();
+    var dismiss: () -> Void = {}
     
     var body: some View {
         ScrollView{

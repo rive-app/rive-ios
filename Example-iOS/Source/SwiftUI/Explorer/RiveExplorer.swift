@@ -1,7 +1,7 @@
 import SwiftUI
 import RiveRuntime
 
-struct RiveExplorer: View {
+struct RiveExplorer: DismissableView {
     @ObservedObject private var riveController = RiveExplorerController(
         "artboard_animations",
         fit: Fit.fitCover
