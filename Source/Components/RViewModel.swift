@@ -11,7 +11,7 @@ import SwiftUI
 open class RViewModel: ObservableObject {
     public var inputsAction: InputsAction = nil
     public var stateChangeAction: StateChangeAction = nil
-    @Published public var model: RModel
+    @Published private(set) var model: RModel
     
     private(set) var view: RView?
     
@@ -153,7 +153,7 @@ open class RViewModel: ObservableObject {
     
     /// This can be used as a subview of a UIView
     public var viewUIKit: UIView {
-        let view = RViewRepresentable(viewModel: RViewModel.riveslider)
+        let view = RViewRepresentable(viewModel: self)
         return UIHostingController(rootView: view).view
     }
     
@@ -164,6 +164,7 @@ open class RViewModel: ObservableObject {
     
     public struct StandardView: View {
         let viewModel: RViewModel
+        public var dismiss: () -> Void = { }
         
         init(viewModel: RViewModel) {
             self.viewModel = viewModel
@@ -214,7 +215,7 @@ extension RViewModel {
     }
 }
 
-
+// MARK: -
 public struct RViewRepresentable: UIViewRepresentable {
     let viewModel: RViewModel
     
