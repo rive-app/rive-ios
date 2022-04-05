@@ -9,7 +9,9 @@
 import SwiftUI
 import RiveRuntime
 
-struct SwiftMultipleAnimations: View {
+struct SwiftMultipleAnimations: DismissableView {
+    var dismiss: () -> Void = {}
+    
     
     var body: some View {
         ScrollView{

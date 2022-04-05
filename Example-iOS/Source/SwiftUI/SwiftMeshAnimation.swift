@@ -9,9 +9,10 @@
 import SwiftUI
 import RiveRuntime
 
-struct SwiftMeshAnimation: View {
+struct SwiftMeshAnimation: DismissableView {
     let controller = RiveController();
     @State var isTapped: Bool = false
+    var dismiss: () -> Void = {}
     
     var body: some View {
         RiveViewSwift(

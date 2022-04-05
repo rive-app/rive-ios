@@ -19,119 +19,57 @@ import RiveRuntime
 //}
 
 // Exposes SwiftUI with the ability to dismiss view from SwiftUI side
-class ExamplesViewController: UIViewController, RViewController {
-    var viewModel: RResourceViewModel!
-    
-    
+class ExamplesViewController: UIViewController {
     @IBSegueAction func showRiveExplorer(_ coder: NSCoder) -> UIViewController? {
-        return RiveExplorerHostingController(coder: coder)
+        return HostingController<RiveExplorer>(coder: coder)
     }
     
     @IBSegueAction func showRiveComponents(_ coder: NSCoder) -> UIViewController? {
-        return RiveComponentsHostingController(coder: coder)
+        return HostingController<RiveComponents>(coder: coder)
     }
-    
+
     @IBSegueAction func showSimpleAnimation(_ coder: NSCoder) -> UIViewController? {
-        return SimpleAnimationHostingController(coder: coder)
+        return HostingController<SwiftSimpleAnimation>(coder: coder)
     }
-    
+
     @IBSegueAction func showLayout(_ coder: NSCoder) -> UIViewController? {
-        return LayoutHostingController(coder: coder)
+        return HostingController<SwiftLayout>(coder: coder)
     }
-    
+
     @IBSegueAction func showMultipleAnimations(_ coder: NSCoder) -> UIViewController? {
-        return MultipleAnimationsHostingController(coder: coder)
+        return HostingController<SwiftMultipleAnimations>(coder: coder)
     }
-    
+
     @IBSegueAction func showLoopMode(_ coder: NSCoder) -> UIViewController? {
-        return LoopModeHostingController(coder: coder)
+        return HostingController<SwiftLoopMode>(coder: coder)
     }
-    
+
     @IBSegueAction func showStateMachine(_ coder: NSCoder) -> UIViewController? {
-        return StateMachineHostingController(coder: coder)
+        return HostingController<SwiftStateMachine>(coder: coder)
     }
-    
+
     @IBSegueAction func showMeshExample(_ coder: NSCoder) -> UIViewController? {
-        return MeshExampleHostingController(coder: coder)
+        return HostingController<SwiftMeshAnimation>(coder: coder)
     }
     
     @IBAction func showNewSwiftUIExample(_ sender: Any) {
-        let healthbar = RResource(
-            resource: "energy_bar_example",
-            stateMachine: "State Machine ")
-        let healthbarView = RiveResource(healthbar)
-        
         let sliderViewModel = RViewModel.riveslider
         presentRiveResource(sliderViewModel.viewSwift)
     }
 }
 
-class MeshExampleHostingController: UIHostingController<SwiftMeshAnimation> {
-    required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: SwiftMeshAnimation())
+class HostingController<Content: DismissableView>: UIHostingController<Content> {
+    override init(rootView: Content) {
+        super.init(rootView: rootView)
+        sharedInit()
     }
     
-    func dismiss() {
-        dismiss(animated: true, completion: nil)
-    }
-}
-
-
-class LoopModeHostingController: UIHostingController<SwiftLoopMode> {
     required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: SwiftLoopMode())
+        super.init(coder: coder, rootView: Content())
+        sharedInit()
     }
     
-    func dismiss() {
-        dismiss(animated: true, completion: nil)
-    }
-}
-
-
-class StateMachineHostingController: UIHostingController<SwiftStateMachine> {
-    required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: SwiftStateMachine())
-    }
-    
-    func dismiss() {
-        dismiss(animated: true, completion: nil)
-    }
-}
-
-class MultipleAnimationsHostingController: UIHostingController<SwiftMultipleAnimations> {
-    required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: SwiftMultipleAnimations())
-    }
-    
-    func dismiss() {
-        dismiss(animated: true, completion: nil)
-    }
-}
-
-class SimpleAnimationHostingController: UIHostingController<SwiftSimpleAnimation> {
-    required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: SwiftSimpleAnimation())
-    }
-    
-    func dismiss() {
-        dismiss(animated: true, completion: nil)
-    }
-}
-
-
-class LayoutHostingController: UIHostingController<SwiftLayout> {
-    required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: SwiftLayout())
-    }
-    
-    func dismiss() {
-        dismiss(animated: true, completion: nil)
-    }
-}
-
-class RiveExplorerHostingController: UIHostingController<RiveExplorer> {
-    required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: RiveExplorer())
+    private func sharedInit() {
         rootView.dismiss = dismiss
     }
 
@@ -140,13 +78,34 @@ class RiveExplorerHostingController: UIHostingController<RiveExplorer> {
     }
 }
 
-class RiveComponentsHostingController: UIHostingController<RiveComponents> {
-    required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: RiveComponents())
-        rootView.dismiss = dismiss
-    }
+public protocol DismissableView: View {
+    init()
+    var dismiss: () -> Void { get set }
+}
 
-    func dismiss() {
-        dismiss(animated: true, completion: nil)
+func presentRiveResource(_ resource: RViewModel.StandardView, navigationController: UINavigationController? = nil) {
+    let controller = UIHostingController(rootView: resource)
+    
+    if let navController = navigationController {
+        navController.pushViewController(controller, animated: true)
+    } else {
+        topController()?.present(controller, animated: true)
     }
+}
+
+private func topController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
+    if let navigationController = controller as? UINavigationController {
+        return topController(controller: navigationController.visibleViewController)
+    }
+    
+    if let tabController = controller as? UITabBarController {
+        if let selected = tabController.selectedViewController {
+            return topController(controller: selected)
+        }
+    }
+    
+    if let presented = controller?.presentedViewController {
+        return topController(controller: presented)
+    }
+    return controller
 }

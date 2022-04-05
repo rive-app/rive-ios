@@ -9,7 +9,9 @@
 import SwiftUI
 import RiveRuntime
 
-struct SwiftLoopMode: View {
+struct SwiftLoopMode: DismissableView {
+    var dismiss: () -> Void = {}
+    
     let controller = RiveController()
     var direction = Direction.directionAuto
     

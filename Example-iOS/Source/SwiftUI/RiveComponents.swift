@@ -9,7 +9,7 @@
 import SwiftUI
 import RiveRuntime
 
-struct RiveComponents: View {
+struct RiveComponents: DismissableView {
     
     /// lets UIKit bind to this to trigger dismiss events
     var dismiss: () -> Void = {}
@@ -23,8 +23,6 @@ struct RiveComponents: View {
     @State var sliderController: RiveController = RiveController()
     
     var slider = RViewModel.riveslider
-    
-    var view = RiveResource("riveslider7")
     
     var body: some View {
         VStack {

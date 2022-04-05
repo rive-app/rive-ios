@@ -9,7 +9,9 @@
 import SwiftUI
 import RiveRuntime
 
-struct SwiftLayout: View {
+struct SwiftLayout: DismissableView {
+    var dismiss: () -> Void = {}
+    
     @State private var fit = Fit.fitContain
     @State private var alignment = Alignment.alignmentCenter
     
