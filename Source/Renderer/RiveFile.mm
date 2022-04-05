@@ -131,22 +131,24 @@
 }
 
 - (BOOL) import:(rive::BinaryReader)reader error:(NSError**)error {
-    rive::ImportResult result = rive::File::import(reader, &riveFile);
+    rive::ImportResult result;
+    riveFile = rive::File::import(reader, &result).release();
     if (result == rive::ImportResult::success) {
         return true;
     }
-    else if(result == rive::ImportResult::unsupportedVersion){
-        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnsupportedVersion userInfo:@{NSLocalizedDescriptionKey: @"Unsupported Rive File Version", @"name": @"UnsupportedVersion"}];
-        return false;
+
+    switch (result) {
+        case rive::ImportResult::unsupportedVersion:
+            *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnsupportedVersion userInfo:@{NSLocalizedDescriptionKey: @"Unsupported Rive File Version", @"name": @"UnsupportedVersion"}];
+            break;
+        case rive::ImportResult::malformed:
+            *error = [NSError errorWithDomain:RiveErrorDomain code:RiveMalformedFile userInfo:@{NSLocalizedDescriptionKey: @"Malformed Rive File.", @"name": @"Malformed"}];
+            break;
+        default:
+            *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnknownError userInfo:@{NSLocalizedDescriptionKey: @"Unknown error loading file.", @"name": @"Unknown"}];
+            break;
     }
-    else if(result == rive::ImportResult::malformed){
-        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveMalformedFile userInfo:@{NSLocalizedDescriptionKey: @"Malformed Rive File.", @"name": @"Malformed"}];
-        return false;
-    }
-    else {
-        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnknownError userInfo:@{NSLocalizedDescriptionKey: @"Unknown error loading file.", @"name": @"Unknown"}];
-        return false;
-    }
+    return false;
 }
 
 - (RiveArtboard *)artboard:(NSError**)error {
