@@ -131,8 +131,8 @@
 
 // Creates an instance of the artboard
 - (RiveArtboard *)instance {
-    rive::Artboard *instance = _artboard->instance();
-    return [[RiveArtboard alloc] initWithArtboard: instance];
+    auto instance = _artboard->instance();
+    return [[RiveArtboard alloc] initWithArtboard: instance.release()];
 }
 
 - (void)dealloc {
