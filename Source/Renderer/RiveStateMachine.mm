@@ -43,8 +43,8 @@
 }
 
 // Creates a new instance of this state machine
-- (RiveStateMachineInstance *)instance {
-    return [[RiveStateMachineInstance alloc] initWithStateMachine: stateMachine];
+- (RiveStateMachineInstance *)instanceWithArtboard:(RiveArtboard *)artboard {
+    return [[RiveStateMachineInstance alloc] initWithStateMachine:stateMachine artboard:artboard];
 }
 
 - (RiveStateMachineInput *)_convertInput:(const rive::StateMachineInput *)input error:(NSError**)error {

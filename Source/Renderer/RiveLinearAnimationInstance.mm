@@ -16,9 +16,10 @@
     rive::LinearAnimationInstance *instance;
 }
 
-- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation {
+- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation
+                         artboard:(RiveArtboard *)artboard {
     if (self = [super init]) {
-        instance = new rive::LinearAnimationInstance(riveAnimation);
+        instance = new rive::LinearAnimationInstance(riveAnimation, artboard.artboard);
         return self;
     } else {
         return nil;
@@ -38,8 +39,8 @@
     instance->time(time);
 }
 
-- (void)applyTo:(RiveArtboard*) artboard {
-    instance->apply(artboard.artboard);
+- (void)apply {
+    instance->apply();
 }
 
 - (bool)advanceBy:(double)elapsedSeconds {

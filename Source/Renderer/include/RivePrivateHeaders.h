@@ -31,7 +31,7 @@
  * RiveStateMachineInstance interface
  */
 @interface RiveStateMachineInstance ()
-- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine;
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine artboard:(RiveArtboard *)artboard;
 @end
 
 /*
@@ -78,7 +78,7 @@
  * RiveLinearAnimationInstance interface
  */
 @interface RiveLinearAnimationInstance ()
-- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation;
+- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation artboard:(RiveArtboard *)artboard;
 @end
 
 /*

@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)name;
 - (NSInteger)layerCount;
 - (NSInteger)inputCount;
-- (RiveStateMachineInstance *)instance;
+- (RiveStateMachineInstance *)instanceWithArtboard:(RiveArtboard *)artboard;
 - (NSArray<NSString *> *)inputNames;
 - (RiveStateMachineInput * __nullable)inputFromIndex:(NSInteger)index error:(NSError**)error;
 - (RiveStateMachineInput * __nullable)inputFromName:(NSString*)name error:(NSError**)error;
