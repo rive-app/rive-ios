@@ -40,8 +40,8 @@ open class RView: RiveRendererView {
     
     // Delegates
     public weak var playerDelegate: RPlayerDelegate?
-    public weak var inputsDelegate: InputsDelegate?
-    public weak var stateChangeDelegate: StateChangeDelegate?
+    public weak var inputsDelegate: RInputDelegate?
+    public weak var stateChangeDelegate: RStateDelegate?
     
     // Tracks config options when rive files load asynchronously
     private var configOptions: ConfigOptions?
@@ -70,8 +70,8 @@ open class RView: RiveRendererView {
         animation: String? = nil,
         stateMachine: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: InputsDelegate? = nil,
-        stateChangeDelegate: StateChangeDelegate? = nil
+        inputsDelegate: RInputDelegate? = nil,
+        stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         self.fit = fit
@@ -104,8 +104,8 @@ open class RView: RiveRendererView {
         animation: String? = nil,
         stateMachine: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: InputsDelegate? = nil,
-        stateChangeDelegate: StateChangeDelegate? = nil
+        inputsDelegate: RInputDelegate? = nil,
+        stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         let riveFile = try getRiveFile(resourceName: resource)
@@ -139,8 +139,8 @@ open class RView: RiveRendererView {
         animation: String? = nil,
         stateMachine: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: InputsDelegate? = nil,
-        stateChangeDelegate: StateChangeDelegate? = nil
+        inputsDelegate: RInputDelegate? = nil,
+        stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         let riveFile = RiveFile(httpUrl: httpUrl, with:self)!

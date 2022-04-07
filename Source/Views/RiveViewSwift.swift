@@ -217,7 +217,6 @@ public struct RiveViewSwift: UIViewRepresentable {
             riveView = RiveView()
         }
         
-        controller?.registerView(riveView)
         return riveView
     }
     
@@ -229,6 +228,8 @@ public struct RiveViewSwift: UIViewRepresentable {
         if (alignment != riveView.alignment) {
             riveView.alignment = alignment
         }
+        
+        controller?.registerView(riveView)
     }
     
     public static func dismantleUIView(
@@ -261,7 +262,7 @@ extension RiveViewSwift {
     // MARK: - Coordinator
     
     // Coordinator between RiveView and UIRiveView
-    public class Coordinator: NSObject, LoopDelegate, PlayDelegate, PauseDelegate, InputsDelegate, StopDelegate, StateChangeDelegate {
+    public class Coordinator: NSObject, LoopDelegate, PlayDelegate, PauseDelegate, RInputDelegate, StopDelegate, RStateDelegate {
         
         public var controller: RiveController?
         private var loopAction: LoopAction

@@ -155,7 +155,7 @@ extension RiveExplorerBridge {
     // MARK: - Coordinator
     
     // Coordinator between RiveView and UIRiveView
-    class Coordinator: NSObject, LoopDelegate, PlayDelegate, PauseDelegate, InputsDelegate {
+    class Coordinator: NSObject, LoopDelegate, PlayDelegate, PauseDelegate, RInputDelegate {
         
         private var controller: RiveExplorerController
         private var loopAction: LoopAction

@@ -34,6 +34,7 @@ class StateMachineView: UIView {
         resetButtonAction?()
     }
 }
+
 class StateMachineViewController: UIViewController {
     let resourceName = "skills"
     

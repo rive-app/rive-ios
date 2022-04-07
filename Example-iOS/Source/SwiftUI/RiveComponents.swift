@@ -45,7 +45,7 @@ struct RiveComponents: DismissableView {
             
             VStack {
                 Text("New - RiveSlider")
-                slider.viewSwift
+                slider.view
             }
             
             Slider(value: Binding(get: {
@@ -58,11 +58,7 @@ struct RiveComponents: DismissableView {
                     value: Float(newVal)
                 )
                 
-                try? slider.setState(
-                    floatValue: Float(newVal),
-                    stateMachineName: "Slide",
-                    inputName: "FillPercent"
-                )
+                try? slider.setInput("FillPercent", value: newVal)
             }), in: 0...100)
             .padding()
         }
