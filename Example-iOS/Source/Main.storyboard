@@ -75,12 +75,12 @@
                                             <segue destination="6Y6-o9-aZy" kind="show" id="sFN-gS-xr4"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fdr-Kk-aPS">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y7T-yB-thu">
                                         <rect key="frame" x="0.0" y="230.5" width="414" height="31"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="filled" title="New UIKit Example"/>
                                         <connections>
-                                            <segue destination="nXP-c2-Cpg" kind="show" id="Z2z-hZ-bi6"/>
+                                            <segue destination="nXP-c2-Cpg" kind="show" destinationCreationSelector="showUIKitSlider:" id="NDt-Ho-xN4"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SwiftUI examples" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wyj-7w-GPq">
@@ -150,7 +150,7 @@
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="filled" title="New SwiftUI Example"/>
                                         <connections>
-                                            <action selector="showNewSwiftUIExample:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="bcX-1W-zmL"/>
+                                            <action selector="showSwiftUISlider:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="xFo-zd-VnN"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -170,22 +170,22 @@
             </objects>
             <point key="canvasLocation" x="1039" y="151"/>
         </scene>
-        <!--Rive HealthbarVC-->
+        <!--Simple Slider View Controller-->
         <scene sceneID="Pvx-pO-5XB">
             <objects>
-                <viewController id="nXP-c2-Cpg" customClass="RiveHealthbarVC" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="nXP-c2-Cpg" customClass="SimpleSliderViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="2zm-EC-beS">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ds8-bv-afK" customClass="RiveView" customModule="RiveRuntime">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ds8-bv-afK" customClass="RView" customModule="RiveRuntime">
                                 <rect key="frame" x="20" y="88" width="394" height="594"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="NxR-px-RAW">
                                 <rect key="frame" x="18" y="782" width="378" height="31"/>
                                 <connections>
-                                    <action selector="sliderChanged:" destination="nXP-c2-Cpg" eventType="valueChanged" id="CzE-BD-p9Z"/>
+                                    <action selector="sliderValueChanged:" destination="nXP-c2-Cpg" eventType="valueChanged" id="YV8-7f-YR1"/>
                                 </connections>
                             </slider>
                         </subviews>
@@ -203,8 +203,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="Oiz-Xf-xBD"/>
                     <connections>
-                        <outlet property="riveView" destination="ds8-bv-afK" id="FQa-5M-rfP"/>
-                        <outlet property="slider" destination="NxR-px-RAW" id="1WM-1N-uQC"/>
+                        <outlet property="rview" destination="ds8-bv-afK" id="jOs-Qf-IUZ"/>
+                        <outlet property="uislider" destination="NxR-px-RAW" id="BEm-CC-V0n"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="btb-K4-jol" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

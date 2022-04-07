@@ -39,14 +39,14 @@ public protocol StopDelegate: AnyObject {
 public typealias InputsAction = (([StateMachineInput]) -> Void)?
 
 /// Delegate for reporting changes to available input states
-public protocol InputsDelegate: AnyObject {
+public protocol RInputDelegate: AnyObject {
     func inputs(_ inputs: [StateMachineInput])
 }
 
 public typealias StateChangeAction = ((String, String) -> Void)?
 
 /// Delegate for new input states
-public protocol StateChangeDelegate: AnyObject {
+public protocol RStateDelegate: AnyObject {
     func stateChange(_ stateMachineName: String, _ stateName: String)
 }
 
@@ -148,8 +148,8 @@ public class RiveView: RiveRendererView {
     public weak var playDelegate: PlayDelegate?
     public weak var pauseDelegate: PauseDelegate?
     public weak var stopDelegate: StopDelegate?
-    public weak var inputsDelegate: InputsDelegate?
-    public weak var stateChangeDelegate: StateChangeDelegate?
+    public weak var inputsDelegate: RInputDelegate?
+    public weak var stateChangeDelegate: RStateDelegate?
     
     // Tracks config options when rive files load asynchronously
     private var configOptions: ConfigOptions?
@@ -184,8 +184,8 @@ public class RiveView: RiveRendererView {
         playDelegate: PlayDelegate? = nil,
         pauseDelegate: PauseDelegate? = nil,
         stopDelegate: StopDelegate? = nil,
-        inputsDelegate: InputsDelegate? = nil,
-        stateChangeDelegate: StateChangeDelegate? = nil
+        inputsDelegate: RInputDelegate? = nil,
+        stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         self.fit = fit
@@ -228,8 +228,8 @@ public class RiveView: RiveRendererView {
         playDelegate: PlayDelegate? = nil,
         pauseDelegate: PauseDelegate? = nil,
         stopDelegate: StopDelegate? = nil,
-        inputsDelegate: InputsDelegate? = nil,
-        stateChangeDelegate: StateChangeDelegate? = nil
+        inputsDelegate: RInputDelegate? = nil,
+        stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         let riveFile = try getRiveFile(resourceName: resource)
@@ -274,8 +274,8 @@ public class RiveView: RiveRendererView {
         playDelegate: PlayDelegate? = nil,
         pauseDelegate: PauseDelegate? = nil,
         stopDelegate: StopDelegate? = nil,
-        inputsDelegate: InputsDelegate? = nil,
-        stateChangeDelegate: StateChangeDelegate? = nil
+        inputsDelegate: RInputDelegate? = nil,
+        stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         let riveFile = RiveFile(httpUrl: httpUrl, with:self)!

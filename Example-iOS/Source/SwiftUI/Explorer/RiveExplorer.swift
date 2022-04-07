@@ -18,106 +18,102 @@ struct RiveExplorer: DismissableView {
             )
             VStack {
                 HStack(alignment: .center, spacing: 50) {
-                    if #available(iOS 14.0, *) {
-                        Menu {
-                            ForEach(riveController.artboardNames(), id: \.self) { name in
-                                Button {
-                                    riveController.activeArtboard = name
-                                } label: {
-                                    Text(name)
-                                }
+                    Menu {
+                        ForEach(riveController.artboardNames(), id: \.self) { name in
+                            Button {
+                                riveController.activeArtboard = name
+                            } label: {
+                                Text(name)
                             }
-                        } label: {
-                            Text("Artboards")
-                            Image(systemName: "square.and.pencil")
                         }
-                        Menu {
-                            ForEach(riveController.animationNames(), id: \.self) { name in
-                                Button {
-                                    riveController.playAnimation = name
-                                } label: {
-                                    Text(name)
-                                }
+                    } label: {
+                        Text("Artboards")
+                        Image(systemName: "square.and.pencil")
+                    }
+                    Menu {
+                        ForEach(riveController.animationNames(), id: \.self) { name in
+                            Button {
+                                riveController.playAnimation = name
+                            } label: {
+                                Text(name)
                             }
-                        } label: {
-                            Text("Animations")
-                            Image(systemName: "list.and.film")
                         }
+                    } label: {
+                        Text("Animations")
+                        Image(systemName: "list.and.film")
                     }
                 }
                 .padding()
                 HStack(alignment: .center, spacing: 50) {
-                    if #available(iOS 14.0, *) {
-                        Menu {
-                            Button {
-                                riveController.fit = .fitContain
-                            } label: {
-                                Text("Contain")
-                            }
-                            Button {
-                                riveController.fit = .fitCover
-                            } label: {
-                                Text("Cover")
-                            }
-                            Button {
-                                riveController.fit = .fitFill
-                            } label: {
-                                Text("Fill")
-                            }
+                    Menu {
+                        Button {
+                            riveController.fit = .fitContain
                         } label: {
-                            Text("Fit")
-                            Image(systemName: "crop")
+                            Text("Contain")
                         }
-                        Menu {
-                            Button {
-                                riveController.alignment = .alignmentTopLeft
-                            } label: {
-                                Text("Top Left")
-                            }
-                            Button {
-                                riveController.alignment = .alignmentTopCenter
-                            } label: {
-                                Text("Top Center")
-                            }
-                            Button {
-                                riveController.alignment = .alignmentTopRight
-                            } label: {
-                                Text("Top Right")
-                            }
-                            Button {
-                                riveController.alignment = .alignmentCenterLeft
-                            } label: {
-                                Text("Left")
-                            }
-                            Button {
-                                riveController.alignment = .alignmentCenter
-                            } label: {
-                                Text("Center")
-                            }
-                            Button {
-                                riveController.alignment = .alignmentCenterRight
-                            } label: {
-                                Text("Right")
-                            }
-                            Button {
-                                riveController.alignment = .alignmentBottomLeft
-                            } label: {
-                                Text("Bottom Left")
-                            }
-                            Button {
-                                riveController.alignment = .alignmentBottomCenter
-                            } label: {
-                                Text("Bottom Center")
-                            }
-                            Button {
-                                riveController.alignment = .alignmentBottomRight
-                            } label: {
-                                Text("Bottom Right")
-                            }
+                        Button {
+                            riveController.fit = .fitCover
                         } label: {
-                            Text("Alignment")
-                            Image(systemName: "square.dashed")
+                            Text("Cover")
                         }
+                        Button {
+                            riveController.fit = .fitFill
+                        } label: {
+                            Text("Fill")
+                        }
+                    } label: {
+                        Text("Fit")
+                        Image(systemName: "crop")
+                    }
+                    Menu {
+                        Button {
+                            riveController.alignment = .alignmentTopLeft
+                        } label: {
+                            Text("Top Left")
+                        }
+                        Button {
+                            riveController.alignment = .alignmentTopCenter
+                        } label: {
+                            Text("Top Center")
+                        }
+                        Button {
+                            riveController.alignment = .alignmentTopRight
+                        } label: {
+                            Text("Top Right")
+                        }
+                        Button {
+                            riveController.alignment = .alignmentCenterLeft
+                        } label: {
+                            Text("Left")
+                        }
+                        Button {
+                            riveController.alignment = .alignmentCenter
+                        } label: {
+                            Text("Center")
+                        }
+                        Button {
+                            riveController.alignment = .alignmentCenterRight
+                        } label: {
+                            Text("Right")
+                        }
+                        Button {
+                            riveController.alignment = .alignmentBottomLeft
+                        } label: {
+                            Text("Bottom Left")
+                        }
+                        Button {
+                            riveController.alignment = .alignmentBottomCenter
+                        } label: {
+                            Text("Bottom Center")
+                        }
+                        Button {
+                            riveController.alignment = .alignmentBottomRight
+                        } label: {
+                            Text("Bottom Right")
+                        }
+                    } label: {
+                        Text("Alignment")
+                        Image(systemName: "square.dashed")
                     }
                 }
                 .padding()
@@ -143,10 +139,18 @@ struct RiveExplorer: DismissableView {
                         
                     }
                     Spacer()
-                    Button(action: dismiss, label: {
+                    Button {
+                        
+                        dismiss()
+                    } label: {
                         Image(systemName: "x.circle")
                         Text("Dismiss")
-                    })
+                    }
+
+//                    Button(action: dismiss, label: {
+//                        Image(systemName: "x.circle")
+//                        Text("Dismiss")
+//                    })
                 }
                 .padding()
             }

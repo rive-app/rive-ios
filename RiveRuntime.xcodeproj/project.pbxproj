@@ -254,8 +254,8 @@
 		C9C73ED324FC478800EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				C3468E5627EB9858008652FD /* Components */,
 				C9C73ED424FC478800EF9516 /* RiveRuntime.h */,
+				C3468E5627EB9858008652FD /* Components */,
 				C9BD3928263B65B100696C37 /* Views */,
 				C9BD3927263B64B100696C37 /* Renderer */,
 				C9C73ED524FC478800EF9516 /* Info.plist */,

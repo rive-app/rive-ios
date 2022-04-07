@@ -10,15 +10,7 @@ import UIKit
 import SwiftUI
 import RiveRuntime
 
-/// Simple way to add SwiftUI to a UIKit app; doesn't have a way to handle dismissing view in SwiftUI
-//class ExamplesViewController: UIViewController {
-//
-//    @IBSegueAction func hostingAction(_ coder: NSCoder) -> UIViewController? {
-//        return UIHostingController(coder: coder, rootView: RiveSwiftUIView())
-//    }
-//}
-
-// Exposes SwiftUI with the ability to dismiss view from SwiftUI side
+/// Exposes SwiftUI with the ability to dismiss view from SwiftUI side
 class ExamplesViewController: UIViewController {
     @IBSegueAction func showRiveExplorer(_ coder: NSCoder) -> UIViewController? {
         return HostingController<RiveExplorer>(coder: coder)
@@ -52,60 +44,31 @@ class ExamplesViewController: UIViewController {
         return HostingController<SwiftMeshAnimation>(coder: coder)
     }
     
-    @IBAction func showNewSwiftUIExample(_ sender: Any) {
+    @IBSegueAction func showSimpleSlider(_ coder: NSCoder) -> UIViewController? {
         let sliderViewModel = RViewModel.riveslider
-        presentRiveResource(sliderViewModel.viewSwift)
+        return UIHostingController(coder: coder, rootView: sliderViewModel.view)
+    }
+    @IBAction func showSwiftUISlider(_ sender: Any) {
+        let controller = UIHostingController(rootView: RViewModel.riveslider.view)
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    @IBSegueAction func showUIKitSlider(_ coder: NSCoder) -> SimpleSliderViewController? {
+        return SimpleSliderViewController(coder: coder)
     }
 }
 
-class HostingController<Content: DismissableView>: UIHostingController<Content> {
-    override init(rootView: Content) {
-        super.init(rootView: rootView)
-        sharedInit()
-    }
-    
+fileprivate class HostingController<Content: DismissableView>: UIHostingController<Content> {
     required init?(coder: NSCoder) {
         super.init(coder: coder, rootView: Content())
-        sharedInit()
-    }
-    
-    private func sharedInit() {
-        rootView.dismiss = dismiss
-    }
-
-    func dismiss() {
-        dismiss(animated: true, completion: nil)
+        rootView.dismiss = {
+            self.dismiss(animated: true, completion: nil)
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 }
 
 public protocol DismissableView: View {
     init()
     var dismiss: () -> Void { get set }
-}
-
-func presentRiveResource(_ resource: RViewModel.StandardView, navigationController: UINavigationController? = nil) {
-    let controller = UIHostingController(rootView: resource)
-    
-    if let navController = navigationController {
-        navController.pushViewController(controller, animated: true)
-    } else {
-        topController()?.present(controller, animated: true)
-    }
-}
-
-private func topController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-    if let navigationController = controller as? UINavigationController {
-        return topController(controller: navigationController.visibleViewController)
-    }
-    
-    if let tabController = controller as? UITabBarController {
-        if let selected = tabController.selectedViewController {
-            return topController(controller: selected)
-        }
-    }
-    
-    if let presented = controller?.presentedViewController {
-        return topController(controller: presented)
-    }
-    return controller
 }
