@@ -15,11 +15,17 @@ The `./scripts/configure.sh` script will download or build appropriate libraries
 
 ### Uploading caches
 
-If you are contributing and you have access to Rives' aws environment, make you sure install `aws-cli` and configure it with your credentials. Set the `RIVE_UPLOAD_IOS_ARCHIVE` env variable to `TRUE` then you should be able to run `./scripts/configure.sh`, or `RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh` and you will upload caches when feasible. 
+If you are contributing and you have access to Rives' aws environment, make you sure install `aws-cli` and configure it with your credentials. If you run into permission issues here `aws sts get-caller-identity` can help make sure that your local developer environment is setup to talk to AWS correctly.
+See https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
-To force a rebuild, add `rebuild` as an argument `RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh rebuild`
+Set the `RIVE_UPLOAD_IOS_ARCHIVE` env variable to `TRUE`
 
-If you run into permission issues here `aws sts get-caller-identity` can help make sure that your local developer environment is setup to talk to AWS correctly
+`RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh`
+
+and it will upload caches when feasible.  To force a rebuild, add `rebuild` as an argument...
+
+`RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh rebuild`
+
 
 ## Changing rive-cpp/skia
 
