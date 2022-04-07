@@ -131,7 +131,7 @@
 
 // Creates an instance of the artboard
 - (RiveArtboard *)instance {
-    auto instance = _artboard->instance();
+    std::unique_ptr<rive::Artboard> instance = _artboard->instance();
     return [[RiveArtboard alloc] initWithArtboard: instance.release()];
 }
 

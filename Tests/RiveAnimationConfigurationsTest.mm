@@ -65,8 +65,8 @@
     XCTAssertEqual([animation duration], 60);
     XCTAssertEqual([animation effectiveDuration], 60);
     XCTAssertEqual([animation fps], 60);
-    XCTAssertEqual([animation workStart], -1);
-    XCTAssertEqual([animation workEnd], -1);
+    XCTAssertEqual([animation workStart], UINT_MAX);
+    XCTAssertEqual([animation workEnd], UINT_MAX);
 }
 
 /*
@@ -81,8 +81,8 @@
     XCTAssertEqual([animation duration], 120);
     XCTAssertEqual([animation effectiveDuration], 120);
     XCTAssertEqual([animation fps], 120);
-    XCTAssertEqual([animation workStart], -1);
-    XCTAssertEqual([animation workEnd], -1);
+    XCTAssertEqual([animation workStart], UINT_MAX);
+    XCTAssertEqual([animation workEnd], UINT_MAX);
 }
 
 /*

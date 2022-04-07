@@ -31,8 +31,8 @@
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
-- (RiveLinearAnimationInstance *)instance {
-    return [[RiveLinearAnimationInstance alloc] initWithAnimation: animation];
+- (RiveLinearAnimationInstance *)instanceWithArtboard:(RiveArtboard *)artboard {
+    return [[RiveLinearAnimationInstance alloc] initWithAnimation:animation artboard:artboard];
 }
 
 - (NSInteger)workStart {
@@ -48,7 +48,7 @@
 }
 
 - (NSInteger)effectiveDuration {
-    if (self.workStart == -1) {
+    if (self.workStart == UINT_MAX) {
         return animation->duration();
         
     }else {

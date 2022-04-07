@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (float)time;
 - (void)setTime:(float) time;
 - (const RiveLinearAnimation *)animation;
-- (void)applyTo:(RiveArtboard*)artboard;
+- (void)apply;
 - (bool)advanceBy:(double)elapsedSeconds;
 - (int)direction;
 - (void)direction:(int)direction;

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RiveLinearAnimation : NSObject
 - (NSString *)name;
-- (RiveLinearAnimationInstance *)instance;
+- (RiveLinearAnimationInstance *)instanceWithArtboard:(RiveArtboard *)artboard;
 - (NSInteger)workStart;
 - (NSInteger)workEnd;
 - (NSInteger)duration;
