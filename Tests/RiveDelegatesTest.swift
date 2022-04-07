@@ -27,7 +27,7 @@ func getRiveFile(resourceName: String, resourceExt: String=".riv") throws -> Riv
     return riveFile
 }
 
-class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, StateChangeDelegate {
+class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, RStateDelegate {
     var stateMachinePlays = [String]()
     var stateMachinePauses = [String]()
     var stateMachineStops = [String]()

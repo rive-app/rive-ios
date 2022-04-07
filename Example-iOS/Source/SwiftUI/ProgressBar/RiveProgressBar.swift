@@ -28,25 +28,3 @@ struct RiveProgressBar_Previews: PreviewProvider {
         RiveProgressBar(resource: "energy_bar_example", controller: RiveController())
     }
 }
-
-//struct NewProgressBar: View {
-//    private let resource = RResource(resource: "energy_bar_example", stateMachine: "State Machine ")
-//    
-//    init() {
-//        
-//    }
-//    
-//    var body: some View {
-//        RiveResource(resource)
-//    }
-//    
-//    public func setPosition() {
-//        setNumberState("State Machine ", inputName: "Energy", value: Float(newVal))
-//    }
-//}
-//
-//extension NewRiveController {
-//    fileprivate func setNumberState(_ value: Float) throws {
-//        try oldController.setNumberState("State Machine ", inputName: "Energy", value: value)
-//    }
-//}
