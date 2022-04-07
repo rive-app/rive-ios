@@ -30,7 +30,7 @@ jobs:
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    runs-on: macos-11
+    runs-on: macos-12
     needs: [determine_version]
     outputs:
       checksum: ${{steps.get_checksum.outputs.checksum}}
@@ -150,7 +150,7 @@ jobs:
 
   publish_cocoapods:
     name: Publish framework to cocoapods
-    runs-on: macos-11
+    runs-on: macos-12
     needs: [determine_version, build_framework, do_release]
     steps:
       - name: Download framework artifact
