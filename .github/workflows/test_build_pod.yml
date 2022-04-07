@@ -30,7 +30,7 @@ jobs:
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -58,7 +58,7 @@ jobs:
 
   build_pod:
     name: Update podspec repository
-    runs-on: macos-11
+    runs-on: macos-12
     timeout-minutes: 10
     needs: [create_podspec_file, build_framework]
     steps:
