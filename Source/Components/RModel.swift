@@ -9,24 +9,24 @@
 import Foundation
 
 public struct RModel { // TODO: Rename to RAssetState
-    public let url: String? = nil
+    public let webURL: String? = nil
     public let fileName: String?
     public var fit: RiveRuntime.Fit = .fitContain
     public var alignment: RiveRuntime.Alignment = .alignmentCenter
     public var autoplay: Bool = true
-    public var artboard: String? = nil
-    public var animation: String? = nil
+    public var artboardName: String? = nil
+    public var animationName: String? = nil
     public var stateMachineName: String? = nil
     
     public var description: String {
-          "URL: "           + (url ?? "None")           + "/n"
-        + "File Name: "     + (fileName ?? "None")      + "/n"
-        + "Fit: "           + fit.description           + "/n"
-        + "Alignment: "     + alignment.description     + "/n"
-        + "Autoplay: "      + autoplay.description      + "/n"
-        + "Artboard: "      + (artboard ?? "None")      + "/n"
-        + "Animation: "     + (animation ?? "None")     + "/n"
-        + "State Machine: " + (stateMachineName ?? "None")  + "/n"
+          "URL: ["           + (webURL ?? "None")           + "]/n"
+        + "File Name: ["     + (fileName ?? "None")      + "]/n"
+        + "Fit: ["           + fit.description           + "]/n"
+        + "Alignment: ["     + alignment.description     + "]/n"
+        + "Autoplay: ["      + autoplay.description      + "]/n"
+        + "Artboard: ["      + (artboardName ?? "None")      + "]/n"
+        + "Animation: ["     + (animationName ?? "None")     + "]/n"
+        + "State Machine: [" + (stateMachineName ?? "None")  + "]/n"
     }
     
     public init(fileName: String?, stateMachineName: String? = nil) {
