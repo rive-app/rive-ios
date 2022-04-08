@@ -31,7 +31,8 @@ open class RViewModel: ObservableObject {
 extension RViewModel {
     // MARK: Lifecycle
     
-    /// Makes a new `RView` for its rview property with data from model
+    /// Makes a new `RView` for its rview property with data from model which will
+    /// replace any previous `RView`
     public func createRView() -> RView {
         let view: RView
         
@@ -78,9 +79,10 @@ extension RViewModel {
         }
     }
     
-    /// This can be used to connect with and configure an `RView` that was created elsewhere
+    /// This can be used to connect with and configure an `RView` that was created elsewhere.
+    /// Does not need to be called when updating an already configured `RView`
     /// - Parameter view: the `Rview` that this `RViewModel` will maintain
-    public func configure(view: RView) {
+    public func configure(rview view: RView) {
         register(view: view)
         
         guard let fileName = fileName else {
