@@ -51,6 +51,7 @@
 		04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */; };
 		2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */ = {isa = PBXBuildFile; fileRef = 2A7079342726277C00C035A1 /* rive_renderer_view.hh */; settings = {ATTRIBUTES = (Public, ); }; };
 		2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2A707936272628AD00C035A1 /* rive_renderer_view.mm */; };
+		C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */; };
 		C3468E5827EB9887008652FD /* RView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5727EB9887008652FD /* RView.swift */; };
 		C3468E5A27ECC7C6008652FD /* RViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5927ECC7C6008652FD /* RViewModel.swift */; };
 		C3468E5C27ED4C41008652FD /* RModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5B27ED4C41008652FD /* RModel.swift */; };
@@ -119,6 +120,7 @@
 		04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RivePrivateHeaders.h; sourceTree = "<group>"; };
 		2A7079342726277C00C035A1 /* rive_renderer_view.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rive_renderer_view.hh; sourceTree = "<group>"; };
 		2A707936272628AD00C035A1 /* rive_renderer_view.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = rive_renderer_view.mm; sourceTree = "<group>"; };
+		C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveFile+Extensions.swift"; sourceTree = "<group>"; };
 		C3468E5727EB9887008652FD /* RView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RView.swift; sourceTree = "<group>"; };
 		C3468E5927ECC7C6008652FD /* RViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RViewModel.swift; sourceTree = "<group>"; };
 		C3468E5B27ED4C41008652FD /* RModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RModel.swift; sourceTree = "<group>"; };
@@ -193,6 +195,14 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		C34609FA27FF9027002DBCB7 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		C3468E5627EB9858008652FD /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -256,6 +266,7 @@
 			children = (
 				C9C73ED424FC478800EF9516 /* RiveRuntime.h */,
 				C3468E5627EB9858008652FD /* Components */,
+				C34609FA27FF9027002DBCB7 /* Extensions */,
 				C9BD3928263B65B100696C37 /* Views */,
 				C9BD3927263B64B100696C37 /* Renderer */,
 				C9C73ED524FC478800EF9516 /* Info.plist */,
@@ -429,6 +440,7 @@
 				04026DC027CCDADB002B3DBF /* RiveViewSwift.swift in Sources */,
 				046FB7F9264EAA60000129B1 /* RiveStateMachine.mm in Sources */,
 				2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */,
+				C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */,
 				C3468E5827EB9887008652FD /* RView.swift in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
 				046FB7FA264EAA60000129B1 /* RiveLinearAnimation.mm in Sources */,
