@@ -78,6 +78,30 @@ extension RViewModel {
         }
     }
     
+    /// This can be used to connect with and configure an `RView` that was created elsewhere
+    /// - Parameter view: the `Rview` that this `RViewModel` will maintain
+    public func configure(view: RView) {
+        register(view: view)
+        
+        guard let fileName = fileName else {
+            print("RViewModel.register(view:) did not have a fileName")
+            return
+        }
+        
+        guard let file = try? RiveFile(name: fileName) else {
+            print("RViewModel.register(view:) could not create a RiveFile")
+            return
+        }
+        
+        try? rview!.configure(
+            file,
+            artboard: artboard,
+            animation: animation,
+            stateMachine: stateMachineName,
+            autoPlay: autoplay
+        )
+    }
+    
     /// Assigns the provided `RView` to its rview property
     /// - Parameter view: the `Rview` that this `RViewModel` will maintain
     internal func register(view: RView) {
@@ -153,7 +177,7 @@ extension RViewModel {
         rview?.stop(animationName: animationName, isStateMachine: isStateMachine)
     }
     
-    public func fireState(_ stateMachineName: String, inputName: String) throws {
+    public func triggerInput(_ inputName: String, stateMachineName: String) throws {
         try rview?.fireState(stateMachineName, inputName: inputName)
     }
     
@@ -219,8 +243,8 @@ extension RViewModel {
     }
     
     public var stateMachineName: String? {
-        get { model.stateMachine }
-        set { model.stateMachine = newValue }
+        get { model.stateMachineName }
+        set { model.stateMachineName = newValue }
     }
 }
 
@@ -282,7 +306,7 @@ extension RViewModel: RInputDelegate, RStateDelegate {
 // MARK: - Test Data
 extension RViewModel {
     public static var riveslider: RViewModel {
-        let model = RModel(fileName: "riveslider7", stateMachine: "Slide")
+        let model = RModel(fileName: "riveslider7", stateMachineName: "Slide")
         return RViewModel(model)
     }
 }
@@ -310,7 +334,7 @@ public struct RViewRepresentable: UIViewRepresentable {
         coordinator.viewModel.deregisterView()
     }
     
-    // Constructs a coordinator for managing updating state
+    /// Constructs a coordinator for managing updating state
     public func makeCoordinator() -> Coordinator {
         return Coordinator(viewModel: viewModel)
     }

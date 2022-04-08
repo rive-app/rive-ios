@@ -83,7 +83,7 @@ open class RView: RiveRendererView {
         try configure(riveFile, artboard: artboard, animation: animation, stateMachine: stateMachine, autoPlay: autoplay)
     }
     
-    /// Constructor with a resource file.
+    /// Constructor with a .riv file name.
     /// - Parameters:
     ///   - resource: the resource to load the rive file from
     ///   - fit: to specify how and if the animation should be resized to fit its container.
@@ -108,7 +108,7 @@ open class RView: RiveRendererView {
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
-        let riveFile = try getRiveFile(resourceName: resource)
+        let riveFile = try RiveFile(name: resource)
         self.fit = fit
         self.alignment = alignment
         self.playerDelegate = playerDelegate
@@ -192,7 +192,9 @@ extension RView {
         )
         
         // If it isn't loaded, early out
-        guard riveFile.isLoaded else { return }
+        guard riveFile.isLoaded else {
+            fatalError("WE FAILLED")
+        }
         
         // Testing stuff
         NotificationCenter.default.addObserver(
@@ -231,6 +233,8 @@ extension RView {
         
         // Make an instance of the artboard and use that
         self.artboard = artboard.instance()
+        
+        assert(self.artboard != nil, "WE FAILED")
         
         // Start the animation loop
         if autoPlay {
@@ -745,24 +749,24 @@ extension RView: RArtboardDelegate {
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
         artboard?.touched(at: location, info: 0)
-        print("TouchesBegan on: [" + (artboard?.name() ?? " no artboard") + "] - at location x:\(location.x), y:\(location.y)")
+        print("TouchesBegan on: [" + (artboard?.name() ?? "no artboard") + "] - at location x:\(location.x), y:\(location.y)")
     }
     
     open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //let location = touches.first!.location(in: self)
-        //artboard?.touched(at: location, info: 0)
-        //print("TouchesMoved on: [" + (artboard?.name() ?? " no artboard") + "] - at location x:\(location.x), y:\(location.y)")
+        let location = touches.first!.location(in: self)
+        artboard?.touched(at: location, info: 0)
+        print("TouchesMoved on: [" + (artboard?.name() ?? "no artboard") + "] - at location x:\(location.x), y:\(location.y)")
     }
     
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
         artboard?.touched(at: location, info: 0)
-        print("TouchesEnded on: [" + (artboard?.name() ?? " no artboard") + "] - at location x:\(location.x), y:\(location.y)")
+        print("TouchesEnded on: [" + (artboard?.name() ?? "no artboard") + "] - at location x:\(location.x), y:\(location.y)")
     }
     
     open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
         artboard?.touched(at: location, info: 0)
-        print("TouchesCancelled on: [" + (artboard?.name() ?? " no artboard") + "] - at location x:\(location.x), y:\(location.y)")
+        print("TouchesCancelled on: [" + (artboard?.name() ?? "no artboard") + "] - at location x:\(location.x), y:\(location.y)")
     }
 }
