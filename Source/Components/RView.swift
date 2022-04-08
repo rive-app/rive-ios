@@ -192,9 +192,7 @@ extension RView {
         )
         
         // If it isn't loaded, early out
-        guard riveFile.isLoaded else {
-            fatalError("WE FAILLED")
-        }
+        guard riveFile.isLoaded else { return }
         
         // Testing stuff
         NotificationCenter.default.addObserver(
@@ -233,8 +231,6 @@ extension RView {
         
         // Make an instance of the artboard and use that
         self.artboard = artboard.instance()
-        
-        assert(self.artboard != nil, "WE FAILED")
         
         // Start the animation loop
         if autoPlay {
