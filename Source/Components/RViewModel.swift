@@ -42,19 +42,19 @@ extension RViewModel {
                 fit: fit,
                 alignment: alignment,
                 autoplay: autoplay,
-                artboard: artboard,
-                animation: animation,
+                artboard: artboardName,
+                animation: animationName,
                 stateMachine: stateMachineName
             )
         }
-        else if let httpUrl = url {
+        else if let httpUrl = webURL {
             view = try! RView(
                 httpUrl: httpUrl,
                 fit: fit,
                 alignment: alignment,
                 autoplay: autoplay,
-                artboard: artboard,
-                animation: animation,
+                artboard: artboardName,
+                animation: animationName,
                 stateMachine: stateMachineName
             )
         }
@@ -91,14 +91,14 @@ extension RViewModel {
         }
         
         guard let file = try? RiveFile(name: fileName) else {
-            print("RViewModel.register(view:) could not create a RiveFile")
+            print("RViewModel.register(view:) could not create a RiveFile from name: " + fileName)
             return
         }
         
         try? rview!.configure(
             file,
-            artboard: artboard,
-            animation: animation,
+            artboard: artboardName,
+            animation: animationName,
             stateMachine: stateMachineName,
             autoPlay: autoplay
         )
@@ -215,8 +215,7 @@ extension RViewModel {
 
 // MARK: - RModel Communication
 extension RViewModel {
-    public var url: String? { model.url }
-    
+    public var webURL: String? { model.webURL }
     public var fileName: String? { model.fileName }
     
     public var fit: RiveRuntime.Fit {
@@ -234,14 +233,14 @@ extension RViewModel {
         set { model.autoplay = newValue }
     }
     
-    public var artboard: String? {
-        get { model.artboard }
-        set { model.artboard = newValue }
+    public var artboardName: String? {
+        get { model.artboardName }
+        set { model.artboardName = newValue }
     }
     
-    public var animation: String? {
-        get { model.animation }
-        set { model.animation = newValue }
+    public var animationName: String? {
+        get { model.animationName }
+        set { model.animationName = newValue }
     }
     
     public var stateMachineName: String? {
