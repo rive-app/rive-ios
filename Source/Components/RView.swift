@@ -18,17 +18,14 @@ public protocol RPlayerDelegate: AnyObject {
 open class RView: RiveRendererView {
     // Configuration
     private var riveFile: RiveFile?
-    
+    private var autoPlay: Bool = true
+    open var artboard: RiveArtboard?
     open var fit: Fit = .fitContain {
         didSet { artboard?.advance(by: 0) }
     }
-    
     open var alignment: Alignment = .alignmentCenter {
         didSet { artboard?.advance(by: 0) }
     }
-    
-    open var artboard: RiveArtboard?
-    private var autoPlay: Bool = true
     
     // Playback controls
     public var animations: [RiveLinearAnimationInstance] = []
