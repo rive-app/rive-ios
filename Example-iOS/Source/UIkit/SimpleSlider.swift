@@ -19,7 +19,7 @@ class SimpleSliderViewController: UIViewController {
         super.viewDidLoad()
         
         rslider = newSliderVM()
-        rslider.configure(view: rview)
+        rslider.configure(rview: rview)
     }
     
     @IBAction func sliderValueChanged(_ sender: Any) {
