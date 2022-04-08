@@ -16,7 +16,7 @@ public struct RModel { // TODO: Rename to RAssetState
     public var autoplay: Bool = true
     public var artboard: String? = nil
     public var animation: String? = nil
-    public var stateMachine: String? = nil
+    public var stateMachineName: String? = nil
     
     public var description: String {
           "URL: "           + (url ?? "None")           + "/n"
@@ -26,12 +26,17 @@ public struct RModel { // TODO: Rename to RAssetState
         + "Autoplay: "      + autoplay.description      + "/n"
         + "Artboard: "      + (artboard ?? "None")      + "/n"
         + "Animation: "     + (animation ?? "None")     + "/n"
-        + "State Machine: " + (stateMachine ?? "None")  + "/n"
+        + "State Machine: " + (stateMachineName ?? "None")  + "/n"
+    }
+    
+    public init(fileName: String?, stateMachineName: String? = nil) {
+        self.fileName = fileName
+        self.stateMachineName = stateMachineName
     }
 }
 
-extension RiveRuntime.Fit {
-    public var description: String {
+public extension RiveRuntime.Fit {
+    var description: String {
         switch self {
         case .fitNone:      return "None"
         case .fitFill:      return "Fill"
@@ -45,8 +50,8 @@ extension RiveRuntime.Fit {
     }
 }
 
-extension RiveRuntime.Alignment {
-    public var description: String {
+public extension RiveRuntime.Alignment {
+    var description: String {
         switch self {
         case .alignmentCenter:          return "Center"
         case .alignmentCenterLeft:      return "Center Left"
