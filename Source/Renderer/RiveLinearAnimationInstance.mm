@@ -19,7 +19,7 @@
 - (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation
                          artboard:(RiveArtboard *)artboard {
     if (self = [super init]) {
-        instance = new rive::LinearAnimationInstance(riveAnimation, artboard.artboard);
+        instance = new rive::LinearAnimationInstance(riveAnimation, artboard.artboardInstance);
         return self;
     } else {
         return nil;

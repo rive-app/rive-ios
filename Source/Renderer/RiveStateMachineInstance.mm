@@ -29,7 +29,7 @@
                             artboard:(RiveArtboard *)artboard {
     if (self = [super init]) {
         self->stateMachine = stateMachine;
-        instance = new rive::StateMachineInstance(stateMachine, artboard.artboard);
+        instance = new rive::StateMachineInstance(stateMachine, artboard.artboardInstance);
         _inputs = [[NSMutableDictionary alloc] init];
         return self;
     } else {

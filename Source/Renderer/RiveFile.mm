@@ -152,13 +152,13 @@
 }
 
 - (RiveArtboard *)artboard:(NSError**)error {
-    rive::Artboard *artboard = riveFile->artboard();
+    auto artboard = riveFile->artboardDefault();
     if (artboard == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardsFound userInfo:@{NSLocalizedDescriptionKey: @"No Artboards Found.", @"name": @"NoArtboardsFound"}];
         return nil;
     }
     else {
-        return [[RiveArtboard alloc] initWithArtboard: artboard];
+        return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
     }
 }
 
@@ -167,22 +167,22 @@
 }
 
 - (RiveArtboard *)artboardFromIndex:(NSInteger)index error:(NSError**)error {
-    if (index >= [self artboardCount]) {
+    auto artboard = riveFile->artboardAt(index);
+    if (artboard == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Artboard Found at index %ld.", (long)index], @"name": @"NoArtboardFound"}];
         return nil;
     }
-    return [[RiveArtboard alloc]
-            initWithArtboard: reinterpret_cast<rive::Artboard *>(riveFile->artboard(index))];
+    return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
 }
 
 - (RiveArtboard *)artboardFromName:(NSString *)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
-    rive::Artboard *artboard = riveFile->artboard(stdName);
+    auto artboard = riveFile->artboardNamed(stdName);
     if (artboard == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Artboard Found with name %@.", name], @"name": @"NoArtboardFound"}];
         return nil;
     } else {
-        return [[RiveArtboard alloc] initWithArtboard: artboard];
+        return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
     }
 }
 
