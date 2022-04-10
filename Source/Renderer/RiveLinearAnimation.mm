@@ -72,7 +72,7 @@
 }
 
 - (void)apply:(float)time to:(RiveArtboard *)artboard {
-    animation->apply(artboard.artboard, time);
+    animation->apply(artboard.artboardInstance, time);
 }
 
 - (int)loop {

@@ -92,8 +92,8 @@
  * RiveArtboard interface
  */
 @interface RiveArtboard ()
-@property (nonatomic, readonly) rive::Artboard* artboard;
--(instancetype) initWithArtboard:(rive::Artboard *) riveArtboard;
+@property (nonatomic, readonly) rive::ArtboardInstance* artboardInstance;
+-(instancetype) initWithArtboard:(rive::ArtboardInstance *) riveArtboard;
 @end
 
 /*

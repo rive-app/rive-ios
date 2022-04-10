@@ -397,8 +397,7 @@ extension RiveView {
             fatalError("No animations in the file.")
         }
         
-        // Make an instance of the artboard and use that
-        self._artboard = artboard.instance()
+        self._artboard = artboard
         
         // Start the animation loop
         if autoPlay {
