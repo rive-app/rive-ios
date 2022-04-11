@@ -17,10 +17,8 @@
 		046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7E7264EAA5F000129B1 /* RiveFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7F8264EAA60000129B1 /* RiveStateMachineInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7E8264EAA5F000129B1 /* RiveStateMachineInstance.mm */; };
 		046FB7F9264EAA60000129B1 /* RiveStateMachine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7E9264EAA5F000129B1 /* RiveStateMachine.mm */; };
-		046FB7FA264EAA60000129B1 /* RiveLinearAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7EA264EAA60000129B1 /* RiveLinearAnimation.mm */; };
 		046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7EB264EAA60000129B1 /* RiveSMIInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7EC264EAA60000129B1 /* RiveArtboard.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		046FB7FD264EAA61000129B1 /* RiveLinearAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7ED264EAA60000129B1 /* RiveLinearAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7EE264EAA60000129B1 /* RiveStateMachine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7EF264EAA60000129B1 /* RiveFile.mm */; };
 		046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -81,10 +79,8 @@
 		046FB7E7264EAA5F000129B1 /* RiveFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveFile.h; sourceTree = "<group>"; };
 		046FB7E8264EAA5F000129B1 /* RiveStateMachineInstance.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveStateMachineInstance.mm; sourceTree = "<group>"; };
 		046FB7E9264EAA5F000129B1 /* RiveStateMachine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveStateMachine.mm; sourceTree = "<group>"; };
-		046FB7EA264EAA60000129B1 /* RiveLinearAnimation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveLinearAnimation.mm; sourceTree = "<group>"; };
 		046FB7EB264EAA60000129B1 /* RiveSMIInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveSMIInput.h; sourceTree = "<group>"; };
 		046FB7EC264EAA60000129B1 /* RiveArtboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveArtboard.h; sourceTree = "<group>"; };
-		046FB7ED264EAA60000129B1 /* RiveLinearAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveLinearAnimation.h; sourceTree = "<group>"; };
 		046FB7EE264EAA60000129B1 /* RiveStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachine.h; sourceTree = "<group>"; };
 		046FB7EF264EAA60000129B1 /* RiveFile.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveFile.mm; sourceTree = "<group>"; };
 		046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveStateMachineInstance.h; sourceTree = "<group>"; };
@@ -153,7 +149,6 @@
 			children = (
 				046FB7EC264EAA60000129B1 /* RiveArtboard.h */,
 				046FB7E7264EAA5F000129B1 /* RiveFile.h */,
-				046FB7ED264EAA60000129B1 /* RiveLinearAnimation.h */,
 				046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */,
 				046FB7EB264EAA60000129B1 /* RiveSMIInput.h */,
 				046FB7EE264EAA60000129B1 /* RiveStateMachine.h */,
@@ -193,7 +188,6 @@
 				046FB801264EB632000129B1 /* include */,
 				046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */,
 				046FB7EF264EAA60000129B1 /* RiveFile.mm */,
-				046FB7EA264EAA60000129B1 /* RiveLinearAnimation.mm */,
 				046FB7E4264EAA5F000129B1 /* RiveLinearAnimationInstance.mm */,
 				046FB7E5264EAA5F000129B1 /* RiveSMIInput.mm */,
 				046FB7E9264EAA5F000129B1 /* RiveStateMachine.mm */,
@@ -283,7 +277,6 @@
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
 				2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */,
-				046FB7FD264EAA61000129B1 /* RiveLinearAnimation.h in Headers */,
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
 				046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */,
 				046FB7FE264EAA61000129B1 /* RiveStateMachine.h in Headers */,
@@ -413,7 +406,6 @@
 				046FB7F9264EAA60000129B1 /* RiveStateMachine.mm in Sources */,
 				2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
-				046FB7FA264EAA60000129B1 /* RiveLinearAnimation.mm in Sources */,
 				C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */,
 				046FB7F5264EAA60000129B1 /* RiveSMIInput.mm in Sources */,
 				C9002A20263C76080011556B /* RiveView.swift in Sources */,

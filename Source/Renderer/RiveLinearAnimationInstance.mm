@@ -16,19 +16,13 @@
     rive::LinearAnimationInstance *instance;
 }
 
-- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation
-                         artboard:(RiveArtboard *)artboard {
+- (instancetype)initWithAnimationInstance:(const rive::LinearAnimationInstance *)instance {
     if (self = [super init]) {
-        instance = new rive::LinearAnimationInstance(riveAnimation, artboard.artboardInstance);
+        instance = instance;
         return self;
     } else {
         return nil;
     }
-}
-
-- (RiveLinearAnimation *)animation {
-    const rive::LinearAnimation *linearAnimation = instance->animation();
-    return [[RiveLinearAnimation alloc] initWithAnimation: linearAnimation];
 }
 
 - (float)time {
@@ -63,6 +57,20 @@
 
 - (bool)didLoop {
     return instance->didLoop();
+}
+
+- (NSInteger)fps {
+    return instance->fps();
+}
+
+- (float)endTime {
+    return 0;
+    /*
+    if (instance->enableWorkArea()){
+        return instance->workEnd()/instance->fps();
+    }
+    return instance->duration()/instance->fps();
+     */
 }
 
 - (NSString *)name {

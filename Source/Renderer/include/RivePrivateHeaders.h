@@ -78,14 +78,7 @@
  * RiveLinearAnimationInstance interface
  */
 @interface RiveLinearAnimationInstance ()
-- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation artboard:(RiveArtboard *)artboard;
-@end
-
-/*
- * RiveLinearAnimation interface
- */
-@interface RiveLinearAnimation ()
-- (instancetype) initWithAnimation:(const rive::LinearAnimation *)riveAnimation;
+- (instancetype)initWithAnimationInstance:(rive::LinearAnimationInstance *)instance;
 @end
 
 /*

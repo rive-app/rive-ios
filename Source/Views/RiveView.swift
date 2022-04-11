@@ -836,7 +836,7 @@ extension RiveView {
             guard let guardedArtboard = _artboard else {
                 return []
             }
-            let animationInstance = try guardedArtboard.animation(fromName: animationName).instance(with:guardedArtboard)
+            let animationInstance = try guardedArtboard.animation(fromName: animationName)
             return [animationInstance]
         }
         return animationInstances
@@ -872,7 +872,7 @@ extension RiveView {
     
     private func _animations(animationNames: [String]) -> [RiveLinearAnimationInstance] {
         return animations.filter { animationInstance in
-            animationNames.contains(animationInstance.animation().name())
+            animationNames.contains(animationInstance.name())
         }
     }
     
@@ -896,7 +896,7 @@ extension RiveView {
         }
         if !animations.contains(animationInstance) {
             if direction == .directionBackwards {
-                animationInstance.setTime(animationInstance.animation().endTime())
+                animationInstance.setTime(animationInstance.endTime())
             }
             animations.append(
                 animationInstance

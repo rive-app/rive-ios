@@ -22,9 +22,11 @@
     }
 }
 
+/*
 - (RiveLinearAnimation *)animation{
     return [[RiveLinearAnimation alloc] initWithAnimation: ((const rive::AnimationState *)instance)->animation()];
 };
+ */
 
 - (bool)isEntryState {
     return instance->is<rive::EntryState>();
@@ -73,7 +75,8 @@
 @implementation RiveAnimationState
 
 - (NSString *)name{
-    return [[self animation] name];
+//    return [[self animation] name];
+    return nil;
 }
 @end
 

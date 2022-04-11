@@ -28,34 +28,26 @@
 }
 
 // Returns the first animation in the artboard, or null if it has none
-- (RiveLinearAnimation *)firstAnimation:(NSError**) error {
-    rive::LinearAnimation *animation = _artboardInstance->firstAnimation();
-    if (animation == nullptr) {
-        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoAnimations userInfo:@{NSLocalizedDescriptionKey: @"No Animations found.", @"name": @"NoAnimations"}];
-        return nil;
-    }
-    else {
-        return [[RiveLinearAnimation alloc] initWithAnimation:animation];
-    }
-    
+- (RiveLinearAnimationInstance *)firstAnimation:(NSError**) error {
+    return [self animationFromIndex:0 error:error];
 }
 
-- (RiveLinearAnimation *)animationFromIndex:(NSInteger)index error:(NSError**) error {
-    if (index < 0 || index >= [self animationCount]) {
+- (RiveLinearAnimationInstance *)animationFromIndex:(NSInteger)index error:(NSError**) error {
+    auto animInst = _artboardInstance->animationAt(index);
+    if (animInst == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoAnimationFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Animation found at index %ld.", (long)index], @"name": @"NoAnimationFound"}];
         return nil;
     }
-    return [[RiveLinearAnimation alloc] initWithAnimation: _artboardInstance->animation(index)];
+    return [[RiveLinearAnimationInstance alloc] initWithAnimationInstance:animInst.release()];
 }
 
-- (RiveLinearAnimation *)animationFromName:(NSString *)name error:(NSError**) error {
-    std::string stdName = std::string([name UTF8String]);
-    rive::LinearAnimation *animation = _artboardInstance->animation(stdName);
-    if (animation == nullptr) {
+- (RiveLinearAnimationInstance *)animationFromName:(NSString *)name error:(NSError**) error {
+    auto animInst = _artboardInstance->animationNamed(std::string([name UTF8String]));
+    if (animInst == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoAnimationFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Animation found with name %@.", name], @"name": @"NoAnimationFound"}];
         return nil;
     }
-    return [[RiveLinearAnimation alloc] initWithAnimation: animation];
+    return [[RiveLinearAnimationInstance alloc] initWithAnimationInstance:animInst.release()];
 }
 
 - (NSArray *)animationNames{

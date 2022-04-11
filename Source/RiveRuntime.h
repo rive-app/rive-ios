@@ -19,7 +19,6 @@ FOUNDATION_EXPORT const unsigned char RiveRuntimeVersionString[];
 #import <RiveRuntime/LayerState.h>
 #import <RiveRuntime/RiveFile.h>
 #import <RiveRuntime/RiveArtboard.h>
-#import <RiveRuntime/RiveLinearAnimation.h>
 #import <RiveRuntime/RiveSMIInput.h>
 #import <RiveRuntime/RiveStateMachine.h>
 #import <RiveRuntime/RiveStateMachineInput.h>

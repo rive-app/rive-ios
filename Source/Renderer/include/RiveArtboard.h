@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RiveLinearAnimation;
+@class RiveLinearAnimationInstance;
 @class RiveStateMachine;
 @class RiveRenderer;
 
@@ -28,9 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)animationCount;
 - (NSArray<NSString *> *)animationNames;
-- (RiveLinearAnimation * __nullable)firstAnimation:(NSError **)error;
-- (RiveLinearAnimation * __nullable)animationFromIndex:(NSInteger)index error:(NSError **)error;
-- (RiveLinearAnimation * __nullable)animationFromName:(NSString *)name error:(NSError **)error;
+- (RiveLinearAnimationInstance * __nullable)firstAnimation:(NSError **)error;
+- (RiveLinearAnimationInstance * __nullable)animationFromIndex:(NSInteger)index error:(NSError **)error;
+- (RiveLinearAnimationInstance * __nullable)animationFromName:(NSString *)name error:(NSError **)error;
 
 - (NSInteger)stateMachineCount;
 - (NSArray<NSString *> *)stateMachineNames;
