@@ -23,44 +23,61 @@ struct RiveComponents: DismissableView {
     @State var sliderController: RiveController = RiveController()
     
     var slider = RViewModel.riveslider
+    var bird = RViewModel(RModel(fileName: "bird", stateMachineName: "State Machine 1"))
+    var rswitch = RViewModel(RModel(fileName: "switch"))
+    
+    // TODO: Some views don't display in a ScrollView
+    // - The bird and slider don't display
+    // - The switch does
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("RiveButton:")
-                RiveButton(resource: "pull") {
-                    print("Button tapped")
-                }
-            }
-            HStack {
-                Text("RiveSwitch:")
-                RiveSwitch(resource: "switch") { on in
-                    print("switch is \(on ? "on" : "off")")
-                }
-            }
+        ScrollView {
             VStack {
-                Text("RiveProgressBar:")
-                RiveProgressBar(resource: "energy_bar_example", controller: sliderController)
-            }
-            
-            VStack {
-                Text("New - RiveSlider")
-                slider.view
-            }
-            
-            Slider(value: Binding(get: {
-                self.health
-            }, set: { (newVal) in
-                self.health = newVal
-                try? self.sliderController.setNumberState(
-                    "State Machine ",
-                    inputName: "Energy",
-                    value: Float(newVal)
-                )
+                bird.view
+                    .frame(width: 500, height: 500, alignment: .center)
                 
-                try? slider.setInput("FillPercent", value: newVal)
-            }), in: 0...100)
-            .padding()
+                HStack {
+                    Text("RiveButton:")
+                    RiveButton(resource: "pull") {
+                        print("Button tapped")
+                    }
+                }
+                HStack {
+                    Text("RiveSwitch:")
+                    RiveSwitch(resource: "switch") { on in
+                        print("switch is \(on ? "on" : "off")")
+                    }
+                    
+                    // Just a quick hack switch made with the new components
+                    rswitch.view
+                        .onTapGesture {
+                            rswitch.stop()
+                            try? rswitch.play(animationName: "On")
+                        }
+                }
+                VStack {
+                    Text("RiveProgressBar:")
+                    RiveProgressBar(resource: "energy_bar_example", controller: sliderController)
+                }
+                VStack {
+                    Text("New - RiveSlider")
+                    slider.view
+                }
+                
+                Slider(value: Binding(get: {
+                    self.health
+                }, set: { (newVal) in
+                    self.health = newVal
+                    try? self.sliderController.setNumberState(
+                        "State Machine ",
+                        inputName: "Energy",
+                        value: Float(newVal)
+                    )
+                    
+                    try? slider.setInput("FillPercent", value: newVal)
+                }), in: 0...100)
+                .padding()
+            }
         }
     }
 }

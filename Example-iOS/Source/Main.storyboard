@@ -179,7 +179,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ds8-bv-afK" customClass="RView" customModule="RiveRuntime">
-                                <rect key="frame" x="20" y="88" width="394" height="594"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="684"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="NxR-px-RAW">
@@ -192,9 +192,9 @@
                         <viewLayoutGuide key="safeArea" id="8Hm-wn-wbm"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="NxR-px-RAW" firstAttribute="top" secondItem="ds8-bv-afK" secondAttribute="bottom" constant="100" id="DoR-99-P5v"/>
+                            <constraint firstItem="NxR-px-RAW" firstAttribute="top" secondItem="ds8-bv-afK" secondAttribute="bottom" constant="10" id="DoR-99-P5v"/>
                             <constraint firstItem="8Hm-wn-wbm" firstAttribute="trailing" secondItem="ds8-bv-afK" secondAttribute="trailing" id="Lvh-YZ-VBm"/>
-                            <constraint firstItem="ds8-bv-afK" firstAttribute="leading" secondItem="8Hm-wn-wbm" secondAttribute="leading" constant="20" id="fM5-BD-F9E"/>
+                            <constraint firstItem="ds8-bv-afK" firstAttribute="leading" secondItem="8Hm-wn-wbm" secondAttribute="leading" id="fM5-BD-F9E"/>
                             <constraint firstItem="NxR-px-RAW" firstAttribute="leading" secondItem="8Hm-wn-wbm" secondAttribute="leading" constant="20" id="nzv-Zh-9mk"/>
                             <constraint firstItem="8Hm-wn-wbm" firstAttribute="trailing" secondItem="NxR-px-RAW" secondAttribute="trailing" constant="20" id="uhC-uQ-0EU"/>
                             <constraint firstItem="ds8-bv-afK" firstAttribute="top" secondItem="8Hm-wn-wbm" secondAttribute="top" id="vZO-P8-cqR"/>
