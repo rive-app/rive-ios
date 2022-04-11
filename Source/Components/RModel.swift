@@ -8,12 +8,12 @@
 
 import Foundation
 
-public struct RModel { // TODO: Rename to RAssetState
+public struct RModel {
     /// The web address from which to load the `RiveFile`
-    public let webURL: String? = nil
+    public var webURL: String? = nil
     
     /// The name of the file from which to load the .riv file
-    public let fileName: String?
+    public var fileName: String? = nil
     
     /// Specifies how and if the animation should be resized to fit its container
     public var fit: RiveRuntime.Fit = .fitContain
@@ -45,9 +45,40 @@ public struct RModel { // TODO: Rename to RAssetState
         + "State Machine: [" + (stateMachineName ?? "None") + "]/n"
     }
     
-    public init(fileName: String?, stateMachineName: String? = nil) {
+    public init(
+        fileName: String?,
+        stateMachineName: String? = nil,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoplay: Bool = true,
+        artboardName: String? = nil,
+        animationName: String? = nil
+    ) {
         self.fileName = fileName
         self.stateMachineName = stateMachineName
+        self.fit = fit
+        self.alignment = alignment
+        self.autoplay = autoplay
+        self.artboardName = artboardName
+        self.animationName = animationName
+    }
+    
+    public init(
+        webURL: String?,
+        stateMachineName: String? = nil,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoplay: Bool = true,
+        artboardName: String? = nil,
+        animationName: String? = nil
+    ) {
+        self.webURL = webURL
+        self.stateMachineName = stateMachineName
+        self.fit = fit
+        self.alignment = alignment
+        self.autoplay = autoplay
+        self.artboardName = artboardName
+        self.animationName = animationName
     }
 }
 

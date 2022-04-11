@@ -54,7 +54,9 @@ class ExamplesViewController: UIViewController {
     }
     
     @IBSegueAction func showUIKitSlider(_ coder: NSCoder) -> SimpleSliderViewController? {
-        return SimpleSliderViewController(coder: coder)
+        let controller = SimpleSliderViewController(coder: coder)
+        
+        return controller
     }
 }
 
