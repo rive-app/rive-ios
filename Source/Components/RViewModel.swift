@@ -82,7 +82,7 @@ extension RViewModel {
     /// This can be used to connect with and configure an `RView` that was created elsewhere.
     /// Does not need to be called when updating an already configured `RView`
     /// - Parameter view: the `Rview` that this `RViewModel` will maintain
-    public func configure(rview view: RView) {
+    @objc open func configure(rview view: RView) {
         register(view: view)
         
         guard let fileName = fileName else {
