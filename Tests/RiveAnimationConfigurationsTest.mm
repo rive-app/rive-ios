@@ -108,17 +108,15 @@
     XCTAssertEqual([animation workEnd], 50);
 
     // These calculations may have some floating error, as they are approximate
+    const float accuracy = 0.0000001;
 
-    // these are currently failing: TODO: fix tme
-    if (false) {
-        // seconds = duation / fps = 20/60
-        float secs = 20.0 / 60.0;
-        XCTAssertEqual([animation effectiveDurationInSeconds], secs);
+    // seconds = duation / fps = 20/60
+    const float secs = 20.0 / 60.0;
+    XCTAssertEqualWithAccuracy([animation effectiveDurationInSeconds], secs, accuracy);
 
-        // time = effectiveDuration / fps = 50/60
-        float time = 50.0 / 60.0;
-        XCTAssertEqual([animation endTime], time);
-    }
+    // time = effectiveDuration / fps = 50/60
+    const float time = 50.0 / 60.0;
+    XCTAssertEqualWithAccuracy([animation endTime], time, accuracy);
 }
 
 /*
