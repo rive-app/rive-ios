@@ -57,14 +57,16 @@
 }
 
 - (float)effectiveDurationInSeconds {
-    return [self effectiveDuration] / [self fps];
+    float ifps = 1.0 / animation->fps();
+    return [self effectiveDuration] * ifps;
 }
 
 - (float)endTime {
+    float ifps = 1.0 / animation->fps();
     if (animation->enableWorkArea()){
-        return animation->workEnd()/animation->fps();
+        return animation->workEnd() * ifps;
     }
-    return animation->duration()/animation->fps();
+    return animation->duration() * ifps;
 }
 
 - (NSInteger)fps {
