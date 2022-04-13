@@ -78,7 +78,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y7T-yB-thu">
                                         <rect key="frame" x="0.0" y="230.5" width="414" height="31"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="filled" title="New UIKit Example"/>
+                                        <buttonConfiguration key="configuration" style="filled" title="Interactable Slider"/>
                                         <connections>
                                             <segue destination="nXP-c2-Cpg" kind="show" destinationCreationSelector="showUIKitSlider:" id="NDt-Ho-xN4"/>
                                         </connections>
@@ -98,7 +98,7 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5d-hg-cnK">
                                         <rect key="frame" x="0.0" y="312" width="414" height="30"/>
-                                        <state key="normal" title="SwiftUI Components"/>
+                                        <state key="normal" title="Sample Widgets"/>
                                         <connections>
                                             <segue destination="yNC-ze-bA4" kind="show" destinationCreationSelector="showRiveComponents:" id="9dn-S5-TjE"/>
                                         </connections>
@@ -148,7 +148,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dcW-li-yCR">
                                         <rect key="frame" x="0.0" y="522" width="414" height="31"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="filled" title="New SwiftUI Example"/>
+                                        <buttonConfiguration key="configuration" style="filled" title="Interactable Slider"/>
                                         <connections>
                                             <action selector="showSwiftUISlider:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="xFo-zd-VnN"/>
                                         </connections>

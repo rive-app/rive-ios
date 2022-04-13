@@ -44,19 +44,13 @@ class ExamplesViewController: UIViewController {
         return HostingController<SwiftMeshAnimation>(coder: coder)
     }
     
-    @IBSegueAction func showSimpleSlider(_ coder: NSCoder) -> UIViewController? {
-        let sliderViewModel = RViewModel.riveslider
-        return UIHostingController(coder: coder, rootView: sliderViewModel.view())
-    }
     @IBAction func showSwiftUISlider(_ sender: Any) {
-        let controller = UIHostingController(rootView: RViewModel.riveslider.view())
+        let controller = UIHostingController(rootView: RSlider().view())
         navigationController?.pushViewController(controller, animated: true)
     }
     
     @IBSegueAction func showUIKitSlider(_ coder: NSCoder) -> SimpleSliderViewController? {
-        let controller = SimpleSliderViewController(coder: coder)
-        
-        return controller
+        return SimpleSliderViewController(coder: coder)
     }
     
     @IBSegueAction func showUIKitMultiAnimations(_ coder: NSCoder) -> MultipleAnimationsController? {

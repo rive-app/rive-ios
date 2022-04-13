@@ -54,6 +54,7 @@
 		C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E6127FDCBC6008652FD /* SimpleSlider.swift */; };
 		C3D187F3280751A8008B739A /* RProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RProgressBar.swift */; };
 		C3D187F728075B6C008B739A /* riveslider.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F628075B6C008B739A /* riveslider.riv */; };
+		C3D187F9280770EA008B739A /* truck.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F8280770EA008B739A /* truck.riv */; };
 		C9A84F38264495600014D8E0 /* RiveExplorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F37264495600014D8E0 /* RiveExplorer.swift */; };
 		C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */; };
 		C9A84F602644AB6B0014D8E0 /* RiveExplorerBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5F2644AB6B0014D8E0 /* RiveExplorerBridge.swift */; };
@@ -150,6 +151,7 @@
 		C3468E6127FDCBC6008652FD /* SimpleSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSlider.swift; sourceTree = "<group>"; };
 		C3D187F2280751A8008B739A /* RProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RProgressBar.swift; sourceTree = "<group>"; };
 		C3D187F628075B6C008B739A /* riveslider.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider.riv; sourceTree = "<group>"; };
+		C3D187F8280770EA008B739A /* truck.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck.riv; sourceTree = "<group>"; };
 		C9A84F37264495600014D8E0 /* RiveExplorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveExplorer.swift; sourceTree = "<group>"; };
 		C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesViewController.swift; sourceTree = "<group>"; };
 		C9A84F5F2644AB6B0014D8E0 /* RiveExplorerBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveExplorerBridge.swift; sourceTree = "<group>"; };
@@ -260,6 +262,7 @@
 				042C88CB2644447400E7DBB2 /* ui_swipe_left_to_delete.riv */,
 				042C88DA2644447500E7DBB2 /* vader.riv */,
 				042C88C92644447400E7DBB2 /* wacky.riv */,
+				C3D187F8280770EA008B739A /* truck.riv */,
 				C9BD3925263B5FC700696C37 /* truck_v7.riv */,
 				046AFA6E2673AF04004ED497 /* blendmodes.riv */,
 			);
@@ -446,6 +449,7 @@
 				042C88DE2644447500E7DBB2 /* rope.riv in Resources */,
 				0480028B2729AA4400F7132B /* clean_icon_set.riv in Resources */,
 				04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */,
+				C3D187F9280770EA008B739A /* truck.riv in Resources */,
 				C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */,
 				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
 				042C88E52644447500E7DBB2 /* explorer.riv in Resources */,
