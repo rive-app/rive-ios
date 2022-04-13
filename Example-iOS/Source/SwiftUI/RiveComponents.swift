@@ -38,26 +38,27 @@ struct RiveComponents: DismissableView {
                     VStack {
                         Text("Bird Animation")
                         bird.view()
-                            .aspectRatio(1, contentMode: .fill)
+                            .frame(maxWidth: .infinity)
+                            .aspectRatio(1, contentMode: .fit)
                     }
-                    
                     Spacer().padding()
+                    
                     HStack {
                         Text("RButton:")
                         RButton().view {
                             print("Button tapped")
                         }
                     }
-                    
                     Spacer().padding()
+                    
                     HStack {
                         Text("RSwitch:")
                         rswitch.view { on in
                             print("The switch is " + (on ? "on" : "off"))
                         }
                     }
-                    
                     Spacer().padding()
+                    
                     VStack {
                         Text("RProgressBar:")
                         rprogress.formattedView()
@@ -73,16 +74,19 @@ struct RiveComponents: DismissableView {
                         ), in: 0...100)
                         .padding(.leading).padding(.trailing)
                     }
-                    
                     Spacer().padding()
-                    VStack {
+                    
+                    HStack {
                         Text("RSlider:")
-                        rslider.formattedView()
+                            .padding()
+                        rslider.view()
                     }
+                    .padding()
                 }
             }
             .foregroundColor(.white)
         }
+        .frame(maxWidth: .infinity)
     }
 }
 
