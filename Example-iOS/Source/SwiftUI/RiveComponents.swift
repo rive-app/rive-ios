@@ -42,8 +42,8 @@ struct RiveComponents: DismissableView {
                     Spacer().padding()
                     HStack {
                         Text("RButton:")
-                        RButton(fileName: "pull").view {
-                                print("Button tapped")
+                        RButton().view {
+                            print("Button tapped")
                         }
                     }
                     
