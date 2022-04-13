@@ -46,6 +46,8 @@
 		04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		04DB5938266A348C0020A7E8 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
+		C324DB5628071EB80060589F /* RSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5528071EB80060589F /* RSwitch.swift */; };
+		C324DB5B2807216B0060589F /* RSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5A2807216B0060589F /* RSlider.swift */; };
 		C3460A002800A6CE002DBCB7 /* bird.riv in Resources */ = {isa = PBXBuildFile; fileRef = C34609FD2800A6CE002DBCB7 /* bird.riv */; };
 		C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E6127FDCBC6008652FD /* SimpleSlider.swift */; };
 		C3CDFAB827E445A3005CC341 /* riveslider7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3CDFAB727E445A3005CC341 /* riveslider7.riv */; };
@@ -64,8 +66,6 @@
 		C9D3DE60264F3B84001BA265 /* RiveProgressBarBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D3DE5F264F3B84001BA265 /* RiveProgressBarBridge.swift */; };
 		C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9D3DE67264F49F4001BA265 /* life_bar.riv */; };
 		C9E0409D264DEAA2009ABC7C /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E0409C264DEAA2009ABC7C /* RiveButton.swift */; };
-		C9E0409F264DF1A3009ABC7C /* RiveSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E0409E264DF1A3009ABC7C /* RiveSwitch.swift */; };
-		C9E040A7264DF95C009ABC7C /* RiveSwitchBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E040A6264DF95C009ABC7C /* RiveSwitchBridge.swift */; };
 		C9E040A9264DFCFD009ABC7C /* switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9E040A8264DFCFD009ABC7C /* switch.riv */; };
 		E5A7874A27E115170056F24B /* energy_bar_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874727E115170056F24B /* energy_bar_example.riv */; };
 		E5A7874C27E1158E0056F24B /* prop_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874B27E1158E0056F24B /* prop_example.riv */; };
@@ -142,6 +142,8 @@
 		04C4C83D2646FE410047E614 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		04D5B069266A460C004ACA5B /* nothing.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nothing.riv; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
+		C324DB5528071EB80060589F /* RSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSwitch.swift; sourceTree = "<group>"; };
+		C324DB5A2807216B0060589F /* RSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSlider.swift; sourceTree = "<group>"; };
 		C34609FD2800A6CE002DBCB7 /* bird.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = bird.riv; sourceTree = "<group>"; };
 		C3468E6127FDCBC6008652FD /* SimpleSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSlider.swift; sourceTree = "<group>"; };
 		C3CDFAB727E445A3005CC341 /* riveslider7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider7.riv; sourceTree = "<group>"; };
@@ -162,8 +164,6 @@
 		C9D3DE5F264F3B84001BA265 /* RiveProgressBarBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveProgressBarBridge.swift; sourceTree = "<group>"; };
 		C9D3DE67264F49F4001BA265 /* life_bar.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = life_bar.riv; sourceTree = "<group>"; };
 		C9E0409C264DEAA2009ABC7C /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
-		C9E0409E264DF1A3009ABC7C /* RiveSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitch.swift; sourceTree = "<group>"; };
-		C9E040A6264DF95C009ABC7C /* RiveSwitchBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitchBridge.swift; sourceTree = "<group>"; };
 		C9E040A8264DFCFD009ABC7C /* switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = switch.riv; sourceTree = "<group>"; };
 		E5A7874727E115170056F24B /* energy_bar_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = energy_bar_example.riv; sourceTree = "<group>"; };
 		E5A7874B27E1158E0056F24B /* prop_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = prop_example.riv; sourceTree = "<group>"; };
@@ -215,6 +215,17 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
+		C324DB592807202A0060589F /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				C324DB5528071EB80060589F /* RSwitch.swift */,
+				C324DB5A2807216B0060589F /* RSlider.swift */,
+				C9D3DE55264F3080001BA265 /* Button */,
+				C9D3DE5C264F3B5C001BA265 /* ProgressBar */,
+			);
+			path = Widgets;
+			sourceTree = "<group>";
+		};
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -257,10 +268,7 @@
 		C9A84F342644931E0014D8E0 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
-				C9D3DE5C264F3B5C001BA265 /* ProgressBar */,
 				C9D3DE59264F309F001BA265 /* Explorer */,
-				C9D3DE58264F308B001BA265 /* Switch */,
-				C9D3DE55264F3080001BA265 /* Button */,
 				C9CB2F12264C92D200E7FF0D /* RiveComponents.swift */,
 				04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */,
 				04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */,
@@ -294,6 +302,7 @@
 			isa = PBXGroup;
 			children = (
 				04A8F6C226452F25002C909A /* lib */,
+				C324DB592807202A0060589F /* Widgets */,
 				C9A84F342644931E0014D8E0 /* SwiftUI */,
 				042C88862643DB2200E7DBB2 /* UIkit */,
 				C9C73E9724FC471E00EF9516 /* AppDelegate.swift */,
@@ -328,15 +337,6 @@
 				C9E0409C264DEAA2009ABC7C /* RiveButton.swift */,
 			);
 			path = Button;
-			sourceTree = "<group>";
-		};
-		C9D3DE58264F308B001BA265 /* Switch */ = {
-			isa = PBXGroup;
-			children = (
-				C9E0409E264DF1A3009ABC7C /* RiveSwitch.swift */,
-				C9E040A6264DF95C009ABC7C /* RiveSwitchBridge.swift */,
-			);
-			path = Switch;
 			sourceTree = "<group>";
 		};
 		C9D3DE59264F309F001BA265 /* Explorer */ = {
@@ -487,12 +487,11 @@
 				C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */,
 				C9CB2F13264C92D200E7FF0D /* RiveComponents.swift in Sources */,
 				042C888E2644230700E7DBB2 /* utility.swift in Sources */,
-				C9E0409F264DF1A3009ABC7C /* RiveSwitch.swift in Sources */,
 				C9D3DE5E264F3B72001BA265 /* RiveProgressBar.swift in Sources */,
 				E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */,
 				042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */,
-				C9E040A7264DF95C009ABC7C /* RiveSwitchBridge.swift in Sources */,
 				C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */,
+				C324DB5628071EB80060589F /* RSwitch.swift in Sources */,
 				04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */,
 				04026DCC27CE3F03002B3DBF /* SwiftLoopMode.swift in Sources */,
 				C9A84F38264495600014D8E0 /* RiveExplorer.swift in Sources */,
@@ -500,6 +499,7 @@
 				C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */,
 				04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */,
 				04BE5438264D604500427B39 /* iosPlayer.swift in Sources */,
+				C324DB5B2807216B0060589F /* RSlider.swift in Sources */,
 				C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */,
 				042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */,
 				C9A84F602644AB6B0014D8E0 /* RiveExplorerBridge.swift in Sources */,

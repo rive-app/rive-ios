@@ -15,11 +15,11 @@ public protocol RPlayerDelegate: AnyObject {
     func stop(animation animationName: String, isStateMachine: Bool)
 }
 
-public protocol RTouchDelegate: AnyObject {
-    func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
-    func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
-    func touchEnded(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
-    func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
+@objc public protocol RTouchDelegate: AnyObject {
+    @objc optional func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
+    @objc optional func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
+    @objc optional func touchEnded(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
+    @objc optional func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
 }
 
 open class RView: RiveRendererView {
@@ -756,27 +756,27 @@ extension RView: RArtboardDelegate {
         let location = touches.first!.location(in: self)
         
         artboard?.touched(at: location, info: 0)
-        touchDelegate?.touchBegan(onArtboard: artboard, atLocation: location)
+        touchDelegate?.touchBegan?(onArtboard: artboard, atLocation: location)
     }
     
     open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
         
         artboard?.touched(at: location, info: 0)
-        touchDelegate?.touchMoved(onArtboard: artboard, atLocation: location)
+        touchDelegate?.touchMoved?(onArtboard: artboard, atLocation: location)
     }
     
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
         
         artboard?.touched(at: location, info: 0)
-        touchDelegate?.touchEnded(onArtboard: artboard, atLocation: location)
+        touchDelegate?.touchEnded?(onArtboard: artboard, atLocation: location)
     }
     
     open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
         
         artboard?.touched(at: location, info: 0)
-        touchDelegate?.touchCancelled(onArtboard: artboard, atLocation: location)
+        touchDelegate?.touchCancelled?(onArtboard: artboard, atLocation: location)
     }
 }

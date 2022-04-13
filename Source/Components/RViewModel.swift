@@ -25,6 +25,11 @@ open class RViewModel: ObservableObject {
     public convenience init(fileName: String) {
         self.init(RModel(fileName: fileName))
     }
+    
+    /// This can be added to the body of a SwiftUI View
+    open func view() -> StandardView {
+        return StandardView(viewModel: self)
+    }
 }
  
 // MARK: - RView
@@ -32,13 +37,13 @@ extension RViewModel {
     // MARK: Lifecycle
     
     /// Makes a new `RView` for its rview property with data from model which will
-    /// replace any previous `RView`
+    /// replace any previous `RView`. This is called when first drawing a `StandardView`.
     public func createRView() -> RView {
         let view: RView
         
-        if let resource = fileName {
+        if let fileName = fileName {
             view = try! RView(
-                resource: resource,
+                resource: fileName,
                 fit: fit,
                 alignment: alignment,
                 autoplay: autoplay,
@@ -47,9 +52,9 @@ extension RViewModel {
                 stateMachine: stateMachineName
             )
         }
-        else if let httpUrl = webURL {
+        else if let webURL = webURL {
             view = try! RView(
-                httpUrl: httpUrl,
+                httpUrl: webURL,
                 fit: fit,
                 alignment: alignment,
                 autoplay: autoplay,
@@ -62,14 +67,15 @@ extension RViewModel {
             view = RView()
         }
         
-        register(view: view)
+        register(rview: view)
         
         return view
     }
     
-    /// Gives updated layout values to the provided `RView`
+    /// Gives updated layout values to the provided `RView`. This is called in
+    /// the process of re-displaying `StandardView`.
     /// - Parameter rview: the `RView` that will be updated
-    public func update(rview: RView) {
+    @objc open func update(rview: RView) {
         if (fit != rview.fit) {
             rview.fit = fit
         }
@@ -80,10 +86,11 @@ extension RViewModel {
     }
     
     /// This can be used to connect with and configure an `RView` that was created elsewhere.
-    /// Does not need to be called when updating an already configured `RView`
+    /// Does not need to be called when updating an already configured `RView`. Useful for
+    /// attaching views created in a `UIViewController` or Storyboard.
     /// - Parameter view: the `Rview` that this `RViewModel` will maintain
-    @objc open func configure(rview view: RView) {
-        register(view: view)
+    @objc open func setView(_ rview: RView) {
+        register(rview: rview)
         
         guard let fileName = fileName else {
             print("RViewModel.register(view:) did not have a fileName")
@@ -95,7 +102,7 @@ extension RViewModel {
             return
         }
         
-        try? rview!.configure(
+        try? self.rview!.configure(
             file,
             artboard: artboardName,
             animation: animationName,
@@ -104,13 +111,14 @@ extension RViewModel {
         )
     }
     
-    /// Assigns the provided `RView` to its rview property
+    /// Assigns the provided `RView` to its rview property. This is called when creating a
+    /// `StandardView`
     /// - Parameter view: the `Rview` that this `RViewModel` will maintain
-    internal func register(view: RView) {
-        rview = view
-        rview!.playerDelegate = self
-        rview!.inputsDelegate = self
-        rview!.stateChangeDelegate = self
+    internal func register(rview: RView) {
+        self.rview = rview
+        self.rview!.playerDelegate = self
+        self.rview!.inputsDelegate = self
+        self.rview!.stateChangeDelegate = self
     }
     
     /// Stops maintaining a connection to any `RView`
@@ -251,11 +259,6 @@ extension RViewModel {
 
 // MARK: - Usable Views
 extension RViewModel {
-    /// This can be added to the body of a SwiftUI View
-    public var view: StandardView {
-        return StandardView(viewModel: self)
-    }
-    
     public struct StandardView: View {
         let viewModel: RViewModel
         

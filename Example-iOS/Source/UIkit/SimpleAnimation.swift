@@ -8,6 +8,7 @@
 
 import UIKit
 import RiveRuntime
+import SwiftUI
 
 //class SimpleAnimationViewController: UIViewController {
 //    let resourceName = "truck_v7"
