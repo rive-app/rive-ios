@@ -14,9 +14,7 @@ struct SwiftSimpleAnimation: DismissableView {
     var dismiss: () -> Void = {}
     
     var body: some View {
-        RiveViewSwift(
-            httpUrl: "https://cdn.rive.app/animations/truck.riv"
-        )
+        RViewModel(fileName: "truck").view()
     }
 }
 

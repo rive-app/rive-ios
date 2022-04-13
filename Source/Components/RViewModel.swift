@@ -94,12 +94,12 @@ extension RViewModel {
         register(rview: rview)
         
         guard let fileName = fileName else {
-            print("RViewModel.register(view:) did not have a fileName")
+            print("RViewModel.setView(_ rview:) did not have a fileName")
             return
         }
         
         guard let file = try? RiveFile(name: fileName) else {
-            print("RViewModel.register(view:) could not create a RiveFile from name: " + fileName)
+            print("RViewModel.setView(_ rview:) could not create a RiveFile from name: " + fileName)
             return
         }
         
@@ -306,14 +306,6 @@ extension RViewModel: RInputDelegate, RStateDelegate {
     
     public func stateChange(_ stateMachineName: String, _ stateName: String) {
         stateChangeAction?(stateMachineName, stateName)
-    }
-}
-
-// MARK: - Test Data
-extension RViewModel {
-    public static var riveslider: RViewModel {
-        let model = RModel(fileName: "riveslider7", stateMachineName: "Slide")
-        return RViewModel(model)
     }
 }
 

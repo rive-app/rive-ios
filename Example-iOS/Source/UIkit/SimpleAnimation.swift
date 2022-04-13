@@ -10,42 +10,15 @@ import UIKit
 import RiveRuntime
 import SwiftUI
 
-//class SimpleAnimationViewController: UIViewController {
-//    let resourceName = "truck_v7"
-//
-//    override public func loadView() {
-//        super.loadView()
-//
-//        let view = RiveView()
-//        view.fit = Fit.fitCover
-//        do{
-//            let riveFile = try RiveFile(resource: resourceName)
-//            try view.configure(riveFile)
-//        } catch {
-//          print(error)
-//        }
-//
-//        self.view = view
-//    }
-//
-//    override public func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//    }
-//}
-
-
 class SimpleAnimationViewController: UIViewController {
-    let url = "https://cdn.rive.app/animations/truck.riv"
-
-    override public func loadView() {
-        super.loadView()
-
-        let view = RiveView()
-        guard let riveFile = RiveFile(httpUrl: url, with: view) else {
-            fatalError("Unable to load RiveFile")
-        }
-        try? view.configure(riveFile)
-
-        self.view = view
+    var viewModel = RViewModel(fileName: "truck")
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        let rview = RView()
+        view.addSubview(rview)
+        viewModel.setView(rview)
+        rview.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
     }
 }
