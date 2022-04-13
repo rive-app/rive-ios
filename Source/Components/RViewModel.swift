@@ -27,7 +27,7 @@ open class RViewModel: ObservableObject, RTouchDelegate {
     }
     
     /// This can be added to the body of a SwiftUI View
-    open func view() -> StandardView {
+    open func view() -> some View {
         return StandardView(viewModel: self)
     }
 }
