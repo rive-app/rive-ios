@@ -67,6 +67,13 @@
     XCTAssertEqual([animation fps], 60);
     XCTAssertEqual([animation workStart], UINT_MAX);
     XCTAssertEqual([animation workEnd], UINT_MAX);
+    
+    // These calculations should be exact
+
+    // seconds = duation / fps = 60/60
+    XCTAssertEqual([animation effectiveDurationInSeconds], 1.0);
+    // time = effectiveDuration / fps = 60/60
+    XCTAssertEqual([animation endTime], 1.0);
 }
 
 /*
@@ -99,6 +106,16 @@
     XCTAssertEqual([animation fps], 60);
     XCTAssertEqual([animation workStart], 30);
     XCTAssertEqual([animation workEnd], 50);
+
+    // These calculations may have some floating error, as they are approximate
+
+    // seconds = duation / fps = 20/60
+    float secs = 20.0 / 60.0;
+    XCTAssertEqual([animation effectiveDurationInSeconds], secs);
+
+    // time = effectiveDuration / fps = 50/60
+    float time = 50.0/60.0;
+    XCTAssertEqual([animation endTime], time);
 }
 
 /*
