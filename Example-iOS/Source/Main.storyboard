@@ -179,32 +179,22 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ds8-bv-afK" customClass="RView" customModule="RiveRuntime">
-                                <rect key="frame" x="0.0" y="88" width="414" height="684"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="NxR-px-RAW">
-                                <rect key="frame" x="18" y="782" width="378" height="31"/>
-                                <connections>
-                                    <action selector="sliderValueChanged:" destination="nXP-c2-Cpg" eventType="valueChanged" id="YV8-7f-YR1"/>
-                                </connections>
-                            </slider>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="8Hm-wn-wbm"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="NxR-px-RAW" firstAttribute="top" secondItem="ds8-bv-afK" secondAttribute="bottom" constant="10" id="DoR-99-P5v"/>
+                            <constraint firstItem="8Hm-wn-wbm" firstAttribute="bottom" secondItem="ds8-bv-afK" secondAttribute="bottom" id="I43-Vk-S9v"/>
                             <constraint firstItem="8Hm-wn-wbm" firstAttribute="trailing" secondItem="ds8-bv-afK" secondAttribute="trailing" id="Lvh-YZ-VBm"/>
                             <constraint firstItem="ds8-bv-afK" firstAttribute="leading" secondItem="8Hm-wn-wbm" secondAttribute="leading" id="fM5-BD-F9E"/>
-                            <constraint firstItem="NxR-px-RAW" firstAttribute="leading" secondItem="8Hm-wn-wbm" secondAttribute="leading" constant="20" id="nzv-Zh-9mk"/>
-                            <constraint firstItem="8Hm-wn-wbm" firstAttribute="trailing" secondItem="NxR-px-RAW" secondAttribute="trailing" constant="20" id="uhC-uQ-0EU"/>
                             <constraint firstItem="ds8-bv-afK" firstAttribute="top" secondItem="8Hm-wn-wbm" secondAttribute="top" id="vZO-P8-cqR"/>
-                            <constraint firstItem="8Hm-wn-wbm" firstAttribute="bottom" secondItem="NxR-px-RAW" secondAttribute="bottom" constant="50" id="wFS-Q2-1lL"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Oiz-Xf-xBD"/>
                     <connections>
                         <outlet property="rview" destination="ds8-bv-afK" id="jOs-Qf-IUZ"/>
-                        <outlet property="uislider" destination="NxR-px-RAW" id="BEm-CC-V0n"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="btb-K4-jol" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

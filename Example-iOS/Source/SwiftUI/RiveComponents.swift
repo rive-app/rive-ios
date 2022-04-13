@@ -22,68 +22,73 @@ struct RiveComponents: DismissableView {
     
     @State var sliderController: RiveController = RiveController()
     
-    var slider = RViewModel.riveslider
+    var slider = RSlider()
     var bird = RViewModel(RModel(fileName: "bird", stateMachineName: "State Machine 1"))
-    var rswitch = RViewModel(RModel(fileName: "switch"))
-    
-    // TODO: Some views don't display in a ScrollView
-    // - The bird and slider don't display
-    // - The switch does
+    var rswitch = RSwitch()
     
     var body: some View {
-        ScrollView {
-            VStack {
-                bird.view
-                    .frame(width: 500, height: 500, alignment: .center)
-                
-                HStack {
-                    Text("RiveButton:")
-                    RiveButton(resource: "pull") {
-                        print("Button tapped")
-                    }
-                }
-                HStack {
-                    Text("RiveSwitch:")
-                    RiveSwitch(resource: "switch") { on in
-                        print("switch is \(on ? "on" : "off")")
+        ZStack {
+            Color.gray
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack {
+                    VStack {
+                        Text("Bird Animation")
+                        bird.view()
+                            .aspectRatio(1, contentMode: .fill)
                     }
                     
-                    // Just a quick hack switch made with the new components
-                    rswitch.view
-                        .onTapGesture {
-                            rswitch.stop()
-                            try? rswitch.play(animationName: "On")
+                    Spacer().padding()
+                    HStack {
+                        Text("RiveButton:")
+                        RiveButton(resource: "pull") {
+                            print("Button tapped")
                         }
-                }
-                VStack {
-                    Text("RiveProgressBar:")
-                    RiveProgressBar(resource: "energy_bar_example", controller: sliderController)
-                }
-                VStack {
-                    Text("New - RiveSlider")
-                    slider.view
-                }
-                
-                Slider(value: Binding(get: {
-                    self.health
-                }, set: { (newVal) in
-                    self.health = newVal
-                    try? self.sliderController.setNumberState(
-                        "State Machine ",
-                        inputName: "Energy",
-                        value: Float(newVal)
-                    )
+                    }
                     
-                    try? slider.setInput("FillPercent", value: newVal)
-                }), in: 0...100)
-                .padding()
+                    Spacer().padding()
+                    HStack {
+                        Text("RSwitch:")
+                        rswitch.view { on in
+                            print("The switch is " + (on ? "on" : "off"))
+                        }
+                    }
+                    
+                    Spacer().padding()
+                    VStack {
+                        Text("RiveProgressBar:")
+                        RiveProgressBar(resource: "energy_bar_example", controller: sliderController)
+                            .aspectRatio(1, contentMode: .fill)
+                        
+                        Slider(value: Binding(get: {
+                            self.health
+                        }, set: { (newVal) in
+                            self.health = newVal
+                            try? self.sliderController.setNumberState(
+                                "State Machine ",
+                                inputName: "Energy",
+                                value: Float(newVal)
+                            )
+                        }), in: 0...100)
+                        .aspectRatio(1, contentMode: .fill)
+                        .padding()
+                    }
+                    
+                    Spacer().padding()
+                    VStack {
+                        Text("RiveSlider - Touch Events")
+                        slider.view()
+                            .aspectRatio(1, contentMode: .fill)
+                    }
+                }
             }
+            .foregroundColor(.white)
         }
     }
 }
 
- 
-struct ExampleStateMachineView_Previews: PreviewProvider {
+struct RiveComponents_Previews: PreviewProvider {
     static var previews: some View {
         RiveComponents()
     }
