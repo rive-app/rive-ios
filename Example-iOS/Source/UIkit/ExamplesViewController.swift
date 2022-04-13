@@ -46,10 +46,10 @@ class ExamplesViewController: UIViewController {
     
     @IBSegueAction func showSimpleSlider(_ coder: NSCoder) -> UIViewController? {
         let sliderViewModel = RViewModel.riveslider
-        return UIHostingController(coder: coder, rootView: sliderViewModel.view)
+        return UIHostingController(coder: coder, rootView: sliderViewModel.view())
     }
     @IBAction func showSwiftUISlider(_ sender: Any) {
-        let controller = UIHostingController(rootView: RViewModel.riveslider.view)
+        let controller = UIHostingController(rootView: RViewModel.riveslider.view())
         navigationController?.pushViewController(controller, animated: true)
     }
     
