@@ -22,9 +22,11 @@ struct RiveComponents: DismissableView {
     
     @State var sliderController: RiveController = RiveController()
     
-    var slider = RSlider()
-    var bird = RViewModel(RModel(fileName: "bird", stateMachineName: "State Machine 1"))
+    var rslider = RSlider()
+    var rprogress = RProgressBar()
     var rswitch = RSwitch()
+    var bird = RViewModel(RModel(fileName: "bird", stateMachineName: "State Machine 1"))
+    
     
     var body: some View {
         ZStack {
@@ -57,29 +59,26 @@ struct RiveComponents: DismissableView {
                     
                     Spacer().padding()
                     VStack {
-                        Text("RiveProgressBar:")
-                        RiveProgressBar(resource: "energy_bar_example", controller: sliderController)
-                            .aspectRatio(1, contentMode: .fill)
+                        Text("RProgressBar:")
+                        rprogress.formattedView()
                         
-                        Slider(value: Binding(get: {
-                            self.health
-                        }, set: { (newVal) in
-                            self.health = newVal
-                            try? self.sliderController.setNumberState(
-                                "State Machine ",
-                                inputName: "Energy",
-                                value: Float(newVal)
-                            )
-                        }), in: 0...100)
+                        Slider(value: Binding(
+                            get: {
+                                health
+                            },
+                            set: { (newVal) in
+                                health = newVal
+                                rprogress.progress = health
+                            }
+                        ), in: 0...100)
                         .aspectRatio(1, contentMode: .fill)
                         .padding()
                     }
                     
                     Spacer().padding()
                     VStack {
-                        Text("RiveSlider - Touch Events")
-                        slider.view()
-                            .aspectRatio(1, contentMode: .fill)
+                        Text("RSlider:")
+                        rslider.formattedView()
                     }
                 }
             }

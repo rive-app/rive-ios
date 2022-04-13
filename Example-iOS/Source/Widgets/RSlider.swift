@@ -7,11 +7,24 @@
 //
 
 import RiveRuntime
+import SwiftUI
 
 class RSlider: RViewModel {
-    init() {
-        let model = RModel(fileName: "riveslider7", stateMachineName: "Slide")
+    var progress: Double {
+        didSet {
+            try? setInput("FillPercent", value: progress)
+        }
+    }
+    
+    init(_ initialProgress: Double = 0) {
+        let model = RModel(fileName: "riveslider7", stateMachineName: "Slide", fit: .fitCover)
+        progress = initialProgress
         super.init(model)
+    }
+    
+    func formattedView() -> some View {
+        return super.view()
+            .aspectRatio(2.5, contentMode: .fill)
     }
     
     func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
@@ -19,7 +32,6 @@ class RSlider: RViewModel {
     }
     
     func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
-        let percent = Float(location.x / rview!.frame.width) * 100
-        try? setInput("FillPercent", value: percent)
+        progress = Double(location.x / rview!.frame.width) * 100
     }
 }
