@@ -38,6 +38,7 @@ extension RViewModel {
     
     /// Makes a new `RView` for its rview property with data from model which will
     /// replace any previous `RView`. This is called when first drawing a `StandardView`.
+    /// - Returns: Reference to the new view that the `RViewModel` will be maintaining
     public func createRView() -> RView {
         let view: RView
         
