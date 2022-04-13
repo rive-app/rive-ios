@@ -14,11 +14,6 @@ class RSlider: RViewModel {
         super.init(model)
     }
     
-    override func setView(_ rview: RView) {
-        super.setView(rview)
-        rview.touchDelegate = self
-    }
-    
     func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
         touchMoved(onArtboard: artboard, atLocation: location)
     }
