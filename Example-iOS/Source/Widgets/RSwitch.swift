@@ -10,6 +10,11 @@ import SwiftUI
 import RiveRuntime
 
 class RSwitch: RViewModel {
+    private let onAnimation: String = "On"
+    private let offAnimation: String = "Off"
+    private let startAnimation: String = "StartOff"
+    
+    var action: ((Bool) -> Void)? = nil
     var isOn = false {
         didSet {
             stop()
@@ -17,12 +22,6 @@ class RSwitch: RViewModel {
             action?(isOn)
         }
     }
-    
-    private let onAnimation: String = "On"
-    private let offAnimation: String = "Off"
-    private let startAnimation: String = "StartOff"
-    
-    var action: ((Bool) -> Void)? = nil
     
     convenience init() {
         self.init(fileName: "switch")
