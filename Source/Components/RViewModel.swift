@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-open class RViewModel: ObservableObject {
+open class RViewModel: ObservableObject, RTouchDelegate {
     /// This can be assigned to already emplaced UIViews or RViews within .xib files or storyboards
     public private(set) var rview: RView?
     public var inputsAction: InputsAction = nil
@@ -119,6 +119,7 @@ extension RViewModel {
         self.rview!.playerDelegate = self
         self.rview!.inputsDelegate = self
         self.rview!.stateChangeDelegate = self
+        self.rview!.touchDelegate = self
     }
     
     /// Stops maintaining a connection to any `RView`

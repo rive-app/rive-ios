@@ -9,7 +9,7 @@
 import SwiftUI
 import RiveRuntime
 
-class RSwitch: RViewModel, RTouchDelegate {
+class RSwitch: RViewModel {
     var isOn = false {
         didSet {
             stop()
@@ -28,11 +28,6 @@ class RSwitch: RViewModel, RTouchDelegate {
         self.init(fileName: "switch")
         fit = .fitCover
         animationName = startAnimation
-    }
-    
-    override func update(rview: RView) {
-        super.update(rview: rview)
-        self.rview!.touchDelegate = self
     }
     
     func view(_ action: ((Bool) -> Void)? = nil) -> some View {

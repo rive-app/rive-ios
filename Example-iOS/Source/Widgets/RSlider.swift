@@ -8,7 +8,7 @@
 
 import RiveRuntime
 
-class RSlider: RViewModel, RTouchDelegate {
+class RSlider: RViewModel {
     init() {
         let model = RModel(fileName: "riveslider7", stateMachineName: "Slide")
         super.init(model)
@@ -16,11 +16,6 @@ class RSlider: RViewModel, RTouchDelegate {
     
     override func setView(_ rview: RView) {
         super.setView(rview)
-        rview.touchDelegate = self
-    }
-    
-    override func update(rview: RView) {
-        super.update(rview: rview)
         rview.touchDelegate = self
     }
     
