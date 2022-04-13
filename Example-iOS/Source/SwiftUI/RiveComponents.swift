@@ -71,8 +71,7 @@ struct RiveComponents: DismissableView {
                                 rprogress.progress = health
                             }
                         ), in: 0...100)
-                        .aspectRatio(1, contentMode: .fill)
-                        .padding()
+                        .padding(.leading).padding(.trailing)
                     }
                     
                     Spacer().padding()
