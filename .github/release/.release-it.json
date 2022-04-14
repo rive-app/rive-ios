@@ -2,6 +2,7 @@
   "git": {
     "commitMessage": "chore: release v${version}",
     "tagName": "${version}",
+    "pushArgs": ["--atomic", "--follow-tags"],
     "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
   },
   "github": {
