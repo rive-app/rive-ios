@@ -11,6 +11,7 @@ import SwiftUI
 
 
 // ok we need to structure this a different way. as we're going to leak memory
+@available(*, deprecated, message: "Use RViewModel instead")
 public class RiveController {
     var riveView: RiveView? = nil
     
@@ -104,6 +105,7 @@ enum RiveViewError: Error {
 }
 
 //  MARK: RiveViewSwift is highly experimental and subject to change without major version changes
+@available(*, deprecated, message: "Use RViewModel instead")
 public struct RiveViewSwift: UIViewRepresentable {
     // TODO: do we want to wrap all of this in @ObservableObject?
     // essentially making our controller, the observableObject

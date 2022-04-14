@@ -10,34 +10,27 @@ import SwiftUI
 import RiveRuntime
 
 struct SwiftMultipleAnimations: DismissableView {
+    private let fileName = "artboard_animations"
     var dismiss: () -> Void = {}
-    
     
     var body: some View {
         ScrollView{
             VStack {
                 Text("Square - go around")
-                RiveViewSwift(
-                    resource: "artboard_animations",
-                    artboard: "Square",
-                    animation:"goaround"
-                ).frame(height:200)
+                RViewModel(fileName: fileName, artboardName: "Square", animationName: "goaround").view()
+                    .frame(height:200)
+                
                 Text("Square - roll around")
-                RiveViewSwift(
-                    resource: "artboard_animations",
-                    artboard: "Square",
-                    animation:"rollaround"
-                ).frame(height:200)
+                RViewModel(fileName: fileName, artboardName: "Square", animationName: "rollaround").view()
+                    .frame(height:200)
+                
                 Text("Circle")
-                RiveViewSwift(
-                    resource: "artboard_animations",
-                    artboard: "Circle"
-                ).frame(height:200)
+                RViewModel(fileName: fileName, artboardName: "Circle").view()
+                    .frame(height:200)
+                
                 Text("Star")
-                RiveViewSwift(
-                    resource: "artboard_animations",
-                    artboard: "Star"
-                ).frame(height:200)
+                RViewModel(fileName: fileName, artboardName: "Star").view()
+                    .frame(height:200)
             }
         }
     }
