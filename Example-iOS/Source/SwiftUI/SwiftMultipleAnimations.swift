@@ -9,6 +9,8 @@
 import SwiftUI
 import RiveRuntime
 
+/// This shows how to utilize one animation file to show content in different artboards and
+/// different animations within those artboards
 struct SwiftMultipleAnimations: DismissableView {
     private let fileName = "artboard_animations"
     var dismiss: () -> Void = {}
