@@ -71,9 +71,9 @@ open class RView: RiveRendererView {
         fit: Fit = .fitContain,
         alignment: Alignment = .alignmentCenter,
         autoplay: Bool = true,
-        artboard: String? = nil,
-        animation: String? = nil,
-        stateMachine: String? = nil,
+        artboardName: String? = nil,
+        animationName: String? = nil,
+        stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
@@ -85,7 +85,7 @@ open class RView: RiveRendererView {
         self.inputsDelegate = inputsDelegate
         self.stateChangeDelegate = stateChangeDelegate
         
-        try configure(riveFile, artboard: artboard, animation: animation, stateMachine: stateMachine, autoPlay: autoplay)
+        try configure(riveFile, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName, autoPlay: autoplay)
     }
     
     /// Constructor with a .riv file name.
@@ -101,26 +101,26 @@ open class RView: RiveRendererView {
     ///   - inputsDelegate: to get callbacks for inputs relevant to a loaded `StateMachine`.
     ///   - stateChangeDelegate: to get callbacks for when the current state of a StateMachine chagnes.
     public init(
-        resource: String,
+        fileName: String,
         fit: Fit = .fitContain,
         alignment: Alignment = .alignmentCenter,
         autoplay: Bool = true,
-        artboard: String? = nil,
-        animation: String? = nil,
-        stateMachine: String? = nil,
+        artboardName: String? = nil,
+        animationName: String? = nil,
+        stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
-        let riveFile = try RiveFile(name: resource)
+        let riveFile = try RiveFile(name: fileName)
         self.fit = fit
         self.alignment = alignment
         self.playerDelegate = playerDelegate
         self.inputsDelegate = inputsDelegate
         self.stateChangeDelegate = stateChangeDelegate
         
-        try configure(riveFile, artboard: artboard, animation: animation, stateMachine: stateMachine, autoPlay: autoplay)
+        try configure(riveFile, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName, autoPlay: autoplay)
     }
     
     /// Constructor with a resource file.
@@ -136,26 +136,26 @@ open class RView: RiveRendererView {
     ///   - inputsDelegate: to get callbacks for inputs relevant to a loaded `StateMachine`.
     ///   - stateChangeDelegate: to get callbacks for when the current state of a StateMachine chagnes.
     public init(
-        httpUrl: String,
+        webURL: String,
         fit: Fit = .fitContain,
         alignment: Alignment = .alignmentCenter,
         autoplay: Bool = true,
-        artboard: String? = nil,
-        animation: String? = nil,
-        stateMachine: String? = nil,
+        artboardName: String? = nil,
+        animationName: String? = nil,
+        stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
-        let riveFile = RiveFile(httpUrl: httpUrl, with:self)!
+        let riveFile = RiveFile(httpUrl: webURL, with:self)!
         self.fit = fit
         self.alignment = alignment
         self.playerDelegate = playerDelegate
         self.inputsDelegate = inputsDelegate
         self.stateChangeDelegate = stateChangeDelegate
         
-        try configure(riveFile, artboard: artboard, animation: animation, stateMachine: stateMachine, autoPlay: autoplay)
+        try configure(riveFile, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName, autoPlay: autoplay)
     }
     
     /// Minimalist constructor, call `.configure` to customize the `RView` later.
@@ -177,22 +177,34 @@ extension RView: RiveFileDelegate {
 
 // MARK: - Configure
 extension RView {
+    
+    // Refactor:
+    // 1. Make a buffer of config settings
+    // - Config settings should be buffered in the RModel
+    // 2. Check that the file is loaded
+    // - RiveFile should be stored in the RModel
+    // 3. Make a new root Artboard using riveFile and artboardName
+    // - The instance of the artboard should be communicated to the RView by the RViewModel
+    // 4. Store instance of the new artboard
+    // 5. If autoplay=true play animation, else advance(0)
+    // - The RModel should communicate that it's done configuring, which should trigger the RViewModel to tell the RView to play or advance(0)
     /// Updates the artboard and layout options
     open func configure(
         _ riveFile: RiveFile,
-        artboard: String? = nil,
-        animation: String? = nil,
-        stateMachine: String? = nil,
+        artboardName: String? = nil,
+        animationName: String? = nil,
+        stateMachineName: String? = nil,
         autoPlay: Bool = true
     ) throws {
         clear()
         
         // Always save the config options to preserve for reset
+// TODO: Zach - Find everywhere the instance's configOptions is needed
         configOptions = ConfigOptions(
             riveFile: riveFile,
-            artboard: artboard ?? configOptions?.artboard,
-            animation: animation ?? configOptions?.animation,
-            stateMachine: stateMachine ?? configOptions?.stateMachine,
+            artboardName: artboardName ?? configOptions?.artboardName,
+            animationName: animationName ?? configOptions?.animationName,
+            stateMachineName: stateMachineName ?? configOptions?.stateMachineName,
             autoPlay: autoPlay  // has a default setting
         )
         
@@ -214,14 +226,18 @@ extension RView {
         )
         
         // Ensure the view's transparent
+        // TODO: Possibly remove this?
+        // - I think this is why the background is black when assigning RViews to the root view of a UIViewController
+        // - What problem was this solving?
         self.isOpaque = false
         
+// TODO: Zach - Find everywhere that the instance's riveFile is needed
         self.riveFile = riveFile
         self.autoPlay = configOptions!.autoPlay
         
         let rootArtboard: RiveArtboard?
         
-        if let artboardName = configOptions?.artboard {
+        if let artboardName = configOptions?.artboardName {
             rootArtboard = try riveFile.artboard(fromName: artboardName)
         } else {
             rootArtboard = try riveFile.artboard()
@@ -239,9 +255,9 @@ extension RView {
         
         // Start the animation loop
         if autoPlay {
-            if let animationName = configOptions?.animation {
+            if let animationName = configOptions?.animationName {
                 try play(animationName: animationName)
-            } else if let stateMachineName = configOptions?.stateMachine {
+            } else if let stateMachineName = configOptions?.stateMachineName {
                 try play(animationName: stateMachineName, isStateMachine: true)
             } else {
                 try play()
@@ -341,6 +357,10 @@ extension RView {
         return !isPlaying
     }
     
+// TODO: Zach - DrawRive is a critical part of RView
+    // Components that it needs:
+    // - an ArtboardInstance
+    // - .align()
     override public func drawRive(_ rect: CGRect, size: CGSize) {
         guard let artboard = artboard else { return }
         let alignmentRect = CGRect(x: rect.origin.x, y: rect.origin.y, width: size.width, height: size.height)
@@ -372,6 +392,13 @@ extension RView {
         lastTime = 0
     }
     
+    
+// TODO: Zach - Tick is a critical part of RView
+    // Components it needs:
+    // - displayLinkProxy
+    // - .advance()
+    // - .stopTimer()
+    // - isPlaying
     /// Start a redraw:
     /// - determine the elapsed time
     /// - advance the artbaord, which will invalidate the display.
@@ -398,6 +425,15 @@ extension RView {
         }
     }
     
+// TODO: Zach - Critical part of RView
+    // - ArtboardInstance
+    // - eventQueue
+    // - total AnimationInstance array
+    // - playing AnimationInstance set
+    // - PlayerDelegate
+    // - total AnimationInstance array
+    // - playing AnimationInstance set
+    // - StateChangeDelegate
     /// Advance all playing animations by a set amount.
     ///
     /// This will also trigger any events for configured delegates.
@@ -447,7 +483,7 @@ extension RView {
         stopTimer()
         if let riveFile = self.riveFile {
             // Calling configure will create a new artboard instance, reseting the animation
-            try configure(riveFile, artboard: artboard, animation: animation, stateMachine: stateMachine, autoPlay: autoPlay)
+            try configure(riveFile, artboardName: artboard, animationName: animation, stateMachineName: stateMachine, autoPlay: autoPlay)
         }
     }
     
