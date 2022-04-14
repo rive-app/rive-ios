@@ -22,8 +22,48 @@ open class RViewModel: ObservableObject, RTouchDelegate {
         self.model = model
     }
     
-    public convenience init(fileName: String) {
-        self.init(RModel(fileName: fileName))
+    public convenience init(
+        fileName: String,
+        stateMachineName: String? = nil,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoplay: Bool = true,
+        artboardName: String? = nil,
+        animationName: String? = nil
+    ) {
+        let model = RModel(
+            fileName: fileName,
+            stateMachineName: stateMachineName,
+            fit: fit,
+            alignment: alignment,
+            autoplay: autoplay,
+            artboardName: artboardName,
+            animationName: animationName
+        )
+        
+        self.init(model)
+    }
+    
+    public convenience init(
+        webURL: String,
+        stateMachineName: String? = nil,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoplay: Bool = true,
+        artboardName: String? = nil,
+        animationName: String? = nil
+    ) {
+        let model = RModel(
+            webURL: webURL,
+            stateMachineName: stateMachineName,
+            fit: fit,
+            alignment: alignment,
+            autoplay: autoplay,
+            artboardName: artboardName,
+            animationName: animationName
+        )
+        
+        self.init(model)
     }
     
     /// This can be added to the body of a SwiftUI View
@@ -44,24 +84,24 @@ extension RViewModel {
         
         if let fileName = fileName {
             view = try! RView(
-                resource: fileName,
+                fileName: fileName,
                 fit: fit,
                 alignment: alignment,
                 autoplay: autoplay,
-                artboard: artboardName,
-                animation: animationName,
-                stateMachine: stateMachineName
+                artboardName: artboardName,
+                animationName: animationName,
+                stateMachineName: stateMachineName
             )
         }
         else if let webURL = webURL {
             view = try! RView(
-                httpUrl: webURL,
+                webURL: webURL,
                 fit: fit,
                 alignment: alignment,
                 autoplay: autoplay,
-                artboard: artboardName,
-                animation: animationName,
-                stateMachine: stateMachineName
+                artboardName: artboardName,
+                animationName: animationName,
+                stateMachineName: stateMachineName
             )
         }
         else {
@@ -105,9 +145,9 @@ extension RViewModel {
         
         try? self.rview!.configure(
             file,
-            artboard: artboardName,
-            animation: animationName,
-            stateMachine: stateMachineName,
+            artboardName: artboardName,
+            animationName: animationName,
+            stateMachineName: stateMachineName,
             autoPlay: autoplay
         )
     }
