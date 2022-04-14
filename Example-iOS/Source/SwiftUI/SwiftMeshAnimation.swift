@@ -10,20 +10,16 @@ import SwiftUI
 import RiveRuntime
 
 struct SwiftMeshAnimation: DismissableView {
-    let controller = RiveController();
+    var tapePlayer = RViewModel(fileName: "prop_example", stateMachineName: "State Machine 1")
     @State var isTapped: Bool = false
     var dismiss: () -> Void = {}
     
     var body: some View {
-        RiveViewSwift(
-            resource: "prop_example",
-            stateMachine: "State Machine 1",
-            controller: controller
-        ).frame(height:200)
+        tapePlayer.view()
+            .aspectRatio(1, contentMode: .fit)
             .onTapGesture {
                 isTapped = !isTapped
-                try? self.controller.setBooleanState("State Machine 1", inputName: "Hover", value: isTapped)
+                try? tapePlayer.setInput("Hover", value: isTapped)
             }
-            
     }
 }
