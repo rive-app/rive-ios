@@ -18,6 +18,8 @@ The `./scripts/configure.sh` script will download or build appropriate libraries
 If you are contributing and you have access to Rives' aws environment, make you sure install `aws-cli` and configure it with your credentials. If you run into permission issues here `aws sts get-caller-identity` can help make sure that your local developer environment is setup to talk to AWS correctly.
 See https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
+Note: on Mac, I just did 'brew install awscli'
+
 Set the `RIVE_UPLOAD_IOS_ARCHIVE` env variable to `TRUE`
 
 `RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh`
@@ -26,6 +28,7 @@ and it will upload caches when feasible.  To force a rebuild, add `rebuild` as a
 
 `RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh rebuild`
 
+Note: the 'dependencies' directory is just a cache of what the configure.sh script downloads. It can be removed if you suspect is is out of date, and then just rerun the script (./scripts/configure.sh)
 
 ## Changing rive-cpp/skia
 
