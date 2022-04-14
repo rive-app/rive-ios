@@ -68,22 +68,18 @@ struct SwiftLoopMode: DismissableView {
             }
             HStack {
                 Text("Pingpong")
-                Button(
-                    "Play",
-                    action:{try? loopy.play(animationName: "pingpong")}
-                )
-                Button(
-                    "OneShot",
-                    action:{try? loopy.play(animationName: "pingpong", loop: .loopOneShot)}
-                )
-                Button(
-                    "Loop",
-                    action:{try? loopy.play(animationName: "pingpong", loop: .loopLoop)}
-                )
-                Button(
-                    "PingPong",
-                    action:{try? loopy.play(animationName: "pingpong", loop: .loopPingPong)}
-                )
+                Button("Play") {
+                    try? loopy.play(animationName: "pingpong")
+                }
+                Button("OneShot") {
+                    try? loopy.play(animationName: "pingpong", loop: .loopOneShot)
+                }
+                Button("Loop") {
+                    try? loopy.play(animationName: "pingpong", loop: .loopLoop)
+                }
+                Button("PingPong") {
+                    try? loopy.play(animationName: "pingpong", loop: .loopPingPong)
+                }
             }
         }
     }
