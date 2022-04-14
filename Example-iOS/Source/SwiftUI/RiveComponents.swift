@@ -14,19 +14,13 @@ struct RiveComponents: DismissableView {
     /// lets UIKit bind to this to trigger dismiss events
     var dismiss: () -> Void = {}
     
-    /// Plays or pauses the button's Rive animation
-    @State var play: Bool = false
-    
     /// Tracks the health value coming from the slide for the progress bar
     @State var health: Double = 0
-    
-    @State var sliderController: RiveController = RiveController()
     
     var rslider = RSlider()
     var rprogress = RProgressBar()
     var rswitch = RSwitch()
     var bird = RViewModel(RModel(fileName: "bird", stateMachineName: "State Machine 1"))
-    
     
     var body: some View {
         ZStack {
@@ -82,11 +76,11 @@ struct RiveComponents: DismissableView {
                         rslider.view()
                     }
                     .padding()
+                    Spacer().padding()
                 }
             }
             .foregroundColor(.white)
         }
-        .frame(maxWidth: .infinity)
     }
 }
 
