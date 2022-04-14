@@ -33,18 +33,18 @@
                                             <segue destination="l4C-BT-Wpi" kind="show" id="LHB-TA-e4W"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mhU-90-IiH">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dCb-q6-0j5">
                                         <rect key="frame" x="0.0" y="50.5" width="414" height="30"/>
+                                        <state key="normal" title="Multiple Animations"/>
+                                        <connections>
+                                            <segue destination="qQy-Yc-tGr" kind="show" destinationCreationSelector="showUIKitMultiAnimations:" id="Tbs-54-2gn"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mhU-90-IiH">
+                                        <rect key="frame" x="0.0" y="80.5" width="414" height="30"/>
                                         <state key="normal" title="Layout"/>
                                         <connections>
                                             <segue destination="6EP-ej-U9V" kind="show" id="3pi-Qq-8fB"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dCb-q6-0j5">
-                                        <rect key="frame" x="0.0" y="80.5" width="414" height="30"/>
-                                        <state key="normal" title="Multiple Animations"/>
-                                        <connections>
-                                            <segue destination="qQy-Yc-tGr" kind="show" id="xDt-M5-1hC"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tdH-Jc-BAa">
@@ -851,7 +851,7 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sxA-17-x8h" customClass="RiveView" customModule="RiveRuntime">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sxA-17-x8h" customClass="RView" customModule="RiveRuntime">
                                                                 <rect key="frame" x="0.0" y="36.5" width="414" height="213.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
@@ -876,7 +876,7 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PJ5-0H-25B" customClass="RiveView" customModule="RiveRuntime">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PJ5-0H-25B" customClass="RView" customModule="RiveRuntime">
                                                                 <rect key="frame" x="0.0" y="36.5" width="414" height="213.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
@@ -901,7 +901,7 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gSn-oV-2AP" customClass="RiveView" customModule="RiveRuntime">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gSn-oV-2AP" customClass="RView" customModule="RiveRuntime">
                                                                 <rect key="frame" x="0.0" y="36.5" width="414" height="213.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
@@ -926,7 +926,7 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JRT-Go-O95" customClass="RiveView" customModule="RiveRuntime">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JRT-Go-O95" customClass="RView" customModule="RiveRuntime">
                                                                 <rect key="frame" x="0.0" y="36.5" width="414" height="213.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
@@ -973,14 +973,14 @@
                             <constraint firstItem="EH2-QA-C7D" firstAttribute="top" secondItem="MCw-1E-F8V" secondAttribute="top" id="lfJ-WO-yFi"/>
                             <constraint firstItem="MCw-1E-F8V" firstAttribute="trailing" secondItem="EH2-QA-C7D" secondAttribute="trailing" id="zfs-Aj-tqJ"/>
                         </constraints>
-                        <connections>
-                            <outlet property="circle" destination="gSn-oV-2AP" id="CxP-ig-ezn"/>
-                            <outlet property="squareGoAround" destination="sxA-17-x8h" id="smM-sS-DJM"/>
-                            <outlet property="squareRollAround" destination="PJ5-0H-25B" id="u1j-1I-Sx6"/>
-                            <outlet property="star" destination="JRT-Go-O95" id="RZ8-zA-5dv"/>
-                        </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Multiple Animations" id="t8D-ky-JFA"/>
+                    <connections>
+                        <outlet property="rviewCircle" destination="gSn-oV-2AP" id="iBS-h3-LRD"/>
+                        <outlet property="rviewSquareGoAround" destination="sxA-17-x8h" id="xeb-CG-jUg"/>
+                        <outlet property="rviewSquareRollAround" destination="PJ5-0H-25B" id="d52-05-xAe"/>
+                        <outlet property="rviewStar" destination="JRT-Go-O95" id="5CF-tW-IxR"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yc7-ml-Tkq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
