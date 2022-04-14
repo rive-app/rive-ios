@@ -9,45 +9,24 @@
 import UIKit
 import RiveRuntime
 
-class MultipleAnimations: UIView {
-    @IBOutlet var squareGoAround: RiveView!
-    @IBOutlet var squareRollAround: RiveView!
-    @IBOutlet var circle: RiveView!
-    @IBOutlet var star: RiveView!
-}
-
 class MultipleAnimationsController: UIViewController {
+    @IBOutlet weak var rviewSquareGoAround: RView!
+    @IBOutlet weak var rviewSquareRollAround: RView!
+    @IBOutlet weak var rviewCircle: RView!
+    @IBOutlet weak var rviewStar: RView!
+    var rSquareGoAround = RViewModel(RModel(fileName: "artboard_animations", artboardName: "Square", animationName: "goaround"))
+    var rSquareRollAround = RViewModel(RModel(fileName: "artboard_animations", artboardName: "Square", animationName: "rollaround"))
+    var rCircle = RViewModel(RModel(fileName: "artboard_animations", artboardName: "Circle"))
+    var rStar = RViewModel(RModel(fileName: "artboard_animations", artboardName: "Star"))
     
-    let loopResourceName = "artboard_animations"
-    
-    override public func loadView()  {
-        super.loadView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        rSquareGoAround.configure(rview: rviewSquareGoAround)
         
-        guard let multipleAnimationView = view as? MultipleAnimations else {
-            fatalError("Could not find LayoutView")
-        }
-        try? multipleAnimationView.squareGoAround.configure(
-            getRiveFile(resourceName: loopResourceName),
-            andArtboard: "Square",
-            andAnimation: "goaround"
-        )
-        try? multipleAnimationView.squareRollAround.configure(
-            getRiveFile(resourceName: loopResourceName),
-            andArtboard: "Square",
-            andAnimation: "rollaround"
-        )
-        try? multipleAnimationView.circle.configure(
-            getRiveFile(resourceName: loopResourceName),
-            andArtboard: "Circle"
-        )
-        try? multipleAnimationView.star?.configure(
-            getRiveFile(resourceName: loopResourceName),
-            andArtboard: "Star"
-        )
-    }
-    
-    override public func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        rSquareRollAround.configure(rview: rviewSquareRollAround)
         
+        rCircle.configure(rview: rviewCircle)
+        
+        rStar.configure(rview: rviewStar)
     }
 }

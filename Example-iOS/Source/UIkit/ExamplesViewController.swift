@@ -58,6 +58,10 @@ class ExamplesViewController: UIViewController {
         
         return controller
     }
+    
+    @IBSegueAction func showUIKitMultiAnimations(_ coder: NSCoder) -> MultipleAnimationsController? {
+        return MultipleAnimationsController(coder: coder)
+    }
 }
 
 fileprivate class HostingController<Content: DismissableView>: UIHostingController<Content> {
