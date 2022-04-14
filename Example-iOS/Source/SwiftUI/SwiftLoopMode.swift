@@ -12,17 +12,23 @@ import RiveRuntime
 struct SwiftLoopMode: DismissableView {
     var dismiss: () -> Void = {}
     
-    let controller = RiveController()
-    var direction = Direction.directionAuto
+    var loopy = RViewModel(fileName: "loopy", autoplay: false)
+//    var direction = Direction.directionAuto
     
     var body: some View {
-        ScrollView{
+        ScrollView {
             VStack {
-                RiveViewSwift(
-                    resource: "loopy", autoplay: false, controller:controller
-                ).frame(height:300)
-                HStack{
-                    Button("Reset", action:{try? controller.reset()})
+//                RiveViewSwift(
+//                    resource: "loopy", autoplay: false, controller:controller
+//                )
+                
+                loopy.view()
+                    .frame(height:300)
+                HStack {
+                    Button("Reset") {
+                        try? loopy.reset()
+                    }
+                    
 //                    TODO: work out direction controls
 //                    Button("Forwards", action:{direction = .directionForwards})
 //                    Button("Auto", action:{direction = .directionAuto})
@@ -30,61 +36,53 @@ struct SwiftLoopMode: DismissableView {
                 }
                 
             }
-            HStack{
-                Text("Animation oneshot")
-                Button(
-                    "Play",
-                    action:{try? controller.play("oneshot")}
-                )
-                Button(
-                    "OneShot",
-                    action:{try? controller.play("oneshot", .loopOneShot)}
-                )
-                Button(
-                    "Loop",
-                    action:{try? controller.play("oneshot", .loopLoop)}
-                )
-                Button(
-                    "PingPong",
-                    action:{try? controller.play("oneshot", .loopPingPong)}
-                )
+            HStack {
+                Text("Oneshot")
+                Button("Play") {
+                    try? loopy.play(animationName: "oneshot")
+                }
+                Button("OneShot") {
+                    try? loopy.play(animationName: "oneshot", loop: .loopOneShot)
+                }
+                Button("Loop") {
+                    try? loopy.play(animationName: "oneshot", loop: .loopLoop)
+                }
+                Button("PingPong") {
+                    try? loopy.play(animationName: "oneshot", loop: .loopPingPong)
+                }
             }
-            HStack{
-                Text("Animation loop")
-                Button(
-                    "Play",
-                    action:{try? controller.play("loop")}
-                )
-                Button(
-                    "OneShot",
-                    action:{try? controller.play("loop", .loopOneShot)}
-                )
-                Button(
-                    "Loop",
-                    action:{try? controller.play("loop", .loopLoop)}
-                )
-                Button(
-                    "PingPong",
-                    action:{try? controller.play("loop", .loopPingPong)}
-                )
+            HStack {
+                Text("Loop")
+                Button("Play") {
+                    try? loopy.play(animationName: "loop")
+                }
+                Button("OneShot") {
+                    try? loopy.play(animationName: "loop", loop: .loopOneShot)
+                }
+                Button("Loop") {
+                    try? loopy.play(animationName: "loop", loop: .loopLoop)
+                }
+                Button("PingPong") {
+                    try? loopy.play(animationName: "loop", loop: .loopPingPong)
+                }
             }
-            HStack{
-                Text("Animation pingpong")
+            HStack {
+                Text("Pingpong")
                 Button(
                     "Play",
-                    action:{try? controller.play("pingpong")}
+                    action:{try? loopy.play(animationName: "pingpong")}
                 )
                 Button(
                     "OneShot",
-                    action:{try? controller.play("pingpong", .loopOneShot)}
+                    action:{try? loopy.play(animationName: "pingpong", loop: .loopOneShot)}
                 )
                 Button(
                     "Loop",
-                    action:{try? controller.play("pingpong", .loopLoop)}
+                    action:{try? loopy.play(animationName: "pingpong", loop: .loopLoop)}
                 )
                 Button(
                     "PingPong",
-                    action:{try? controller.play("pingpong", .loopPingPong)}
+                    action:{try? loopy.play(animationName: "pingpong", loop: .loopPingPong)}
                 )
             }
         }

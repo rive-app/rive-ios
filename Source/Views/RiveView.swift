@@ -90,9 +90,9 @@ class EventQueue {
 /// Stores config options for a RiveFile when rive files load async
 struct ConfigOptions {
     let riveFile: RiveFile
-    var artboard: String? = nil
-    var animation: String? = nil
-    var stateMachine: String?
+    var artboardName: String? = nil
+    var animationName: String? = nil
+    var stateMachineName: String?
     var autoPlay: Bool = true
 }
 
@@ -122,6 +122,7 @@ class CADisplayLinkProxy {
     }
 }
 
+@available(*, deprecated, message: "Use RView instead")
 public class RiveView: RiveRendererView {
     
     deinit {
@@ -351,9 +352,9 @@ extension RiveView {
         // Always save the config options to preserve for reset
         configOptions = ConfigOptions(
             riveFile: riveFile,
-            artboard: artboard ?? configOptions?.artboard,
-            animation: animation ?? configOptions?.animation,
-            stateMachine: stateMachine ?? configOptions?.stateMachine,
+            artboardName: artboard ?? configOptions?.artboardName,
+            animationName: animation ?? configOptions?.animationName,
+            stateMachineName: stateMachine ?? configOptions?.stateMachineName,
             autoPlay: autoPlay  // has a default setting
         )
         
@@ -378,7 +379,7 @@ extension RiveView {
         
         let rootArtboard: RiveArtboard?
         
-        if let artboardName = configOptions?.artboard {
+        if let artboardName = configOptions?.artboardName {
             rootArtboard = try riveFile.artboard(fromName: artboardName)
         } else {
             rootArtboard = try riveFile.artboard()
@@ -395,9 +396,9 @@ extension RiveView {
         
         // Start the animation loop
         if autoPlay {
-            if let animationName = configOptions?.animation {
+            if let animationName = configOptions?.animationName {
                 try play(animationName: animationName)
-            } else if let stateMachineName = configOptions?.stateMachine {
+            } else if let stateMachineName = configOptions?.stateMachineName {
                 try play(animationName: stateMachineName, isStateMachine: true)
             } else {
                 try play()
