@@ -9,24 +9,33 @@
 import UIKit
 import RiveRuntime
 
+/// This shows how to utilize one animation file to show content in different artboards and
+/// different animations within those artboards
 class MultipleAnimationsController: UIViewController {
     @IBOutlet weak var rviewSquareGoAround: RView!
     @IBOutlet weak var rviewSquareRollAround: RView!
     @IBOutlet weak var rviewCircle: RView!
     @IBOutlet weak var rviewStar: RView!
-    var rSquareGoAround = RViewModel(RModel(fileName: "artboard_animations", artboardName: "Square", animationName: "goaround"))
-    var rSquareRollAround = RViewModel(RModel(fileName: "artboard_animations", artboardName: "Square", animationName: "rollaround"))
-    var rCircle = RViewModel(RModel(fileName: "artboard_animations", artboardName: "Circle"))
-    var rStar = RViewModel(RModel(fileName: "artboard_animations", artboardName: "Star"))
+    
+    var rSquareGoAround = RViewModel(
+        fileName: "artboard_animations", artboardName: "Square", animationName: "goaround"
+    )
+    var rSquareRollAround = RViewModel(
+        fileName: "artboard_animations", artboardName: "Square", animationName: "rollaround"
+    )
+    var rCircle = RViewModel(
+        fileName: "artboard_animations", artboardName: "Circle"
+    )
+    var rStar = RViewModel(
+        fileName: "artboard_animations", artboardName: "Star"
+    )
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        rSquareGoAround.configure(rview: rviewSquareGoAround)
         
-        rSquareRollAround.configure(rview: rviewSquareRollAround)
-        
-        rCircle.configure(rview: rviewCircle)
-        
-        rStar.configure(rview: rviewStar)
+        rSquareGoAround.setView(rviewSquareGoAround)
+        rSquareRollAround.setView(rviewSquareRollAround)
+        rCircle.setView(rviewCircle)
+        rStar.setView(rviewStar)
     }
 }
