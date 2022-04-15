@@ -45,7 +45,7 @@ class ExamplesViewController: UIViewController {
     }
     
     @IBAction func showSwiftUISlider(_ sender: Any) {
-        let controller = UIHostingController(rootView: RSlider().view())
+        let controller = UIHostingController(rootView: RiveSlider().view())
         navigationController?.pushViewController(controller, animated: true)
     }
     

@@ -1,5 +1,5 @@
 //
-//  RProgressBar.swift
+//  RiveProgressBar.swift
 //  RiveExample
 //
 //  Created by Zachary Duncan on 4/13/22.
@@ -9,7 +9,7 @@
 import RiveRuntime
 import SwiftUI
 
-class RProgressBar: RiveViewModel {
+class RiveProgressBar: RiveViewModel {
     var progress: Double {
         didSet {
             try? setInput("Energy", value: progress)

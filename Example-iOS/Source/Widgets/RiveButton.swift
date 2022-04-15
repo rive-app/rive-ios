@@ -1,5 +1,5 @@
 //
-//  RButton.swift
+//  RiveButton.swift
 //  RiveExample
 //
 //  Created by Zachary Duncan on 4/13/22.
@@ -9,7 +9,7 @@
 import RiveRuntime
 import SwiftUI
 
-class RButton: RiveViewModel {
+class RiveButton: RiveViewModel {
     private let input = "IsPressed"
     var action: (() -> Void)? = nil
     
