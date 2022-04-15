@@ -9,7 +9,7 @@
 import SwiftUI
 import RiveRuntime
 
-class RSwitch: RViewModel {
+class RSwitch: RiveViewModel {
     private let onAnimation: String = "On"
     private let offAnimation: String = "Off"
     private let startAnimation: String = "StartOff"

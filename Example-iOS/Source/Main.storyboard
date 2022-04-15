@@ -178,7 +178,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ds8-bv-afK" customClass="RView" customModule="RiveRuntime">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ds8-bv-afK" customClass="RiveView" customModule="RiveRuntime">
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
@@ -237,7 +237,7 @@
                                     <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="24E-zt-a7v"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GdZ-6S-Xlu" customClass="RView" customModule="RiveRuntime">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GdZ-6S-Xlu" customClass="RiveView" customModule="RiveRuntime">
                                 <rect key="frame" x="0.0" y="88" width="414" height="327"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
@@ -650,7 +650,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="xT7-qJ-ddv">
                                 <rect key="frame" x="0.0" y="88" width="414" height="344"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H4O-e0-nOc" customClass="RView" customModule="RiveRuntime">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H4O-e0-nOc" customClass="RiveView" customModule="RiveRuntime">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="300"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
@@ -841,7 +841,7 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sxA-17-x8h" customClass="RView" customModule="RiveRuntime">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sxA-17-x8h" customClass="RiveView" customModule="RiveRuntime">
                                                                 <rect key="frame" x="0.0" y="36.5" width="414" height="213.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
@@ -866,7 +866,7 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PJ5-0H-25B" customClass="RView" customModule="RiveRuntime">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PJ5-0H-25B" customClass="RiveView" customModule="RiveRuntime">
                                                                 <rect key="frame" x="0.0" y="36.5" width="414" height="213.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
@@ -891,7 +891,7 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gSn-oV-2AP" customClass="RView" customModule="RiveRuntime">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gSn-oV-2AP" customClass="RiveView" customModule="RiveRuntime">
                                                                 <rect key="frame" x="0.0" y="36.5" width="414" height="213.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>
@@ -916,7 +916,7 @@
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JRT-Go-O95" customClass="RView" customModule="RiveRuntime">
+                                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JRT-Go-O95" customClass="RiveView" customModule="RiveRuntime">
                                                                 <rect key="frame" x="0.0" y="36.5" width="414" height="213.5"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             </view>

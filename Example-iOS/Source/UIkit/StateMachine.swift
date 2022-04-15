@@ -11,7 +11,7 @@ import RiveRuntime
 
 class StateMachineView: UIView {
     typealias ButtonAction = ()->Void
-    @IBOutlet var riveView: RView!
+    @IBOutlet var riveView: RiveView!
     
     var beginnerButtonAction: ButtonAction?
     var intermediateButtonAction: ButtonAction?
@@ -35,7 +35,7 @@ class StateMachineView: UIView {
 }
 
 class StateMachineViewController: UIViewController {
-    var viewModel = RViewModel(fileName: "skills", stateMachineName: "Designer's Test")
+    var viewModel = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
     
     override public func loadView() {
         super.loadView()

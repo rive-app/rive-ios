@@ -1,5 +1,5 @@
 //
-//  RModel.swift
+//  RiveModel.swift
 //  RiveRuntime
 //
 //  Created by Zachary Duncan on 3/24/22.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct RModel {
+public struct RiveModel {
     /// The web address from which to load the `RiveFile`
     public var webURL: String? = nil
     

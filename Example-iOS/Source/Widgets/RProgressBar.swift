@@ -9,7 +9,7 @@
 import RiveRuntime
 import SwiftUI
 
-class RProgressBar: RViewModel {
+class RProgressBar: RiveViewModel {
     var progress: Double {
         didSet {
             try? setInput("Energy", value: progress)
@@ -17,7 +17,7 @@ class RProgressBar: RViewModel {
     }
     
     init(_ initialProgress: Double = 0) {
-        let model = RModel(fileName: "energy_bar_example", stateMachineName: "State Machine ", fit: .fitCover)
+        let model = RiveModel(fileName: "energy_bar_example", stateMachineName: "State Machine ", fit: .fitCover)
         progress = initialProgress
         super.init(model)
     }

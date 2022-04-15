@@ -20,7 +20,7 @@ struct RiveComponents: DismissableView {
     var rslider = RSlider()
     var rprogress = RProgressBar()
     var rswitch = RSwitch()
-    var bird = RViewModel(RModel(fileName: "bird", stateMachineName: "State Machine 1"))
+    var bird = RiveViewModel(RiveModel(fileName: "bird", stateMachineName: "State Machine 1"))
     
     var body: some View {
         ZStack {
