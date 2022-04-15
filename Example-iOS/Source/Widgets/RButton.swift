@@ -9,12 +9,12 @@
 import RiveRuntime
 import SwiftUI
 
-class RButton: RViewModel {
+class RButton: RiveViewModel {
     private let input = "IsPressed"
     var action: (() -> Void)? = nil
     
     init(fileName: String = "rbutton") {
-        let model = RModel(fileName: fileName, stateMachineName: "State Machine 1", fit: .fitCover, autoplay: false)
+        let model = RiveModel(fileName: fileName, stateMachineName: "State Machine 1", fit: .fitCover, autoplay: false)
         super.init(model)
     }
     

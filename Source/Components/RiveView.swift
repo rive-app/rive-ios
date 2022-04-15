@@ -1,5 +1,5 @@
 //
-//  RView.swift
+//  RiveView.swift
 //  RiveRuntime
 //
 //  Created by Zachary Duncan on 3/23/22.
@@ -8,14 +8,14 @@
 
 import Foundation
 
-public protocol RPlayerDelegate: AnyObject {
+public protocol RivePlayerDelegate: AnyObject {
     func loop(animation animationName: String, type: Int)
     func play(animation animationName: String, isStateMachine: Bool)
     func pause(animation animationName: String, isStateMachine: Bool)
     func stop(animation animationName: String, isStateMachine: Bool)
 }
 
-@objc public protocol RTouchDelegate: AnyObject {
+@objc public protocol RiveTouchDelegate: AnyObject {
     @objc optional func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
     @objc optional func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
     @objc optional func touchEnded(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
@@ -100,7 +100,7 @@ class EventQueue {
     }
 }
 
-open class RView: RiveRendererView {
+open class RiveView: RiveRendererView {
     // Configuration
     private var riveFile: RiveFile?
     private var autoPlay: Bool = true
@@ -122,8 +122,8 @@ open class RView: RiveRendererView {
     private var displayLinkProxy: CADisplayLinkProxy?
     
     // Delegates
-    public weak var playerDelegate: RPlayerDelegate?
-    public weak var touchDelegate: RTouchDelegate?
+    public weak var playerDelegate: RivePlayerDelegate?
+    public weak var touchDelegate: RiveTouchDelegate?
     public weak var inputsDelegate: RInputDelegate?
     public weak var stateChangeDelegate: RStateDelegate?
     
@@ -153,7 +153,7 @@ open class RView: RiveRendererView {
         artboardName: String? = nil,
         animationName: String? = nil,
         stateMachineName: String? = nil,
-        playerDelegate: RPlayerDelegate? = nil,
+        playerDelegate: RivePlayerDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
@@ -187,7 +187,7 @@ open class RView: RiveRendererView {
         artboardName: String? = nil,
         animationName: String? = nil,
         stateMachineName: String? = nil,
-        playerDelegate: RPlayerDelegate? = nil,
+        playerDelegate: RivePlayerDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
@@ -222,7 +222,7 @@ open class RView: RiveRendererView {
         artboardName: String? = nil,
         animationName: String? = nil,
         stateMachineName: String? = nil,
-        playerDelegate: RPlayerDelegate? = nil,
+        playerDelegate: RivePlayerDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
@@ -237,7 +237,7 @@ open class RView: RiveRendererView {
         try configure(riveFile, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName, autoPlay: autoplay)
     }
     
-    /// Minimalist constructor, call `.configure` to customize the `RView` later.
+    /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
     public init() {
         super.init(frame: .zero)
     }
@@ -248,25 +248,25 @@ open class RView: RiveRendererView {
 }
 
 // MARK: - Asynchronously load file
-extension RView: RiveFileDelegate {
+extension RiveView: RiveFileDelegate {
     public func riveFileDidLoad(_ riveFile: RiveFile) throws {
         try self.configure(riveFile)
     }
 }
 
 // MARK: - Configure
-extension RView {
+extension RiveView {
     
     // Refactor:
     // 1. Make a buffer of config settings
-    // - Config settings should be buffered in the RModel
+    // - Config settings should be buffered in the RiveModel
     // 2. Check that the file is loaded
-    // - RiveFile should be stored in the RModel
+    // - RiveFile should be stored in the RiveModel
     // 3. Make a new root Artboard using riveFile and artboardName
-    // - The instance of the artboard should be communicated to the RView by the RViewModel
+    // - The instance of the artboard should be communicated to the RiveView by the RiveViewModel
     // 4. Store instance of the new artboard
     // 5. If autoplay=true play animation, else advance(0)
-    // - The RModel should communicate that it's done configuring, which should trigger the RViewModel to tell the RView to play or advance(0)
+    // - The RiveModel should communicate that it's done configuring, which should trigger the RiveViewModel to tell the RiveView to play or advance(0)
     /// Updates the artboard and layout options
     open func configure(
         _ riveFile: RiveFile,
@@ -426,7 +426,7 @@ extension RView {
 }
 
 // MARK: - Animation Loop
-extension RView {
+extension RiveView {
     /// Are any Animations or State Machines playing.
     open var isPlaying: Bool {
         return !playingAnimations.isEmpty || !playingStateMachines.isEmpty
@@ -436,7 +436,7 @@ extension RView {
         return !isPlaying
     }
     
-// TODO: Zach - DrawRive is a critical part of RView
+// TODO: Zach - DrawRive is a critical part of RiveView
     // Components that it needs:
     // - an ArtboardInstance
     // - .align()
@@ -472,7 +472,7 @@ extension RView {
     }
     
     
-// TODO: Zach - Tick is a critical part of RView
+// TODO: Zach - Tick is a critical part of RiveView
     // Components it needs:
     // - displayLinkProxy
     // - .advance()
@@ -504,7 +504,7 @@ extension RView {
         }
     }
     
-// TODO: Zach - Critical part of RView
+// TODO: Zach - Critical part of RiveView
     // - ArtboardInstance
     // - eventQueue
     // - total AnimationInstance array
@@ -555,7 +555,7 @@ extension RView {
 }
 
 // MARK: - Control Animations
-extension RView {
+extension RiveView {
     
     /// Reset the rive view & reload any provided `riveFile`
     public func reset(artboard: String? = nil, animation: String? = nil, stateMachine: String? = nil) throws {
@@ -857,7 +857,7 @@ extension RView {
 }
 
 // MARK: - Artboard Events
-extension RView: RArtboardDelegate {
+extension RiveView: RArtboardDelegate {
     // MARK: RArtboardDelegate
     
     /// Events triggered in the RiveArtboard by user input

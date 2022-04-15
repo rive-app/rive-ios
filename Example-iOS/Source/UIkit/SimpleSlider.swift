@@ -10,8 +10,8 @@ import RiveRuntime
 import SwiftUI
 
 class SimpleSliderViewController: UIViewController {
-    @IBOutlet weak var rview: RView!
-    var rslider: RViewModel!
+    @IBOutlet weak var rview: RiveView!
+    var rslider: RiveViewModel!
     
     override func viewDidLoad() {
         super.viewDidLoad()

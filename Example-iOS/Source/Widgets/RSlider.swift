@@ -9,7 +9,7 @@
 import RiveRuntime
 import SwiftUI
 
-class RSlider: RViewModel {
+class RSlider: RiveViewModel {
     var progress: Double {
         didSet {
             try? setInput("FillPercent", value: progress)
@@ -17,7 +17,7 @@ class RSlider: RViewModel {
     }
     
     init(_ initialProgress: Double = 0) {
-        let model = RModel(fileName: "riveslider", stateMachineName: "Slide", fit: .fitScaleDown)
+        let model = RiveModel(fileName: "riveslider", stateMachineName: "Slide", fit: .fitScaleDown)
         progress = initialProgress
         super.init(model)
     }

@@ -14,7 +14,7 @@ class LayoutView: UIView {
     var fitButtonAction: ButtonAction?
     var alignmentButtonAction: ButtonAction?
     
-    @IBOutlet weak var riveView: RView!
+    @IBOutlet weak var riveView: RiveView!
     @IBAction func fitButtonTriggered(_ sender: UIButton) {
         fitButtonAction?(sender.currentTitle!)
     }
@@ -24,7 +24,7 @@ class LayoutView: UIView {
 }
 
 class LayoutViewController: UIViewController {
-    var viewModel = RViewModel(fileName: "truck_v7")
+    var viewModel = RiveViewModel(fileName: "truck_v7")
     
     override public func loadView() {
         super.loadView()

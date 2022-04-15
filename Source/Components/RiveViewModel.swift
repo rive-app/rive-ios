@@ -1,5 +1,5 @@
 //
-//  RViewModel.swift
+//  RiveViewModel.swift
 //  RiveRuntime
 //
 //  Created by Zachary Duncan on 3/24/22.
@@ -8,17 +8,17 @@
 
 import SwiftUI
 
-open class RViewModel: ObservableObject, RTouchDelegate {
+open class RiveViewModel: ObservableObject, RiveTouchDelegate {
     /// This can be assigned to already emplaced UIViews or RViews within .xib files or storyboards
-    public private(set) var rview: RView?
+    public private(set) var rview: RiveView?
     public var inputsAction: InputsAction = nil
     public var stateChangeAction: StateChangeAction = nil
     
-    @Published private var model: RModel
+    @Published private var model: RiveModel
     private var viewRepresentable: RViewRepresentable?
     
     
-    public init(_ model: RModel) {
+    public init(_ model: RiveModel) {
         self.model = model
     }
     
@@ -31,7 +31,7 @@ open class RViewModel: ObservableObject, RTouchDelegate {
         artboardName: String? = nil,
         animationName: String? = nil
     ) {
-        let model = RModel(
+        let model = RiveModel(
             fileName: fileName,
             stateMachineName: stateMachineName,
             fit: fit,
@@ -53,7 +53,7 @@ open class RViewModel: ObservableObject, RTouchDelegate {
         artboardName: String? = nil,
         animationName: String? = nil
     ) {
-        let model = RModel(
+        let model = RiveModel(
             webURL: webURL,
             stateMachineName: stateMachineName,
             fit: fit,
@@ -72,18 +72,18 @@ open class RViewModel: ObservableObject, RTouchDelegate {
     }
 }
  
-// MARK: - RView
-extension RViewModel {
+// MARK: - RiveView
+extension RiveViewModel {
     // MARK: Lifecycle
     
-    /// Makes a new `RView` for its rview property with data from model which will
-    /// replace any previous `RView`. This is called when first drawing a `StandardView`.
-    /// - Returns: Reference to the new view that the `RViewModel` will be maintaining
-    public func createRView() -> RView {
-        let view: RView
+    /// Makes a new `RiveView` for its rview property with data from model which will
+    /// replace any previous `RiveView`. This is called when first drawing a `StandardView`.
+    /// - Returns: Reference to the new view that the `RiveViewModel` will be maintaining
+    public func createRView() -> RiveView {
+        let view: RiveView
         
         if let fileName = fileName {
-            view = try! RView(
+            view = try! RiveView(
                 fileName: fileName,
                 fit: fit,
                 alignment: alignment,
@@ -94,7 +94,7 @@ extension RViewModel {
             )
         }
         else if let webURL = webURL {
-            view = try! RView(
+            view = try! RiveView(
                 webURL: webURL,
                 fit: fit,
                 alignment: alignment,
@@ -105,7 +105,7 @@ extension RViewModel {
             )
         }
         else {
-            view = RView()
+            view = RiveView()
         }
         
         register(rview: view)
@@ -113,10 +113,10 @@ extension RViewModel {
         return view
     }
     
-    /// Gives updated layout values to the provided `RView`. This is called in
+    /// Gives updated layout values to the provided `RiveView`. This is called in
     /// the process of re-displaying `StandardView`.
-    /// - Parameter rview: the `RView` that will be updated
-    @objc open func update(rview: RView) {
+    /// - Parameter rview: the `RiveView` that will be updated
+    @objc open func update(rview: RiveView) {
         if (fit != rview.fit) {
             rview.fit = fit
         }
@@ -126,11 +126,11 @@ extension RViewModel {
         }
     }
     
-    /// This can be used to connect with and configure an `RView` that was created elsewhere.
-    /// Does not need to be called when updating an already configured `RView`. Useful for
+    /// This can be used to connect with and configure an `RiveView` that was created elsewhere.
+    /// Does not need to be called when updating an already configured `RiveView`. Useful for
     /// attaching views created in a `UIViewController` or Storyboard.
-    /// - Parameter view: the `Rview` that this `RViewModel` will maintain
-    @objc open func setView(_ rview: RView) {
+    /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
+    @objc open func setView(_ rview: RiveView) {
         register(rview: rview)
         
         var file: RiveFile!
@@ -151,10 +151,10 @@ extension RViewModel {
         )
     }
     
-    /// Assigns the provided `RView` to its rview property. This is called when creating a
+    /// Assigns the provided `RiveView` to its rview property. This is called when creating a
     /// `StandardView`
-    /// - Parameter view: the `Rview` that this `RViewModel` will maintain
-    internal func register(rview: RView) {
+    /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
+    internal func register(rview: RiveView) {
         self.rview = rview
         self.rview!.playerDelegate = self
         self.rview!.inputsDelegate = self
@@ -162,7 +162,7 @@ extension RViewModel {
         self.rview!.touchDelegate = self
     }
     
-    /// Stops maintaining a connection to any `RView`
+    /// Stops maintaining a connection to any `RiveView`
     internal func deregisterView() {
         rview = nil
     }
@@ -262,8 +262,8 @@ extension RViewModel {
     }
 }
 
-// MARK: - RModel Communication
-extension RViewModel {
+// MARK: - RiveModel Communication
+extension RiveViewModel {
     public var webURL: String? { model.webURL }
     public var fileName: String? { model.fileName }
     
@@ -299,16 +299,16 @@ extension RViewModel {
 }
 
 // MARK: - Usable Views
-extension RViewModel {
+extension RiveViewModel {
     public struct StandardView: View {
-        let viewModel: RViewModel
+        let viewModel: RiveViewModel
         
         // TODO: Remove this
         // Our widgets should not be used as root Views or "controllers"
         // If you need to dismiss our widget wrap it in another View that defines such behavior
         public var dismiss: () -> Void = { }
         
-        init(viewModel: RViewModel) {
+        init(viewModel: RiveViewModel) {
             self.viewModel = viewModel
         }
         
@@ -319,7 +319,7 @@ extension RViewModel {
 }
 
 // MARK: - RPlayerDelegate
-extension RViewModel: RPlayerDelegate {
+extension RiveViewModel: RivePlayerDelegate {
     public func loop(animation animationName: String, type: Int) {
         //print("Animation: [" + animationName + "] - Looped")
     }
@@ -338,7 +338,7 @@ extension RViewModel: RPlayerDelegate {
 }
 
 // MARK: - State Delegates
-extension RViewModel: RInputDelegate, RStateDelegate {
+extension RiveViewModel: RInputDelegate, RStateDelegate {
     public func inputs(_ inputs: [StateMachineInput]) {
         inputsAction?(inputs)
     }
@@ -349,24 +349,24 @@ extension RViewModel: RInputDelegate, RStateDelegate {
 }
 
 // MARK: - SwiftUI Utility
-/// This makes a SwiftUI digestable view from an `RViewModel` and its `RView`
+/// This makes a SwiftUI digestable view from an `RiveViewModel` and its `RiveView`
 public struct RViewRepresentable: UIViewRepresentable {
-    let viewModel: RViewModel
+    let viewModel: RiveViewModel
     
-    public init(viewModel: RViewModel) {
+    public init(viewModel: RiveViewModel) {
         self.viewModel = viewModel
     }
     
     /// Constructs the view
-    public func makeUIView(context: Context) -> RView {
+    public func makeUIView(context: Context) -> RiveView {
         return viewModel.createRView()
     }
     
-    public func updateUIView(_ view: RView, context: UIViewRepresentableContext<RViewRepresentable>) {
+    public func updateUIView(_ view: RiveView, context: UIViewRepresentableContext<RViewRepresentable>) {
         viewModel.update(rview: view)
     }
     
-    public static func dismantleUIView(_ view: RView, coordinator: Coordinator) {
+    public static func dismantleUIView(_ view: RiveView, coordinator: Coordinator) {
         view.stop()
         coordinator.viewModel.deregisterView()
     }
@@ -377,9 +377,9 @@ public struct RViewRepresentable: UIViewRepresentable {
     }
     
     public class Coordinator: NSObject {
-        public var viewModel: RViewModel
+        public var viewModel: RiveViewModel
 
-        init(viewModel: RViewModel) {
+        init(viewModel: RiveViewModel) {
             self.viewModel = viewModel
         }
     }
