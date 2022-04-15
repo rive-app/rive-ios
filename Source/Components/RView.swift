@@ -22,6 +22,14 @@ public protocol RPlayerDelegate: AnyObject {
     @objc optional func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
 }
 
+public protocol RiveStateDelegate: AnyObject {
+    func stateChange(_ stateMachineName: String, _ stateName: String)
+}
+
+public protocol RiveInputDelegate: AnyObject {
+    func inputs(_ inputs: [StateMachineInput])
+}
+
 open class RView: RiveRendererView {
     // Configuration
     private var riveFile: RiveFile?
@@ -45,8 +53,8 @@ open class RView: RiveRendererView {
     // Delegates
     public weak var playerDelegate: RPlayerDelegate?
     public weak var touchDelegate: RTouchDelegate?
-    public weak var inputsDelegate: RInputDelegate?
-    public weak var stateChangeDelegate: RStateDelegate?
+    public weak var inputsDelegate: RiveInputDelegate?
+    public weak var stateChangeDelegate: RiveStateDelegate?
     
     // Tracks config options when rive files load asynchronously
     private var configOptions: ConfigOptions?
@@ -75,8 +83,8 @@ open class RView: RiveRendererView {
         animationName: String? = nil,
         stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: RInputDelegate? = nil,
-        stateChangeDelegate: RStateDelegate? = nil
+        inputsDelegate: RiveInputDelegate? = nil,
+        stateChangeDelegate: RiveStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         self.fit = fit
@@ -109,7 +117,7 @@ open class RView: RiveRendererView {
         animationName: String? = nil,
         stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: RInputDelegate? = nil,
+        inputsDelegate: RiveInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
@@ -144,8 +152,8 @@ open class RView: RiveRendererView {
         animationName: String? = nil,
         stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: RInputDelegate? = nil,
-        stateChangeDelegate: RStateDelegate? = nil
+        inputsDelegate: RiveInputDelegate? = nil,
+        stateChangeDelegate: RiveStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         let riveFile = RiveFile(httpUrl: webURL, with:self)!
