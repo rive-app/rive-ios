@@ -11,8 +11,7 @@ import RiveRuntime
 
 class StateMachineView: UIView {
     typealias ButtonAction = ()->Void
-    
-    @IBOutlet var riveView: RiveView!
+    @IBOutlet var riveView: RView!
     
     var beginnerButtonAction: ButtonAction?
     var intermediateButtonAction: ButtonAction?
@@ -36,7 +35,7 @@ class StateMachineView: UIView {
 }
 
 class StateMachineViewController: UIViewController {
-    let resourceName = "skills"
+    var viewModel = RViewModel(fileName: "skills", stateMachineName: "Designer's Test")
     
     override public func loadView() {
         super.loadView()
@@ -45,31 +44,16 @@ class StateMachineViewController: UIViewController {
             fatalError("Could not find StateMachineView")
         }
         
-        try? stateMachineView.riveView.configure(
-            getRiveFile(resourceName: resourceName),
-            andStateMachine: "Designer's Test"
-        )
+        viewModel.setView(stateMachineView.riveView)
         
         stateMachineView.beginnerButtonAction = {
-            try? stateMachineView.riveView.setNumberState(
-                "Designer's Test",
-                inputName: "Level",
-                value: 0.0
-            )
+            try? self.viewModel.setInput("Level", value: 0.0)
         }
         stateMachineView.intermediateButtonAction = {
-            try? stateMachineView.riveView.setNumberState(
-                "Designer's Test",
-                inputName: "Level",
-                value: 1.0
-            )
+            try? self.viewModel.setInput("Level", value: 1.0)
         }
         stateMachineView.expertButtonAction = {
-            try? stateMachineView.riveView.setNumberState(
-                "Designer's Test",
-                inputName: "Level",
-                value: 2.0
-            )
+            try? self.viewModel.setInput("Level", value: 2.0)
         }
         stateMachineView.resetButtonAction = {
             try? stateMachineView.riveView.reset()
