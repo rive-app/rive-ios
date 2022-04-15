@@ -329,8 +329,7 @@ extension RiveView {
             fatalError("No animations in the file.")
         }
         
-        // Make an instance of the artboard and use that
-        self.artboard = artboard.instance()
+        self.artboard = artboard
         
         // Start the animation loop
         if autoPlay {
@@ -525,7 +524,7 @@ extension RiveView {
         
         for animation in animations where playingAnimations.contains(animation) {
             let stillPlaying = animation.advance(by: delta)
-            animation.apply(to: artboard)
+            animation.apply()
             
             if !stillPlaying {
                 _stop(animation)
@@ -538,7 +537,7 @@ extension RiveView {
         }
         
         for stateMachine in stateMachines where playingStateMachines.contains(stateMachine) {
-            let stillPlaying = stateMachine.advance(artboard, by: delta)
+            let stillPlaying = stateMachine.advance(by: delta)
             
             stateMachine.stateChanges().forEach { stateChangeDelegate?.stateChange(stateMachine.name(), $0) }
             
@@ -732,7 +731,7 @@ extension RiveView {
         if stateMachineInstances.isEmpty {
             guard let guardedArtboard = artboard else { return [] }
             
-            let stateMachineInstance = try guardedArtboard.stateMachine(fromName: animationName).instance()
+            let stateMachineInstance = try guardedArtboard.stateMachine(fromName: animationName).instance(with: guardedArtboard)
             return [stateMachineInstance]
         }
         return stateMachineInstances
@@ -744,7 +743,7 @@ extension RiveView {
         if animationInstances.isEmpty {
             guard let guardedArtboard = artboard else { return [] }
             
-            let animationInstance = try guardedArtboard.animation(fromName: animationName).instance()
+            let animationInstance = try guardedArtboard.animation(fromName: animationName).instance(with: guardedArtboard)
             return [animationInstance]
         }
         return animationInstances
