@@ -8,18 +8,16 @@ iOS runtime for [Rive](https://rive.app/)
 Further runtime documentation can be found in [Rive's help center](https://help.rive.app/runtimes).
 
 ## Create and ship interactive animations to any platform
-
-[Rive](https://rive.app/) is a real-time interactive design and animation tool. Use our collaborative editor to create motion graphics that respond to different states and user inputs. Then load your animations into apps, games, and websites with our lightweight open-source runtimes.
+[Rive](https://rive.app/) is a real-time interactive design and animation tool. Use our collaborative 
+editor to create motion graphics that respond to different states and user inputs. Then load your animations 
+into apps, games, and websites with our lightweight open-source runtimes.
 
 ## Beta Release
-
-This is the iOS runtime for [Rive](https://rive.app), currently in beta. The api is subject to change as we continue to improve it. Please file issues and PRs for anything busted, missing, or just wrong.
+This is the iOS runtime for [Rive](https://rive.app), currently in beta. The api is subject to change 
+as we continue to improve it. Please file issues and PRs for anything busted, missing, or just wrong.
 
 # Installing rive-ios
-
-
 ## Via Cocoapods
-
 To install our pod, simply add the following to [cocoapods](https://cocoapods.org/) and run `pod install`.
 
 ```ruby
@@ -38,37 +36,39 @@ to have access to our higher level views or build on top of our bindings to cont
 To install via Swift Package Manager, in the package finder in xcode, search with the Github repository name: `https://github.com/rive-app/rive-ios`
 
 # Examples
-
 There is an example project next to the runtimes.
 
-The examples show simple ways of adding animated views into your app, how to add buttons & slider controls, how to use state machines & how to navigate the contents of a rive file programatically.
+The examples show simple ways of adding animated views into your app, how to add buttons & slider controls, how 
+to use state machines & how to navigate the contents of a rive file programatically.
 
-To run the example, open the `Rive.xcworkspace` in Xcode and run the `RiveExample` project. Check out the Contributing docs to get set up. 
+To run the example, open the `Rive.xcworkspace` in Xcode and run the `RiveExample` project. Check out the 
+Contributing docs to get set up. 
 
 # Overview
-
-We have provided high level Swift controller and a UIkit view to easily add Rive into your application. All of this is built ontop of an objective c layer that allows for fine grained granular animation control.
+We have provided high level Swift controller and a UIkit view to easily add Rive into your application. All of 
+this is built ontop of an objective c layer that allows for fine grained granular animation control.
 
 ## UIKit
-
 ### RiveViewModel
-
-The simplest way of adding Rive to a controller is to make a RiveViewModel and set its view as the `RiveView` when it is loaded.
+The simplest way of adding Rive to a controller is to make a RiveViewModel and set its view as the `RiveView` when 
+it is loaded.
 
 ```swift
 class SimpleAnimationViewController: UIViewController {
     @IBOutlet weak var rview: RiveView!
+    
     // Load the truck_v7 resource assets
     var rSimpleVM: RiveViewModel = RiveModel(fileName: "truck_v7")
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        rSimpleVM.setView(rview: rview)
+        rSimpleVM.setView(rview)
     }
 }
 ```
 
-Rive will autoplay the first animation found in the Rive file passed in. You can also set the Rive file via a URL like so:
+Rive will autoplay the first animation found in the Rive file passed in. You can also set the Rive file via a 
+URL like so:
 
 ```swift
 class SimpleAnimationViewController: UIViewController {
@@ -77,21 +77,40 @@ class SimpleAnimationViewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        rSimpleVM.setView(rview: rview)
+        rSimpleVM.setView(rview)
     }
 }
 ```
 
-The `RiveViewModel` can be further customized to select which animation to play, or how to fit the animation into the view space.
-### Layout
+The `RiveViewModel` can be further customized to select which animation to play, or how to fit the animation 
+into the view space.
 
+### Layout
 The Rive view can be further customized as part of specifying layout attributes.
 
-`fit` can be specified to determine how the animation should be resized to fit its container. The available choices are `.fitFill` , `.fitContain` , `.fitCover` , `.fitFitWidth` , `.fitFitHeight` , `.fitNone` , `.fitScaleDown`
+`fit` can be specified to determine how the animation should be resized to fit its container. The available 
+choices are: 
+- `.fitFill` 
+- `.fitContain`
+- `.fitCover`
+- `.fitFitWidth`
+- `.fitFitHeight`
+- `.fitNone`
+- `.fitScaleDown`
 
-`alignment` informs how it should be aligned within the container. The available choices are `alignmentTopLeft`, `alignmentTopCenter`, `alignmentTopRight`, `alignmentCenterLeft`, `alignmentCenter`, `alignmentCenterRight`, `alignmentBottomLeft`, `alignmentBottomCenter`, `alignmentBottomRight`.
+`alignment` informs how it should be aligned within the container. The available choices are: 
+- `alignmentTopLeft`
+- `alignmentTopCenter`
+- `alignmentTopRight`
+- `alignmentCenterLeft`
+- `alignmentCenter`
+- `alignmentCenterRight`
+- `alignmentBottomLeft`
+- `alignmentBottomCenter`
+- `alignmentBottomRight`
 
-By default, if no `fit` or `alignment` properties are set on the `RiveViewModel`, the view will be set with `.fitContain` and `.alignmentCenter`.
+By default, if no `fit` or `alignment` properties are set on the `RiveViewModel`, the view will be set 
+with `.fitContain` and `.alignmentCenter`.
 
 To understand more on these options, check out the help docs [here](https://help.rive.app/runtimes/layout#fit).
 
@@ -113,8 +132,9 @@ rSimpleVM.alignment = .alignmentCenter
 ```
 
 ### Playback Controls
-
-Animations can be controlled in many ways. Again by default, loading a RiveView will autoplay the first animation on the first artboard. The artboard and animation can be specified by name however if there are multiple artboards and/or animations defined in the Rive file.
+Animations can be controlled in many ways. Again by default, loading a RiveView will autoplay the first 
+animation on the first artboard. The artboard and animation can be specified by name however if there 
+are multiple artboards and/or animations defined in the Rive file.
 
 ```swift
 let rMultiVM = RiveModel(
@@ -168,15 +188,17 @@ rMultiVM.pause(animationNames:["bouncing", "windshield_wipers"])
 ```
 
 ### Mixing
-
-Mixing goes further than just playing multiple animations at the same time, animations can use a mix factor between 0 and 1, to allow multiple animations effects to blend together. The high level views do not expose this currently. but you can wrap your own render loop around the core libraries. The advance function is where you can specify a mix factor.
+Mixing goes further than just playing multiple animations at the same time, animations can use 
+a mix factor between 0 and 1, to allow multiple animations effects to blend together. The high 
+level views do not expose this currently. but you can wrap your own render loop around the core 
+libraries. The advance function is where you can specify a mix factor.
 
 ### Delegates & Events
+The `rive-ios` runtime allows for delegates that can be set on the `RiveViewModel`. If provided, 
+these delegates will be fired whenever a matching event is triggered to be able to hook into and 
+listen for certain events in the Rive animation cycle.
 
-The `rive-ios` runtime allows for delegates that can be set on the `RiveViewModel`. If provided, these delegates will be fired whenever a matching event is triggered to be able to hook into and listen for certain events in the Rive animation cycle.
-
-Currently, there exist the following delegates: `RivePlayerDelegate`, `RiveStateDelegate`, and `RiveInputDelegate`.
-
+Currently, there exist the following delegates: 
 - `RivePlayerDelegate` - Hook into animation lifecycle events
     - `loop`: `(animation animationName: String, type: Int) {}`
     - `play`: `(animation animationName: String, isStateMachine: Bool) {}`
@@ -187,33 +209,35 @@ Currently, there exist the following delegates: `RivePlayerDelegate`, `RiveState
 - `RiveInputDelegate` - Hook into changes to available input states
     - `inputs`: `(_ inputs: [StateMachineInput]) {}`
 
-You can create your own delegate or mix in with the `RiveViewModel`, implementing as many protocols as are needed. Below is an example to set up a RiveViewModel with the `RivePlayerDelegate`:
+You can create your own delegate or mix in with the `RiveViewModel`, implementing as many protocols 
+as are needed. Below is an example of how to customize a RiveViewModel's implementation of 
+the `RivePlayerDelegate`:
 
 ```swift
-class SimpleAnimation: RiveViewModel, RivePlayerDelegate {
+class SimpleAnimation: RiveViewModel {
     init() {
         let model = RiveModel(fileName: "truck_v7", stateMachineName: "Drive")
         super.init(model)
     }
     
     override func setView(rview view: RiveView) {
-        super.setView(rview: view)
+        super.setView(view)
         rview?.playerDelegate = self
     }
 
-    func loop(animation animationName: String, type: Int) {
+    override func loop(animation animationName: String, type: Int) {
         // do things when the animation loops playing.
     }
     
-    func play(animation animationName: String, isStateMachine: Bool) {
+    override func play(animation animationName: String, isStateMachine: Bool) {
         // do things when the animation starts playing.
     }
 
-    public func pause(animation animationName: String, isStateMachine: Bool) {
+    override func pause(animation animationName: String, isStateMachine: Bool) {
         // do things when the animation is paused.
     }
     
-    public func stop(animation animationName: String, isStateMachine: Bool) {
+    override func stop(animation animationName: String, isStateMachine: Bool) {
         // do things when the animation is stopped.
     }
 }
@@ -224,21 +248,22 @@ Then you would instantiate your view model and configure it with the `RiveView` 
 ```swift
 class SimpleAnimationViewController: UIViewController {
     @IBOutlet weak var rview: RiveView!
-    var rAnimationVM: RiveViewModel!
+    var rAnimationVM: RiveViewModel = SimpleAnimation()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        rAnimationVM = SimpleAnimation()
-        rAnimationVM.setView(rview: rview)
+        rAnimationVM.setView(rview)
     }
 }
 ```
 
 ## Blend modes 
+Rive allows the artist to set blend modes on shapes to determine how they are to be merged with the
+rest of the animation.
 
-Rive allows the artist to set blend modes on shapes to determine how they are to be merged with the rest of the animation.
-
-Each runtime is supporting the various blend modes natively, this means that there are some discrepancies in how blend modes end up being applied, we have a test file that is shipped inside the application that highlights the differences.
+Each runtime is supporting the various blend modes natively, this means that there are some discrepancies 
+in how blend modes end up being applied, we have a test file that is shipped inside the application that 
+highlights the differences.
 
 For ios, hue and saturation blend modes do not match the original.
 
@@ -248,5 +273,5 @@ Original | iOS             |
 
 
 ## Developing `rive-ios`
-
-please see [CONTRIBUTING.md](/CONTRIBUTING.md) for information on how to get setup and running with developing `rive-ios`
+please see [CONTRIBUTING.md](/CONTRIBUTING.md) for information on how to get setup and running with 
+developing `rive-ios`
