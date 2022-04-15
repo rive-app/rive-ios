@@ -22,12 +22,82 @@ public protocol RPlayerDelegate: AnyObject {
     @objc optional func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
 }
 
-public protocol RiveStateDelegate: AnyObject {
-    func stateChange(_ stateMachineName: String, _ stateName: String)
+/// State machine input types
+public enum StateMachineInputType {
+    case trigger
+    case number
+    case boolean
+}
+/// Simple data type for passing state machine input names and their types
+public struct StateMachineInput: Hashable {
+    public let name: String
+    public let type: StateMachineInputType
 }
 
-public protocol RiveInputDelegate: AnyObject {
+/// Delegate for reporting changes to available input states
+public protocol RInputDelegate: AnyObject {
     func inputs(_ inputs: [StateMachineInput])
+}
+/// signature for inputs action delegate function
+public typealias InputsAction = (([StateMachineInput]) -> Void)?
+
+/// Delegate for new input states
+public protocol RStateDelegate: AnyObject {
+    func stateChange(_ stateMachineName: String, _ stateName: String)
+}
+/// signature for state change action delegate function
+public typealias StateChangeAction = ((String, String) -> Void)?
+
+/// Stores config options for a RiveFile when rive files load async
+struct ConfigOptions {
+    let riveFile: RiveFile
+    var artboardName: String? = nil
+    var animationName: String? = nil
+    var stateMachineName: String?
+    var autoPlay: Bool = true
+}
+
+class CADisplayLinkProxy {
+
+    var displayLink: CADisplayLink?
+    var handle: (() -> Void)?
+    private var runloop: RunLoop
+    private var mode: RunLoop.Mode
+
+    init(handle: (() -> Void)?, to runloop: RunLoop, forMode mode: RunLoop.Mode) {
+        self.handle = handle
+        self.runloop = runloop
+        self.mode = mode
+        displayLink = CADisplayLink(target: self, selector: #selector(updateHandle))
+        displayLink?.add(to: runloop, forMode: mode)
+    }
+
+    @objc func updateHandle() {
+        handle?()
+    }
+
+    func invalidate() {
+        displayLink?.remove(from: runloop, forMode: mode)
+        displayLink?.invalidate()
+        displayLink = nil
+    }
+}
+
+// Tracks a queue of events that haven't been fired yet. We do this so
+// that we're not calling delegates and modifying state while a view is
+// updating (e.g. being initialized, as we autoplay and fire play events
+// during the view's init otherwise
+class EventQueue {
+    var events: [() -> Void] = []
+
+    func add(_ event: @escaping () -> Void) {
+        events.append(event)
+    }
+
+    func fireAll() {
+        events.forEach { $0() }
+        events.removeAll()
+    }
 }
 
 open class RView: RiveRendererView {
@@ -47,14 +117,15 @@ open class RView: RiveRendererView {
     public var playingAnimations: Set<RiveLinearAnimationInstance> = []
     public var stateMachines: [RiveStateMachineInstance] = []
     public var playingStateMachines: Set<RiveStateMachineInstance> = []
+    
     private var lastTime: CFTimeInterval = 0
     private var displayLinkProxy: CADisplayLinkProxy?
     
     // Delegates
     public weak var playerDelegate: RPlayerDelegate?
     public weak var touchDelegate: RTouchDelegate?
-    public weak var inputsDelegate: RiveInputDelegate?
-    public weak var stateChangeDelegate: RiveStateDelegate?
+    public weak var inputsDelegate: RInputDelegate?
+    public weak var stateChangeDelegate: RStateDelegate?
     
     // Tracks config options when rive files load asynchronously
     private var configOptions: ConfigOptions?
@@ -83,8 +154,8 @@ open class RView: RiveRendererView {
         animationName: String? = nil,
         stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: RiveInputDelegate? = nil,
-        stateChangeDelegate: RiveStateDelegate? = nil
+        inputsDelegate: RInputDelegate? = nil,
+        stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         self.fit = fit
@@ -117,7 +188,7 @@ open class RView: RiveRendererView {
         animationName: String? = nil,
         stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: RiveInputDelegate? = nil,
+        inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
@@ -152,8 +223,8 @@ open class RView: RiveRendererView {
         animationName: String? = nil,
         stateMachineName: String? = nil,
         playerDelegate: RPlayerDelegate? = nil,
-        inputsDelegate: RiveInputDelegate? = nil,
-        stateChangeDelegate: RiveStateDelegate? = nil
+        inputsDelegate: RInputDelegate? = nil,
+        stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
         let riveFile = RiveFile(httpUrl: webURL, with:self)!
@@ -330,11 +401,11 @@ extension RView {
             let inputCount = machine.inputCount()
             for i in 0 ..< inputCount {
                 let input = try machine.input(from: i)
-                var type = StateMachineInputType.boolean
+                var type: StateMachineInputType = .boolean
                 if input.isTrigger() {
-                    type = StateMachineInputType.trigger
+                    type = .trigger
                 } else if input.isNumber() {
-                    type = StateMachineInputType.number
+                    type = .number
                 }
                 inputs.append(StateMachineInput(name: input.name(), type: type))
             }
