@@ -23,7 +23,8 @@
 - (void)testNothing {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachineInstance  = [[[file artboard:nil] stateMachineFromName:@"nothing" error:nil] instance];
+    RiveArtboard* artboard = [file artboard:nil];
+    RiveStateMachineInstance* stateMachineInstance  = [[artboard stateMachineFromName:@"nothing" error:nil] instanceWithArtboard:artboard];
 
     XCTAssertEqual([stateMachineInstance inputCount], 0);
 }
@@ -34,7 +35,8 @@
 - (void)testNumberInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachineInstance  = [[[file artboard:nil] stateMachineFromName:@"number_input" error:nil] instance];
+    RiveArtboard* artboard = [file artboard:nil];
+    RiveStateMachineInstance* stateMachineInstance  = [[artboard stateMachineFromName:@"number_input" error:nil] instanceWithArtboard:artboard];
 
     XCTAssertEqual([stateMachineInstance inputCount], 1);
     
@@ -56,7 +58,8 @@
 - (void)testBooleanInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachineInstance = [[[file artboard:nil] stateMachineFromName:@"boolean_input" error:nil] instance];
+    RiveArtboard* artboard = [file artboard:nil];
+    RiveStateMachineInstance* stateMachineInstance = [[artboard stateMachineFromName:@"boolean_input" error:nil] instanceWithArtboard:artboard];
 
     XCTAssertEqual([stateMachineInstance inputCount], 1);
     
@@ -81,7 +84,8 @@
 - (void)testTriggerInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachineInstance  = [[[file artboard:nil] stateMachineFromName:@"trigger_input" error:nil] instance];
+    RiveArtboard* artboard = [file artboard:nil];
+    RiveStateMachineInstance* stateMachineInstance  = [[artboard stateMachineFromName:@"trigger_input" error:nil] instanceWithArtboard:artboard];
 
     XCTAssertEqual([stateMachineInstance inputCount], 1);
     
@@ -102,7 +106,8 @@
 - (void)testMixedInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachineInstance = [[[file artboard:nil] stateMachineFromName:@"mixed" error:nil] instance];
+    RiveArtboard* artboard = [file artboard:nil];
+    RiveStateMachineInstance* stateMachineInstance = [[artboard stateMachineFromName:@"mixed" error:nil] instanceWithArtboard:artboard];
 
     XCTAssertEqual([stateMachineInstance inputCount], 6);
     NSArray * target = [NSArray arrayWithObjects:@"zero", @"off", @"trigger", @"two_point_two", @"on", @"three", nil];

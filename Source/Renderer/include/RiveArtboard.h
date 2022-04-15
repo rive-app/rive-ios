@@ -40,9 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)touchedAt: (CGPoint)location info:(int)hitInfo;
 - (void)draw:(RiveRenderer *)renderer;
 
-// Creates an instance of the artboard
-- (RiveArtboard *)instance;
-
 @end
 
 // MARK: - RiveArtboard Delegate

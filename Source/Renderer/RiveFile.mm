@@ -131,32 +131,34 @@
 }
 
 - (BOOL) import:(rive::BinaryReader)reader error:(NSError**)error {
-    rive::ImportResult result = rive::File::import(reader, &riveFile);
+    rive::ImportResult result;
+    riveFile = rive::File::import(reader, &result).release();
     if (result == rive::ImportResult::success) {
         return true;
     }
-    else if(result == rive::ImportResult::unsupportedVersion){
-        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnsupportedVersion userInfo:@{NSLocalizedDescriptionKey: @"Unsupported Rive File Version", @"name": @"UnsupportedVersion"}];
-        return false;
+
+    switch (result) {
+        case rive::ImportResult::unsupportedVersion:
+            *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnsupportedVersion userInfo:@{NSLocalizedDescriptionKey: @"Unsupported Rive File Version", @"name": @"UnsupportedVersion"}];
+            break;
+        case rive::ImportResult::malformed:
+            *error = [NSError errorWithDomain:RiveErrorDomain code:RiveMalformedFile userInfo:@{NSLocalizedDescriptionKey: @"Malformed Rive File.", @"name": @"Malformed"}];
+            break;
+        default:
+            *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnknownError userInfo:@{NSLocalizedDescriptionKey: @"Unknown error loading file.", @"name": @"Unknown"}];
+            break;
     }
-    else if(result == rive::ImportResult::malformed){
-        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveMalformedFile userInfo:@{NSLocalizedDescriptionKey: @"Malformed Rive File.", @"name": @"Malformed"}];
-        return false;
-    }
-    else {
-        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveUnknownError userInfo:@{NSLocalizedDescriptionKey: @"Unknown error loading file.", @"name": @"Unknown"}];
-        return false;
-    }
+    return false;
 }
 
 - (RiveArtboard *)artboard:(NSError**)error {
-    rive::Artboard *artboard = riveFile->artboard();
+    auto artboard = riveFile->artboardDefault();
     if (artboard == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardsFound userInfo:@{NSLocalizedDescriptionKey: @"No Artboards Found.", @"name": @"NoArtboardsFound"}];
         return nil;
     }
     else {
-        return [[RiveArtboard alloc] initWithArtboard: artboard];
+        return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
     }
 }
 
@@ -165,22 +167,22 @@
 }
 
 - (RiveArtboard *)artboardFromIndex:(NSInteger)index error:(NSError**)error {
-    if (index >= [self artboardCount]) {
+    auto artboard = riveFile->artboardAt(index);
+    if (artboard == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Artboard Found at index %ld.", (long)index], @"name": @"NoArtboardFound"}];
         return nil;
     }
-    return [[RiveArtboard alloc]
-            initWithArtboard: reinterpret_cast<rive::Artboard *>(riveFile->artboard(index))];
+    return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
 }
 
 - (RiveArtboard *)artboardFromName:(NSString *)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
-    rive::Artboard *artboard = riveFile->artboard(stdName);
+    auto artboard = riveFile->artboardNamed(stdName);
     if (artboard == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Artboard Found with name %@.", name], @"name": @"NoArtboardFound"}];
         return nil;
     } else {
-        return [[RiveArtboard alloc] initWithArtboard: artboard];
+        return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
     }
 }
 

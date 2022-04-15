@@ -176,7 +176,7 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
 }
 
 - (void)drawWithArtboard:(RiveArtboard *)artboard {
-  [artboard artboard]->draw(_renderer);
+  [artboard artboardInstance]->draw(_renderer);
 }
 
 - (void)drawRive:(CGRect)rect size:(CGSize)size {

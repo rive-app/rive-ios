@@ -392,8 +392,7 @@ extension RiveView {
             fatalError("No animations in the file.")
         }
         
-        // Make an instance of the artboard and use that
-        self._artboard = artboard.instance()
+        self._artboard = artboard
         
         // Start the animation loop
         if autoPlay {
@@ -582,7 +581,7 @@ extension RiveView {
         animations.forEach { animation in
             if playingAnimations.contains(animation) {
                 let stillPlaying = animation.advance(by: delta)
-                animation.apply(to: artboard)
+                animation.apply()
                 if !stillPlaying {
                     _stop(animation)
                 } else {
@@ -596,7 +595,7 @@ extension RiveView {
         }
         stateMachines.forEach { stateMachine in
             if playingStateMachines.contains(stateMachine) {
-                let stillPlaying = stateMachine.advance(artboard, by: delta)
+                let stillPlaying = stateMachine.advance(by:delta)
                 
                 stateMachine.stateChanges().forEach {
                     stateChangeName in stateChangeDelegate?.stateChange(stateMachine.name(), stateChangeName)
@@ -817,7 +816,7 @@ extension RiveView {
                 return []
             }
             let stateMachineInstance = try guardedArtboard.stateMachine(fromName: animationName)
-                .instance()
+                .instance(with:guardedArtboard)
             return [stateMachineInstance]
         }
         return stateMachineInstances
@@ -832,7 +831,7 @@ extension RiveView {
             guard let guardedArtboard = _artboard else {
                 return []
             }
-            let animationInstance = try guardedArtboard.animation(fromName: animationName).instance()
+            let animationInstance = try guardedArtboard.animation(fromName: animationName).instance(with:guardedArtboard)
             return [animationInstance]
         }
         return animationInstances

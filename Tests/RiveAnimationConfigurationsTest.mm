@@ -65,8 +65,15 @@
     XCTAssertEqual([animation duration], 60);
     XCTAssertEqual([animation effectiveDuration], 60);
     XCTAssertEqual([animation fps], 60);
-    XCTAssertEqual([animation workStart], -1);
-    XCTAssertEqual([animation workEnd], -1);
+    XCTAssertEqual([animation workStart], UINT_MAX);
+    XCTAssertEqual([animation workEnd], UINT_MAX);
+    
+    // These calculations should be exact
+
+    // seconds = duation / fps = 60/60
+    XCTAssertEqual([animation effectiveDurationInSeconds], 1.0);
+    // time = effectiveDuration / fps = 60/60
+    XCTAssertEqual([animation endTime], 1.0);
 }
 
 /*
@@ -81,8 +88,8 @@
     XCTAssertEqual([animation duration], 120);
     XCTAssertEqual([animation effectiveDuration], 120);
     XCTAssertEqual([animation fps], 120);
-    XCTAssertEqual([animation workStart], -1);
-    XCTAssertEqual([animation workEnd], -1);
+    XCTAssertEqual([animation workStart], UINT_MAX);
+    XCTAssertEqual([animation workEnd], UINT_MAX);
 }
 
 /*
@@ -99,6 +106,17 @@
     XCTAssertEqual([animation fps], 60);
     XCTAssertEqual([animation workStart], 30);
     XCTAssertEqual([animation workEnd], 50);
+
+    // These calculations may have some floating error, as they are approximate
+    const float accuracy = 0.0000001;
+
+    // seconds = duation / fps = 20/60
+    const float secs = 20.0 / 60.0;
+    XCTAssertEqualWithAccuracy([animation effectiveDurationInSeconds], secs, accuracy);
+
+    // time = effectiveDuration / fps = 50/60
+    const float time = 50.0 / 60.0;
+    XCTAssertEqualWithAccuracy([animation endTime], time, accuracy);
 }
 
 /*

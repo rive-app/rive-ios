@@ -31,8 +31,8 @@
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
-- (RiveLinearAnimationInstance *)instance {
-    return [[RiveLinearAnimationInstance alloc] initWithAnimation: animation];
+- (RiveLinearAnimationInstance *)instanceWithArtboard:(RiveArtboard *)artboard {
+    return [[RiveLinearAnimationInstance alloc] initWithAnimation:animation artboard:artboard];
 }
 
 - (NSInteger)workStart {
@@ -48,7 +48,7 @@
 }
 
 - (NSInteger)effectiveDuration {
-    if (self.workStart == -1) {
+    if (self.workStart == UINT_MAX) {
         return animation->duration();
         
     }else {
@@ -57,14 +57,16 @@
 }
 
 - (float)effectiveDurationInSeconds {
-    return [self effectiveDuration] / [self fps];
+    float ifps = 1.0 / animation->fps();
+    return [self effectiveDuration] * ifps;
 }
 
 - (float)endTime {
+    float ifps = 1.0 / animation->fps();
     if (animation->enableWorkArea()){
-        return animation->workEnd()/animation->fps();
+        return animation->workEnd() * ifps;
     }
-    return animation->duration()/animation->fps();
+    return animation->duration() * ifps;
 }
 
 - (NSInteger)fps {
@@ -72,7 +74,7 @@
 }
 
 - (void)apply:(float)time to:(RiveArtboard *)artboard {
-    animation->apply(artboard.artboard, time);
+    animation->apply(artboard.artboardInstance, time);
 }
 
 - (int)loop {

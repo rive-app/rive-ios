@@ -25,10 +25,11 @@
 }
 
 // Creates a new RiveStateMachineInstance from a cpp StateMachine
-- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine {
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine
+                            artboard:(RiveArtboard *)artboard {
     if (self = [super init]) {
         self->stateMachine = stateMachine;
-        instance = new rive::StateMachineInstance(stateMachine);
+        instance = new rive::StateMachineInstance(stateMachine, artboard.artboardInstance);
         _inputs = [[NSMutableDictionary alloc] init];
         return self;
     } else {
@@ -37,8 +38,8 @@
 }
 
 
-- (bool) advance:(RiveArtboard *)artboard by:(double)elapsedSeconds  {
-    return instance->advance(artboard.artboard, elapsedSeconds);
+- (bool) advanceBy:(double)elapsedSeconds  {
+    return instance->advance(elapsedSeconds);
 }
 
 - (RiveStateMachine *)stateMachine {
