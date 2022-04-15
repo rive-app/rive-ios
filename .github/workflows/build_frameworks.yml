@@ -22,7 +22,7 @@ jobs:
         working-directory: ./.github/release
       - id: determine_version
         name: Get Version
-        run: npm run release -- major --ci --release-version | tail -n 1 > RELEASE_VERSION
+        run: npm run release -- --ci --release-version | tail -n 1 > RELEASE_VERSION
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.RIVE_REPO_PAT }}
@@ -146,7 +146,7 @@ jobs:
           name: RiveRuntime.xcframework.zip
           path: archive/
       - name: Bump version number, update changelog, push and tag
-        run: npm run release -- major --ci
+        run: npm run release -- --ci
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.RIVE_REPO_PAT }}
