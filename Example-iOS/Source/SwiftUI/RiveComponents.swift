@@ -17,9 +17,9 @@ struct RiveComponents: DismissableView {
     /// Tracks the health value coming from the slide for the progress bar
     @State var health: Double = 0
     
-    var rslider = RSlider()
-    var rprogress = RProgressBar()
-    var rswitch = RSwitch()
+    var rslider = RiveSlider()
+    var rprogress = RiveProgressBar()
+    var rswitch = RiveSwitch()
     var bird = RiveViewModel(RiveModel(fileName: "bird", stateMachineName: "State Machine 1"))
     
     var body: some View {
@@ -38,8 +38,8 @@ struct RiveComponents: DismissableView {
                     Spacer().padding()
                     
                     HStack {
-                        Text("RButton:")
-                        RButton().view {
+                        Text("RiveButton:")
+                        RiveButton().view {
                             print("Button tapped")
                         }
                     }
@@ -54,7 +54,7 @@ struct RiveComponents: DismissableView {
                     Spacer().padding()
                     
                     VStack {
-                        Text("RProgressBar:")
+                        Text("RiveProgressBar:")
                         rprogress.formattedView()
                         
                         Slider(value: Binding(
@@ -71,7 +71,7 @@ struct RiveComponents: DismissableView {
                     Spacer().padding()
                     
                     HStack {
-                        Text("RSlider:")
+                        Text("RiveSlider:")
                             .padding()
                         rslider.view()
                     }

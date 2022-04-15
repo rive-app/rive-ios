@@ -1,5 +1,5 @@
 //
-//  RSwitch.swift
+//  RiveSwitch.swift
 //  RiveExample
 //
 //  Created by Zachary Duncan on 4/13/22.
@@ -9,7 +9,7 @@
 import SwiftUI
 import RiveRuntime
 
-class RSwitch: RiveViewModel {
+class RiveSwitch: RiveViewModel {
     private let onAnimation: String = "On"
     private let offAnimation: String = "Off"
     private let startAnimation: String = "StartOff"
