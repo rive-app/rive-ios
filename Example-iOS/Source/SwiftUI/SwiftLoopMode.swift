@@ -12,7 +12,7 @@ import RiveRuntime
 struct SwiftLoopMode: DismissableView {
     var dismiss: () -> Void = {}
     
-    var loopy = RViewModel(fileName: "loopy", autoplay: false)
+    var loopy = RiveViewModel(fileName: "loopy", autoplay: false)
 //    var direction = Direction.directionAuto
     
     var body: some View {

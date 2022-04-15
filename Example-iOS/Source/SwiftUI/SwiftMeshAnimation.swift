@@ -10,7 +10,7 @@ import SwiftUI
 import RiveRuntime
 
 struct SwiftMeshAnimation: DismissableView {
-    var tapePlayer = RViewModel(fileName: "prop_example", stateMachineName: "State Machine 1")
+    var tapePlayer = RiveViewModel(fileName: "prop_example", stateMachineName: "State Machine 1")
     @State var isTapped: Bool = false
     var dismiss: () -> Void = {}
     

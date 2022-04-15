@@ -12,21 +12,21 @@ import RiveRuntime
 /// This shows how to utilize one animation file to show content in different artboards and
 /// different animations within those artboards
 class MultipleAnimationsController: UIViewController {
-    @IBOutlet weak var rviewSquareGoAround: RView!
-    @IBOutlet weak var rviewSquareRollAround: RView!
-    @IBOutlet weak var rviewCircle: RView!
-    @IBOutlet weak var rviewStar: RView!
+    @IBOutlet weak var rviewSquareGoAround: RiveView!
+    @IBOutlet weak var rviewSquareRollAround: RiveView!
+    @IBOutlet weak var rviewCircle: RiveView!
+    @IBOutlet weak var rviewStar: RiveView!
     
-    var rSquareGoAround = RViewModel(
+    var rSquareGoAround = RiveViewModel(
         fileName: "artboard_animations", artboardName: "Square", animationName: "goaround"
     )
-    var rSquareRollAround = RViewModel(
+    var rSquareRollAround = RiveViewModel(
         fileName: "artboard_animations", artboardName: "Square", animationName: "rollaround"
     )
-    var rCircle = RViewModel(
+    var rCircle = RiveViewModel(
         fileName: "artboard_animations", artboardName: "Circle"
     )
-    var rStar = RViewModel(
+    var rStar = RiveViewModel(
         fileName: "artboard_animations", artboardName: "Star"
     )
     

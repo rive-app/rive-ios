@@ -10,12 +10,12 @@ import UIKit
 import RiveRuntime
 
 class BlendModeViewController: UIViewController {
-    let viewModel = RViewModel(fileName: "blendmodes")
+    let viewModel = RiveViewModel(fileName: "blendmodes")
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let rview = RView()
+        let rview = RiveView()
         view.addSubview(rview)
         viewModel.setView(rview)
         rview.frame = view.frame

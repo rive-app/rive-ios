@@ -10,7 +10,7 @@ import SwiftUI
 import RiveRuntime
 
 struct SwiftStateMachine: DismissableView {
-    var stateChanger = RViewModel(fileName: "skills", stateMachineName: "Designer's Test")
+    var stateChanger = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
     var dismiss: () -> Void = {}
     
     var body: some View {
