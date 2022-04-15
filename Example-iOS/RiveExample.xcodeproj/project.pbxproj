@@ -44,13 +44,13 @@
 		04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		04DB5938266A348C0020A7E8 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
-		C324DB5628071EB80060589F /* RSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5528071EB80060589F /* RSwitch.swift */; };
-		C324DB5B2807216B0060589F /* RSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5A2807216B0060589F /* RSlider.swift */; };
-		C324DB5D280728690060589F /* RButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5C280728690060589F /* RButton.swift */; };
+		C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5528071EB80060589F /* RiveSwitch.swift */; };
+		C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5A2807216B0060589F /* RiveSlider.swift */; };
+		C324DB5D280728690060589F /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5C280728690060589F /* RiveButton.swift */; };
 		C324DB5F280740FB0060589F /* rbutton.riv in Resources */ = {isa = PBXBuildFile; fileRef = C324DB5E280740FB0060589F /* rbutton.riv */; };
 		C3460A002800A6CE002DBCB7 /* bird.riv in Resources */ = {isa = PBXBuildFile; fileRef = C34609FD2800A6CE002DBCB7 /* bird.riv */; };
 		C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E6127FDCBC6008652FD /* SimpleSlider.swift */; };
-		C3D187F3280751A8008B739A /* RProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RProgressBar.swift */; };
+		C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RiveProgressBar.swift */; };
 		C3D187F728075B6C008B739A /* riveslider.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F628075B6C008B739A /* riveslider.riv */; };
 		C3D187F9280770EA008B739A /* truck.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F8280770EA008B739A /* truck.riv */; };
 		C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */; };
@@ -137,13 +137,13 @@
 		04C4C83D2646FE410047E614 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		04D5B069266A460C004ACA5B /* nothing.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nothing.riv; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
-		C324DB5528071EB80060589F /* RSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSwitch.swift; sourceTree = "<group>"; };
-		C324DB5A2807216B0060589F /* RSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSlider.swift; sourceTree = "<group>"; };
-		C324DB5C280728690060589F /* RButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RButton.swift; sourceTree = "<group>"; };
+		C324DB5528071EB80060589F /* RiveSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitch.swift; sourceTree = "<group>"; };
+		C324DB5A2807216B0060589F /* RiveSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSlider.swift; sourceTree = "<group>"; };
+		C324DB5C280728690060589F /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
 		C324DB5E280740FB0060589F /* rbutton.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rbutton.riv; sourceTree = "<group>"; };
 		C34609FD2800A6CE002DBCB7 /* bird.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = bird.riv; sourceTree = "<group>"; };
 		C3468E6127FDCBC6008652FD /* SimpleSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSlider.swift; sourceTree = "<group>"; };
-		C3D187F2280751A8008B739A /* RProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RProgressBar.swift; sourceTree = "<group>"; };
+		C3D187F2280751A8008B739A /* RiveProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveProgressBar.swift; sourceTree = "<group>"; };
 		C3D187F628075B6C008B739A /* riveslider.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider.riv; sourceTree = "<group>"; };
 		C3D187F8280770EA008B739A /* truck.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck.riv; sourceTree = "<group>"; };
 		C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesViewController.swift; sourceTree = "<group>"; };
@@ -210,10 +210,10 @@
 		C324DB592807202A0060589F /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
-				C324DB5C280728690060589F /* RButton.swift */,
-				C324DB5528071EB80060589F /* RSwitch.swift */,
-				C324DB5A2807216B0060589F /* RSlider.swift */,
-				C3D187F2280751A8008B739A /* RProgressBar.swift */,
+				C324DB5C280728690060589F /* RiveButton.swift */,
+				C324DB5528071EB80060589F /* RiveSwitch.swift */,
+				C324DB5A2807216B0060589F /* RiveSlider.swift */,
+				C3D187F2280751A8008B739A /* RiveProgressBar.swift */,
 			);
 			path = Widgets;
 			sourceTree = "<group>";
@@ -453,20 +453,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C324DB5D280728690060589F /* RButton.swift in Sources */,
+				C324DB5D280728690060589F /* RiveButton.swift in Sources */,
 				C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */,
 				C9CB2F13264C92D200E7FF0D /* RiveComponents.swift in Sources */,
 				042C888E2644230700E7DBB2 /* utility.swift in Sources */,
-				C3D187F3280751A8008B739A /* RProgressBar.swift in Sources */,
+				C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */,
 				E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */,
 				042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */,
 				C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */,
-				C324DB5628071EB80060589F /* RSwitch.swift in Sources */,
+				C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */,
 				04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */,
 				04026DCC27CE3F03002B3DBF /* SwiftLoopMode.swift in Sources */,
 				C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */,
 				04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */,
-				C324DB5B2807216B0060589F /* RSlider.swift in Sources */,
+				C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */,
 				C9A84F5E2644A75A0014D8E0 /* ExamplesViewController.swift in Sources */,
 				042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */,
 				046AFA732673B00B004ED497 /* BlendModes.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  RSlider.swift
+//  RiveSlider.swift
 //  RiveExample
 //
 //  Created by Zachary Duncan on 4/13/22.
@@ -9,7 +9,7 @@
 import RiveRuntime
 import SwiftUI
 
-class RSlider: RiveViewModel {
+class RiveSlider: RiveViewModel {
     var progress: Double {
         didSet {
             try? setInput("FillPercent", value: progress)
