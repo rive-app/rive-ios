@@ -27,7 +27,7 @@ func getRiveFile(resourceName: String, resourceExt: String=".riv") throws -> Riv
     return riveFile
 }
 
-class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, RStateDelegate {
+class MrDelegate: RivePlayerDelegate, RStateDelegate {
     var stateMachinePlays = [String]()
     var stateMachinePauses = [String]()
     var stateMachineStops = [String]()
@@ -38,11 +38,11 @@ class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, RStat
     var stateMachineNames = [String]()
     var stateMachineStates = [String]()
     
-    func loop(_ animationName: String, type: Int) {
+    func loop(animation animationName: String, type: Int) {
         loops.append(animationName)
     }
     
-    func play(_ animationName: String, isStateMachine: Bool) {
+    func play(animation animationName: String, isStateMachine: Bool) {
         if (isStateMachine){
             stateMachinePlays.append(animationName)
         }
@@ -52,7 +52,7 @@ class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, RStat
         
     }
     
-    func pause(_ animationName: String, isStateMachine: Bool) {
+    func pause(animation animationName: String, isStateMachine: Bool) {
         if (isStateMachine){
             stateMachinePauses.append(animationName)
         }
@@ -61,7 +61,7 @@ class MrDelegate: LoopDelegate, PlayDelegate, PauseDelegate, StopDelegate, RStat
         }
     }
     
-    func stop(_ animationName: String, isStateMachine: Bool) {
+    func stop(animation animationName: String, isStateMachine: Bool) {
         if (isStateMachine){
             stateMachineStops.append(animationName)
         }
@@ -85,7 +85,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            playDelegate: delegate
+            playerDelegate: delegate
         )
         try view.play(animationName: "one")
         view.advance(delta:0)
@@ -97,7 +97,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            playDelegate: delegate
+            playerDelegate: delegate
         )
         try view.play(animationName: "one")
         try view.play(animationName: "one")
@@ -110,7 +110,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            pauseDelegate: delegate
+            playerDelegate: delegate
         )
         try view.play(animationName: "one")
         view.pause(animationName: "one")
@@ -123,7 +123,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            pauseDelegate: delegate
+            playerDelegate: delegate
         )
         view.pause(animationName: "one")
         view.advance(delta:0)
@@ -135,7 +135,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            stopDelegate: delegate
+            playerDelegate: delegate
         )
         try view.play(animationName: "one")
         view.stop(animationName: "one")
@@ -148,7 +148,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            stopDelegate: delegate
+            playerDelegate: delegate
         )
         
         view.stop(animationName: "one")
@@ -161,7 +161,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            stopDelegate: delegate
+            playerDelegate: delegate
         )
         try view.play(animationName: "one")
         view.pause(animationName: "one")
@@ -175,10 +175,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            loopDelegate: delegate,
-            playDelegate: delegate,
-            pauseDelegate: delegate,
-            stopDelegate: delegate
+            playerDelegate: delegate
         )
         
         try view.play(animationName: "one", loop: .loopOneShot)
@@ -197,10 +194,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            loopDelegate: delegate,
-            playDelegate: delegate,
-            pauseDelegate: delegate,
-            stopDelegate: delegate
+            playerDelegate: delegate
         )
         
         try view.play(animationName: "one", loop: .loopLoop)
@@ -217,10 +211,7 @@ class DelegatesTest: XCTestCase {
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"multiple_animations"),
             autoplay: false,
-            loopDelegate: delegate,
-            playDelegate: delegate,
-            pauseDelegate: delegate,
-            stopDelegate: delegate
+            playerDelegate: delegate
         )
         
         try view.play(animationName: "one", loop: .loopPingPong)
@@ -236,9 +227,8 @@ class DelegatesTest: XCTestCase {
         let delegate = MrDelegate()
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"what_a_state"),
-            stateMachine: "State Machine 2",
-            playDelegate: delegate,
-            pauseDelegate: delegate,
+            stateMachineName: "State Machine 2",
+            playerDelegate: delegate,
             stateChangeDelegate: delegate
         )
 
@@ -260,7 +250,7 @@ class DelegatesTest: XCTestCase {
         let delegate = MrDelegate()
         let view = try RiveView.init(
             riveFile: getRiveFile(resourceName:"what_a_state"),
-            stateMachine: "State Machine 1",
+            stateMachineName: "State Machine 1",
             stateChangeDelegate: delegate
         )
     
