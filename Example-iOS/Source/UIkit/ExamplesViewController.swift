@@ -12,9 +12,9 @@ import RiveRuntime
 
 /// Exposes SwiftUI with the ability to dismiss view from SwiftUI side
 class ExamplesViewController: UIViewController {
-    @IBSegueAction func showRiveExplorer(_ coder: NSCoder) -> UIViewController? {
-        return HostingController<RiveExplorer>(coder: coder)
-    }
+//    @IBSegueAction func showRiveExplorer(_ coder: NSCoder) -> UIViewController? {
+//        return HostingController<RiveExplorer>(coder: coder)
+//    }
     
     @IBSegueAction func showRiveComponents(_ coder: NSCoder) -> UIViewController? {
         return HostingController<RiveComponents>(coder: coder)

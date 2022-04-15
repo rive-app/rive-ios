@@ -10,23 +10,14 @@ import UIKit
 import RiveRuntime
 
 class BlendModeViewController: UIViewController {
-    let resourceName = "blendmodes"
+    let viewModel = RViewModel(fileName: "blendmodes")
     
-    override public func loadView() {
-        super.loadView()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
-        let view = RiveView()
-        view.fit = Fit.fitContain
-        
-        guard let riveFile = try? RiveFile(resource: resourceName) else {
-            fatalError("Failed to import Rive file.")
-        }
-        try? view.configure(riveFile)
-        self.view = view
-        
-    }
-    
-    override public func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        let rview = RView()
+        view.addSubview(rview)
+        viewModel.setView(rview)
+        rview.frame = view.frame
     }
 }

@@ -19,6 +19,6 @@ class SimpleAnimationViewController: UIViewController {
         let rview = RView()
         view.addSubview(rview)
         viewModel.setView(rview)
-        rview.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
+        rview.frame = view.frame
     }
 }

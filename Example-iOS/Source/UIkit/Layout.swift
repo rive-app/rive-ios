@@ -14,7 +14,7 @@ class LayoutView: UIView {
     var fitButtonAction: ButtonAction?
     var alignmentButtonAction: ButtonAction?
     
-    @IBOutlet weak var riveView: RiveView!
+    @IBOutlet weak var riveView: RView!
     @IBAction func fitButtonTriggered(_ sender: UIButton) {
         fitButtonAction?(sender.currentTitle!)
     }
@@ -24,7 +24,7 @@ class LayoutView: UIView {
 }
 
 class LayoutViewController: UIViewController {
-    let resourceName = "truck_v7"
+    var viewModel = RViewModel(fileName: "truck_v7")
     
     override public func loadView() {
         super.loadView()
@@ -33,7 +33,7 @@ class LayoutViewController: UIViewController {
             fatalError("Could not find LayoutView")
         }
         
-        try? layoutView.riveView.configure(getRiveFile(resourceName: resourceName))
+        viewModel.setView(layoutView.riveView)
         
         func setFit(name:String) {
             var fit: Fit = .fitContain

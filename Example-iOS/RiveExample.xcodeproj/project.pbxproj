@@ -187,15 +187,15 @@
 		042C88862643DB2200E7DBB2 /* UIkit */ = {
 			isa = PBXGroup;
 			children = (
+				C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */,
 				042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */,
 				C3468E6127FDCBC6008652FD /* SimpleSlider.swift */,
 				042C888B2643EEE300E7DBB2 /* Layout.swift */,
 				042C888F2644250D00E7DBB2 /* MultipleAnimations.swift */,
-				C9A84F5D2644A75A0014D8E0 /* ExamplesViewController.swift */,
-				04A8F6C426454711002C909A /* LoopMode.swift */,
-				04C4C83D2646FE410047E614 /* StateMachine.swift */,
-				04BE5437264D604500427B39 /* iosPlayer.swift */,
 				046AFA722673B00B004ED497 /* BlendModes.swift */,
+				04C4C83D2646FE410047E614 /* StateMachine.swift */,
+				04A8F6C426454711002C909A /* LoopMode.swift */,
+				04BE5437264D604500427B39 /* iosPlayer.swift */,
 			);
 			path = UIkit;
 			sourceTree = "<group>";
@@ -273,8 +273,8 @@
 			isa = PBXGroup;
 			children = (
 				C9D3DE59264F309F001BA265 /* Explorer */,
-				C9CB2F12264C92D200E7FF0D /* RiveComponents.swift */,
 				04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */,
+				C9CB2F12264C92D200E7FF0D /* RiveComponents.swift */,
 				04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */,
 				04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */,
 				04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */,

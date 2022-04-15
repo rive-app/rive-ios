@@ -66,7 +66,7 @@ open class RViewModel: ObservableObject, RTouchDelegate {
         self.init(model)
     }
     
-    /// This can be added to the body of a SwiftUI View
+    /// This can be added to the body of a SwiftUI `View`
     open func view() -> some View {
         return StandardView(viewModel: self)
     }
@@ -133,14 +133,13 @@ extension RViewModel {
     @objc open func setView(_ rview: RView) {
         register(rview: rview)
         
-        guard let fileName = fileName else {
-            print("RViewModel.setView(_ rview:) did not have a fileName")
-            return
-        }
+        var file: RiveFile!
         
-        guard let file = try? RiveFile(name: fileName) else {
-            print("RViewModel.setView(_ rview:) could not create a RiveFile from name: " + fileName)
-            return
+        if let fileName = fileName {
+            file = try! RiveFile(name: fileName)
+        }
+        else if let webURL = webURL {
+            file = RiveFile(httpUrl: webURL, with: rview)!
         }
         
         try? self.rview!.configure(
@@ -322,19 +321,19 @@ extension RViewModel {
 // MARK: - RPlayerDelegate
 extension RViewModel: RPlayerDelegate {
     public func loop(animation animationName: String, type: Int) {
-        print("Animation: [" + animationName + "] - Looped")
+        //print("Animation: [" + animationName + "] - Looped")
     }
     
     public func play(animation animationName: String, isStateMachine: Bool) {
-        print("Animation: [" + animationName + "] - Played")
+        //print("Animation: [" + animationName + "] - Played")
     }
     
     public func pause(animation animationName: String, isStateMachine: Bool) {
-        print("Animation: [" + animationName + "] - Paused")
+        //print("Animation: [" + animationName + "] - Paused")
     }
     
     public func stop(animation animationName: String, isStateMachine: Bool) {
-        print("Animation: [" + animationName + "] - Stopped")
+        //print("Animation: [" + animationName + "] - Stopped")
     }
 }
 

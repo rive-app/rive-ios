@@ -46,7 +46,7 @@ public struct RModel {
     }
     
     public init(
-        fileName: String?,
+        fileName: String,
         stateMachineName: String? = nil,
         fit: RiveRuntime.Fit = .fitContain,
         alignment: RiveRuntime.Alignment = .alignmentCenter,
@@ -55,6 +55,7 @@ public struct RModel {
         animationName: String? = nil
     ) {
         self.fileName = fileName
+        self.webURL = nil
         self.stateMachineName = stateMachineName
         self.fit = fit
         self.alignment = alignment
@@ -64,7 +65,7 @@ public struct RModel {
     }
     
     public init(
-        webURL: String?,
+        webURL: String,
         stateMachineName: String? = nil,
         fit: RiveRuntime.Fit = .fitContain,
         alignment: RiveRuntime.Alignment = .alignmentCenter,
@@ -73,6 +74,7 @@ public struct RModel {
         animationName: String? = nil
     ) {
         self.webURL = webURL
+        self.fileName = nil
         self.stateMachineName = stateMachineName
         self.fit = fit
         self.alignment = alignment
