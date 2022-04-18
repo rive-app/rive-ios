@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 open class RiveViewModel: ObservableObject, RiveTouchDelegate {
     /// This can be assigned to already emplaced UIViews or RViews within .xib files or storyboards
