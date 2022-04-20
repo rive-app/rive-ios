@@ -48,6 +48,8 @@
 		C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5A2807216B0060589F /* RiveSlider.swift */; };
 		C324DB5D280728690060589F /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5C280728690060589F /* RiveButton.swift */; };
 		C324DB5F280740FB0060589F /* rbutton.riv in Resources */ = {isa = PBXBuildFile; fileRef = C324DB5E280740FB0060589F /* rbutton.riv */; };
+		C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */; };
+		C3357CA5280F430000F03B6F /* ExamplesDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA4280F430000F03B6F /* ExamplesDetail.swift */; };
 		C3460A002800A6CE002DBCB7 /* bird.riv in Resources */ = {isa = PBXBuildFile; fileRef = C34609FD2800A6CE002DBCB7 /* bird.riv */; };
 		C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E6127FDCBC6008652FD /* SimpleSlider.swift */; };
 		C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RiveProgressBar.swift */; };
@@ -141,6 +143,8 @@
 		C324DB5A2807216B0060589F /* RiveSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSlider.swift; sourceTree = "<group>"; };
 		C324DB5C280728690060589F /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
 		C324DB5E280740FB0060589F /* rbutton.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rbutton.riv; sourceTree = "<group>"; };
+		C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesMaster.swift; sourceTree = "<group>"; };
+		C3357CA4280F430000F03B6F /* ExamplesDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesDetail.swift; sourceTree = "<group>"; };
 		C34609FD2800A6CE002DBCB7 /* bird.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = bird.riv; sourceTree = "<group>"; };
 		C3468E6127FDCBC6008652FD /* SimpleSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSlider.swift; sourceTree = "<group>"; };
 		C3D187F2280751A8008B739A /* RiveProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveProgressBar.swift; sourceTree = "<group>"; };
@@ -294,16 +298,18 @@
 		C9C73E9624FC471E00EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				04A8F6C226452F25002C909A /* lib */,
 				C324DB592807202A0060589F /* Widgets */,
 				C9A84F342644931E0014D8E0 /* SwiftUI */,
 				042C88862643DB2200E7DBB2 /* UIkit */,
-				C9C73E9724FC471E00EF9516 /* AppDelegate.swift */,
-				C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */,
-				C9C73EA524FC471E00EF9516 /* Info.plist */,
+				042C88822643D6B900E7DBB2 /* Main.storyboard */,
+				C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */,
+				C3357CA4280F430000F03B6F /* ExamplesDetail.swift */,
 				C9C73E9D24FC471E00EF9516 /* Assets.xcassets */,
 				C9C73E9F24FC471E00EF9516 /* Preview Content */,
-				042C88822643D6B900E7DBB2 /* Main.storyboard */,
+				04A8F6C226452F25002C909A /* lib */,
+				C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */,
+				C9C73E9724FC471E00EF9516 /* AppDelegate.swift */,
+				C9C73EA524FC471E00EF9516 /* Info.plist */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -458,9 +464,11 @@
 				C9CB2F13264C92D200E7FF0D /* RiveComponents.swift in Sources */,
 				042C888E2644230700E7DBB2 /* utility.swift in Sources */,
 				C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */,
+				C3357CA5280F430000F03B6F /* ExamplesDetail.swift in Sources */,
 				E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */,
 				042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */,
 				C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */,
+				C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */,
 				C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */,
 				04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */,
 				04026DCC27CE3F03002B3DBF /* SwiftLoopMode.swift in Sources */,
