@@ -19,3 +19,8 @@ struct SwiftSimpleAnimation: DismissableView {
 }
 
 
+struct SwiftSimpleAnimation_Previews: PreviewProvider {
+    static var previews: some View {
+        SwiftSimpleAnimation()
+    }
+}

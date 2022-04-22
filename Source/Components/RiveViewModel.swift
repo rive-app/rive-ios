@@ -168,6 +168,10 @@ extension RiveViewModel {
         rview = nil
     }
     
+    open func refreshView() {
+        try? rview?.refresh(withViewModel: self)
+    }
+    
     // MARK: Controls
     
     public func reset() throws {

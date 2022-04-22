@@ -128,7 +128,7 @@ open class RiveView: RiveRendererView {
     public weak var stateChangeDelegate: RStateDelegate?
     
     // Tracks config options when rive files load asynchronously
-    private var configOptions: ConfigOptions?
+    internal var configOptions: ConfigOptions?
     
     // Queue of events that need to be done outside view updates
     private var eventQueue = EventQueue()
@@ -275,18 +275,6 @@ extension RiveView {
         stateMachineName: String? = nil,
         autoPlay: Bool = true
     ) throws {
-        clear()
-        
-        // Always save the config options to preserve for reset
-// TODO: Zach - Find everywhere the instance's configOptions is needed
-        configOptions = ConfigOptions(
-            riveFile: riveFile,
-            artboardName: artboardName ?? configOptions?.artboardName,
-            animationName: animationName ?? configOptions?.animationName,
-            stateMachineName: stateMachineName ?? configOptions?.stateMachineName,
-            autoPlay: autoPlay  // has a default setting
-        )
-        
         // If it isn't loaded, early out
         guard riveFile.isLoaded else { return }
         
@@ -312,24 +300,26 @@ extension RiveView {
         
 // TODO: Zach - Find everywhere that the instance's riveFile is needed
         self.riveFile = riveFile
+        
+        try refresh(artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName, autoPlay: autoPlay)
+    }
+    
+    open func refresh(withViewModel viewModel: RiveViewModel) throws {
+        clear()
+        
+        // Always save the config options to preserve for reset
+// TODO: Zach - Find everywhere the instance's configOptions is needed
+        configOptions = ConfigOptions(
+            riveFile: self.riveFile!,
+            artboardName: viewModel.artboardName ?? configOptions?.artboardName,
+            animationName: viewModel.animationName ?? configOptions?.animationName,
+            stateMachineName: viewModel.stateMachineName ?? configOptions?.stateMachineName,
+            autoPlay: viewModel.autoplay  // has a default setting
+        )
+        
         self.autoPlay = configOptions!.autoPlay
         
-        let rootArtboard: RiveArtboard?
-        
-        if let artboardName = configOptions?.artboardName {
-            rootArtboard = try riveFile.artboard(fromName: artboardName)
-        } else {
-            rootArtboard = try riveFile.artboard()
-        }
-        guard let artboard = rootArtboard else {
-            fatalError("No default artboard exists")
-        }
-        
-        if artboard.animationCount() == 0 {
-            fatalError("No animations in the file.")
-        }
-        
-        self.artboard = artboard
+        try setArtboard(withName: configOptions?.artboardName, inFile: riveFile)
         
         // Start the animation loop
         if autoPlay {
@@ -343,6 +333,37 @@ extension RiveView {
         } else {
             advance(delta: 0)
         }
+    }
+    
+    open func refresh(artboardName: String? = nil, animationName: String? = nil, stateMachineName: String? = nil, autoPlay: Bool = true) throws {
+        let viewModel = RiveViewModel(
+            fileName: "",
+            stateMachineName: stateMachineName,
+            autoplay: autoPlay,
+            artboardName: artboardName,
+            animationName: animationName
+        )
+        try refresh(withViewModel: viewModel)
+    }
+    
+    func setArtboard(withName artboardName: String?, inFile riveFile: RiveFile?) throws {
+        let rootArtboard: RiveArtboard?
+        
+        if let artboardName = artboardName {
+            rootArtboard = try riveFile?.artboard(fromName: artboardName)
+        } else {
+            rootArtboard = try riveFile?.artboard()
+        }
+        
+        guard let artboard = rootArtboard else {
+            fatalError("No default artboard exists")
+        }
+        
+        if artboard.animationCount() == 0 {
+            fatalError("No animations in the file.")
+        }
+        
+        self.artboard = artboard
     }
     
     /// Stop playback, clear any created animation or state machine instances.

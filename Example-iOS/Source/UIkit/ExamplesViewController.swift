@@ -11,6 +11,7 @@ import SwiftUI
 import RiveRuntime
 
 /// Exposes SwiftUI with the ability to dismiss view from SwiftUI side
+@available(iOS 15.0, *)
 class ExamplesViewController: UIViewController {
 //    @IBSegueAction func showRiveExplorer(_ coder: NSCoder) -> UIViewController? {
 //        return HostingController<RiveExplorer>(coder: coder)
@@ -33,7 +34,7 @@ class ExamplesViewController: UIViewController {
     }
 
     @IBSegueAction func showLoopMode(_ coder: NSCoder) -> UIViewController? {
-        return HostingController<SwiftLoopMode>(coder: coder)
+        return HostingController<LoopView>(coder: coder)
     }
 
     @IBSegueAction func showStateMachine(_ coder: NSCoder) -> UIViewController? {
