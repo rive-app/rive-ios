@@ -59,7 +59,7 @@
 		C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */; };
 		C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C73E9D24FC471E00EF9516 /* Assets.xcassets */; };
 		C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C73EA024FC471E00EF9516 /* Preview Assets.xcassets */; };
-		C9CB2F13264C92D200E7FF0D /* RiveComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CB2F12264C92D200E7FF0D /* RiveComponents.swift */; };
+		C9CB2F13264C92D200E7FF0D /* SwiftWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CB2F12264C92D200E7FF0D /* SwiftWidgets.swift */; };
 		C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9CE8265263B90E000F98DDB /* juice_v7.riv */; };
 		C9D3DE5B264F3B51001BA265 /* liquid.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9D3DE5A264F3B51001BA265 /* liquid.riv */; };
 		C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9D3DE67264F49F4001BA265 /* life_bar.riv */; };
@@ -154,7 +154,7 @@
 		C9C73E9D24FC471E00EF9516 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9C73EA024FC471E00EF9516 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C9C73EA524FC471E00EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C9CB2F12264C92D200E7FF0D /* RiveComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveComponents.swift; sourceTree = "<group>"; };
+		C9CB2F12264C92D200E7FF0D /* SwiftWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftWidgets.swift; sourceTree = "<group>"; };
 		C9CE8265263B90E000F98DDB /* juice_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = juice_v7.riv; sourceTree = "<group>"; };
 		C9D3DE5A264F3B51001BA265 /* liquid.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = liquid.riv; sourceTree = "<group>"; };
 		C9D3DE67264F49F4001BA265 /* life_bar.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = life_bar.riv; sourceTree = "<group>"; };
@@ -262,7 +262,7 @@
 			isa = PBXGroup;
 			children = (
 				04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */,
-				C9CB2F12264C92D200E7FF0D /* RiveComponents.swift */,
+				C9CB2F12264C92D200E7FF0D /* SwiftWidgets.swift */,
 				04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */,
 				04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */,
 				04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */,
@@ -455,7 +455,7 @@
 			files = (
 				C324DB5D280728690060589F /* RiveButton.swift in Sources */,
 				C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */,
-				C9CB2F13264C92D200E7FF0D /* RiveComponents.swift in Sources */,
+				C9CB2F13264C92D200E7FF0D /* SwiftWidgets.swift in Sources */,
 				042C888E2644230700E7DBB2 /* utility.swift in Sources */,
 				C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */,
 				E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */,

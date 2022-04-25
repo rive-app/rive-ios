@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Rive Examples-->
+        <!--Examples-->
         <scene sceneID="XV1-T1-lAJ">
             <objects>
-                <tableViewController title="Rive Examples" id="oFD-NX-sZZ" customClass="ExamplesMasterTableViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="oFD-NX-sZZ" customClass="ExamplesMasterTableViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="insetGrouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="WCh-4c-dF3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -31,7 +31,7 @@
                             <outlet property="delegate" destination="oFD-NX-sZZ" id="el9-mJ-yKI"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Root View Controller" id="D8Z-my-oJi"/>
+                    <navigationItem key="navigationItem" title="Examples" prompt="Discover Ways to Use Rive" id="D8Z-my-oJi"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HFb-68-BQh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -82,7 +82,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="btb-K4-jol" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7319" y="-358"/>
+            <point key="canvasLocation" x="4561" y="353"/>
         </scene>
         <!--Layout-->
         <scene sceneID="f8y-qg-uzH">
@@ -276,7 +276,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iPR-UO-vO8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3052" y="-358"/>
+            <point key="canvasLocation" x="3103" y="-358"/>
         </scene>
         <!--Blend Modes-->
         <scene sceneID="JXR-CF-wxg">
@@ -292,7 +292,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0JN-k1-xkH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6581" y="-358"/>
+            <point key="canvasLocation" x="3822" y="353"/>
         </scene>
         <!--Loop Mode-->
         <scene sceneID="iqU-00-Krb">
@@ -520,7 +520,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ozx-fu-trC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4449" y="-358"/>
+            <point key="canvasLocation" x="4561" y="-358"/>
         </scene>
         <!--State Machine-->
         <scene sceneID="sMa-mk-G4H">
@@ -603,7 +603,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qYD-XH-vp4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5135" y="-358"/>
+            <point key="canvasLocation" x="2377" y="353"/>
         </scene>
         <!--iOS Player-->
         <scene sceneID="8FV-8I-h1w">
@@ -686,17 +686,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jt7-3l-j1T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5861" y="-358"/>
-        </scene>
-        <!--Hosting Controller-->
-        <scene sceneID="FCb-Pg-8ib">
-            <objects>
-                <hostingController id="yNC-ze-bA4" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="gnB-w3-z8e"/>
-                </hostingController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="SUL-R1-Glq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3090" y="356"/>
+            <point key="canvasLocation" x="3103" y="353"/>
         </scene>
         <!--Multiple Animations-->
         <scene sceneID="RWJ-v9-IHm">
@@ -857,7 +847,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yc7-ml-Tkq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3765" y="-358"/>
+            <point key="canvasLocation" x="3822" y="-358"/>
         </scene>
         <!--Simple Animation Example-->
         <scene sceneID="b8F-wH-PQu">
@@ -874,26 +864,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xxk-hl-V9T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2377" y="-358"/>
-        </scene>
-        <!--Hosting Controller-->
-        <scene sceneID="ywB-z0-0QJ">
-            <objects>
-                <hostingController id="w39-2n-FCH" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="GYU-ku-HRS"/>
-                </hostingController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tzM-Rx-Bel" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3817" y="356"/>
-        </scene>
-        <!--Hosting Controller-->
-        <scene sceneID="iwq-aZ-Vk6">
-            <objects>
-                <hostingController id="uUT-OA-tcC" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="Db7-UM-aVi"/>
-                </hostingController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Wo1-9T-STv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2378" y="356"/>
         </scene>
     </scenes>
     <resources>

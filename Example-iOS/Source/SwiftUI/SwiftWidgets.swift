@@ -1,15 +1,16 @@
 //
-//  ExampleStateMachineView.swift
+//  SwiftWidgets.swift
 //  RiveExample
 //
 //  Created by Matt Sullivan on 5/12/21.
+//  Updated by Zachary Duncan on 4/15/22.
 //  Copyright © 2021 Rive. All rights reserved.
 //
 
 import SwiftUI
 import RiveRuntime
 
-struct RiveComponents: DismissableView {
+struct SwiftWidgets: DismissableView {
     
     /// lets UIKit bind to this to trigger dismiss events
     var dismiss: () -> Void = {}
@@ -20,7 +21,6 @@ struct RiveComponents: DismissableView {
     var rslider = RiveSlider()
     var rprogress = RiveProgressBar()
     var rswitch = RiveSwitch()
-    var bird = RiveViewModel(RiveModel(fileName: "bird", stateMachineName: "State Machine 1"))
     
     var body: some View {
         ZStack {
@@ -29,14 +29,6 @@ struct RiveComponents: DismissableView {
             
             ScrollView {
                 VStack {
-                    VStack {
-                        Text("Bird Animation")
-                        bird.view()
-                            .frame(maxWidth: .infinity)
-                            .aspectRatio(1, contentMode: .fit)
-                    }
-                    Spacer().padding()
-                    
                     HStack {
                         Text("RiveButton:")
                         RiveButton().view {
@@ -86,6 +78,6 @@ struct RiveComponents: DismissableView {
 
 struct RiveComponents_Previews: PreviewProvider {
     static var previews: some View {
-        RiveComponents()
+        SwiftWidgets()
     }
 }
