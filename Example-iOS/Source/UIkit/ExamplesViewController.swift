@@ -34,7 +34,7 @@ class ExamplesViewController: UIViewController {
     }
 
     @IBSegueAction func showLoopMode(_ coder: NSCoder) -> UIViewController? {
-        return HostingController<LoopView>(coder: coder)
+        return HostingController<SwiftLoopMode>(coder: coder)
     }
 
     @IBSegueAction func showStateMachine(_ coder: NSCoder) -> UIViewController? {

@@ -15,11 +15,13 @@ open class RiveViewModel: ObservableObject, RiveTouchDelegate {
     public var inputsAction: InputsAction = nil
     public var stateChangeAction: StateChangeAction = nil
     
+//    private let modelDefault: RiveModel
     @Published private var model: RiveModel
     private var viewRepresentable: RViewRepresentable?
     
     
     public init(_ model: RiveModel) {
+//        self.modelDefault = model
         self.model = model
     }
     

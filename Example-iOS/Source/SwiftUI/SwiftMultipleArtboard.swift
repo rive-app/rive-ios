@@ -10,7 +10,7 @@ import SwiftUI
 import RiveRuntime
 
 @available(iOS 15.0, *)
-struct LoopView: DismissableView {
+struct SwiftMultipleArtboards: DismissableView {
     var dismiss: () -> Void = {}
     
     var viewModels = [
@@ -21,36 +21,42 @@ struct LoopView: DismissableView {
     
     var body: some View {
         HStack {
-            ForEach(viewModels) { viewModel in
-                viewModel.view()
-            }
+            ForEach(viewModels) { $0.view() }
         }
         .background(.black)
     }
 }
 
 class IconViewModel: RiveViewModel, Identifiable {
-    private var isActive = false
     private let icons = ["CHAT", "SEARCH", "TIMER"]
-    private let icon = "CHAT"
+    private var isActive = false {
+        didSet {
+            if isActive {
+                try? setInput("active", value: true)
+            } else {
+                pause()
+            }
+        }
+    }
     
     convenience init(item: String) {
         self.init(fileName: "animated_icon_set_-_1_color", stateMachineName: "\(item)_Interactivity", artboardName: item)
     }
     
     func touchEnded(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
-        stateMachineName = "\(icon)_Interactivity"
-        self.artboardName = icon
-        refreshView()
+        // If you want to change the model mid-flight
+//        let icon = "CHAT"
+//        stateMachineName = "\(icon)_Interactivity"
+//        self.artboardName = icon
+//        refreshView()
         
         isActive.toggle()
-        try? setInput("active", value: isActive)
     }
 }
 
 @available(iOS 15.0, *)
 struct LoopView_Previews: PreviewProvider {
     static var previews: some View {
-        LoopView()
+        SwiftMultipleArtboards()
     }
 }
