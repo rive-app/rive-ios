@@ -9,11 +9,6 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
-@interface RiveFile ()
-
-- (rive::BinaryReader) getReader:(UInt8 *)bytes byteLength:(UInt64)length;
-
-@end
 
 /*
  * RiveFile
