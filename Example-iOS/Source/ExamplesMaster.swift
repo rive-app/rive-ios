@@ -10,6 +10,8 @@ import SwiftUI
 import RiveRuntime
 
 class ExamplesMasterTableViewController: UITableViewController {
+    
+    
     // MARK: Storyboard Examples
     /// Sourced from the `Main` storyboard
     private let storyboardIDs: [String] = [
@@ -21,10 +23,11 @@ class ExamplesMasterTableViewController: UITableViewController {
         "Slider Widget"
     ]
     
+    
     // MARK: SwiftUI View Examples
     /// Made from custom `Views`
     private lazy var swiftViews: [(String, AnyView)] = [
-        ("Widget Collection",   typeErased(dismissableView: RiveComponents())),
+        ("Widget Collection",   typeErased(dismissableView: SwiftWidgets())),
         ("Simple Animation",    typeErased(dismissableView: SwiftSimpleAnimation())),
         ("Layout",              typeErased(dismissableView: SwiftLayout())),
         ("MultipleAnimations",  typeErased(dismissableView: SwiftMultipleAnimations())),
@@ -33,13 +36,16 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("Mesh Animation",      typeErased(dismissableView: SwiftMeshAnimation()))
     ]
     
+    
     // MARK: ViewModel Examples
     /// Made from `RiveViewModels`' default `.view()` method
     private let viewModels: [(String, RiveViewModel)] = [
         ("Slider Widget",       RiveSlider())
     ]
     
+    
     // MARK: -
+    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
@@ -50,12 +56,12 @@ class ExamplesMasterTableViewController: UITableViewController {
         }
         
         // Views made by custom SwiftUI Views
-        if indexPath.section == 1 {
+        else if indexPath.section == 1 {
             cell.textLabel?.text = swiftViews[indexPath.row].0
         }
         
         // Views made by the ViewModels
-        if indexPath.section == 2 {
+        else if indexPath.section == 2 {
             cell.textLabel?.text = viewModels[indexPath.row].0
         }
         
@@ -71,12 +77,12 @@ class ExamplesMasterTableViewController: UITableViewController {
         }
         
         // Views made by custom SwiftUI Views
-        if indexPath.section == 1 {
+        else if indexPath.section == 1 {
             controller = UIHostingController(rootView: swiftViews[indexPath.row].1)
         }
         
         // Views made by the ViewModels
-        if indexPath.section == 2 {
+        else if indexPath.section == 2 {
             let anyView = AnyView(viewModels[indexPath.row].1.view())
             controller = UIHostingController(rootView: anyView)
         }
@@ -87,8 +93,13 @@ class ExamplesMasterTableViewController: UITableViewController {
         navigationController?.pushViewController(controller, animated: true)
     }
     
-    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        return ["Storyboard Examples", "SwiftUI View Examples", "RiveViewModel View Examples"]
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0: return "Storyboard Examples"
+        case 1: return "SwiftUI Examples"
+        case 2: return "ViewModel Examples"
+        default: fatalError()
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
