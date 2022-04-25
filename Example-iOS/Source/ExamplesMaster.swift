@@ -10,33 +10,36 @@ import SwiftUI
 import RiveRuntime
 
 class ExamplesMasterTableViewController: UITableViewController {
+    // MARK: UIKit Examples (sourced from the Main storyboard)
     private let storyboardIDs: [String] = [
         "Simple Animation",
         "Layout",
         "MultipleAnimations",
-        "Loop Mode",
+        //"Loop Mode",
         "State Machine",
-//        "iOS Player",
+        //"iOS Player",
         "Blend Mode",
         "Slider Widget"
     ]
     
-    private enum SwiftViews: StringLiteralType, CaseIterable {
-        case components = "Widget Collection"
-        case simpleAnimation = "Simple Animation"
-        case layout = "Layout"
-        case multiple = "MultipleAnimations"
-        case loop = "Loop Mode"
-        case stateMachine = "State Machine"
-        case mesh = "Mesh Animation"
-    }
+    // MARK: SwiftUI Examples (made from custom Views)
+    private lazy var swiftViews: [(String, AnyView)] = [
+        ("Widget Collection",   typeErased(dismissableView: RiveComponents())),
+        ("Simple Animation",    typeErased(dismissableView: SwiftSimpleAnimation())),
+        ("Layout",              typeErased(dismissableView: SwiftLayout())),
+        ("MultipleAnimations",  typeErased(dismissableView: SwiftMultipleAnimations())),
+        ("Loop Mode",           typeErased(dismissableView: SwiftLoopMode())),
+        ("State Machine",       typeErased(dismissableView: SwiftStateMachine())),
+        ("Mesh Animation",      typeErased(dismissableView: SwiftMeshAnimation()))
+    ]
     
+    // MARK: SwiftUI Examples (displays the default .view() for custom RiveViewModels)
     private let viewModels: [(String, RiveViewModel)] = [
         ("Slider Widget",       RiveSlider())
     ]
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return storyboardIDs.count + SwiftViews.allCases.count + viewModels.count
+        return storyboardIDs.count + swiftViews.count + viewModels.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -49,13 +52,13 @@ class ExamplesMasterTableViewController: UITableViewController {
         }
         
         // Views made by custom SwiftUI Views
-        else if i < storyboardIDs.count + SwiftViews.allCases.count {
-            cell.textLabel?.text = SwiftViews.allCases[i - storyboardIDs.count].rawValue
+        else if i < storyboardIDs.count + swiftViews.count {
+            cell.textLabel?.text = swiftViews[i - storyboardIDs.count].0
         }
         
         // Views made by the ViewModels
         else {
-            cell.textLabel?.text = viewModels[i - (storyboardIDs.count + SwiftViews.allCases.count)].0
+            cell.textLabel?.text = viewModels[i - (storyboardIDs.count + swiftViews.count)].0
         }
         
         return cell
@@ -71,29 +74,17 @@ class ExamplesMasterTableViewController: UITableViewController {
         }
         
         // Views made by custom SwiftUI Views
-        else if i < storyboardIDs.count + SwiftViews.allCases.count {
-            var anyView: AnyView
-            
-            switch SwiftViews.allCases[i - storyboardIDs.count] {
-            case .components:       anyView = typeErased(dismissableView: RiveComponents())
-            case .simpleAnimation:  anyView = typeErased(dismissableView: SwiftSimpleAnimation())
-            case .layout:           anyView = typeErased(dismissableView: SwiftLayout())
-            case .multiple:         anyView = typeErased(dismissableView: SwiftMultipleAnimations())
-            case .loop:             anyView = typeErased(dismissableView: SwiftLoopMode())
-            case .stateMachine:     anyView = typeErased(dismissableView: SwiftStateMachine())
-            case .mesh:             anyView = typeErased(dismissableView: SwiftMeshAnimation())
-            }
-            
-            controller = UIHostingController(rootView: anyView)
+        else if i < storyboardIDs.count + swiftViews.count {
+            controller = UIHostingController(rootView: swiftViews[i - storyboardIDs.count].1)
         }
         
         // Views made by the ViewModels
         else {
-            let anyView = AnyView(viewModels[i - (storyboardIDs.count + SwiftViews.allCases.count)].1.view())
+            let anyView = AnyView(viewModels[i - (storyboardIDs.count + swiftViews.count)].1.view())
             controller = UIHostingController(rootView: anyView)
         }
         
-        splitViewController?.showDetailViewController(controller, sender: self)
+        navigationController?.pushViewController(controller, animated: true)
     }
     
     private func typeErased<Content: DismissableView>(dismissableView: Content) -> AnyView {

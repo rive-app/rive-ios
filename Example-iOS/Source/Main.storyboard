@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Jj8-QH-eAe">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="0Wt-ue-AAA">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -9,21 +9,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
-        <scene sceneID="Ofc-Em-JP5">
-            <objects>
-                <viewController id="Rif-Z2-ml6" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="yE1-5o-Uq1">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="vdE-WD-ztg"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="QEY-6T-0Mo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="117" y="-1045"/>
-        </scene>
         <!--Root View Controller-->
         <scene sceneID="XV1-T1-lAJ">
             <objects>
@@ -51,7 +36,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HFb-68-BQh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1038" y="-1918"/>
+            <point key="canvasLocation" x="1274" y="-23"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="foC-i9-QZA">
@@ -61,183 +46,13 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <connections>
+                        <segue destination="oFD-NX-sZZ" kind="relationship" relationship="rootViewController" id="irS-IK-zAb"/>
+                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HNW-hv-lLR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="116" y="-2236"/>
-        </scene>
-        <!--Split View Controller-->
-        <scene sceneID="3PL-ZH-SYd">
-            <objects>
-                <splitViewController allowDoubleColumnStyle="YES" id="Jj8-QH-eAe" sceneMemberID="viewController">
-                    <connections>
-                        <segue destination="oFD-NX-sZZ" kind="relationship" relationship="masterViewController" id="Uis-3l-OTR"/>
-                    </connections>
-                </splitViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="o1k-3I-tAX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-741" y="-1614"/>
-        </scene>
-        <!--Examples-->
-        <scene sceneID="s0d-6b-0kx">
-            <objects>
-                <viewController storyboardIdentifier="ExamplesViewController" title="Examples" id="Y6W-OH-hqX" customClass="ExamplesViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="wRo-9V-rXR">
-                                <rect key="frame" x="0.0" y="88" width="414" height="463"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UIKit examples" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C8u-cc-gX1">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQZ-zi-PeG">
-                                        <rect key="frame" x="0.0" y="20.5" width="414" height="30"/>
-                                        <state key="normal" title="SimpleAnimation"/>
-                                        <connections>
-                                            <segue destination="l4C-BT-Wpi" kind="show" id="LHB-TA-e4W"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dCb-q6-0j5">
-                                        <rect key="frame" x="0.0" y="50.5" width="414" height="30"/>
-                                        <state key="normal" title="Multiple Animations"/>
-                                        <connections>
-                                            <segue destination="qQy-Yc-tGr" kind="show" destinationCreationSelector="showUIKitMultiAnimations:" id="Tbs-54-2gn"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mhU-90-IiH">
-                                        <rect key="frame" x="0.0" y="80.5" width="414" height="30"/>
-                                        <state key="normal" title="Layout"/>
-                                        <connections>
-                                            <segue destination="6EP-ej-U9V" kind="show" id="3pi-Qq-8fB"/>
-                                        </connections>
-                                    </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tdH-Jc-BAa">
-                                        <rect key="frame" x="0.0" y="110.5" width="414" height="0.0"/>
-                                        <state key="normal" title="Loop Mode"/>
-                                        <connections>
-                                            <segue destination="fGr-bk-Efd" kind="show" id="x3r-N0-mCq"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oJ8-UX-LUE">
-                                        <rect key="frame" x="0.0" y="110.5" width="414" height="30"/>
-                                        <state key="normal" title="State Machine"/>
-                                        <connections>
-                                            <segue destination="tat-Jb-Aap" kind="show" id="ATD-KD-J91"/>
-                                        </connections>
-                                    </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uPx-Gu-h53">
-                                        <rect key="frame" x="0.0" y="140.5" width="414" height="0.0"/>
-                                        <state key="normal" title="iOS Player"/>
-                                        <connections>
-                                            <segue destination="bLr-Sd-R4P" kind="show" id="cqv-jB-x3e"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PZ2-v5-w29">
-                                        <rect key="frame" x="0.0" y="140.5" width="414" height="30"/>
-                                        <state key="normal" title="Blend Modes"/>
-                                        <connections>
-                                            <segue destination="6Y6-o9-aZy" kind="show" id="sFN-gS-xr4"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y7T-yB-thu">
-                                        <rect key="frame" x="0.0" y="170.5" width="414" height="31"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="filled" title="Interactable Slider"/>
-                                        <connections>
-                                            <segue destination="nXP-c2-Cpg" kind="show" destinationCreationSelector="showUIKitSlider:" id="NDt-Ho-xN4"/>
-                                        </connections>
-                                    </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SwiftUI examples" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wyj-7w-GPq">
-                                        <rect key="frame" x="0.0" y="201.5" width="414" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrC-Ng-Q2K">
-                                        <rect key="frame" x="0.0" y="222" width="414" height="0.0"/>
-                                        <state key="normal" title="Rive Explorer"/>
-                                        <connections>
-                                            <segue destination="w39-2n-FCH" kind="show" destinationCreationSelector="showRiveExplorer:" id="SeF-el-OxU"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5d-hg-cnK">
-                                        <rect key="frame" x="0.0" y="222" width="414" height="30"/>
-                                        <state key="normal" title="Sample Widgets"/>
-                                        <connections>
-                                            <segue destination="yNC-ze-bA4" kind="show" destinationCreationSelector="showRiveComponents:" id="9dn-S5-TjE"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Beu-Ih-RHj">
-                                        <rect key="frame" x="0.0" y="252" width="414" height="30"/>
-                                        <state key="normal" title="SimpleAnimation"/>
-                                        <connections>
-                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showSimpleAnimation:" id="Bb7-l1-qUL"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AaE-4k-lRG">
-                                        <rect key="frame" x="0.0" y="282" width="414" height="30"/>
-                                        <state key="normal" title="Layout"/>
-                                        <connections>
-                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showLayout:" id="QnL-BI-j2Y"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3XF-q3-7am">
-                                        <rect key="frame" x="0.0" y="312" width="414" height="30"/>
-                                        <state key="normal" title="Multiple Animations"/>
-                                        <connections>
-                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showMultipleAnimations:" id="KB7-jS-ZRo"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mrA-Za-9Mv">
-                                        <rect key="frame" x="0.0" y="342" width="414" height="30"/>
-                                        <state key="normal" title="Loop Mode"/>
-                                        <connections>
-                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showLoopMode:" id="pGf-IT-DMh"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eie-9o-eWU">
-                                        <rect key="frame" x="0.0" y="372" width="414" height="30"/>
-                                        <state key="normal" title="State Machine"/>
-                                        <connections>
-                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showStateMachine:" id="vXr-uV-fEd"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MRR-U0-Wdr">
-                                        <rect key="frame" x="0.0" y="402" width="414" height="30"/>
-                                        <state key="normal" title="Mesh Example"/>
-                                        <connections>
-                                            <segue destination="uUT-OA-tcC" kind="show" destinationCreationSelector="showMeshExample:" id="vR2-MY-ezJ"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dcW-li-yCR">
-                                        <rect key="frame" x="0.0" y="432" width="414" height="31"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="filled" title="Interactable Slider"/>
-                                        <connections>
-                                            <action selector="showSwiftUISlider:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="xFo-zd-VnN"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                            </stackView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="wRo-9V-rXR" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="de4-Qw-mbc"/>
-                            <constraint firstItem="wRo-9V-rXR" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="hDB-Gq-GSr"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="wRo-9V-rXR" secondAttribute="trailing" id="pyM-w7-Bct"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" title="Examples" id="rQS-9g-M4c"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1038" y="25"/>
+            <point key="canvasLocation" x="426" y="-23"/>
         </scene>
         <!--Simple Slider View Controller-->
         <scene sceneID="Pvx-pO-5XB">
@@ -248,7 +63,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ds8-bv-afK" customClass="RiveView" customModule="RiveRuntime">
-                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                         </subviews>
@@ -279,128 +94,128 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ohb-BZ-OAk">
-                                <rect key="frame" x="116.5" y="452" width="30" height="30"/>
+                                <rect key="frame" x="116.5" y="426.5" width="30" height="30"/>
                                 <state key="normal" title="Fill"/>
                                 <connections>
                                     <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Y41-BP-EjE"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fF7-wG-Oov">
-                                <rect key="frame" x="180.5" y="452" width="53" height="30"/>
+                                <rect key="frame" x="180.5" y="426.5" width="53" height="30"/>
                                 <state key="normal" title="Contain"/>
                                 <connections>
                                     <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Rb7-0D-dRL"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pUd-0l-Nop">
-                                <rect key="frame" x="101.5" y="490" width="62" height="30"/>
+                                <rect key="frame" x="98" y="464.5" width="65.5" height="30"/>
                                 <state key="normal" title="Fit Width"/>
                                 <connections>
                                     <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="ocu-SF-gIr"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Vz-kr-gCL">
-                                <rect key="frame" x="266.5" y="452" width="41" height="30"/>
+                                <rect key="frame" x="266.5" y="426.5" width="41" height="30"/>
                                 <state key="normal" title="Cover"/>
                                 <connections>
                                     <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="24E-zt-a7v"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GdZ-6S-Xlu" customClass="RiveView" customModule="RiveRuntime">
-                                <rect key="frame" x="0.0" y="88" width="414" height="327"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="345.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m03-n3-AFR">
-                                <rect key="frame" x="197.5" y="423" width="19" height="21"/>
+                                <rect key="frame" x="197.5" y="397.5" width="19" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Alignment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4q8-o8-CC8">
-                                <rect key="frame" x="168.5" y="625" width="77" height="21"/>
+                                <rect key="frame" x="168.5" y="599.5" width="77" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="soS-hc-i68">
-                                <rect key="frame" x="173.5" y="490" width="67" height="30"/>
+                                <rect key="frame" x="173.5" y="464.5" width="67" height="30"/>
                                 <state key="normal" title="Fit Height"/>
                                 <connections>
                                     <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="4u7-vG-Hlt"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5oe-5V-5Zm">
-                                <rect key="frame" x="188.5" y="528" width="37" height="30"/>
+                                <rect key="frame" x="188.5" y="502.5" width="37" height="30"/>
                                 <state key="normal" title="None"/>
                                 <connections>
                                     <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Ih4-mr-Ejn"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dO7-zS-EmM">
-                                <rect key="frame" x="247.5" y="490" width="81" height="30"/>
+                                <rect key="frame" x="247.5" y="464.5" width="81" height="30"/>
                                 <state key="normal" title="Scale Down"/>
                                 <connections>
                                     <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="pRJ-VJ-BJf"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QVr-w0-HOv">
-                                <rect key="frame" x="80" y="648" width="57" height="30"/>
+                                <rect key="frame" x="80" y="622.5" width="57" height="30"/>
                                 <state key="normal" title="Top Left"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="YqT-dS-wUd"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0gO-Qa-iuy">
-                                <rect key="frame" x="169" y="648" width="76" height="30"/>
+                                <rect key="frame" x="169" y="622.5" width="76" height="30"/>
                                 <state key="normal" title="Top Center"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Dkc-uO-WzQ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8ui-GB-0Sy">
-                                <rect key="frame" x="277" y="648" width="66" height="30"/>
+                                <rect key="frame" x="277" y="622.5" width="66" height="30"/>
                                 <state key="normal" title="Top Right"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Z3p-TD-e7n"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CyQ-UX-4Z9">
-                                <rect key="frame" x="67.5" y="724" width="81" height="30"/>
+                                <rect key="frame" x="67.5" y="698.5" width="81" height="30"/>
                                 <state key="normal" title="Bottom Left"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="n8k-lJ-qjL"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p3G-Ej-92k">
-                                <rect key="frame" x="156.5" y="724" width="101" height="30"/>
+                                <rect key="frame" x="156.5" y="698.5" width="101" height="30"/>
                                 <state key="normal" title="Bottom Center"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="7Nz-a5-QZZ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1aE-iZ-zYc">
-                                <rect key="frame" x="264.5" y="724" width="90" height="30"/>
+                                <rect key="frame" x="264.5" y="698.5" width="90" height="30"/>
                                 <state key="normal" title="Bottom Right"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="tXM-XI-ZSo"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ysz-UL-Mgb">
-                                <rect key="frame" x="69.5" y="686" width="77" height="30"/>
+                                <rect key="frame" x="69.5" y="660.5" width="77" height="30"/>
                                 <state key="normal" title="Center Left"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Uma-ud-p4g"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aBz-ML-kCf">
-                                <rect key="frame" x="183.5" y="686" width="47" height="30"/>
+                                <rect key="frame" x="183.5" y="660.5" width="47" height="30"/>
                                 <state key="normal" title="Center"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="wfc-aj-dTL"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zqy-87-clG">
-                                <rect key="frame" x="266.5" y="686" width="87" height="30"/>
+                                <rect key="frame" x="266.5" y="660.5" width="87" height="30"/>
                                 <state key="normal" title="Center Right"/>
                                 <connections>
                                     <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="3WP-vG-B6a"/>
@@ -489,7 +304,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="5oq-0F-BqP">
-                                <rect key="frame" x="0.0" y="88" width="414" height="590"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="590"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6bX-tZ-DVu" customClass="RiveView" customModule="RiveRuntime">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="414"/>
@@ -717,7 +532,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="xT7-qJ-ddv">
-                                <rect key="frame" x="0.0" y="88" width="414" height="344"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="344"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H4O-e0-nOc" customClass="RiveView" customModule="RiveRuntime">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="300"/>
@@ -800,7 +615,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FaC-da-Pqd">
-                                <rect key="frame" x="0.0" y="88" width="414" height="808"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="852"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ivU-mP-rmv">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="732"/>
@@ -893,7 +708,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EH2-QA-C7D">
-                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O0V-5e-rJx">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="1000"/>
@@ -1064,30 +879,12 @@
         <!--Hosting Controller-->
         <scene sceneID="ywB-z0-0QJ">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tzM-Rx-Bel" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <hostingController id="w39-2n-FCH" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="GYU-ku-HRS"/>
                 </hostingController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tzM-Rx-Bel" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3817" y="356"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="Vw7-FC-sqO">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="FPy-V6-MlI" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="pyH-fw-nka">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="Y6W-OH-hqX" kind="relationship" relationship="rootViewController" id="HkN-b4-uJ2"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="EYg-Zx-cpS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="146" y="25"/>
         </scene>
         <!--Hosting Controller-->
         <scene sceneID="iwq-aZ-Vk6">
@@ -1100,9 +897,6 @@
             <point key="canvasLocation" x="2378" y="356"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="Bb7-l1-qUL"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
