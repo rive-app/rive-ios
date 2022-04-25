@@ -300,12 +300,7 @@ extension RiveView {
     }
     
     open func refresh(withViewModel viewModel: RiveViewModel) throws {
-        stop()
-        playingAnimations.removeAll()
-        playingStateMachines.removeAll()
-        animations.removeAll()
-        stateMachines.removeAll()
-        stopTimer()
+        clear()
         
         // Always save the config options to preserve for reset
         configOptions = ConfigOptions(
@@ -347,11 +342,11 @@ extension RiveView {
     }
     
     /// Reset the rive view & reload any provided `riveFile`
-    public func reset(artboard: String? = nil, animation: String? = nil, stateMachine: String? = nil) throws {
+    public func reset(artboardName: String? = nil, animationName: String? = nil, stateMachineName: String? = nil) throws {
         stopTimer()
         if let riveFile = self.riveFile {
             // Calling configure will create a new artboard instance, reseting the animation
-            try configure(riveFile, artboardName: artboard, animationName: animation, stateMachineName: stateMachine, autoPlay: autoPlay)
+            try configure(riveFile, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName, autoPlay: autoPlay)
         }
     }
     
