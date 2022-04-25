@@ -42,6 +42,14 @@ class ExamplesMasterTableViewController: UITableViewController {
         return storyboardIDs.count + swiftViews.count + viewModels.count
     }
     
+    override func numberOfSections(in tableView: UITableView) -> Int {
+//        var sectionCount: Int
+        
+//        if (storyboardIDs.count > 0) &&
+        
+        return 1
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let i = indexPath.row
         let cell = UITableViewCell()
