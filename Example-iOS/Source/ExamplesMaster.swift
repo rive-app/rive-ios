@@ -10,19 +10,19 @@ import SwiftUI
 import RiveRuntime
 
 class ExamplesMasterTableViewController: UITableViewController {
-    // MARK: UIKit Examples (sourced from the Main storyboard)
+    // MARK: Storyboard Examples
+    /// Sourced from the `Main` storyboard
     private let storyboardIDs: [String] = [
         "Simple Animation",
         "Layout",
         "MultipleAnimations",
-        //"Loop Mode",
         "State Machine",
-        //"iOS Player",
         "Blend Mode",
         "Slider Widget"
     ]
     
-    // MARK: SwiftUI Examples (made from custom Views)
+    // MARK: SwiftUI View Examples
+    /// Made from custom `Views`
     private lazy var swiftViews: [(String, AnyView)] = [
         ("Widget Collection",   typeErased(dismissableView: RiveComponents())),
         ("Simple Animation",    typeErased(dismissableView: SwiftSimpleAnimation())),
@@ -33,66 +33,75 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("Mesh Animation",      typeErased(dismissableView: SwiftMeshAnimation()))
     ]
     
-    // MARK: SwiftUI Examples (displays the default .view() for custom RiveViewModels)
+    // MARK: ViewModel Examples
+    /// Made from `RiveViewModels`' default `.view()` method
     private let viewModels: [(String, RiveViewModel)] = [
         ("Slider Widget",       RiveSlider())
     ]
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return storyboardIDs.count + swiftViews.count + viewModels.count
-    }
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-//        var sectionCount: Int
-        
-//        if (storyboardIDs.count > 0) &&
-        
-        return 1
-    }
+    // MARK: -
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let i = indexPath.row
         let cell = UITableViewCell()
         
         // ViewControllers made from Storyboard IDs
-        if i < storyboardIDs.count {
+        if indexPath.section == 0 {
             cell.textLabel?.text = storyboardIDs[indexPath.row]
         }
         
         // Views made by custom SwiftUI Views
-        else if i < storyboardIDs.count + swiftViews.count {
-            cell.textLabel?.text = swiftViews[i - storyboardIDs.count].0
+        if indexPath.section == 1 {
+            cell.textLabel?.text = swiftViews[indexPath.row].0
         }
         
         // Views made by the ViewModels
-        else {
-            cell.textLabel?.text = viewModels[i - (storyboardIDs.count + swiftViews.count)].0
+        if indexPath.section == 2 {
+            cell.textLabel?.text = viewModels[indexPath.row].0
         }
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let i = indexPath.row
         var controller: UIViewController
         
         // ViewControllers made from Storyboard IDs
-        if i < storyboardIDs.count {
-            controller = storyboard!.instantiateViewController(withIdentifier: storyboardIDs[i])
+        if indexPath.section == 0 {
+            controller = storyboard!.instantiateViewController(withIdentifier: storyboardIDs[indexPath.row])
         }
         
         // Views made by custom SwiftUI Views
-        else if i < storyboardIDs.count + swiftViews.count {
-            controller = UIHostingController(rootView: swiftViews[i - storyboardIDs.count].1)
+        if indexPath.section == 1 {
+            controller = UIHostingController(rootView: swiftViews[indexPath.row].1)
         }
         
         // Views made by the ViewModels
-        else {
-            let anyView = AnyView(viewModels[i - (storyboardIDs.count + swiftViews.count)].1.view())
+        if indexPath.section == 2 {
+            let anyView = AnyView(viewModels[indexPath.row].1.view())
             controller = UIHostingController(rootView: anyView)
         }
         
+        // Too many sections
+        else { fatalError() }
+        
         navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return ["Storyboard Examples", "SwiftUI View Examples", "RiveViewModel View Examples"]
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch section {
+        case 0: return storyboardIDs.count
+        case 1: return swiftViews.count
+        case 2: return viewModels.count
+        default: fatalError()
+        }
+    }
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 3
     }
     
     private func typeErased<Content: DismissableView>(dismissableView: Content) -> AnyView {
