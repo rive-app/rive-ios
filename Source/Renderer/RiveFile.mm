@@ -22,11 +22,6 @@
     rive::File* riveFile;
 }
 
-- (rive::BinaryReader) getReader:(UInt8 *)bytes byteLength:(UInt64)length {
-    return rive::BinaryReader(bytes, length);
-}
-
-
 + (uint)majorVersion { return UInt8(rive::File::majorVersion); }
 + (uint)minorVersion { return UInt8(rive::File::minorVersion); }
 
@@ -39,8 +34,7 @@
             [array enumerateObjectsUsingBlock:^(NSNumber* number, NSUInteger index, BOOL* stop){
                 bytes[index] = number.unsignedIntValue;
             }];
-            rive::BinaryReader reader = [self getReader:bytes byteLength:array.count];
-            BOOL ok = [self import:reader error:error];
+            BOOL ok = [self import:bytes byteLength:array.count error:error];
             if (!ok) {
                 return nil;
             }
@@ -57,8 +51,7 @@
 
 - (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length error:(NSError**)error {
     if (self = [super init]) {
-        rive::BinaryReader reader = [self getReader:bytes byteLength:length];
-        BOOL ok = [self import:reader error:error];
+        BOOL ok = [self import:bytes byteLength:length error:error];
         if (!ok) {
             return nil;
         }
@@ -104,10 +97,9 @@
                 // Load the data into the reader
                 NSData *data = [NSData dataWithContentsOfURL: location];
                 UInt8 *bytes = (UInt8 *)[data bytes];
-                rive::BinaryReader reader = [self getReader:bytes byteLength:[data length]];
                 // TODO: Do something with this error the proper way with delegates.
                 NSError* error = nil;
-                [self import:reader error:&error];
+                [self import:bytes byteLength:[data length] error:&error];
                 self.isLoaded = true;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([[NSThread currentThread] isMainThread]) {
@@ -130,9 +122,9 @@
     return nil;
 }
 
-- (BOOL) import:(rive::BinaryReader)reader error:(NSError**)error {
+- (BOOL) import:(UInt8 *)bytes byteLength:(UInt64)length error:(NSError**)error {
     rive::ImportResult result;
-    riveFile = rive::File::import(reader, &result).release();
+    riveFile = rive::File::import(rive::Span(bytes, length), &result).release();
     if (result == rive::ImportResult::success) {
         return true;
     }
