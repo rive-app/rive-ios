@@ -12,4 +12,5 @@
     - (void)drawWithArtboard:(RiveArtboard*)artboard;
     - (void)drawRive:(CGRect)rect size:(CGSize)size;
     - (bool)isPaused;
+    - (CGPoint)artboardLocationFromTouchLocation:(CGPoint)touchLocation inArtboard:(CGRect)artboardRect fit:(Fit)fit alignment:(Alignment)alignment;
 @end

@@ -54,6 +54,13 @@
 		C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RiveProgressBar.swift */; };
 		C3D187F728075B6C008B739A /* riveslider.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F628075B6C008B739A /* riveslider.riv */; };
 		C3D187F9280770EA008B739A /* truck.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F8280770EA008B739A /* truck.riv */; };
+		C3ECAC252817BE1100A81123 /* magic_8-ball_v2.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC222817BE1100A81123 /* magic_8-ball_v2.riv */; };
+		C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ECAC262817BE4600A81123 /* SwiftTouchEvents.swift */; };
+		C3ECAC2B281837B300A81123 /* play_button_event_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC28281837B300A81123 /* play_button_event_example.riv */; };
+		C3ECAC2C281837B300A81123 /* leg_day_events_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC29281837B300A81123 /* leg_day_events_example.riv */; };
+		C3ECAC2D281837B300A81123 /* switch_event_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC2A281837B300A81123 /* switch_event_example.riv */; };
+		C3ECAC2F281840A300A81123 /* ClockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ECAC2E281840A300A81123 /* ClockViewModel.swift */; };
+		C3ECAC31281840EF00A81123 /* watch_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC30281840EF00A81123 /* watch_v1.riv */; };
 		C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9BD3925263B5FC700696C37 /* truck_v7.riv */; };
 		C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9724FC471E00EF9516 /* AppDelegate.swift */; };
 		C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */; };
@@ -147,6 +154,13 @@
 		C3D187F2280751A8008B739A /* RiveProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveProgressBar.swift; sourceTree = "<group>"; };
 		C3D187F628075B6C008B739A /* riveslider.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider.riv; sourceTree = "<group>"; };
 		C3D187F8280770EA008B739A /* truck.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck.riv; sourceTree = "<group>"; };
+		C3ECAC222817BE1100A81123 /* magic_8-ball_v2.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "magic_8-ball_v2.riv"; sourceTree = "<group>"; };
+		C3ECAC262817BE4600A81123 /* SwiftTouchEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTouchEvents.swift; sourceTree = "<group>"; };
+		C3ECAC28281837B300A81123 /* play_button_event_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = play_button_event_example.riv; sourceTree = "<group>"; };
+		C3ECAC29281837B300A81123 /* leg_day_events_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = leg_day_events_example.riv; sourceTree = "<group>"; };
+		C3ECAC2A281837B300A81123 /* switch_event_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = switch_event_example.riv; sourceTree = "<group>"; };
+		C3ECAC2E281840A300A81123 /* ClockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockViewModel.swift; sourceTree = "<group>"; };
+		C3ECAC30281840EF00A81123 /* watch_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = watch_v1.riv; sourceTree = "<group>"; };
 		C9BD3925263B5FC700696C37 /* truck_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck_v7.riv; sourceTree = "<group>"; };
 		C9C73E9424FC471E00EF9516 /* RiveExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiveExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C73E9724FC471E00EF9516 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -176,7 +190,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		042C88862643DB2200E7DBB2 /* UIkit */ = {
+		042C88862643DB2200E7DBB2 /* Storyboard */ = {
 			isa = PBXGroup;
 			children = (
 				042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */,
@@ -186,7 +200,7 @@
 				046AFA722673B00B004ED497 /* BlendModes.swift */,
 				04C4C83D2646FE410047E614 /* StateMachine.swift */,
 			);
-			path = UIkit;
+			path = Storyboard;
 			sourceTree = "<group>";
 		};
 		04A8F6B826452E10002C909A /* Products */ = {
@@ -206,20 +220,36 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
-		C324DB592807202A0060589F /* Widgets */ = {
+		C3ECAC322818608B00A81123 /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				C3ECAC33281860E900A81123 /* ViewModel */,
+				042C88862643DB2200E7DBB2 /* Storyboard */,
+				C9A84F342644931E0014D8E0 /* SwiftUI */,
+			);
+			path = Examples;
+			sourceTree = "<group>";
+		};
+		C3ECAC33281860E900A81123 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
 				C324DB5C280728690060589F /* RiveButton.swift */,
 				C324DB5528071EB80060589F /* RiveSwitch.swift */,
 				C324DB5A2807216B0060589F /* RiveSlider.swift */,
 				C3D187F2280751A8008B739A /* RiveProgressBar.swift */,
+				C3ECAC2E281840A300A81123 /* ClockViewModel.swift */,
 			);
-			path = Widgets;
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				C3ECAC30281840EF00A81123 /* watch_v1.riv */,
+				C3ECAC29281837B300A81123 /* leg_day_events_example.riv */,
+				C3ECAC28281837B300A81123 /* play_button_event_example.riv */,
+				C3ECAC2A281837B300A81123 /* switch_event_example.riv */,
+				C3ECAC222817BE1100A81123 /* magic_8-ball_v2.riv */,
 				C3D187F628075B6C008B739A /* riveslider.riv */,
 				C324DB5E280740FB0060589F /* rbutton.riv */,
 				C34609FD2800A6CE002DBCB7 /* bird.riv */,
@@ -268,6 +298,7 @@
 				04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */,
 				04026DCD27CE3F0F002B3DBF /* SwiftStateMachine.swift */,
 				E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */,
+				C3ECAC262817BE4600A81123 /* SwiftTouchEvents.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -295,9 +326,7 @@
 			children = (
 				042C88822643D6B900E7DBB2 /* Main.storyboard */,
 				C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */,
-				C324DB592807202A0060589F /* Widgets */,
-				C9A84F342644931E0014D8E0 /* SwiftUI */,
-				042C88862643DB2200E7DBB2 /* UIkit */,
+				C3ECAC322818608B00A81123 /* Examples */,
 				C9C73E9D24FC471E00EF9516 /* Assets.xcassets */,
 				C9C73E9F24FC471E00EF9516 /* Preview Content */,
 				04A8F6C226452F25002C909A /* lib */,
@@ -414,9 +443,11 @@
 				042C88DC2644447500E7DBB2 /* pull.riv in Resources */,
 				042C88E32644447500E7DBB2 /* flux_capacitor.riv in Resources */,
 				C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */,
+				C3ECAC2B281837B300A81123 /* play_button_event_example.riv in Resources */,
 				042C88E42644447500E7DBB2 /* neostream.riv in Resources */,
 				042C88E82644447500E7DBB2 /* loopy.riv in Resources */,
 				042C88E02644447500E7DBB2 /* progress.riv in Resources */,
+				C3ECAC252817BE1100A81123 /* magic_8-ball_v2.riv in Resources */,
 				04D5B06C266A460C004ACA5B /* nothing.riv in Resources */,
 				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
@@ -425,8 +456,11 @@
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
 				C3D187F728075B6C008B739A /* riveslider.riv in Resources */,
+				C3ECAC2C281837B300A81123 /* leg_day_events_example.riv in Resources */,
+				C3ECAC31281840EF00A81123 /* watch_v1.riv in Resources */,
 				042C88E12644447500E7DBB2 /* basketball.riv in Resources */,
 				042C88DE2644447500E7DBB2 /* rope.riv in Resources */,
+				C3ECAC2D281837B300A81123 /* switch_event_example.riv in Resources */,
 				0480028B2729AA4400F7132B /* clean_icon_set.riv in Resources */,
 				04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */,
 				C3D187F9280770EA008B739A /* truck.riv in Resources */,
@@ -463,6 +497,8 @@
 				C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */,
 				C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */,
 				C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */,
+				C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */,
+				C3ECAC2F281840A300A81123 /* ClockViewModel.swift in Sources */,
 				04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */,
 				04026DCC27CE3F03002B3DBF /* SwiftLoopMode.swift in Sources */,
 				C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */,

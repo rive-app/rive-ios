@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Examples-->
+        <!--Rive Examples-->
         <scene sceneID="XV1-T1-lAJ">
             <objects>
-                <tableViewController id="oFD-NX-sZZ" customClass="ExamplesMasterTableViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController title="Rive Examples" id="oFD-NX-sZZ" customClass="ExamplesMasterTableViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="insetGrouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="WCh-4c-dF3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -31,16 +31,16 @@
                             <outlet property="delegate" destination="oFD-NX-sZZ" id="el9-mJ-yKI"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Examples" prompt="Discover Ways to Use Rive" id="D8Z-my-oJi"/>
+                    <navigationItem key="navigationItem" title=" " prompt="Discover Ways to Use Rive" id="D8Z-my-oJi"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HFb-68-BQh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1274" y="-23"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Examples Nav Controller-->
         <scene sceneID="foC-i9-QZA">
             <objects>
-                <navigationController id="0Wt-ue-AAA" sceneMemberID="viewController">
+                <navigationController title="Examples Nav Controller" id="0Wt-ue-AAA" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="pOo-q8-9Up">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>

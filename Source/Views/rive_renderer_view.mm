@@ -103,77 +103,19 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
   return value;
 }
 
-- (void)alignWithRect:(CGRect)rect
-      contentRect:(CGRect)contentRect
-        alignment:(Alignment)alignment
-              fit:(Fit)fit {
-
-  rive::AABB frame(rect.origin.x, rect.origin.y,
+- (void)alignWithRect:(CGRect)rect contentRect:(CGRect)contentRect alignment:(Alignment)alignment fit:(Fit)fit {
+    rive::AABB frame(rect.origin.x, rect.origin.y,
                    rect.size.width + rect.origin.x,
                    rect.size.height + rect.origin.y);
 
-  rive::AABB content(contentRect.origin.x, contentRect.origin.y,
+    rive::AABB content(contentRect.origin.x, contentRect.origin.y,
                      contentRect.size.width + contentRect.origin.x,
                      contentRect.size.height + contentRect.origin.y);
 
-  rive::Fit riveFit;
-  switch (fit) {
-  case fitFill:
-    riveFit = rive::Fit::fill;
-    break;
-  case fitContain:
-    riveFit = rive::Fit::contain;
-    break;
-  case fitCover:
-    riveFit = rive::Fit::cover;
-    break;
-  case fitFitHeight:
-    riveFit = rive::Fit::fitHeight;
-    break;
-  case fitFitWidth:
-    riveFit = rive::Fit::fitWidth;
-    break;
-  case fitScaleDown:
-    riveFit = rive::Fit::scaleDown;
-    break;
-  case fitNone:
-    riveFit = rive::Fit::none;
-    break;
-  }
+    auto riveFit = [self riveFit:fit];
+    auto riveAlignment = [self riveAlignment:alignment];
 
-  // Work out the alignment
-  rive::Alignment riveAlignment = rive::Alignment::center;
-  switch (alignment) {
-  case alignmentTopLeft:
-    riveAlignment = rive::Alignment::topLeft;
-    break;
-  case alignmentTopCenter:
-    riveAlignment = rive::Alignment::topCenter;
-    break;
-  case alignmentTopRight:
-    riveAlignment = rive::Alignment::topRight;
-    break;
-  case alignmentCenterLeft:
-    riveAlignment = rive::Alignment::centerLeft;
-    break;
-  case alignmentCenter:
-    riveAlignment = rive::Alignment::center;
-    break;
-  case alignmentCenterRight:
-    riveAlignment = rive::Alignment::centerRight;
-    break;
-  case alignmentBottomLeft:
-    riveAlignment = rive::Alignment::bottomLeft;
-    break;
-  case alignmentBottomCenter:
-    riveAlignment = rive::Alignment::bottomCenter;
-    break;
-  case alignmentBottomRight:
-    riveAlignment = rive::Alignment::bottomRight;
-    break;
-  }
-
-  _renderer->align(riveFit, riveAlignment, frame, content);
+    _renderer->align(riveFit, riveAlignment, frame, content);
 }
 
 - (void)drawWithArtboard:(RiveArtboard *)artboard {
@@ -200,7 +142,8 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
     return;
   }
   auto canvas = surface->getCanvas();
-  _renderer = new rive::SkiaRenderer(canvas);
+  rive::SkiaRenderer renderer(canvas);
+  _renderer = &renderer;
   canvas->clear(SkColor((0x00000000)));
   _renderer->save();
   [self drawRive:rect size:size];
@@ -208,7 +151,6 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
 
   surface->flushAndSubmit();
   surface = nullptr;
-  delete _renderer;
   _renderer = nullptr;
 
   id<MTLCommandBuffer> commandBuffer = [_queue commandBuffer];
@@ -217,6 +159,95 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
   bool paused = [self isPaused];
   [self setEnableSetNeedsDisplay:paused];
   [self setPaused:paused];
+}
+
+- (rive::Fit)riveFit:(Fit)fit {
+    rive::Fit riveFit;
+    
+    switch (fit) {
+    case fitFill:
+      riveFit = rive::Fit::fill;
+      break;
+    case fitContain:
+      riveFit = rive::Fit::contain;
+      break;
+    case fitCover:
+      riveFit = rive::Fit::cover;
+      break;
+    case fitFitHeight:
+      riveFit = rive::Fit::fitHeight;
+      break;
+    case fitFitWidth:
+      riveFit = rive::Fit::fitWidth;
+      break;
+    case fitScaleDown:
+      riveFit = rive::Fit::scaleDown;
+      break;
+    case fitNone:
+      riveFit = rive::Fit::none;
+      break;
+    }
+    
+    return riveFit;
+}
+
+- (rive::Alignment)riveAlignment:(Alignment)alignment {
+    rive::Alignment riveAlignment = rive::Alignment::center;
+    
+    switch (alignment) {
+    case alignmentTopLeft:
+      riveAlignment = rive::Alignment::topLeft;
+      break;
+    case alignmentTopCenter:
+      riveAlignment = rive::Alignment::topCenter;
+      break;
+    case alignmentTopRight:
+      riveAlignment = rive::Alignment::topRight;
+      break;
+    case alignmentCenterLeft:
+      riveAlignment = rive::Alignment::centerLeft;
+      break;
+    case alignmentCenter:
+      riveAlignment = rive::Alignment::center;
+      break;
+    case alignmentCenterRight:
+      riveAlignment = rive::Alignment::centerRight;
+      break;
+    case alignmentBottomLeft:
+      riveAlignment = rive::Alignment::bottomLeft;
+      break;
+    case alignmentBottomCenter:
+      riveAlignment = rive::Alignment::bottomCenter;
+      break;
+    case alignmentBottomRight:
+      riveAlignment = rive::Alignment::bottomRight;
+      break;
+    }
+    
+    return riveAlignment;
+}
+
+- (CGPoint)artboardLocationFromTouchLocation:(CGPoint)touchLocation
+                               inArtboard:(CGRect)artboardRect fit:(Fit)fit alignment:(Alignment)alignment {
+    rive::AABB frame(self.frame.origin.x, self.frame.origin.y,
+                         self.frame.size.width + self.frame.origin.x,
+                         self.frame.size.height + self.frame.origin.y);
+
+    rive::AABB content(artboardRect.origin.x, artboardRect.origin.y,
+                       artboardRect.size.width + artboardRect.origin.x,
+                       artboardRect.size.height + artboardRect.origin.y);
+    
+    auto riveFit = [self riveFit:fit];
+    auto riveAlignment = [self riveAlignment:alignment];
+    
+    rive::Mat2D forward = rive::computeAlignment(riveFit, riveAlignment, frame, content);
+    rive::Mat2D inverse;
+    forward.invert(inverse, forward);
+    
+    rive::Vec2D frameLocation(touchLocation.x, touchLocation.y);
+    rive::Vec2D convertedLocation = inverse * rive::Vec2D(frameLocation.x(), frameLocation.y());
+    
+    return CGPointMake(convertedLocation.x(), convertedLocation.y());
 }
 
 @end
