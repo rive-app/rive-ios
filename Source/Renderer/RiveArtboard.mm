@@ -114,10 +114,6 @@
     _artboardInstance->advance(elapsedSeconds);
 }
 
-- (void)touchedAt:(CGPoint)location info:(int)hitInfo {
-//    delegate.artboardyadayada
-}
-
 - (void)draw:(RiveRenderer *)renderer {
     _artboardInstance->draw([renderer renderer]);
 }

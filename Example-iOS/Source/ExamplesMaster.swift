@@ -27,6 +27,7 @@ class ExamplesMasterTableViewController: UITableViewController {
     // MARK: SwiftUI View Examples
     /// Made from custom `Views`
     private lazy var swiftViews: [(String, AnyView)] = [
+        ("Touch Events!",       typeErased(dismissableView: SwiftTouchEvents())),
         ("Widget Collection",   typeErased(dismissableView: SwiftWidgets())),
         ("Simple Animation",    typeErased(dismissableView: SwiftSimpleAnimation())),
         ("Layout",              typeErased(dismissableView: SwiftLayout())),
@@ -42,11 +43,9 @@ class ExamplesMasterTableViewController: UITableViewController {
     private let viewModels: [(String, RiveViewModel)] = [
         ("Slider Widget",       RiveSlider())
     ]
-    
-    
-    // MARK: -
-    
-    
+}
+
+extension ExamplesMasterTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         

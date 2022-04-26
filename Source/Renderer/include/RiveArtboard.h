@@ -19,8 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 //
 @interface RiveArtboard : NSObject
 
-
-
 - (NSString *)name;
 - (CGRect)bounds;
 
@@ -37,16 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (RiveStateMachine * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
 
 - (void)advanceBy:(double)elapsedSeconds;
-- (void)touchedAt: (CGPoint)location info:(int)hitInfo;
 - (void)draw:(RiveRenderer *)renderer;
-
-@end
-
-// MARK: - RiveArtboard Delegate
-//
-@protocol RArtboardDelegate
-
-- (void)artboard:(RiveArtboard *)artboard didTriggerEvent:(NSString *)event;
 
 @end
 
