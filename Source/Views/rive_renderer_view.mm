@@ -4,6 +4,7 @@
 #import <MetalKit/MetalKit.h>
 #import <UIKit/UIKit.h>
 
+#include "include/core/SkCanvas.h"
 #include "include/core/SkSurface.h"
 #include "include/core/SkSurfaceProps.h"
 #include "include/gpu/GrBackendSurface.h"

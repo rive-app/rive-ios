@@ -50,8 +50,8 @@ this is built ontop of an objective c layer that allows for fine grained granula
 
 ## UIKit
 ### RiveViewModel
-The simplest way of adding Rive to a controller is to make a RiveViewModel and set its view as the `RiveView` when 
-it is loaded.
+The simplest way of adding Rive to a controller is to make a RiveViewModel and set its view as
+the `RiveView` when it is loaded.
 
 ```swift
 class SimpleAnimationViewController: UIViewController {
