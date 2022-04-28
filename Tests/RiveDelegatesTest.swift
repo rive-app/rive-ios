@@ -179,7 +179,7 @@ class DelegatesTest: XCTestCase {
         )
         
         try view.play(animationName: "one", loop: .loopOneShot)
-        view.advance(delta:Double(view.animations.first!.animation().effectiveDurationInSeconds()+0.1))
+        view.advance(delta:Double(view.animations.first!.effectiveDurationInSeconds()+0.1))
         // rough. we need an extra advance to flush the stop.
         view.advance(delta:0.1)
         
@@ -198,7 +198,7 @@ class DelegatesTest: XCTestCase {
         )
         
         try view.play(animationName: "one", loop: .loopLoop)
-        view.advance(delta:Double(view.animations.first!.animation().effectiveDurationInSeconds()+0.1))
+        view.advance(delta:Double(view.animations.first!.effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 1)
         XCTAssertEqual(delegate.linearAnimaitonPlays.count, 1)
@@ -215,7 +215,7 @@ class DelegatesTest: XCTestCase {
         )
         
         try view.play(animationName: "one", loop: .loopPingPong)
-        view.advance(delta:Double(view.animations.first!.animation().effectiveDurationInSeconds()+0.1))
+        view.advance(delta:Double(view.animations.first!.effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 1)
         XCTAssertEqual(delegate.linearAnimaitonPlays.count, 1)

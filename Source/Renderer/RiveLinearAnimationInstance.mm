@@ -16,19 +16,13 @@
     rive::LinearAnimationInstance *instance;
 }
 
-- (instancetype)initWithAnimation:(const rive::LinearAnimation *)riveAnimation
-                         artboard:(RiveArtboard *)artboard {
+- (instancetype)initWithAnimation:(rive::LinearAnimationInstance *)anim {
     if (self = [super init]) {
-        instance = new rive::LinearAnimationInstance(riveAnimation, artboard.artboardInstance);
+        instance = anim;
         return self;
     } else {
         return nil;
     }
-}
-
-- (RiveLinearAnimation *)animation {
-    const rive::LinearAnimation *linearAnimation = instance->animation();
-    return [[RiveLinearAnimation alloc] initWithAnimation: linearAnimation];
 }
 
 - (float)time {
@@ -66,12 +60,52 @@
 }
 
 - (NSString *)name {
-    std::string str = instance->animation()->name();
+    std::string str = instance->name();
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
 - (void)dealloc {
     delete instance;
+}
+
+
+
+- (NSInteger)fps {
+    return instance->fps();
+}
+
+- (NSInteger)workStart {
+    return instance->animation()->workStart();
+}
+
+- (NSInteger)workEnd {
+    return instance->animation()->workEnd();
+}
+
+- (NSInteger)duration {
+    return instance->animation()->duration();
+}
+
+- (NSInteger)effectiveDuration {
+    if (self.workStart == UINT_MAX) {
+        return instance->animation()->duration();
+        
+    }else {
+        return self.workEnd - self.workStart;
+    }
+}
+
+- (float)effectiveDurationInSeconds {
+    return [self effectiveDuration] / (float)instance->fps();
+}
+
+- (float)endTime {
+    float fps = instance->fps();
+    auto animation = instance->animation();
+    if (animation->enableWorkArea()){
+        return animation->workEnd() / fps;
+    }
+    return animation->duration() / fps;
 }
 
 @end
