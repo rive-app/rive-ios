@@ -13,7 +13,7 @@
  * RiveSMIInput
  */
 @implementation RiveSMIInput {
-     const rive::SMIInput *instance;
+     const rive::SMIInput *instance; // note: we do NOT own this, so don't delete it
 }
 
 - (const rive::SMIInput *)getInstance {

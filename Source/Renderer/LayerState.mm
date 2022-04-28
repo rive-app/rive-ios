@@ -22,9 +22,9 @@
     }
 }
 
-- (RiveLinearAnimation *)animation{
-    return [[RiveLinearAnimation alloc] initWithAnimation: ((const rive::AnimationState *)instance)->animation()];
-};
+- (const void *)rive_layer_state {
+    return instance;
+}
 
 - (bool)isEntryState {
     return instance->is<rive::EntryState>();
@@ -73,7 +73,9 @@
 @implementation RiveAnimationState
 
 - (NSString *)name{
-    return [[self animation] name];
+    auto inst = [self rive_layer_state];
+    auto str = ((const rive::AnimationState*)inst)->animation()->name();
+    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 @end
 

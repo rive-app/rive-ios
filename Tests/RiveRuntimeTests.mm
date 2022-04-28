@@ -183,7 +183,7 @@ UInt8 stateMachineFileBytes[] = {
     XCTAssert(artboard != NULL);
     XCTAssert([artboard animationCount] == 1);
     
-    RiveLinearAnimation* animation = [artboard firstAnimation:nil];
+    RiveLinearAnimationInstance* animation = [artboard animationFromIndex:0 error:nil];
     XCTAssert(animation != NULL);
     XCTAssert([animation.name isEqual:@"Animation 1"]);
 }
@@ -195,7 +195,7 @@ UInt8 stateMachineFileBytes[] = {
     RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156 error:nil];
     RiveArtboard* artboard = [file artboard:nil];
     
-    RiveLinearAnimation* animation = [artboard animationFromIndex: 0 error:nil];
+    RiveLinearAnimationInstance* animation = [artboard animationFromIndex: 0 error:nil];
     XCTAssert(animation != NULL);
     XCTAssert([[animation name] isEqual: @"Animation 1"]);
 }
@@ -208,7 +208,7 @@ UInt8 stateMachineFileBytes[] = {
     RiveArtboard* artboard = [file artboard:nil];
     NSError* error = nil;
     
-    RiveLinearAnimation* animation = [artboard animationFromName: @"Animation 1" error:&error];
+    RiveLinearAnimationInstance* animation = [artboard animationFromName: @"Animation 1" error:&error];
     XCTAssert(animation != NULL);
     XCTAssert([animation.name isEqual: @"Animation 1"]);
 }
@@ -223,7 +223,7 @@ UInt8 stateMachineFileBytes[] = {
     XCTAssert(artboard != NULL);
     XCTAssert([artboard stateMachineCount] == 1);
     
-    RiveStateMachine* machine = [artboard firstStateMachine:nil];
+    RiveStateMachineInstance* machine = [artboard stateMachineFromIndex:0 error:nil];
     XCTAssert(machine != NULL);
     XCTAssert([machine.name isEqual:@"StateMachine"]);
 }
@@ -238,7 +238,7 @@ UInt8 stateMachineFileBytes[] = {
     XCTAssert(artboard != NULL);
     XCTAssert([artboard stateMachineCount] == 1);
     
-    RiveStateMachine* machine = [artboard stateMachineFromIndex: 0 error:nil];
+    RiveStateMachineInstance* machine = [artboard stateMachineFromIndex: 0 error:nil];
     XCTAssert(machine != NULL);
     XCTAssert([machine.name isEqual: @"StateMachine"]);
     
@@ -265,7 +265,7 @@ UInt8 stateMachineFileBytes[] = {
     XCTAssert(file != NULL);
     RiveArtboard* artboard = [file artboard:nil];
     XCTAssert(artboard != NULL);
-    RiveStateMachine* machine = [artboard stateMachineFromName: @"StateMachine" error:nil];
+    RiveStateMachineInstance* machine = [artboard stateMachineFromName: @"StateMachine" error:nil];
     XCTAssert(machine != NULL);
     
     NSError* error = nil;
@@ -283,7 +283,7 @@ UInt8 stateMachineFileBytes[] = {
     RiveFile* file = [[RiveFile alloc] initWithBytes: stateMachineFileBytes byteLength: 916 error:nil];
     RiveArtboard* artboard = [file artboard:nil];
     
-    RiveStateMachine* machine = [artboard firstStateMachine:nil];
+    RiveStateMachineInstance* machine = [artboard stateMachineFromIndex:0 error:nil];
     XCTAssert(machine != NULL);
     RiveStateMachineInstance* instance = [[RiveStateMachineInstance alloc] init];
     XCTAssert(instance != NULL);
