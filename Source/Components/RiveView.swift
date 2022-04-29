@@ -305,12 +305,8 @@ extension RiveView {
         )
         
         // Ensure the view's transparent
-        // TODO: Possibly remove this?
-        // - I think this is why the background is black when assigning RViews to the root view of a UIViewController
-        // - What problem was this solving?
+        // Note: Using the RiveView as the root view of a UIViewController causes undefined behavior in non-opaque areas
         self.isOpaque = false
-        
-// TODO: Zach - Find everywhere that the instance's riveFile is needed
         self.riveFile = riveFile
         self.autoPlay = configOptions!.autoPlay
         
@@ -537,10 +533,6 @@ extension RiveView {
         }
         
         for stateMachine in stateMachines where playingStateMachines.contains(stateMachine) {
-            // TODO: Needs potential fix
-            // We get a false returned in certain unexpected situations
-            // in state_machine_instance.cpp, StateMachineLayerInstance, .advance()
-            // The instance is removed from the playable state machines
             let stillPlaying = stateMachine.advance(by: delta)
             
             stateMachine.stateChanges().forEach { stateChangeDelegate?.stateChange(stateMachine.name(), $0) }
@@ -907,6 +899,9 @@ extension RiveView {
         
         for stateMachine in stateMachines {
             action(stateMachine, artboardLocation)
+            try? _play(stateMachine)
         }
+        
+        runTimer()
     }
 }

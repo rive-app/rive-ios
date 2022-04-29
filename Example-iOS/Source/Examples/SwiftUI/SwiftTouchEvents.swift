@@ -19,9 +19,9 @@ struct SwiftTouchEvents: DismissableView {
                     .view()
                     .aspectRatio(1, contentMode: .fit)
                 
-//                RiveViewModel(fileName: "switch_event_example", stateMachineName: "Main State Machine")
-//                    .view()
-//                    .aspectRatio(1, contentMode: .fit)
+                RiveViewModel(fileName: "switch_event_example", stateMachineName: "Main State Machine")
+                    .view()
+                    .aspectRatio(1, contentMode: .fit)
                 
                 RiveViewModel(fileName: "magic_8-ball_v2", stateMachineName: "Main State Machine")
                     .view()
