@@ -241,8 +241,7 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
     auto riveAlignment = [self riveAlignment:alignment];
     
     rive::Mat2D forward = rive::computeAlignment(riveFit, riveAlignment, frame, content);
-    rive::Mat2D inverse;
-    forward.invert(inverse, forward);
+    rive::Mat2D inverse = forward.invertOrIdentity();
     
     rive::Vec2D frameLocation(touchLocation.x, touchLocation.y);
     rive::Vec2D convertedLocation = inverse * rive::Vec2D(frameLocation.x(), frameLocation.y());
