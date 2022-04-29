@@ -174,12 +174,10 @@ extension RiveViewModel {
         try rview?.reset()
     }
     
-    // DELETE THIS: Zach - playingAnimations.insert() is called through this
     public func play(_ loop: Loop = .loopAuto, _ direction: Direction = .directionAuto) throws {
         try rview?.play(loop:loop, direction: direction)
     }
     
-    // DELETE THIS: Zach - playingAnimations.insert() is called through this
     public func play(
         animationName: String,
         loop: Loop = .loopAuto,
@@ -194,7 +192,6 @@ extension RiveViewModel {
         )
     }
     
-    // DELETE THIS: Zach - playingAnimations.insert() is called through this
     public func play(
         animationNames: [String],
         loop: Loop = .loopAuto,
