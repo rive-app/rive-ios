@@ -907,6 +907,9 @@ extension RiveView {
         
         for stateMachine in stateMachines {
             action(stateMachine, artboardLocation)
+            try? _play(stateMachine)
         }
+        
+        runTimer()
     }
 }
