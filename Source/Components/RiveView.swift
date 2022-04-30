@@ -568,7 +568,7 @@ extension RiveView {
     public func play(loop: Loop = .loopAuto, direction: Direction = .directionAuto) throws {
         guard let guardedArtboard = artboard else { return }
         
-        try _playAnimation(animationName: guardedArtboard.animation(from: 0).name(), loop: loop, direction: direction)
+        try _playAnimation(animationName: guardedArtboard.firstAnimation().name(), loop: loop, direction: direction)
         runTimer()
     }
     
@@ -727,7 +727,7 @@ extension RiveView {
         if stateMachineInstances.isEmpty {
             guard let guardedArtboard = artboard else { return [] }
             
-            let stateMachineInstance = try guardedArtboard.stateMachine(fromName: animationName)
+            let stateMachineInstance = try guardedArtboard.stateMachine(fromName: animationName).instance(with: guardedArtboard)
             return [stateMachineInstance]
         }
         return stateMachineInstances
@@ -739,7 +739,7 @@ extension RiveView {
         if animationInstances.isEmpty {
             guard let guardedArtboard = artboard else { return [] }
             
-            let animationInstance = try guardedArtboard.animation(fromName: animationName)
+            let animationInstance = try guardedArtboard.animation(fromName: animationName).instance(with: guardedArtboard)
             return [animationInstance]
         }
         return animationInstances
@@ -765,7 +765,7 @@ extension RiveView {
     }
     
     private func _animations(withNames animationNames: [String]) -> [RiveLinearAnimationInstance] {
-        return animations.filter { animationNames.contains($0.name()) }
+        return animations.filter { animationNames.contains($0.animation().name()) }
     }
     
     private func _stateMachines(withAnimationName animationName: String) -> [RiveStateMachineInstance] {
@@ -773,7 +773,7 @@ extension RiveView {
     }
     
     private func _stateMachines(withAnimationNames animationNames: [String]) -> [RiveStateMachineInstance] {
-        return stateMachines.filter { animationNames.contains($0.name()) }
+        return stateMachines.filter { animationNames.contains($0.stateMachine().name()) }
     }
     
     private func _play(animation: RiveLinearAnimationInstance, loop: Loop, direction: Direction) {
@@ -782,7 +782,7 @@ extension RiveView {
         }
         if !animations.contains(animation) {
             if direction == .directionBackwards {
-                animation.setTime(animation.endTime())
+                animation.setTime(animation.animation().endTime())
             }
             animations.append(animation)
         }

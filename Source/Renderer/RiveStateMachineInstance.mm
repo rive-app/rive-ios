@@ -20,13 +20,16 @@
  * RiveStateMachineInstance
  */
 @implementation RiveStateMachineInstance {
+    const rive::StateMachine *stateMachine;
     rive::StateMachineInstance *instance;
 }
 
 // Creates a new RiveStateMachineInstance from a cpp StateMachine
-- (instancetype)initWithStateMachine:(rive::StateMachineInstance *)stateMachine {
+- (instancetype)initWithStateMachine:(const rive::StateMachine *)stateMachine
+                            artboard:(RiveArtboard *)artboard {
     if (self = [super init]) {
-        instance = stateMachine;
+        self->stateMachine = stateMachine;
+        instance = new rive::StateMachineInstance(stateMachine, artboard.artboardInstance);
         _inputs = [[NSMutableDictionary alloc] init];
         return self;
     } else {
@@ -37,6 +40,11 @@
 
 - (bool) advanceBy:(double)elapsedSeconds  {
     return instance->advance(elapsedSeconds);
+}
+
+- (RiveStateMachine *)stateMachine {
+    const rive::StateMachine *stateMachine = instance->stateMachine();
+    return [[RiveStateMachine alloc] initWithStateMachine: stateMachine];
 }
 
 - (RiveSMIBool *)getBool:(NSString *)name {
@@ -97,7 +105,7 @@
 }
 
 - (NSString *)name {
-    std::string str = instance->name();
+    std::string str = stateMachine->name();
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
@@ -212,11 +220,6 @@
 
 - (void)touchCancelledAtLocation:(CGPoint)touchLocation {
     instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y));
-}
-
-- (NSInteger)layerCount {
-    auto machine = instance->stateMachine();
-    return machine->layerCount();
 }
 
 - (void)dealloc {
