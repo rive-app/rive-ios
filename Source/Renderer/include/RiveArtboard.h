@@ -11,8 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RiveLinearAnimationInstance;
-@class RiveStateMachineInstance;
+@class RiveLinearAnimation;
+@class RiveStateMachine;
 @class RiveRenderer;
 
 // MARK: - RiveArtboard
@@ -24,13 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)animationCount;
 - (NSArray<NSString *> *)animationNames;
-- (RiveLinearAnimationInstance * __nullable)animationFromIndex:(NSInteger)index error:(NSError **)error;
-- (RiveLinearAnimationInstance * __nullable)animationFromName:(NSString *)name error:(NSError **)error;
+- (RiveLinearAnimation * __nullable)firstAnimation:(NSError **)error;
+- (RiveLinearAnimation * __nullable)animationFromIndex:(NSInteger)index error:(NSError **)error;
+- (RiveLinearAnimation * __nullable)animationFromName:(NSString *)name error:(NSError **)error;
 
 - (NSInteger)stateMachineCount;
 - (NSArray<NSString *> *)stateMachineNames;
-- (RiveStateMachineInstance * __nullable)stateMachineFromIndex:(NSInteger)index error:(NSError **)error;
-- (RiveStateMachineInstance * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
+- (RiveStateMachine * __nullable)firstStateMachine:(NSError **)error;
+- (RiveStateMachine * __nullable)stateMachineFromIndex:(NSInteger)index error:(NSError **)error;
+- (RiveStateMachine * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
 
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer *)renderer;

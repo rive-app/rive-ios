@@ -26,22 +26,35 @@
     return _artboardInstance->animationCount();
 }
 
-- (RiveLinearAnimationInstance *)animationFromIndex:(NSInteger)index error:(NSError**) error {
+/// Returns the first animation in the artboard, or null if it has none
+- (RiveLinearAnimation *)firstAnimation:(NSError**) error {
+    rive::LinearAnimation *animation = _artboardInstance->firstAnimation();
+    if (animation == nullptr) {
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoAnimations userInfo:@{NSLocalizedDescriptionKey: @"No Animations found.", @"name": @"NoAnimations"}];
+        return nil;
+    }
+    else {
+        return [[RiveLinearAnimation alloc] initWithAnimation:animation];
+    }
+    
+}
+
+- (RiveLinearAnimation *)animationFromIndex:(NSInteger)index error:(NSError**) error {
     if (index < 0 || index >= [self animationCount]) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoAnimationFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Animation found at index %ld.", (long)index], @"name": @"NoAnimationFound"}];
         return nil;
     }
-    return [[RiveLinearAnimationInstance alloc] initWithAnimation: _artboardInstance->animationAt(index).release()];
+    return [[RiveLinearAnimation alloc] initWithAnimation: _artboardInstance->animation(index)];
 }
 
-- (RiveLinearAnimationInstance *)animationFromName:(NSString *)name error:(NSError**) error {
+- (RiveLinearAnimation *)animationFromName:(NSString *)name error:(NSError**) error {
     std::string stdName = std::string([name UTF8String]);
-    rive::LinearAnimationInstance *animation = _artboardInstance->animationNamed(stdName).release();
+    rive::LinearAnimation *animation = _artboardInstance->animation(stdName);
     if (animation == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoAnimationFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Animation found with name %@.", name], @"name": @"NoAnimationFound"}];
         return nil;
     }
-    return [[RiveLinearAnimationInstance alloc] initWithAnimation: animation];
+    return [[RiveLinearAnimation alloc] initWithAnimation: animation];
 }
 
 - (NSArray *)animationNames{
@@ -57,24 +70,35 @@
     return _artboardInstance->stateMachineCount();
 }
 
+- (RiveStateMachine *)firstStateMachine:(NSError**)error {
+    rive::StateMachine *stateMachine = _artboardInstance->firstStateMachine();
+    if (stateMachine == nullptr) {
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachines userInfo:@{NSLocalizedDescriptionKey: @"No State Machines found.", @"name": @"NoStateMachines"}];
+        return nil;
+    }
+    else {
+        return [[RiveStateMachine alloc] initWithStateMachine:stateMachine];
+    }
+}
+
 /// Returns a state machine at the given index, or null if the index is invalid
-- (RiveStateMachineInstance *)stateMachineFromIndex:(NSInteger)index error:(NSError**)error {
+- (RiveStateMachine *)stateMachineFromIndex:(NSInteger)index error:(NSError**)error {
     if (index < 0 || index >= [self stateMachineCount]) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Machine found at index %ld.", (long)index], @"name": @"NoStateMachineFound"}];
         return nil;
     }
-    return [[RiveStateMachineInstance alloc] initWithStateMachine: _artboardInstance->stateMachineAt(index).release()];
+    return [[RiveStateMachine alloc] initWithStateMachine: _artboardInstance->stateMachine(index)];
 }
 
 /// Returns a state machine with the given name, or null if none exists
-- (RiveStateMachineInstance *)stateMachineFromName:(NSString *)name error:(NSError**)error {
+- (RiveStateMachine *)stateMachineFromName:(NSString *)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
-    rive::StateMachineInstance *machine = _artboardInstance->stateMachineNamed(stdName).release();
+    rive::StateMachine *machine = _artboardInstance->stateMachine(stdName);
     if (machine == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Machine found with name %@.", name], @"name": @"NoStateMachineFound"}];
         return nil;
     }
-    return [[RiveStateMachineInstance alloc] initWithStateMachine: machine];
+    return [[RiveStateMachine alloc] initWithStateMachine: machine];
 }
 
 - (NSArray *)stateMachineNames{

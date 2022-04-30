@@ -21,13 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RiveLayerState : NSObject
 
-- (const void *)rive_layer_state;
+- (RiveLinearAnimation *)animation;
 - (bool)isEntryState;
 - (bool)isExitState;
 - (bool)isAnyState;
 - (bool)isAnimationState;
 - (NSString *)name;
-
 
 @end
 

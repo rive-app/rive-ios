@@ -14,6 +14,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RiveLinearAnimation;
+
 /*
  * RiveLinearAnimationInstance
  */
@@ -21,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (float)time;
 - (void)setTime:(float) time;
-- (float)endTime;
+- (const RiveLinearAnimation *)animation;
 - (void)apply;
 - (bool)advanceBy:(double)elapsedSeconds;
 - (int)direction;
@@ -30,13 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loop:(int)loopMode;
 - (bool)didLoop;
 - (NSString *)name;
-
-- (NSInteger)fps;
-- (NSInteger)workStart;
-- (NSInteger)workEnd;
-- (NSInteger)duration;
-- (NSInteger)effectiveDuration;
-- (float)effectiveDurationInSeconds;
 
 @end
 
