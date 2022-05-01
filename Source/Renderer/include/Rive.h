@@ -16,10 +16,7 @@
 
 #import <RiveRuntime/RiveFile.h>
 #import <RiveRuntime/RiveArtboard.h>
-#import <RiveRuntime/RiveLinearAnimation.h>
 #import <RiveRuntime/RiveSMIInput.h>
-#import <RiveRuntime/RiveStateMachine.h>
-#import <RiveRuntime/RiveStateMachineInput.h>
 #import <RiveRuntime/RiveLinearAnimationInstance.h>
 #import <RiveRuntime/RiveStateMachineInstance.h>
 #import <RiveRuntime/LayerState.h>
