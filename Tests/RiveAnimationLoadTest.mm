@@ -26,17 +26,13 @@
     RiveFile* file = [Util loadTestFile:@"multipleartboards" error:&error];
     RiveArtboard* artboard = [file artboardFromName:@"artboard1" error:&error];
 
-    RiveLinearAnimation* animation = [artboard firstAnimation:&error];
-    XCTAssertNil(error);
-
-    RiveLinearAnimation* animationByIndex = [artboard animationFromIndex:0 error:&error];
+    RiveLinearAnimationInstance* animationByIndex = [artboard animationFromIndex:0 error:&error];
     XCTAssertNil(error);
     
-    RiveLinearAnimation* animationByName = [artboard animationFromName:@"artboard1animation1" error:&error];
+    RiveLinearAnimationInstance* animationByName = [artboard animationFromName:@"artboard1animation1" error:&error];
     XCTAssertNil(error);
     
-    XCTAssertTrue([animation.name isEqualToString:animationByIndex.name]);
-    XCTAssertTrue([animation.name isEqualToString:animationByName.name]);
+    XCTAssertTrue([animationByName.name isEqualToString:animationByIndex.name]);
     
     NSArray *target = [NSArray arrayWithObjects:@"artboard1animation1", nil];
     XCTAssertTrue([[artboard animationNames] isEqualToArray: target]);
@@ -50,19 +46,16 @@
     RiveFile* file = [Util loadTestFile:@"multipleartboards" error:&error];
     RiveArtboard* artboard = [file artboardFromName:@"artboard2" error:&error];
     
-    RiveLinearAnimation* animation = [artboard firstAnimation:&error];
+    RiveLinearAnimationInstance* animationByIndex = [artboard animationFromIndex:0 error:&error];
     XCTAssertNil(error);
-    RiveLinearAnimation* animationByIndex = [artboard animationFromIndex:0 error:&error];
-    XCTAssertNil(error);
-    RiveLinearAnimation* animationByName = [artboard animationFromName:@"artboard2animation1" error:&error];
+    RiveLinearAnimationInstance* animationByName = [artboard animationFromName:@"artboard2animation1" error:&error];
     XCTAssertNil(error);
     
-    XCTAssertTrue([animation.name isEqualToString:animationByIndex.name]);
-    XCTAssertTrue([animation.name isEqualToString:animationByName.name]);
+    XCTAssertTrue([animationByName.name isEqualToString:animationByIndex.name]);
     
-    RiveLinearAnimation* animation2ByIndex = [artboard animationFromIndex:1 error:&error];
+    RiveLinearAnimationInstance* animation2ByIndex = [artboard animationFromIndex:1 error:&error];
     XCTAssertNil(error);
-    RiveLinearAnimation* animation2ByName = [artboard animationFromName:@"artboard2animation2" error:&error];
+    RiveLinearAnimationInstance* animation2ByName = [artboard animationFromName:@"artboard2animation2" error:&error];
     XCTAssertNil(error);
     
     XCTAssertTrue([animation2ByIndex.name isEqualToString:animation2ByName.name]);
@@ -85,24 +78,6 @@
 }
 
 /*
- * Test access nothing
- */
-- (void)testArtboardAnimationDoesntExist {
-    
-    RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
-
-    NSError* error = nil;
-    RiveLinearAnimation* animation = [artboard firstAnimation:&error];
-    
-    XCTAssertNil(animation);
-    XCTAssertNotNil(error);
-    XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
-    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoAnimations");
-    XCTAssertEqual([error code], 200);
-}
-
-/*
  * Test access index doesnt exist
  */
 - (void)testArtboardAnimationAtIndexDoesntExist {
@@ -110,7 +85,7 @@
     RiveArtboard* artboard = [file artboard:nil];
 
     NSError* error = nil;
-    RiveLinearAnimation* animation = [artboard animationFromIndex:0 error:&error];
+    RiveLinearAnimationInstance* animation = [artboard animationFromIndex:0 error:&error];
     XCTAssertNil(animation);
     
     XCTAssertNotNil(error);
@@ -127,7 +102,7 @@
     RiveArtboard* artboard = [file artboard:nil];
     
     NSError* error = nil;
-    RiveLinearAnimation* animation = [artboard animationFromName:@"boo" error:&error];
+    RiveLinearAnimationInstance* animation = [artboard animationFromName:@"boo" error:&error];
     XCTAssertNil(animation);
 
     XCTAssertNotNil(error);

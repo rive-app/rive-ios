@@ -28,12 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RiveStateMachineInstance : NSObject
 - (NSString* )name;
 - (bool)advanceBy: (double)elapsedSeconds;
-- (const RiveStateMachine *)stateMachine;
 - (const RiveSMIBool *)getBool:(NSString*)name;
 - (const RiveSMITrigger *)getTrigger:(NSString*)name;
 - (const RiveSMINumber *)getNumber:(NSString*)name;
 - (NSArray<NSString *> *)inputNames;
 - (NSInteger)inputCount;
+- (NSInteger)layerCount;
 - (RiveSMIInput * __nullable)inputFromIndex:(NSInteger)index error:(NSError**)error;
 - (RiveSMIInput * __nullable)inputFromName:(NSString*)name error:(NSError**)error;
 - (NSInteger)stateChangedCount;

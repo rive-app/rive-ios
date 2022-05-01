@@ -25,15 +25,12 @@
     RiveFile* file = [Util loadTestFile:@"multipleartboards" error:&error];
     RiveArtboard* artboard = [file artboardFromName:@"artboard1" error:&error];
     
-    RiveStateMachine* animation = [artboard firstStateMachine:&error];
+    RiveStateMachineInstance* animationByIndex = [artboard stateMachineFromIndex:0 error:&error];
     XCTAssertNil(error);
-    RiveStateMachine* animationByIndex = [artboard stateMachineFromIndex:0 error:&error];
-    XCTAssertNil(error);
-    RiveStateMachine* animationByName = [artboard stateMachineFromName:@"artboard1stateMachine1" error:&error];
+    RiveStateMachineInstance* animationByName = [artboard stateMachineFromName:@"artboard1stateMachine1" error:&error];
     XCTAssertNil(error);
     
-    XCTAssertTrue([animation.name isEqualToString:animationByIndex.name]);
-    XCTAssertTrue([animation.name isEqualToString:animationByName.name]);
+    XCTAssertTrue([animationByName.name isEqualToString:animationByIndex.name]);
     
     NSArray *target = [NSArray arrayWithObjects:@"artboard1stateMachine1", nil];
     XCTAssertTrue([[artboard stateMachineNames] isEqualToArray: target]);
@@ -47,19 +44,16 @@
     RiveFile* file = [Util loadTestFile:@"multipleartboards" error:&error];
     RiveArtboard* artboard = [file artboardFromName:@"artboard2" error:&error];
     
-    RiveStateMachine* animation = [artboard firstStateMachine:&error];
+    RiveStateMachineInstance* animationByIndex = [artboard stateMachineFromIndex:0 error:&error];
     XCTAssertNil(error);
-    RiveStateMachine* animationByIndex = [artboard stateMachineFromIndex:0 error:&error];
-    XCTAssertNil(error);
-    RiveStateMachine* animationByName = [artboard stateMachineFromName:@"artboard2stateMachine1" error:&error];
+    RiveStateMachineInstance* animationByName = [artboard stateMachineFromName:@"artboard2stateMachine1" error:&error];
     XCTAssertNil(error);
     
-    XCTAssertTrue([animation.name isEqualToString:animationByIndex.name]);
-    XCTAssertTrue([animation.name isEqualToString:animationByName.name]);
+    XCTAssertTrue([animationByName.name isEqualToString:animationByIndex.name]);
     
-    RiveStateMachine* animation2ByIndex = [artboard stateMachineFromIndex:1 error:&error];
+    RiveStateMachineInstance* animation2ByIndex = [artboard stateMachineFromIndex:1 error:&error];
     XCTAssertNil(error);
-    RiveStateMachine* animation2ByName = [artboard stateMachineFromName:@"artboard2stateMachine2" error:&error];
+    RiveStateMachineInstance* animation2ByName = [artboard stateMachineFromName:@"artboard2stateMachine2" error:&error];
     XCTAssertNil(error);
     
     XCTAssertTrue([animation2ByIndex.name isEqualToString:animation2ByName.name]);
@@ -82,22 +76,6 @@
 }
 
 /*
-* Test access nothing
-*/
-- (void)testArtboardStateMachineDoesntExist {
-    RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
-
-    NSError* error = nil;
-    RiveStateMachine* stateMachine = [artboard firstStateMachine:&error];
-    
-    XCTAssertNil(stateMachine);
-    XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
-    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoStateMachines");
-    XCTAssertEqual([error code], 300);
-}
-
-/*
 * Test access index doesnt exist
 */
 - (void)testArtboardStateMachineAtIndexDoesntExist {
@@ -105,7 +83,7 @@
     RiveArtboard* artboard = [file artboard:nil];
 
     NSError* error = nil;
-    RiveStateMachine* stateMachine = [artboard stateMachineFromIndex:0 error:&error];
+    RiveStateMachineInstance* stateMachine = [artboard stateMachineFromIndex:0 error:&error];
 
     XCTAssertNil(stateMachine);
     XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
@@ -121,7 +99,7 @@
     RiveArtboard* artboard = [file artboard:nil];
 
     NSError* error = nil;
-    RiveStateMachine* stateMachine = [artboard stateMachineFromName:@"boo" error:&error];
+    RiveStateMachineInstance* stateMachine = [artboard stateMachineFromName:@"boo" error:&error];
     XCTAssertNil(stateMachine);
     XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
     XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoStateMachineFound");
