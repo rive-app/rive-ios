@@ -120,6 +120,32 @@ open class RiveView: RiveRendererView {
     
     private var lastTime: CFTimeInterval = 0
     private var displayLinkProxy: CADisplayLinkProxy?
+    private var fpsLabel: UILabel? = nil
+    private var fpsFormatter: NumberFormatter? = nil
+    public var showFPS: Bool = false {
+        didSet {
+            if showFPS {
+                fpsLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 75, height: 30))
+                addSubview(fpsLabel!)
+                fpsLabel!.backgroundColor = .darkGray
+                fpsLabel!.textColor = .white
+                fpsLabel!.textAlignment = .center
+                fpsLabel!.alpha = 0.75
+                fpsLabel!.clipsToBounds = true
+                fpsLabel!.layer.cornerRadius = 10
+                fpsLabel!.text = "..."
+                
+                fpsFormatter = NumberFormatter()
+                fpsFormatter!.minimumFractionDigits = 2
+                fpsFormatter!.maximumFractionDigits = 2
+                fpsFormatter!.roundingMode = .down
+            } else {
+                fpsLabel?.removeFromSuperview()
+                fpsLabel = nil
+                fpsFormatter = nil
+            }
+        }
+    }
     
     // Delegates
     public weak var playerDelegate: RivePlayerDelegate?
@@ -158,13 +184,11 @@ open class RiveView: RiveRendererView {
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
-        self.fit = fit
-        self.alignment = alignment
-        self.playerDelegate = playerDelegate
-        self.inputsDelegate = inputsDelegate
-        self.stateChangeDelegate = stateChangeDelegate
-        
-        try configure(riveFile, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName, autoPlay: autoplay)
+        try sharedInit(
+            riveFile, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName,
+            fit: fit, alignment: alignment, autoplay: autoplay,
+            playerDelegate: playerDelegate, inputsDelegate: inputsDelegate, stateChangeDelegate: stateChangeDelegate
+        )
     }
     
     /// Constructor with a .riv file name.
@@ -192,14 +216,11 @@ open class RiveView: RiveRendererView {
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
-        let riveFile = try RiveFile(name: fileName)
-        self.fit = fit
-        self.alignment = alignment
-        self.playerDelegate = playerDelegate
-        self.inputsDelegate = inputsDelegate
-        self.stateChangeDelegate = stateChangeDelegate
-        
-        try configure(riveFile, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName, autoPlay: autoplay)
+        try sharedInit(
+            try RiveFile(name: fileName), artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName,
+            fit: fit, alignment: alignment, autoplay: autoplay,
+            playerDelegate: playerDelegate, inputsDelegate: inputsDelegate, stateChangeDelegate: stateChangeDelegate
+        )
     }
     
     /// Constructor with a resource file.
@@ -227,7 +248,25 @@ open class RiveView: RiveRendererView {
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
-        let riveFile = RiveFile(httpUrl: webURL, with:self)!
+        try sharedInit(
+            RiveFile(httpUrl: webURL, with:self)!, artboardName: artboardName, animationName: animationName, stateMachineName: stateMachineName,
+            fit: fit, alignment: alignment, autoplay: autoplay,
+            playerDelegate: playerDelegate, inputsDelegate: inputsDelegate, stateChangeDelegate: stateChangeDelegate
+        )
+    }
+    
+    private func sharedInit(
+        _ riveFile: RiveFile,
+        artboardName: String?,
+        animationName: String?,
+        stateMachineName: String?,
+        fit: Fit,
+        alignment: Alignment,
+        autoplay: Bool,
+        playerDelegate: RivePlayerDelegate?,
+        inputsDelegate: RInputDelegate?,
+        stateChangeDelegate: RStateDelegate?
+    ) throws {
         self.fit = fit
         self.alignment = alignment
         self.playerDelegate = playerDelegate
@@ -339,6 +378,8 @@ extension RiveView {
         } else {
             advance(delta: 0)
         }
+        
+        showFPS = true
     }
     
     /// Stop playback, clear any created animation or state machine instances.
@@ -464,6 +505,7 @@ extension RiveView {
         displayLinkProxy?.invalidate()
         displayLinkProxy = nil
         lastTime = 0
+        fpsLabel?.text = "Stopped"
     }
     
     
@@ -493,6 +535,11 @@ extension RiveView {
         // Calculate the time elapsed between ticks
         let elapsedTime = timestamp - lastTime
         lastTime = timestamp
+        
+        if elapsedTime != 0 {
+            fpsLabel?.text = fpsFormatter!.string(from: NSNumber(value: 1 / elapsedTime))! + "fps"
+        }
+        
         advance(delta: elapsedTime)
         if !isPlaying {
             stopTimer()
