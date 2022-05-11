@@ -51,6 +51,7 @@
 		C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */; };
 		C3460A002800A6CE002DBCB7 /* bird.riv in Resources */ = {isa = PBXBuildFile; fileRef = C34609FD2800A6CE002DBCB7 /* bird.riv */; };
 		C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E6127FDCBC6008652FD /* SimpleSlider.swift */; };
+		C3745FDD282C10C90087F4AF /* watch_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3745FDC282C10C90087F4AF /* watch_v1.riv */; };
 		C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RiveProgressBar.swift */; };
 		C3D187F728075B6C008B739A /* riveslider.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F628075B6C008B739A /* riveslider.riv */; };
 		C3D187F9280770EA008B739A /* truck.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F8280770EA008B739A /* truck.riv */; };
@@ -60,7 +61,6 @@
 		C3ECAC2C281837B300A81123 /* leg_day_events_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC29281837B300A81123 /* leg_day_events_example.riv */; };
 		C3ECAC2D281837B300A81123 /* switch_event_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC2A281837B300A81123 /* switch_event_example.riv */; };
 		C3ECAC2F281840A300A81123 /* ClockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ECAC2E281840A300A81123 /* ClockViewModel.swift */; };
-		C3ECAC31281840EF00A81123 /* watch_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC30281840EF00A81123 /* watch_v1.riv */; };
 		C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9BD3925263B5FC700696C37 /* truck_v7.riv */; };
 		C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9724FC471E00EF9516 /* AppDelegate.swift */; };
 		C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */; };
@@ -151,6 +151,7 @@
 		C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesMaster.swift; sourceTree = "<group>"; };
 		C34609FD2800A6CE002DBCB7 /* bird.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = bird.riv; sourceTree = "<group>"; };
 		C3468E6127FDCBC6008652FD /* SimpleSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSlider.swift; sourceTree = "<group>"; };
+		C3745FDC282C10C90087F4AF /* watch_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = watch_v1.riv; sourceTree = "<group>"; };
 		C3D187F2280751A8008B739A /* RiveProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveProgressBar.swift; sourceTree = "<group>"; };
 		C3D187F628075B6C008B739A /* riveslider.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider.riv; sourceTree = "<group>"; };
 		C3D187F8280770EA008B739A /* truck.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck.riv; sourceTree = "<group>"; };
@@ -160,7 +161,6 @@
 		C3ECAC29281837B300A81123 /* leg_day_events_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = leg_day_events_example.riv; sourceTree = "<group>"; };
 		C3ECAC2A281837B300A81123 /* switch_event_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = switch_event_example.riv; sourceTree = "<group>"; };
 		C3ECAC2E281840A300A81123 /* ClockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockViewModel.swift; sourceTree = "<group>"; };
-		C3ECAC30281840EF00A81123 /* watch_v1.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = watch_v1.riv; sourceTree = "<group>"; };
 		C9BD3925263B5FC700696C37 /* truck_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck_v7.riv; sourceTree = "<group>"; };
 		C9C73E9424FC471E00EF9516 /* RiveExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiveExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C73E9724FC471E00EF9516 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -245,7 +245,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				C3ECAC30281840EF00A81123 /* watch_v1.riv */,
+				C3745FDC282C10C90087F4AF /* watch_v1.riv */,
 				C3ECAC29281837B300A81123 /* leg_day_events_example.riv */,
 				C3ECAC28281837B300A81123 /* play_button_event_example.riv */,
 				C3ECAC2A281837B300A81123 /* switch_event_example.riv */,
@@ -457,7 +457,7 @@
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
 				C3D187F728075B6C008B739A /* riveslider.riv in Resources */,
 				C3ECAC2C281837B300A81123 /* leg_day_events_example.riv in Resources */,
-				C3ECAC31281840EF00A81123 /* watch_v1.riv in Resources */,
+				C3745FDD282C10C90087F4AF /* watch_v1.riv in Resources */,
 				042C88E12644447500E7DBB2 /* basketball.riv in Resources */,
 				042C88DE2644447500E7DBB2 /* rope.riv in Resources */,
 				C3ECAC2D281837B300A81123 /* switch_event_example.riv in Resources */,

@@ -11,6 +11,7 @@ import RiveRuntime
 
 struct SwiftTouchEvents: DismissableView {
     var dismiss: () -> Void = {}
+    @StateObject var clock = ClockViewModel()
     
     var body: some View {
         ScrollView {
@@ -31,9 +32,7 @@ struct SwiftTouchEvents: DismissableView {
                     .view()
                     .aspectRatio(1, contentMode: .fit)
 
-                ClockViewModel()
-                    .view()
-                    .aspectRatio(1, contentMode: .fit)
+                clock.controlsView()
             }
         }
     }
