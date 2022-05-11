@@ -365,7 +365,7 @@ extension RiveView {
             advance(delta: 0)
         }
         
-        showFPS = true
+        showFPS = false
     }
     
     /// Stop playback, clear any created animation or state machine instances.
@@ -520,10 +520,8 @@ extension RiveView {
         
         // Calculate the time elapsed between ticks
         let elapsedTime = timestamp - lastTime
-        lastTime = timestamp
-        
         fpsCounter?.elapsed(time: elapsedTime)
-        
+        lastTime = timestamp
         advance(delta: elapsedTime)
         if !isPlaying {
             stopTimer()
