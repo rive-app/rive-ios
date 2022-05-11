@@ -120,29 +120,15 @@ open class RiveView: RiveRendererView {
     
     private var lastTime: CFTimeInterval = 0
     private var displayLinkProxy: CADisplayLinkProxy?
-    private var fpsLabel: UILabel? = nil
-    private var fpsFormatter: NumberFormatter? = nil
+    private var fpsCounter: FPSCounterView? = nil
     public var showFPS: Bool = false {
         didSet {
             if showFPS {
-                fpsLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 75, height: 30))
-                addSubview(fpsLabel!)
-                fpsLabel!.backgroundColor = .darkGray
-                fpsLabel!.textColor = .white
-                fpsLabel!.textAlignment = .center
-                fpsLabel!.alpha = 0.75
-                fpsLabel!.clipsToBounds = true
-                fpsLabel!.layer.cornerRadius = 10
-                fpsLabel!.text = "..."
-                
-                fpsFormatter = NumberFormatter()
-                fpsFormatter!.minimumFractionDigits = 2
-                fpsFormatter!.maximumFractionDigits = 2
-                fpsFormatter!.roundingMode = .down
+                fpsCounter = FPSCounterView()
+                addSubview(fpsCounter!)
             } else {
-                fpsLabel?.removeFromSuperview()
-                fpsLabel = nil
-                fpsFormatter = nil
+                fpsCounter?.removeFromSuperview()
+                fpsCounter = nil
             }
         }
     }
@@ -505,7 +491,7 @@ extension RiveView {
         displayLinkProxy?.invalidate()
         displayLinkProxy = nil
         lastTime = 0
-        fpsLabel?.text = "Stopped"
+        fpsCounter?.stopped()
     }
     
     
@@ -536,9 +522,7 @@ extension RiveView {
         let elapsedTime = timestamp - lastTime
         lastTime = timestamp
         
-        if elapsedTime != 0 {
-            fpsLabel?.text = fpsFormatter!.string(from: NSNumber(value: 1 / elapsedTime))! + "fps"
-        }
+        fpsCounter?.elapsed(time: elapsedTime)
         
         advance(delta: elapsedTime)
         if !isPlaying {
