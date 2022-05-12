@@ -44,6 +44,7 @@
 		04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		04DB5938266A348C0020A7E8 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
+		27108F2F282C96E700A99D81 /* light_switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = 27108F2C282C96E700A99D81 /* light_switch.riv */; };
 		C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5528071EB80060589F /* RiveSwitch.swift */; };
 		C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5A2807216B0060589F /* RiveSlider.swift */; };
 		C324DB5D280728690060589F /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5C280728690060589F /* RiveButton.swift */; };
@@ -145,6 +146,7 @@
 		04C4C83D2646FE410047E614 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		04D5B069266A460C004ACA5B /* nothing.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nothing.riv; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
+		27108F2C282C96E700A99D81 /* light_switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = light_switch.riv; sourceTree = "<group>"; };
 		C324DB5528071EB80060589F /* RiveSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitch.swift; sourceTree = "<group>"; };
 		C324DB5A2807216B0060589F /* RiveSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSlider.swift; sourceTree = "<group>"; };
 		C324DB5C280728690060589F /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 				C3ECAC28281837B300A81123 /* play_button_event_example.riv */,
 				C3ECAC2A281837B300A81123 /* switch_event_example.riv */,
 				C3ECAC222817BE1100A81123 /* magic_8-ball_v2.riv */,
+				27108F2C282C96E700A99D81 /* light_switch.riv */,
 				C3D187F628075B6C008B739A /* riveslider.riv */,
 				C324DB5E280740FB0060589F /* rbutton.riv */,
 				C34609FD2800A6CE002DBCB7 /* bird.riv */,
@@ -438,6 +441,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27108F2F282C96E700A99D81 /* light_switch.riv in Resources */,
 				C324DB5F280740FB0060589F /* rbutton.riv in Resources */,
 				C9D3DE5B264F3B51001BA265 /* liquid.riv in Resources */,
 				042C88DF2644447500E7DBB2 /* mascot.riv in Resources */,
