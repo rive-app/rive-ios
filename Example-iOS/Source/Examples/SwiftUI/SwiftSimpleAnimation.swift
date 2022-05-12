@@ -14,7 +14,7 @@ struct SwiftSimpleAnimation: DismissableView {
     var dismiss: () -> Void = {}
     
     var body: some View {
-        RiveViewModel(fileName: "truck").view()
+        NewRiveViewModel(fileName: "truck").view()
     }
 }
 
