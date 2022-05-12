@@ -8,11 +8,15 @@
 
 import Foundation
 
-public protocol RivePlayerDelegate: AnyObject {
+@objc public protocol RiveAnimationDelegate: AnyObject {
     func loop(animation animationName: String, type: Int)
     func play(animation animationName: String, isStateMachine: Bool)
     func pause(animation animationName: String, isStateMachine: Bool)
     func stop(animation animationName: String, isStateMachine: Bool)
+}
+
+public enum RiveAnimationState {
+    case playing, paused, stopped, looped
 }
 
 @objc public protocol RiveTouchDelegate: AnyObject {
@@ -23,15 +27,18 @@ public protocol RivePlayerDelegate: AnyObject {
 }
 
 /// State machine input types
-public enum StateMachineInputType {
-    case trigger
-    case number
-    case boolean
+@objc public enum StateMachineInputType: IntegerLiteralType {
+    case trigger, number, boolean
 }
 /// Simple data type for passing state machine input names and their types
-public struct StateMachineInput: Hashable {
+@objc public class StateMachineInput: NSObject {
     public let name: String
     public let type: StateMachineInputType
+    
+    init(name: String, type: StateMachineInputType) {
+        self.name = name
+        self.type = type
+    }
 }
 
 /// Delegate for reporting changes to available input states
@@ -106,10 +113,10 @@ open class RiveView: RiveRendererView {
     private var autoPlay: Bool = true
     open var artboard: RiveArtboard?
     open var fit: Fit = .fitContain {
-        didSet { artboard?.advance(by: 0) }
+        didSet { setNeedsDisplay() }
     }
     open var alignment: Alignment = .alignmentCenter {
-        didSet { artboard?.advance(by: 0) }
+        didSet { setNeedsDisplay() }
     }
     
     // Playback controls
@@ -122,7 +129,7 @@ open class RiveView: RiveRendererView {
     private var displayLinkProxy: CADisplayLinkProxy?
     
     // Delegates
-    public weak var playerDelegate: RivePlayerDelegate?
+    public weak var playerDelegate: RiveAnimationDelegate?
     public weak var touchDelegate: RiveTouchDelegate?
     public weak var inputsDelegate: RInputDelegate?
     public weak var stateChangeDelegate: RStateDelegate?
@@ -153,7 +160,7 @@ open class RiveView: RiveRendererView {
         artboardName: String? = nil,
         animationName: String? = nil,
         stateMachineName: String? = nil,
-        playerDelegate: RivePlayerDelegate? = nil,
+        playerDelegate: RiveAnimationDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
@@ -187,7 +194,7 @@ open class RiveView: RiveRendererView {
         artboardName: String? = nil,
         animationName: String? = nil,
         stateMachineName: String? = nil,
-        playerDelegate: RivePlayerDelegate? = nil,
+        playerDelegate: RiveAnimationDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
@@ -222,7 +229,7 @@ open class RiveView: RiveRendererView {
         artboardName: String? = nil,
         animationName: String? = nil,
         stateMachineName: String? = nil,
-        playerDelegate: RivePlayerDelegate? = nil,
+        playerDelegate: RiveAnimationDelegate? = nil,
         inputsDelegate: RInputDelegate? = nil,
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
@@ -512,7 +519,7 @@ extension RiveView {
     ///
     /// This will also trigger any events for configured delegates.
     /// - Parameter delta: elapsed seconds.
-    open func advance(delta: Double) {
+    @objc open func advance(delta: Double) {
         guard let artboard = artboard else { return }
         
         // Testing firing events here
@@ -545,7 +552,7 @@ extension RiveView {
         // advance the artboard
         artboard.advance(by: delta)
         // Trigger a redraw
-        self.setNeedsDisplay()
+        setNeedsDisplay()
     }
 }
 

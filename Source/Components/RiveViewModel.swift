@@ -16,7 +16,6 @@ open class RiveViewModel: ObservableObject, RiveTouchDelegate {
     public var stateChangeAction: StateChangeAction = nil
     
     @Published private var model: RiveModel
-    private var viewRepresentable: RViewRepresentable?
     
     
     public init(_ model: RiveModel) {
@@ -315,13 +314,13 @@ extension RiveViewModel {
         }
         
         public var body: some View {
-            RViewRepresentable(viewModel: viewModel)
+            RiveViewRepresentable(viewModel: viewModel)
         }
     }
 }
 
 // MARK: - RPlayerDelegate
-extension RiveViewModel: RivePlayerDelegate {
+extension RiveViewModel: RiveAnimationDelegate {
     public func loop(animation animationName: String, type: Int) {
         //print("Animation: [" + animationName + "] - Looped")
     }
@@ -352,7 +351,7 @@ extension RiveViewModel: RInputDelegate, RStateDelegate {
 
 // MARK: - SwiftUI Utility
 /// This makes a SwiftUI digestable view from an `RiveViewModel` and its `RiveView`
-public struct RViewRepresentable: UIViewRepresentable {
+public struct RiveViewRepresentable: UIViewRepresentable {
     let viewModel: RiveViewModel
     
     public init(viewModel: RiveViewModel) {
@@ -364,7 +363,7 @@ public struct RViewRepresentable: UIViewRepresentable {
         return viewModel.createRView()
     }
     
-    public func updateUIView(_ view: RiveView, context: UIViewRepresentableContext<RViewRepresentable>) {
+    public func updateUIView(_ view: RiveView, context: UIViewRepresentableContext<RiveViewRepresentable>) {
         viewModel.update(rview: view)
     }
     

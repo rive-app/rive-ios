@@ -11,14 +11,16 @@ import RiveRuntime
 import SwiftUI
 
 class SimpleAnimationViewController: UIViewController {
-    var viewModel = RiveViewModel(fileName: "truck")
+    var riveFile = try! RiveFile(name: "truck")
+    var riveModel: NewRiveModel!
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let rview = RiveView()
+        riveModel = try! NewRiveModel(riveFile: riveFile, animationIndex: nil)
+        
+        let rview = NewRiveView(model: riveModel)
         view.addSubview(rview)
-        viewModel.setView(rview)
         rview.frame = view.frame
     }
 }
