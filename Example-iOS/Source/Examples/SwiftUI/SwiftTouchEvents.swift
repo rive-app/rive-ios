@@ -38,6 +38,10 @@ struct SwiftTouchEvents: DismissableView {
                 ClockViewModel()
                     .view()
                     .aspectRatio(1, contentMode: .fit)
+
+                RiveViewModel(fileName: "light_switch", stateMachineName: "Switch")
+                    .view()
+                    .aspectRatio(1, contentMode: .fit)
             }
         }
     }
