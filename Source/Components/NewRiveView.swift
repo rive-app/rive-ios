@@ -360,7 +360,7 @@ public class NewRiveViewModel: NSObject, ObservableObject, RiveFileDelegate, Riv
             view = NewRiveView()
         }
         
-        registerView(view)
+        setView(view)
         
         return view
     }
@@ -377,14 +377,14 @@ public class NewRiveViewModel: NSObject, ObservableObject, RiveFileDelegate, Riv
     /// `StandardView`
     ///
     /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
-    fileprivate func registerView(_ view: NewRiveView) {
+    fileprivate func setView(_ view: NewRiveView) {
         riveView = view
         riveView!.playerDelegate = self
         riveView!.stateMachineDelegate = self
     }
     
     /// Stops maintaining a connection to any `RiveView`
-    fileprivate func deregisterView() {
+    fileprivate func destroyView() {
         riveView = nil
     }
     
@@ -412,8 +412,8 @@ public class NewRiveViewModel: NSObject, ObservableObject, RiveFileDelegate, Riv
     /// Does not need to be called when updating an already configured `RiveView`. Useful for
     /// attaching views created in a `UIViewController` or Storyboard.
     /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
-    @objc open func assignView(_ view: NewRiveView) {
-        registerView(view)
+    @objc open func configureView(_ view: NewRiveView) {
+        setView(view)
         
         try! riveView!.configure(model: riveModel!, autoPlay: autoPlay)
     }
@@ -438,7 +438,7 @@ public struct NewRiveViewRepresentable: UIViewRepresentable {
     
     public static func dismantleUIView(_ view: NewRiveView, coordinator: Coordinator) {
         view.stop()
-        coordinator.viewModel.deregisterView()
+        coordinator.viewModel.destroyView()
     }
     
     /// Constructs a coordinator for managing updating state
