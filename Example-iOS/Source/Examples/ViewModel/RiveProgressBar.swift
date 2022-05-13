@@ -17,9 +17,8 @@ class RiveProgressBar: RiveViewModel {
     }
     
     init(_ initialProgress: Double = 0) {
-        let model = RiveModel(fileName: "energy_bar_example", stateMachineName: "State Machine ", fit: .fitCover)
         progress = initialProgress
-        super.init(model)
+        super.init(fileName: "energy_bar_example", stateMachineName: "State Machine ", fit: .fitCover)
     }
     
     func formattedView() -> some View {

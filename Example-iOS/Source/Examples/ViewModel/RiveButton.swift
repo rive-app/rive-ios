@@ -14,9 +14,8 @@ class RiveButton: RiveViewModel {
     var action: (() -> Void)? = nil
     
     init(fileName: String = "rbutton") {
-        let model = RiveModel(fileName: fileName, stateMachineName: "State Machine 1", fit: .fitCover, autoplay: false)
-        super.init(model)
-    }
+         super.init(fileName: fileName, stateMachineName: "State Machine 1", fit: .fitCover, autoPlay: false)
+     }
     
     func view(_ action: (() -> Void)?) -> some View {
         self.action = action

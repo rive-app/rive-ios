@@ -56,7 +56,7 @@ class StateMachineViewController: UIViewController {
             try? self.viewModel.setInput("Level", value: 2.0)
         }
         stateMachineView.resetButtonAction = {
-            try? stateMachineView.riveView.reset()
+            try? self.viewModel.reset()
         }
     }
     

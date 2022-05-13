@@ -17,9 +17,8 @@ class RiveSlider: RiveViewModel {
     }
     
     init(_ initialProgress: Double = 0) {
-        let model = RiveModel(fileName: "riveslider", stateMachineName: "Slide", fit: .fitScaleDown)
         progress = initialProgress
-        super.init(model)
+        super.init(fileName: "riveslider", stateMachineName: "Slide", fit: .fitScaleDown)
     }
     
     func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
@@ -27,6 +26,6 @@ class RiveSlider: RiveViewModel {
     }
     
     func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
-        progress = Double(location.x / rview!.frame.width) * 100
+        progress = Double(location.x / riveView!.frame.width) * 100
     }
 }
