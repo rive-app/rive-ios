@@ -44,7 +44,7 @@ class StateMachineViewController: UIViewController {
             fatalError("Could not find StateMachineView")
         }
         
-        viewModel.configureView(stateMachineView.riveView)
+        viewModel.setView(stateMachineView.riveView)
         
         stateMachineView.beginnerButtonAction = {
             try? self.viewModel.setInput("Level", value: 0.0)

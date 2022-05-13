@@ -18,7 +18,7 @@ class SimpleAnimationViewController: UIViewController {
         
         let rview = RiveView()
         view.addSubview(rview)
-        viewModel.configureView(rview)
+        viewModel.setView(rview)
         rview.frame = view.frame
     }
 }

@@ -33,9 +33,9 @@ class MultipleAnimationsController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        rSquareGoAround.configureView(rviewSquareGoAround)
-        rSquareRollAround.configureView(rviewSquareRollAround)
-        rCircle.configureView(rviewCircle)
-        rStar.configureView(rviewStar)
+        rSquareGoAround.setView(rviewSquareGoAround)
+        rSquareRollAround.setView(rviewSquareRollAround)
+        rCircle.setView(rviewCircle)
+        rStar.setView(rviewStar)
     }
 }

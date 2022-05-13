@@ -16,6 +16,6 @@ class SimpleSliderViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         rslider = RiveSlider()
-        rslider.configureView(riveView)
+        rslider.setView(riveView)
     }
 }

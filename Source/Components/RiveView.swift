@@ -32,7 +32,7 @@ open class RiveView: RiveRendererView {
     
     public convenience init(model: RiveModel, autoPlay: Bool = true) {
         self.init()
-        try! configure(model: model, autoPlay: autoPlay)
+        try! setModel(model, autoPlay: autoPlay)
     }
     
     required public init(coder aDecoder: NSCoder) {
@@ -40,7 +40,7 @@ open class RiveView: RiveRendererView {
     }
     
     /// This resets the view with the new model. Useful when the `RiveView` was initialized without one.
-    open func configure(model: RiveModel, autoPlay: Bool = true) throws {
+    open func setModel(_ model: RiveModel, autoPlay: Bool = true) throws {
         stop()
         self.riveModel = model
         isOpaque = false

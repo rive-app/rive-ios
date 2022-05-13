@@ -67,7 +67,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     open private(set) var riveModel: RiveModel? {
         didSet {
             if let model = riveModel {
-                try! riveView?.configure(model: model, autoPlay: autoPlay)
+                try! riveView?.setModel(model, autoPlay: autoPlay)
             }
         }
     }
@@ -130,7 +130,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
             try riveModel?.setAnimation()
         }
         
-        try riveView?.configure(model: riveModel!, autoPlay: autoPlay)
+        try riveView?.setModel(riveModel!, autoPlay: autoPlay)
     }
     
     open func triggerInput(_ inputName: String) throws {
@@ -198,7 +198,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
             view = RiveView()
         }
         
-        setView(view)
+        registerView(view)
         
         return view
     }
@@ -215,14 +215,14 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// `StandardView`
     ///
     /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
-    fileprivate func setView(_ view: RiveView) {
+    fileprivate func registerView(_ view: RiveView) {
         riveView = view
         riveView!.playerDelegate = self
         riveView!.stateMachineDelegate = self
     }
     
     /// Stops maintaining a connection to any `RiveView`
-    fileprivate func destroyView() {
+    fileprivate func deregisterView() {
         riveView = nil
     }
     
@@ -250,10 +250,9 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// Does not need to be called when updating an already configured `RiveView`. Useful for
     /// attaching views created in a `UIViewController` or Storyboard.
     /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
-    @objc open func configureView(_ view: RiveView) {
-        setView(view)
-        
-        try! riveView!.configure(model: riveModel!, autoPlay: autoPlay)
+    @objc open func setView(_ view: RiveView) {
+        registerView(view)
+        try! riveView!.setModel(riveModel!, autoPlay: autoPlay)
     }
 }
 
@@ -276,7 +275,7 @@ public struct RiveViewRepresentable: UIViewRepresentable {
     
     public static func dismantleUIView(_ view: RiveView, coordinator: Coordinator) {
         view.stop()
-        coordinator.viewModel.destroyView()
+        coordinator.viewModel.deregisterView()
     }
     
     /// Constructs a coordinator for managing updating state
