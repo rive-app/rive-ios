@@ -9,7 +9,7 @@
 import SwiftUI
 import RiveRuntime
 
-class ClockViewModel: NewRiveViewModel {
+class ClockViewModel: RiveViewModel {
     var timer: Timer!
     var hours: Double = 0 {
         didSet {

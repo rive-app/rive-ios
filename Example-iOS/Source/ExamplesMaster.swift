@@ -32,7 +32,7 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("Simple Animation",    typeErased(dismissableView: SwiftSimpleAnimation())),
         ("Layout",              typeErased(dismissableView: SwiftLayout())),
         ("MultipleAnimations",  typeErased(dismissableView: SwiftMultipleAnimations())),
-        ("Loop Mode",           typeErased(dismissableView: SwiftLoopMode())),
+        //("Loop Mode",           typeErased(dismissableView: SwiftLoopMode())),
         ("State Machine",       typeErased(dismissableView: SwiftStateMachine())),
         ("Mesh Animation",      typeErased(dismissableView: SwiftMeshAnimation()))
     ]
@@ -41,7 +41,7 @@ class ExamplesMasterTableViewController: UITableViewController {
     // MARK: ViewModel Examples
     /// Made from `RiveViewModels`' default `.view()` method
     private let viewModels: [(String, RiveViewModel)] = [
-//        ("Slider Widget",       RiveSlider())
+        ("Slider Widget",       RiveSlider())
     ]
 }
 

@@ -17,7 +17,7 @@ class BlendModeViewController: UIViewController {
         
         let rview = RiveView()
         view.addSubview(rview)
-        viewModel.setView(rview)
+        viewModel.configureView(rview)
         rview.frame = view.frame
     }
 }

@@ -44,7 +44,7 @@ class StateMachineViewController: UIViewController {
             fatalError("Could not find StateMachineView")
         }
         
-        viewModel.setView(stateMachineView.riveView)
+        viewModel.configureView(stateMachineView.riveView)
         
         stateMachineView.beginnerButtonAction = {
             try? self.viewModel.setInput("Level", value: 0.0)
@@ -56,7 +56,7 @@ class StateMachineViewController: UIViewController {
             try? self.viewModel.setInput("Level", value: 2.0)
         }
         stateMachineView.resetButtonAction = {
-            try? stateMachineView.riveView.reset()
+            try? self.viewModel.reset()
         }
     }
     

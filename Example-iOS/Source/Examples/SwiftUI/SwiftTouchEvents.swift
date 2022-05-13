@@ -15,19 +15,19 @@ struct SwiftTouchEvents: DismissableView {
     var body: some View {
         ScrollView {
             VStack {
-                NewRiveViewModel(fileName: "play_button_event_example", stateMachineName: "State Machine")
+                RiveViewModel(fileName: "play_button_event_example", stateMachineName: "State Machine")
                     .view()
                     .aspectRatio(1, contentMode: .fit)
                 
-                NewRiveViewModel(fileName: "switch_event_example", stateMachineName: "Main State Machine")
+                RiveViewModel(fileName: "switch_event_example", stateMachineName: "Main State Machine")
                     .view()
                     .aspectRatio(1, contentMode: .fit)
                 
-                NewRiveViewModel(fileName: "magic_8-ball_v2", stateMachineName: "Main State Machine")
+                RiveViewModel(fileName: "magic_8-ball_v2", stateMachineName: "Main State Machine")
                     .view()
                     .aspectRatio(1, contentMode: .fit)
 
-                NewRiveViewModel(fileName: "leg_day_events_example", stateMachineName: "Don't Skip Leg Day")
+                RiveViewModel(fileName: "leg_day_events_example", stateMachineName: "Don't Skip Leg Day")
                     .view()
                     .aspectRatio(1, contentMode: .fit)
 

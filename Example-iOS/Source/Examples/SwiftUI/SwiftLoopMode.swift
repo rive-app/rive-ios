@@ -12,32 +12,22 @@ import RiveRuntime
 struct SwiftLoopMode: DismissableView {
     var dismiss: () -> Void = {}
     
-    var loopy = RiveViewModel(fileName: "loopy", autoplay: false)
-//    var direction = Direction.directionAuto
+    var loopy = RiveViewModel(fileName: "loopy", autoPlay: false)
     
     var body: some View {
         ScrollView {
             VStack {
-//                RiveViewSwift(
-//                    resource: "loopy", autoplay: false, controller:controller
-//                )
-                
                 loopy.view()
                     .frame(height:300)
                 HStack {
                     Button("Reset") {
                         try? loopy.reset()
                     }
-                    
-//                    TODO: work out direction controls
-//                    Button("Forwards", action:{direction = .directionForwards})
-//                    Button("Auto", action:{direction = .directionAuto})
-//                    Button("Backwards", action:{direction = .directionBackwards})
                 }
                 
             }
             HStack {
-                Text("Oneshot")
+                Text("Spin")
                 Button("Play") {
                     try? loopy.play(animationName: "oneshot")
                 }
@@ -52,7 +42,7 @@ struct SwiftLoopMode: DismissableView {
                 }
             }
             HStack {
-                Text("Loop")
+                Text("Vertical")
                 Button("Play") {
                     try? loopy.play(animationName: "loop")
                 }
@@ -67,7 +57,7 @@ struct SwiftLoopMode: DismissableView {
                 }
             }
             HStack {
-                Text("Pingpong")
+                Text("Horizontal")
                 Button("Play") {
                     try? loopy.play(animationName: "pingpong")
                 }

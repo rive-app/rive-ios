@@ -9,7 +9,7 @@
 import RiveRuntime
 import SwiftUI
 
-class RiveSlider: NewRiveViewModel {
+class RiveSlider: RiveViewModel {
     var progress: Double {
         didSet {
             try? setInput("FillPercent", value: progress)
@@ -17,10 +17,8 @@ class RiveSlider: NewRiveViewModel {
     }
     
     init(_ initialProgress: Double = 0) {
-        let model = try! NewRiveModel(riveFile: RiveFile(name: "riveslider"), stateMachineName: "Slide")
         progress = initialProgress
-        
-        super.init(model, fit: .fitScaleDown)
+        super.init(fileName: "riveslider", stateMachineName: "Slide", fit: .fitScaleDown)
     }
     
     func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
