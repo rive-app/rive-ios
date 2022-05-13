@@ -26,20 +26,7 @@ public enum RiveAnimationState {
     @objc optional func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
 }
 
-/// State machine input types
-@objc public enum StateMachineInputType: IntegerLiteralType {
-    case trigger, number, boolean
-}
-/// Simple data type for passing state machine input names and their types
-@objc public class StateMachineInput: NSObject {
-    public let name: String
-    public let type: StateMachineInputType
-    
-    init(name: String, type: StateMachineInputType) {
-        self.name = name
-        self.type = type
-    }
-}
+
 
 /// Delegate for reporting changes to available input states
 public protocol RInputDelegate: AnyObject {
@@ -234,7 +221,7 @@ open class RiveView: RiveRendererView {
         stateChangeDelegate: RStateDelegate? = nil
     ) throws {
         super.init(frame: .zero)
-        let riveFile = RiveFile(httpUrl: webURL, with:self)!
+        let riveFile = RiveFile(webURL: webURL, with:self)!
         self.fit = fit
         self.alignment = alignment
         self.playerDelegate = playerDelegate

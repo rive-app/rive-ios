@@ -26,8 +26,8 @@ public protocol RivePlayerDelegate: AnyObject {
 }
 
 open class NewRiveView: RiveRendererView {
-    internal var riveModel: NewRiveModel!
-    internal var autoPlay: Bool
+    // MARK: Configuration
+    internal weak var riveModel: NewRiveModel!
     internal var fit: RiveRuntime.Fit = .fitContain { didSet { setNeedsDisplay() } }
     internal var alignment: RiveRuntime.Alignment = .alignmentCenter { didSet { setNeedsDisplay() } }
     
@@ -43,7 +43,6 @@ open class NewRiveView: RiveRendererView {
     
     /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
     public init() {
-        autoPlay = true
         super.init(frame: .zero)
     }
     
@@ -53,10 +52,10 @@ open class NewRiveView: RiveRendererView {
     }
     
     required public init(coder aDecoder: NSCoder) {
-        autoPlay = true
         super.init(coder: aDecoder)
     }
     
+    /// This resets the view with the new model. Useful when the `RiveView` was initialized without one.
     open func configure(model: NewRiveModel, autoPlay: Bool = true) throws {
         stop()
         self.riveModel = model
@@ -193,8 +192,10 @@ open class NewRiveView: RiveRendererView {
     
     /// This is called in the middle of drawRect
     override public func drawRive(_ rect: CGRect, size: CGSize) {
-        let newFrame = CGRect(origin: rect.origin, size: size)
+        // This prevents breaking when loading RiveFile from web
+        guard riveModel != nil else { return }
         
+        let newFrame = CGRect(origin: rect.origin, size: size)
         align(with: newFrame, contentRect: riveModel.artboard.bounds(), alignment: alignment, fit: fit)
         draw(with: riveModel.artboard)
     }
@@ -203,31 +204,24 @@ open class NewRiveView: RiveRendererView {
     
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
-        
         handleTouch(location: location) { $0.touchBegan(atLocation: $1) }
         stateMachineDelegate?.touchBegan?(onArtboard: riveModel.artboard, atLocation: location)
     }
     
     open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
-        
         handleTouch(location: location) { $0.touchMoved(atLocation: $1) }
         stateMachineDelegate?.touchMoved?(onArtboard: riveModel.artboard, atLocation: location)
     }
     
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
-        
         handleTouch(location: location) { $0.touchEnded(atLocation: $1) }
         stateMachineDelegate?.touchEnded?(onArtboard: riveModel.artboard, atLocation: location)
-        
-        if isPlaying { pause() }
-        else { play() }
     }
     
     open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self)
-        
         handleTouch(location: location) { $0.touchCancelled(atLocation: $1) }
         stateMachineDelegate?.touchCancelled?(onArtboard: riveModel.artboard, atLocation: location)
     }
@@ -252,10 +246,16 @@ open class NewRiveView: RiveRendererView {
 }
 
 
-public class NewRiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
-    var riveView: NewRiveView?
+open class NewRiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
+    open private(set) var riveView: NewRiveView?
+    private var asyncModelBuffer: AsyncModelBuffer? = nil
     
-    public init(_ model: NewRiveModel, fit: RiveRuntime.Fit, alignment: RiveRuntime.Alignment, autoPlay: Bool) {
+    public init(
+        _ model: NewRiveModel,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoPlay: Bool = true
+    ) {
         self.riveModel = model
         self.fit = fit
         self.alignment = alignment
@@ -287,17 +287,38 @@ public class NewRiveViewModel: NSObject, ObservableObject, RiveFileDelegate, Riv
         self.init(model, fit: fit, alignment: alignment, autoPlay: autoPlay)
     }
     
+    public init(
+        webURL: String,
+        stateMachineName: String? = nil,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoPlay: Bool = true,
+        artboardName: String? = nil,
+        animationName: String? = nil
+    ) {
+        super.init()
+        
+        self.fit = fit
+        self.alignment = alignment
+        self.autoPlay = autoPlay
+        
+        let file = RiveFile(webURL: webURL, with: self)!
+        asyncModelBuffer = AsyncModelBuffer(riveFile: file, artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+    }
+    
     // MARK: - RiveView
     
     open private(set) var riveModel: NewRiveModel? {
-        didSet { riveView?.riveModel = riveModel }
+        didSet {
+            if let model = riveModel {
+                try! riveView?.configure(model: model, autoPlay: autoPlay)
+            }
+        }
     }
     
     open var isPlaying: Bool { riveView?.isPlaying ?? false }
     
-    open var autoPlay: Bool = true {
-        didSet { riveView?.autoPlay = autoPlay }
-    }
+    open var autoPlay: Bool = true
     
     open var fit: RiveRuntime.Fit = .fitContain {
         didSet { riveView?.fit = fit }
@@ -335,8 +356,28 @@ public class NewRiveViewModel: NSObject, ObservableObject, RiveFileDelegate, Riv
     
     // MARK: - RiveFile Delegate
     
+    /// Needed for when the RiveViewModel is initialized with a webURL so we can make a RiveModel
+    /// when the RiveFile is finished downloading
+    private struct AsyncModelBuffer {
+        var riveFile: RiveFile
+        var artboardName: String?
+        var stateMachineName: String?
+        var animationName: String?
+    }
+    
+    /// Called by RiveFile when it finishes downloading an asset asynchronously
     public func riveFileDidLoad(_ riveFile: RiveFile) throws {
+        if let name = asyncModelBuffer!.stateMachineName {
+            riveModel = try! NewRiveModel(riveFile: riveFile, artboardName: asyncModelBuffer!.artboardName, stateMachineName: name)
+        }
+        else if let name = asyncModelBuffer!.animationName {
+            riveModel = try! NewRiveModel(riveFile: riveFile, artboardName: asyncModelBuffer!.artboardName, animationName: name)
+        }
+        else {
+            riveModel = try! NewRiveModel(riveFile: riveFile, artboardName: asyncModelBuffer!.artboardName)
+        }
         
+        asyncModelBuffer = nil
     }
     
     // MARK: - RivePlayer Delegate

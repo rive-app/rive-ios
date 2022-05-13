@@ -28,3 +28,18 @@ extension RiveStateMachineInstance {
         return inputs
     }
 }
+
+/// State machine input types
+@objc public enum StateMachineInputType: IntegerLiteralType {
+    case trigger, number, boolean
+}
+/// Simple data type for passing state machine input names and their types
+@objc public class StateMachineInput: NSObject {
+    public let name: String
+    public let type: StateMachineInputType
+    
+    init(name: String, type: StateMachineInputType) {
+        self.name = name
+        self.type = type
+    }
+}

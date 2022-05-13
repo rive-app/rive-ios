@@ -41,7 +41,7 @@ class ExamplesMasterTableViewController: UITableViewController {
     // MARK: ViewModel Examples
     /// Made from `RiveViewModels`' default `.view()` method
     private let viewModels: [(String, RiveViewModel)] = [
-        ("Slider Widget",       RiveSlider())
+//        ("Slider Widget",       RiveSlider())
     ]
 }
 

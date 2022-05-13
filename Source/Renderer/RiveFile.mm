@@ -79,7 +79,7 @@ static rive::SkiaFactory gFactory;
 /*
  * Creates a RiveFile from an HTTP url
  */
-- (nullable instancetype)initWithHttpUrl:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate {
+- (nullable instancetype)initWithWebURL:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate {
     self.isLoaded = false;
     if (self = [super init]) {
         self.delegate = delegate;

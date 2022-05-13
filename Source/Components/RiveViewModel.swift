@@ -139,7 +139,7 @@ extension RiveViewModel {
             file = try! RiveFile(name: fileName)
         }
         else if let webURL = webURL {
-            file = RiveFile(httpUrl: webURL, with: rview)!
+            file = RiveFile(webURL: webURL, with: rview)!
         }
         
         try? self.rview!.configure(
