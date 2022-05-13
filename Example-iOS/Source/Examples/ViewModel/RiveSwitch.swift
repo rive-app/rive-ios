@@ -18,15 +18,13 @@ class RiveSwitch: RiveViewModel {
     var isOn = false {
         didSet {
             stop()
-            try? play(animationName: isOn ? onAnimation : offAnimation)
+            play(animationName: isOn ? onAnimation : offAnimation)
             action?(isOn)
         }
     }
     
-    convenience init() {
-        self.init(fileName: "switch")
-        fit = .fitCover
-        animationName = startAnimation
+    init() {
+        super.init(fileName: "switch", fit: .fitCover, animationName: startAnimation)
     }
     
     func view(_ action: ((Bool) -> Void)? = nil) -> some View {

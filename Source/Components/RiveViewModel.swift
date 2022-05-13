@@ -9,107 +9,196 @@
 import SwiftUI
 import Combine
 
-open class RiveViewModel: ObservableObject, RiveTouchDelegate {
-    /// This can be assigned to already emplaced UIViews or RViews within .xib files or storyboards
-    public private(set) var rview: RiveView?
-    public var inputsAction: InputsAction = nil
-    public var stateChangeAction: StateChangeAction = nil
+open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
+    open private(set) var riveView: RiveView?
+    private var asyncModelBuffer: AsyncModelBuffer? = nil
     
-    @Published private var model: RiveModel
-    private var viewRepresentable: RViewRepresentable?
-    
-    
-    public init(_ model: RiveModel) {
-        self.model = model
+    public init(
+        _ model: RiveModel,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoPlay: Bool = true
+    ) {
+        self.riveModel = model
+        self.fit = fit
+        self.alignment = alignment
+        self.autoPlay = autoPlay
     }
     
-    public convenience init(
+    public init(
         fileName: String,
         stateMachineName: String? = nil,
         fit: RiveRuntime.Fit = .fitContain,
         alignment: RiveRuntime.Alignment = .alignmentCenter,
-        autoplay: Bool = true,
+        autoPlay: Bool = true,
         artboardName: String? = nil,
         animationName: String? = nil
     ) {
-        let model = RiveModel(
-            fileName: fileName,
-            stateMachineName: stateMachineName,
-            fit: fit,
-            alignment: alignment,
-            autoplay: autoplay,
-            artboardName: artboardName,
-            animationName: animationName
-        )
+        riveModel = try! RiveModel(fileName: fileName)
+        self.fit = fit
+        self.alignment = alignment
+        self.autoPlay = autoPlay
         
-        self.init(model)
+        super.init()
+        
+        try! configureModel(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
     }
     
-    public convenience init(
+    public init(
         webURL: String,
         stateMachineName: String? = nil,
         fit: RiveRuntime.Fit = .fitContain,
         alignment: RiveRuntime.Alignment = .alignmentCenter,
-        autoplay: Bool = true,
+        autoPlay: Bool = true,
         artboardName: String? = nil,
         animationName: String? = nil
     ) {
-        let model = RiveModel(
-            webURL: webURL,
-            stateMachineName: stateMachineName,
-            fit: fit,
-            alignment: alignment,
-            autoplay: autoplay,
-            artboardName: artboardName,
-            animationName: animationName
-        )
+        super.init()
+        riveModel = RiveModel(webURL: webURL, delegate: self)
+        self.fit = fit
+        self.alignment = alignment
+        self.autoPlay = autoPlay
         
-        self.init(model)
+        asyncModelBuffer = AsyncModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
     }
     
-    /// This can be added to the body of a SwiftUI `View`
-    open func view() -> some View {
-        return StandardView(viewModel: self)
-    }
-}
- 
-// MARK: - RiveView
-extension RiveViewModel {
-    // MARK: Lifecycle
+    // MARK: - RiveView
     
-    /// Makes a new `RiveView` for its rview property with data from model which will
-    /// replace any previous `RiveView`. This is called when first drawing a `StandardView`.
-    /// - Returns: Reference to the new view that the `RiveViewModel` will be maintaining
-    public func createRView() -> RiveView {
-        let view: RiveView
-        
-        if let fileName = fileName {
-            view = try! RiveView(
-                fileName: fileName,
-                fit: fit,
-                alignment: alignment,
-                autoplay: autoplay,
-                artboardName: artboardName,
-                animationName: animationName,
-                stateMachineName: stateMachineName
-            )
+    open private(set) var riveModel: RiveModel? {
+        didSet {
+            if let model = riveModel {
+                try! riveView?.setModel(model, autoPlay: autoPlay)
+            }
         }
-        else if let webURL = webURL {
-            view = try! RiveView(
-                webURL: webURL,
-                fit: fit,
-                alignment: alignment,
-                autoplay: autoplay,
-                artboardName: artboardName,
-                animationName: animationName,
-                stateMachineName: stateMachineName
-            )
+    }
+    
+    open var isPlaying: Bool { riveView?.isPlaying ?? false }
+    
+    open var autoPlay: Bool = true
+    
+    open var fit: RiveRuntime.Fit = .fitContain {
+        didSet { riveView?.fit = fit }
+    }
+    
+    open var alignment: RiveRuntime.Alignment = .alignmentCenter {
+        didSet { riveView?.alignment = alignment }
+    }
+    
+    open func play(animationName: String? = nil, loop: Loop? = nil) {
+        if let name = animationName {
+            try! riveModel?.setAnimation(name)
+        }
+        if let loop = loop?.rawValue {
+            riveModel?.animation?.loop(Int32(loop))
+        }
+        
+        riveView?.play()
+    }
+    
+    open func pause() {
+        riveView?.pause()
+    }
+    
+    open func stop() {
+        riveView?.stop()
+    }
+    
+    @available(*, deprecated, renamed: "stop")
+    open func reset() {
+        stop()
+    }
+    
+    // MARK: - RiveModel
+    
+    /// Instantiates elements in the model needed to play in a `RiveView`
+    private func configureModel(artboardName: String? = nil, stateMachineName: String? = nil, animationName: String? = nil) throws {
+        if let name = artboardName {
+            try riveModel?.setArtboard(name)
+        } else {
+            // Set default Artboard
+            try riveModel?.setArtboard()
+        }
+        
+        if let name = stateMachineName {
+            try riveModel?.setStateMachine(name)
+        }
+        else if let name = animationName {
+            try riveModel?.setAnimation(name)
         }
         else {
+            // Set default Animation
+            try riveModel?.setAnimation()
+        }
+        
+        try riveView?.setModel(riveModel!, autoPlay: autoPlay)
+    }
+    
+    open func triggerInput(_ inputName: String) throws {
+        riveModel?.stateMachine?.getTrigger(inputName)
+        play()
+    }
+    
+    open func setInput(_ inputName: String, value: Bool) throws {
+        riveModel?.stateMachine?.getBool(inputName).setValue(value)
+        play()
+    }
+    
+    open func setInput(_ inputName: String, value: Float) throws {
+        riveModel?.stateMachine?.getNumber(inputName).setValue(value)
+        play()
+    }
+    
+    open func setInput(_ inputName: String, value: Double) throws {
+        riveModel?.stateMachine?.getNumber(inputName).setValue(Float(value))
+        play()
+    }
+    
+    // MARK: - RiveFile Delegate
+    
+    /// Needed for when the RiveViewModel is initialized with a webURL so we can make a RiveModel
+    /// when the RiveFile is finished downloading
+    private struct AsyncModelBuffer {
+        var artboardName: String?
+        var stateMachineName: String?
+        var animationName: String?
+    }
+    
+    /// Called by RiveFile when it finishes downloading an asset asynchronously
+    public func riveFileDidLoad(_ riveFile: RiveFile) throws {
+        riveModel = RiveModel(riveFile: riveFile)
+        
+        try! configureModel(
+            artboardName: asyncModelBuffer?.artboardName,
+            stateMachineName: asyncModelBuffer?.stateMachineName,
+            animationName: asyncModelBuffer?.animationName
+        )
+        
+        asyncModelBuffer = nil
+    }
+    
+    // MARK: - RivePlayer Delegate
+    
+    open func player(playedWithModel riveModel: RiveModel?) { }
+    open func player(pausedWithModel riveModel: RiveModel?) { }
+    open func player(loopedWithModel riveModel: RiveModel?, type: Int) { }
+    open func player(stoppedWithModel riveModel: RiveModel?) { }
+    open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
+    
+    // MARK: SwiftUI Helpers
+    
+    /// Makes a new `RiveView` for the instance property with data from model which will
+    /// replace any previous `RiveView`. This is called when first drawing a `StandardView`.
+    /// - Returns: Reference to the new view that the `RiveViewModel` will be maintaining
+    open func createRiveView() -> RiveView {
+        let view: RiveView
+        
+        if let model = riveModel {
+            view = RiveView(model: model)
+        } else {
             view = RiveView()
         }
         
-        register(rview: view)
+        registerView(view)
         
         return view
     }
@@ -117,242 +206,58 @@ extension RiveViewModel {
     /// Gives updated layout values to the provided `RiveView`. This is called in
     /// the process of re-displaying `StandardView`.
     /// - Parameter rview: the `RiveView` that will be updated
-    @objc open func update(rview: RiveView) {
-        if (fit != rview.fit) {
-            rview.fit = fit
-        }
-        
-        if (alignment != rview.alignment) {
-            rview.alignment = alignment
-        }
-    }
-    
-    /// This can be used to connect with and configure an `RiveView` that was created elsewhere.
-    /// Does not need to be called when updating an already configured `RiveView`. Useful for
-    /// attaching views created in a `UIViewController` or Storyboard.
-    /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
-    @objc open func setView(_ rview: RiveView) {
-        register(rview: rview)
-        
-        var file: RiveFile!
-        
-        if let fileName = fileName {
-            file = try! RiveFile(name: fileName)
-        }
-        else if let webURL = webURL {
-            file = RiveFile(httpUrl: webURL, with: rview)!
-        }
-        
-        try? self.rview!.configure(
-            file,
-            artboardName: artboardName,
-            animationName: animationName,
-            stateMachineName: stateMachineName,
-            autoPlay: autoplay
-        )
+    @objc open func update(view: RiveView) {
+        view.fit = fit
+        view.alignment = alignment
     }
     
     /// Assigns the provided `RiveView` to its rview property. This is called when creating a
     /// `StandardView`
+    ///
     /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
-    internal func register(rview: RiveView) {
-        self.rview = rview
-        self.rview!.playerDelegate = self
-        self.rview!.inputsDelegate = self
-        self.rview!.stateChangeDelegate = self
-        self.rview!.touchDelegate = self
+    fileprivate func registerView(_ view: RiveView) {
+        riveView = view
+        riveView!.playerDelegate = self
+        riveView!.stateMachineDelegate = self
     }
     
     /// Stops maintaining a connection to any `RiveView`
-    internal func deregisterView() {
-        rview = nil
+    fileprivate func deregisterView() {
+        riveView = nil
     }
     
-    // MARK: Controls
-    
-    public func reset() throws {
-        try rview?.reset()
+    /// This can be added to the body of a SwiftUI `View`
+    open func view() -> some View {
+        return StandardView(viewModel: self)
     }
     
-    public func play(_ loop: Loop = .loopAuto, _ direction: Direction = .directionAuto) throws {
-        try rview?.play(loop:loop, direction: direction)
-    }
-    
-    public func play(
-        animationName: String,
-        loop: Loop = .loopAuto,
-        direction: Direction = .directionAuto,
-        isStateMachine: Bool = false
-    ) throws {
-        try rview?.play(
-            animationName: animationName,
-            loop: loop,
-            direction: direction,
-            isStateMachine: isStateMachine
-        )
-    }
-    
-    public func play(
-        animationNames: [String],
-        loop: Loop = .loopAuto,
-        direction: Direction = .directionAuto,
-        isStateMachine: Bool = false
-    ) throws {
-        try rview?.play(
-            animationNames: animationNames,
-            loop: loop,
-            direction: direction,
-            isStateMachine: isStateMachine
-        )
-    }
-    
-    public func pause() {
-        rview?.pause()
-    }
-    
-    public func pause(_ animationName: String, _ isStateMachine: Bool = false) {
-        rview?.pause(animationName: animationName, isStateMachine: isStateMachine)
-    }
-    
-    public func pause(_ animationNames: [String], _ isStateMachine: Bool = false) {
-        rview?.pause(animationNames: animationNames, isStateMachine: isStateMachine)
-    }
-    
-    public func stop() {
-        rview?.stop()
-    }
-    
-    public func stop(_ animationNames: [String], _ isStateMachine: Bool = false) {
-        rview?.stop(animationNames: animationNames, isStateMachine: isStateMachine)
-    }
-    
-    public func stop(_ animationName: String, _ isStateMachine: Bool = false) {
-        rview?.stop(animationName: animationName, isStateMachine: isStateMachine)
-    }
-    
-    public func triggerInput(_ inputName: String, stateMachineName: String) throws {
-        try rview?.fireState(stateMachineName, inputName: inputName)
-    }
-    
-    open func setInput(_ inputName: String, value: Bool, stateMachineName: String? = nil) throws {
-        try? setGenericInput(inputName, value: value, stateMachineName: stateMachineName)
-    }
-    
-    open func setInput(_ inputName: String, value: Float, stateMachineName: String? = nil) throws {
-        try? setGenericInput(inputName, value: value, stateMachineName: stateMachineName)
-    }
-    
-    open func setInput(_ inputName: String, value: Double, stateMachineName: String? = nil) throws {
-        try? setGenericInput(inputName, value: Float(value), stateMachineName: stateMachineName)
-    }
-    
-    private func setGenericInput<Value>(_ inputName: String, value: Value, stateMachineName: String? = nil) throws {
-        var smName = ""
-        if let name = stateMachineName {
-            smName = name
-        }
-        else if let name = self.stateMachineName {
-            smName = name
-        }
-        
-        if value is Float {
-            try rview?.setNumberState(smName, inputName: inputName, value: value as! Float)
-        }
-        else if value is Bool {
-            try rview?.setBooleanState(smName, inputName: inputName, value: value as! Bool)
-        }
-    }
-}
-
-// MARK: - RiveModel Communication
-extension RiveViewModel {
-    public var webURL: String? { model.webURL }
-    public var fileName: String? { model.fileName }
-    
-    public var fit: RiveRuntime.Fit {
-        get { model.fit }
-        set { model.fit = newValue }
-    }
-    
-    public var alignment: RiveRuntime.Alignment {
-        get { model.alignment }
-        set { model.alignment = newValue }
-    }
-    
-    public var autoplay: Bool {
-        get { model.autoplay }
-        set { model.autoplay = newValue }
-    }
-    
-    public var artboardName: String? {
-        get { model.artboardName }
-        set { model.artboardName = newValue }
-    }
-    
-    public var animationName: String? {
-        get { model.animationName }
-        set { model.animationName = newValue }
-    }
-    
-    public var stateMachineName: String? {
-        get { model.stateMachineName }
-        set { model.stateMachineName = newValue }
-    }
-}
-
-// MARK: - Usable Views
-extension RiveViewModel {
+    /// A simple View designed to display
     public struct StandardView: View {
         let viewModel: RiveViewModel
-        
-        // TODO: Remove this
-        // Our widgets should not be used as root Views or "controllers"
-        // If you need to dismiss our widget wrap it in another View that defines such behavior
-        public var dismiss: () -> Void = { }
         
         init(viewModel: RiveViewModel) {
             self.viewModel = viewModel
         }
         
         public var body: some View {
-            RViewRepresentable(viewModel: viewModel)
+            RiveViewRepresentable(viewModel: viewModel)
         }
     }
-}
-
-// MARK: - RPlayerDelegate
-extension RiveViewModel: RivePlayerDelegate {
-    public func loop(animation animationName: String, type: Int) {
-        //print("Animation: [" + animationName + "] - Looped")
-    }
     
-    public func play(animation animationName: String, isStateMachine: Bool) {
-        //print("Animation: [" + animationName + "] - Played")
-    }
+    // MARK: UIKit Helper
     
-    public func pause(animation animationName: String, isStateMachine: Bool) {
-        //print("Animation: [" + animationName + "] - Paused")
-    }
-    
-    public func stop(animation animationName: String, isStateMachine: Bool) {
-        //print("Animation: [" + animationName + "] - Stopped")
+    /// This can be used to connect with and configure an `RiveView` that was created elsewhere.
+    /// Does not need to be called when updating an already configured `RiveView`. Useful for
+    /// attaching views created in a `UIViewController` or Storyboard.
+    /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
+    @objc open func setView(_ view: RiveView) {
+        registerView(view)
+        try! riveView!.setModel(riveModel!, autoPlay: autoPlay)
     }
 }
 
-// MARK: - State Delegates
-extension RiveViewModel: RInputDelegate, RStateDelegate {
-    public func inputs(_ inputs: [StateMachineInput]) {
-        inputsAction?(inputs)
-    }
-    
-    public func stateChange(_ stateMachineName: String, _ stateName: String) {
-        stateChangeAction?(stateMachineName, stateName)
-    }
-}
-
-// MARK: - SwiftUI Utility
 /// This makes a SwiftUI digestable view from an `RiveViewModel` and its `RiveView`
-public struct RViewRepresentable: UIViewRepresentable {
+public struct RiveViewRepresentable: UIViewRepresentable {
     let viewModel: RiveViewModel
     
     public init(viewModel: RiveViewModel) {
@@ -361,11 +266,11 @@ public struct RViewRepresentable: UIViewRepresentable {
     
     /// Constructs the view
     public func makeUIView(context: Context) -> RiveView {
-        return viewModel.createRView()
+        return viewModel.createRiveView()
     }
     
-    public func updateUIView(_ view: RiveView, context: UIViewRepresentableContext<RViewRepresentable>) {
-        viewModel.update(rview: view)
+    public func updateUIView(_ view: RiveView, context: UIViewRepresentableContext<RiveViewRepresentable>) {
+        viewModel.update(view: view)
     }
     
     public static func dismantleUIView(_ view: RiveView, coordinator: Coordinator) {

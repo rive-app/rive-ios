@@ -8,110 +8,88 @@
 
 import Foundation
 
-public struct RiveModel {
-    /// The web address from which to load the `RiveFile`
-    public var webURL: String? = nil
+open class RiveModel: ObservableObject {
+    internal private(set) var riveFile: RiveFile
+    public private(set) var artboard: RiveArtboard!
+    public private(set) var stateMachine: RiveStateMachineInstance?
+    public private(set) var animation: RiveLinearAnimationInstance?
     
-    /// The name of the file from which to load the .riv file
-    public var fileName: String? = nil
+    public init(riveFile: RiveFile) {
+        self.riveFile = riveFile
+    }
     
-    /// Specifies how and if the animation should be resized to fit its container
-    public var fit: RiveRuntime.Fit = .fitContain
+    public init(fileName: String) throws {
+        riveFile = try RiveFile(name: fileName)
+    }
     
-    /// Specifies how the animation should be aligned to its container
-    public var alignment: RiveRuntime.Alignment = .alignmentCenter
+    public init(webURL: String, delegate: RiveFileDelegate) {
+        riveFile = RiveFile(httpUrl: webURL, with: delegate)!
+    }
     
-    /// Determines if the animation should play as soon as it is loaded
-    public var autoplay: Bool = true
+    // MARK: - Setters
     
-    /// Determines the `Artboard` to use. By default the first Artboard in the `RiveFile` is picked
-    public var artboardName: String? = nil
+    open func setArtboard(_ name: String) throws {
+        guard artboard?.name() != name else { return }
+        do { artboard = try riveFile.artboard(fromName: name) }
+        catch { throw RiveModelError.invalidArtboard(name: name) }
+    }
     
-    /// Determines the `Animation` to play. By default the first Animation/StateMachine in the `RiveFile` is picked
-    public var animationName: String? = nil
+    open func setArtboard(_ index: Int? = nil) throws {
+        if let index = index {
+            do { artboard = try riveFile.artboard(from: index) }
+            catch { throw RiveModelError.invalidArtboard(index: index) }
+        } else {
+            // This tries to find the 'default' Artboard
+            do { artboard = try riveFile.artboard() }
+            catch { throw RiveModelError.invalidArtboard(message: "No Default Artboard") }
+        }
+    }
     
-    /// Determine the `StateMachine`to play, ignored if `animation` is set.
-    /// By default the first Animation/StateMachine in the riveFile is picked
-    public var stateMachineName: String? = nil
+    open func setStateMachine(_ name: String) throws {
+        guard stateMachine?.name() != name else { return }
+        do { stateMachine = try artboard.stateMachine(fromName: name) }
+        catch { throw RiveModelError.invalidStateMachine(name: name) }
+    }
+    
+    open func setStateMachine(_ index: Int? = nil) throws {
+        // Defaults to 0 as it's assumed to be the first element in the collection
+        let index = index ?? 0
+        do { stateMachine = try artboard.stateMachine(from: index) }
+        catch { throw RiveModelError.invalidStateMachine(index: index) }
+    }
+    
+    open func setAnimation(_ name: String) throws {
+        guard animation?.name() != name else { return }
+        do { animation = try artboard.animation(fromName: name) }
+        catch { throw RiveModelError.invalidAnimation(name: name) }
+    }
+    
+    open func setAnimation(_ index: Int? = nil) throws {
+        // Defaults to 0 as it's assumed to be the first element in the collection
+        let index = index ?? 0
+        do { animation = try artboard.animation(from: index) }
+        catch { throw RiveModelError.invalidAnimation(index: index) }
+    }
+    
+    // MARK: -
     
     public var description: String {
-          "URL: ["           + (webURL ?? "None")           + "]/n"
-        + "File Name: ["     + (fileName ?? "None")         + "]/n"
-        + "Fit: ["           + fit.description              + "]/n"
-        + "Alignment: ["     + alignment.description        + "]/n"
-        + "Autoplay: ["      + autoplay.description         + "]/n"
-        + "Artboard: ["      + (artboardName ?? "None")     + "]/n"
-        + "Animation: ["     + (animationName ?? "None")    + "]/n"
-        + "State Machine: [" + (stateMachineName ?? "None") + "]/n"
-    }
-    
-    public init(
-        fileName: String,
-        stateMachineName: String? = nil,
-        fit: RiveRuntime.Fit = .fitContain,
-        alignment: RiveRuntime.Alignment = .alignmentCenter,
-        autoplay: Bool = true,
-        artboardName: String? = nil,
-        animationName: String? = nil
-    ) {
-        self.fileName = fileName
-        self.webURL = nil
-        self.stateMachineName = stateMachineName
-        self.fit = fit
-        self.alignment = alignment
-        self.autoplay = autoplay
-        self.artboardName = artboardName
-        self.animationName = animationName
-    }
-    
-    public init(
-        webURL: String,
-        stateMachineName: String? = nil,
-        fit: RiveRuntime.Fit = .fitContain,
-        alignment: RiveRuntime.Alignment = .alignmentCenter,
-        autoplay: Bool = true,
-        artboardName: String? = nil,
-        animationName: String? = nil
-    ) {
-        self.webURL = webURL
-        self.fileName = nil
-        self.stateMachineName = stateMachineName
-        self.fit = fit
-        self.alignment = alignment
-        self.autoplay = autoplay
-        self.artboardName = artboardName
-        self.animationName = animationName
-    }
-}
-
-public extension RiveRuntime.Fit {
-    var description: String {
-        switch self {
-        case .fitNone:      return "None"
-        case .fitFill:      return "Fill"
-        case .fitContain:   return "Contain"
-        case .fitCover:     return "Cover"
-        case .fitFitHeight: return "Fit Height"
-        case .fitFitWidth:  return "Fit Width"
-        case .fitScaleDown: return "Scale Down"
-        @unknown default:   return "Unknown"
+        let art = "RiveModel - [Artboard: " + artboard.name()
+        
+        if let stateMachine = stateMachine {
+            return art + "StateMachine: " + stateMachine.name() + "]"
+        }
+        else if let animation = animation {
+            return art + "Animation: " + animation.name() + "]"
+        }
+        else {
+            return art + "]"
         }
     }
-}
-
-public extension RiveRuntime.Alignment {
-    var description: String {
-        switch self {
-        case .alignmentCenter:          return "Center"
-        case .alignmentCenterLeft:      return "Center Left"
-        case .alignmentCenterRight:     return "Center Right"
-        case .alignmentTopLeft:         return "Top Left"
-        case .alignmentTopCenter:       return "Top Center"
-        case .alignmentTopRight:        return "Top Right"
-        case .alignmentBottomLeft:      return "Bottom Left"
-        case .alignmentBottomCenter:    return "Bottom Center"
-        case .alignmentBottomRight:     return "Bottom Right"
-        @unknown default:               return "Unknown"
-        }
+    
+    enum RiveModelError: Error {
+        case invalidStateMachine(name: String), invalidStateMachine(index: Int)
+        case invalidAnimation(name: String), invalidAnimation(index: Int)
+        case invalidArtboard(name: String), invalidArtboard(index: Int), invalidArtboard(message: String)
     }
 }
