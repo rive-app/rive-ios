@@ -11,8 +11,8 @@ import Foundation
 open class RiveModel: ObservableObject {
     internal private(set) var riveFile: RiveFile
     public private(set) var artboard: RiveArtboard!
-    public private(set) var stateMachine: RiveStateMachineInstance?
-    public private(set) var animation: RiveLinearAnimationInstance?
+    public internal(set) var stateMachine: RiveStateMachineInstance?
+    public internal(set) var animation: RiveLinearAnimationInstance?
     
     public init(riveFile: RiveFile) {
         self.riveFile = riveFile
