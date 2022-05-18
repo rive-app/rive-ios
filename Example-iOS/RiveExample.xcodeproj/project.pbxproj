@@ -10,7 +10,6 @@
 		04026DC427CE3ED6002B3DBF /* SwiftSimpleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */; };
 		04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */; };
 		04026DCA27CE3EF6002B3DBF /* SwiftMultipleAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */; };
-		04026DCC27CE3F03002B3DBF /* SwiftLoopMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */; };
 		04026DCE27CE3F0F002B3DBF /* SwiftStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DCD27CE3F0F002B3DBF /* SwiftStateMachine.swift */; };
 		042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 042C88822643D6B900E7DBB2 /* Main.storyboard */; };
 		042C88882643DB7100E7DBB2 /* SimpleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */; };
@@ -56,6 +55,8 @@
 		C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RiveProgressBar.swift */; };
 		C3D187F728075B6C008B739A /* riveslider.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F628075B6C008B739A /* riveslider.riv */; };
 		C3D187F9280770EA008B739A /* truck.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F8280770EA008B739A /* truck.riv */; };
+		C3E2B58A2833ECB500A8651B /* bullet_man_game.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3E2B5872833ECB500A8651B /* bullet_man_game.riv */; };
+		C3E2B58C2833ECFE00A8651B /* SwiftCannonGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E2B58B2833ECFE00A8651B /* SwiftCannonGame.swift */; };
 		C3ECAC252817BE1100A81123 /* magic_8-ball_v2.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC222817BE1100A81123 /* magic_8-ball_v2.riv */; };
 		C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ECAC262817BE4600A81123 /* SwiftTouchEvents.swift */; };
 		C3ECAC2B281837B300A81123 /* play_button_event_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC28281837B300A81123 /* play_button_event_example.riv */; };
@@ -113,7 +114,6 @@
 		04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftSimpleAnimation.swift; sourceTree = "<group>"; };
 		04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLayout.swift; sourceTree = "<group>"; };
 		04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMultipleAnimations.swift; sourceTree = "<group>"; };
-		04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLoopMode.swift; sourceTree = "<group>"; };
 		04026DCD27CE3F0F002B3DBF /* SwiftStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftStateMachine.swift; sourceTree = "<group>"; };
 		042C88822643D6B900E7DBB2 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleAnimation.swift; sourceTree = "<group>"; };
@@ -158,6 +158,8 @@
 		C3D187F2280751A8008B739A /* RiveProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveProgressBar.swift; sourceTree = "<group>"; };
 		C3D187F628075B6C008B739A /* riveslider.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider.riv; sourceTree = "<group>"; };
 		C3D187F8280770EA008B739A /* truck.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck.riv; sourceTree = "<group>"; };
+		C3E2B5872833ECB500A8651B /* bullet_man_game.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = bullet_man_game.riv; sourceTree = "<group>"; };
+		C3E2B58B2833ECFE00A8651B /* SwiftCannonGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCannonGame.swift; sourceTree = "<group>"; };
 		C3ECAC222817BE1100A81123 /* magic_8-ball_v2.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "magic_8-ball_v2.riv"; sourceTree = "<group>"; };
 		C3ECAC262817BE4600A81123 /* SwiftTouchEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTouchEvents.swift; sourceTree = "<group>"; };
 		C3ECAC28281837B300A81123 /* play_button_event_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = play_button_event_example.riv; sourceTree = "<group>"; };
@@ -249,6 +251,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				C3E2B5872833ECB500A8651B /* bullet_man_game.riv */,
 				C3745FCB282AE2320087F4AF /* hero_editor.riv */,
 				C3ECAC30281840EF00A81123 /* watch_v1.riv */,
 				C3ECAC29281837B300A81123 /* leg_day_events_example.riv */,
@@ -301,10 +304,10 @@
 				C9CB2F12264C92D200E7FF0D /* SwiftWidgets.swift */,
 				04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */,
 				04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */,
-				04026DCB27CE3F03002B3DBF /* SwiftLoopMode.swift */,
 				04026DCD27CE3F0F002B3DBF /* SwiftStateMachine.swift */,
 				E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */,
 				C3ECAC262817BE4600A81123 /* SwiftTouchEvents.swift */,
+				C3E2B58B2833ECFE00A8651B /* SwiftCannonGame.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -473,6 +476,7 @@
 				C3745FCE282AE2320087F4AF /* hero_editor.riv in Resources */,
 				C3D187F9280770EA008B739A /* truck.riv in Resources */,
 				C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */,
+				C3E2B58A2833ECB500A8651B /* bullet_man_game.riv in Resources */,
 				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
 				042C88E52644447500E7DBB2 /* explorer.riv in Resources */,
 				042C88E22644447500E7DBB2 /* f22.riv in Resources */,
@@ -497,6 +501,7 @@
 			files = (
 				C324DB5D280728690060589F /* RiveButton.swift in Sources */,
 				C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */,
+				C3E2B58C2833ECFE00A8651B /* SwiftCannonGame.swift in Sources */,
 				C9CB2F13264C92D200E7FF0D /* SwiftWidgets.swift in Sources */,
 				042C888E2644230700E7DBB2 /* utility.swift in Sources */,
 				C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */,
@@ -508,7 +513,6 @@
 				C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */,
 				C3ECAC2F281840A300A81123 /* ClockViewModel.swift in Sources */,
 				04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */,
-				04026DCC27CE3F03002B3DBF /* SwiftLoopMode.swift in Sources */,
 				C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */,
 				04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */,
 				C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */,

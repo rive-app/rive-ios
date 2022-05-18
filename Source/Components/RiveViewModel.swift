@@ -11,18 +11,25 @@ import Combine
 
 open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
     open private(set) var riveView: RiveView?
-    private var asyncModelBuffer: AsyncModelBuffer? = nil
+    private var defaultModel: RiveModelBuffer!
     
     public init(
         _ model: RiveModel,
+        stateMachineName: String? = nil,
         fit: RiveRuntime.Fit = .fitContain,
         alignment: RiveRuntime.Alignment = .alignmentCenter,
-        autoPlay: Bool = true
+        autoPlay: Bool = true,
+        artboardName: String? = nil,
+        animationName: String? = nil
     ) {
         self.riveModel = model
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
+        
+        super.init()
+        
+        try! configureModel(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
     }
     
     public init(
@@ -53,13 +60,14 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         artboardName: String? = nil,
         animationName: String? = nil
     ) {
-        super.init()
-        riveModel = RiveModel(webURL: webURL, delegate: self)
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
         
-        asyncModelBuffer = AsyncModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+        super.init()
+        
+        riveModel = RiveModel(webURL: webURL, delegate: self)
+        defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
     }
     
     // MARK: - RiveView
@@ -74,7 +82,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     
     open var isPlaying: Bool { riveView?.isPlaying ?? false }
     
-    open var autoPlay: Bool = true
+    open var autoPlay: Bool
     
     open var fit: RiveRuntime.Fit = .fitContain {
         didSet { riveView?.fit = fit }
@@ -101,6 +109,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     
     open func stop() {
         riveView?.stop()
+        try! resetModelToDefault()
     }
     
     @available(*, deprecated, renamed: "stop")
@@ -115,9 +124,15 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         if let name = artboardName {
             try riveModel?.setArtboard(name)
         } else {
-            // Set default Artboard
-            try riveModel?.setArtboard()
+            // Keep current Artboard if there is one
+            if riveModel?.artboard == nil {
+                // Set default Artboard if not
+                try riveModel?.setArtboard()
+            }
         }
+        
+        riveModel?.animation = nil
+        riveModel?.stateMachine = nil
         
         if let name = stateMachineName {
             try riveModel?.setStateMachine(name)
@@ -131,6 +146,15 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         }
         
         try riveView?.setModel(riveModel!, autoPlay: autoPlay)
+        defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+    }
+    
+    private func resetModelToDefault() throws {
+        try configureModel(
+            artboardName: defaultModel.artboardName,
+            stateMachineName: defaultModel.stateMachineName,
+            animationName: defaultModel.animationName
+        )
     }
     
     open func triggerInput(_ inputName: String) throws {
@@ -153,38 +177,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         play()
     }
     
-    // MARK: - RiveFile Delegate
-    
-    /// Needed for when the RiveViewModel is initialized with a webURL so we can make a RiveModel
-    /// when the RiveFile is finished downloading
-    private struct AsyncModelBuffer {
-        var artboardName: String?
-        var stateMachineName: String?
-        var animationName: String?
-    }
-    
-    /// Called by RiveFile when it finishes downloading an asset asynchronously
-    public func riveFileDidLoad(_ riveFile: RiveFile) throws {
-        riveModel = RiveModel(riveFile: riveFile)
-        
-        try! configureModel(
-            artboardName: asyncModelBuffer?.artboardName,
-            stateMachineName: asyncModelBuffer?.stateMachineName,
-            animationName: asyncModelBuffer?.animationName
-        )
-        
-        asyncModelBuffer = nil
-    }
-    
-    // MARK: - RivePlayer Delegate
-    
-    open func player(playedWithModel riveModel: RiveModel?) { }
-    open func player(pausedWithModel riveModel: RiveModel?) { }
-    open func player(loopedWithModel riveModel: RiveModel?, type: Int) { }
-    open func player(stoppedWithModel riveModel: RiveModel?) { }
-    open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
-    
-    // MARK: SwiftUI Helpers
+    // MARK: - SwiftUI Helpers
     
     /// Makes a new `RiveView` for the instance property with data from model which will
     /// replace any previous `RiveView`. This is called when first drawing a `StandardView`.
@@ -193,7 +186,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         let view: RiveView
         
         if let model = riveModel {
-            view = RiveView(model: model)
+            view = RiveView(model: model, autoPlay: autoPlay)
         } else {
             view = RiveView()
         }
@@ -244,7 +237,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         }
     }
     
-    // MARK: UIKit Helper
+    // MARK: - UIKit Helper
     
     /// This can be used to connect with and configure an `RiveView` that was created elsewhere.
     /// Does not need to be called when updating an already configured `RiveView`. Useful for
@@ -254,6 +247,35 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         registerView(view)
         try! riveView!.setModel(riveModel!, autoPlay: autoPlay)
     }
+    
+    // MARK: - RiveFile Delegate
+    
+    /// Needed for when resetting to defaults or the RiveViewModel is initialized with a webURL so
+    /// we are then able make a RiveModel when the RiveFile is finished downloading
+    private struct RiveModelBuffer {
+        var artboardName: String?
+        var stateMachineName: String?
+        var animationName: String?
+    }
+    
+    /// Called by RiveFile when it finishes downloading an asset asynchronously
+    public func riveFileDidLoad(_ riveFile: RiveFile) throws {
+        riveModel = RiveModel(riveFile: riveFile)
+        
+        try! configureModel(
+            artboardName: defaultModel.artboardName,
+            stateMachineName: defaultModel.stateMachineName,
+            animationName: defaultModel.animationName
+        )
+    }
+    
+    // MARK: - RivePlayer Delegate
+    
+    open func player(playedWithModel riveModel: RiveModel?) { }
+    open func player(pausedWithModel riveModel: RiveModel?) { }
+    open func player(loopedWithModel riveModel: RiveModel?, type: Int) { }
+    open func player(stoppedWithModel riveModel: RiveModel?) { }
+    open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
 }
 
 /// This makes a SwiftUI digestable view from an `RiveViewModel` and its `RiveView`

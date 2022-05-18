@@ -22,17 +22,19 @@ open class RiveView: RiveRendererView {
     private var eventQueue = EventQueue()
     
     // MARK: Delegates
-    internal var playerDelegate: RivePlayerDelegate?
-    internal var stateMachineDelegate: RiveStateMachineDelegate?
+    public var playerDelegate: RivePlayerDelegate?
+    public var stateMachineDelegate: RiveStateMachineDelegate?
     
     // MARK: Debug
     private var fpsCounter: FPSCounterView? = nil
     public var showFPS: Bool = false {
         didSet {
-            if showFPS {
+            if showFPS && fpsCounter == nil {
                 fpsCounter = FPSCounterView()
                 addSubview(fpsCounter!)
-            } else {
+            }
+            
+            if !showFPS {
                 fpsCounter?.removeFromSuperview()
                 fpsCounter = nil
             }
@@ -55,8 +57,9 @@ open class RiveView: RiveRendererView {
     
     /// This resets the view with the new model. Useful when the `RiveView` was initialized without one.
     open func setModel(_ model: RiveModel, autoPlay: Bool = true) throws {
-        stop()
-        self.riveModel = model
+        stopTimer()
+        isPlaying = false
+        riveModel = model
         isOpaque = false
         
         if autoPlay {
@@ -64,10 +67,13 @@ open class RiveView: RiveRendererView {
         } else {
             advance(delta: 0)
         }
+        
+        showFPS = true
     }
     
     // MARK: - Controls
     
+    /// Starts the render loop
     internal func play(loop: Loop = .loopAuto, direction: Direction = .directionAuto) {
         eventQueue.add {
             self.playerDelegate?.player(playedWithModel: self.riveModel)
@@ -89,20 +95,20 @@ open class RiveView: RiveRendererView {
         startTimer()
     }
     
+    /// Asks the render loop to stop on the next cycle
     internal func pause() {
-        eventQueue.add {
-            self.playerDelegate?.player(pausedWithModel: self.riveModel)
+        if isPlaying {
+            eventQueue.add {
+                self.playerDelegate?.player(pausedWithModel: self.riveModel)
+            }
+            isPlaying = false
         }
-        
-        isPlaying = false
-        stopTimer()
     }
     
+    /// Asks the render loop to stop on the next cycle
     internal func stop() {
-        playerDelegate?.player(stoppedWithModel: riveModel)
+        self.playerDelegate?.player(stoppedWithModel: self.riveModel)
         isPlaying = false
-        stopTimer()
-        lastTime = 0
     }
     
     // MARK: - Render Loop
@@ -126,13 +132,14 @@ open class RiveView: RiveRendererView {
         displayLinkProxy?.invalidate()
         displayLinkProxy = nil
         lastTime = 0
+        fpsCounter?.stopped()
     }
     
     /// Start a redraw:
     /// - determine the elapsed time
     /// - advance the artbaord, which will invalidate the display.
     /// - if the artboard has come to a stop, stop.
-    @objc func tick() {
+    @objc fileprivate func tick() {
         guard let displayLink = displayLinkProxy?.displayLink else {
             stopTimer()
             return
@@ -146,6 +153,7 @@ open class RiveView: RiveRendererView {
         
         // Calculate the time elapsed between ticks
         let elapsedTime = timestamp - lastTime
+        fpsCounter?.elapsed(time: elapsedTime)
         lastTime = timestamp
         advance(delta: elapsedTime)
         if !isPlaying {
@@ -158,26 +166,34 @@ open class RiveView: RiveRendererView {
     ///
     /// - Parameter delta: elapsed seconds since the last advance
     @objc open func advance(delta: Double) {
+        let wasPlaying = isPlaying
         eventQueue.fireAll()
         
         if let stateMachine = riveModel.stateMachine {
-            isPlaying = stateMachine.advance(by: delta) && isPlaying
-            stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
+            isPlaying = stateMachine.advance(by: delta) && wasPlaying
             
-            if !isPlaying {
-                pause()
+            for stateChange in stateMachine.stateChanges() {
+                stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: stateChange)
             }
+//            stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
         }
         else if let animation = riveModel.animation {
-            isPlaying = animation.advance(by: delta) && isPlaying
+            isPlaying = animation.advance(by: delta) && wasPlaying
             animation.apply()
             
-            if !isPlaying {
-                pause()
-            } else {
+            if isPlaying {
                 if animation.didLoop() {
                     playerDelegate?.player(loopedWithModel: riveModel, type: Int(animation.loop()))
                 }
+            }
+        }
+        
+        if !isPlaying {
+            stopTimer()
+            
+            // This will be true when coming to a hault automatically
+            if wasPlaying {
+                playerDelegate?.player(pausedWithModel: riveModel)
             }
         }
         
