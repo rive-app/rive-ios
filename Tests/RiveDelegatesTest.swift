@@ -164,7 +164,7 @@ class DelegatesTest: XCTestCase {
         let delegate = DrDelegate()
         let file = try RiveFile(testfileName: "multiple_animations")
         let model = RiveModel(riveFile: file)
-        let viewModel = RiveViewModel(model, autoPlay: false)
+        let viewModel = RiveViewModel(model, autoPlay: false, animationName: "one")
         let view = viewModel.createRiveView()
         
         view.playerDelegate = delegate
