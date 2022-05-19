@@ -68,7 +68,7 @@ open class RiveView: RiveRendererView {
             advance(delta: 0)
         }
         
-        showFPS = true
+        showFPS = false
     }
     
     // MARK: - Controls
@@ -172,10 +172,7 @@ open class RiveView: RiveRendererView {
         if let stateMachine = riveModel.stateMachine {
             isPlaying = stateMachine.advance(by: delta) && wasPlaying
             
-            for stateChange in stateMachine.stateChanges() {
-                stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: stateChange)
-            }
-//            stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
+            stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
         }
         else if let animation = riveModel.animation {
             isPlaying = animation.advance(by: delta) && wasPlaying

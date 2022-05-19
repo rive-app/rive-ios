@@ -9,6 +9,33 @@
 import SwiftUI
 import Combine
 
+/// An object used for controlling a RiveView. For most common Rive files you should only need to interact with a `RiveViewModel` object.
+///
+/// - Usage:
+///   - You should initialize with either an Animation name or a StateMachine name, but not both. Only one will be used and if both are given the StateMachine will be used.
+///   - Default StateMachine or Animation from the file can be used by leaving their parameters nil
+/// - Examples:
+///
+/// ```
+/// // SwiftUI Example
+/// struct Animation: View {
+///     var body: some View {
+///         RiveViewModel(fileName: "cool_rive_file").view()
+///     }
+/// }
+/// ```
+///
+/// ```
+/// // UIKit Example
+/// class AnimationViewController: UIViewController {
+///    @IBOutlet weak var riveView: RiveView!
+///    var viewModel = RiveViewModel(fileName: "cool_rive_file")
+///
+///    override func viewDidLoad() {
+///       viewModel.setView(riveView)
+///    }
+/// }
+/// ```
 open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
     open private(set) var riveView: RiveView?
     private var defaultModel: RiveModelBuffer!
