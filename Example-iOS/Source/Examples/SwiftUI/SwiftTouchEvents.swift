@@ -11,36 +11,35 @@ import RiveRuntime
 
 struct SwiftTouchEvents: DismissableView {
     var dismiss: () -> Void = {}
+    @StateObject var clock = ClockViewModel()
+    @StateObject var jelly = RiveViewModel(fileName: "hero_editor", stateMachineName: "Jellyfish")
+    @StateObject var playButton = RiveViewModel(fileName: "play_button_event_example", stateMachineName: "State Machine")
+    @StateObject var lighthouse = RiveViewModel(fileName: "switch_event_example", stateMachineName: "Main State Machine")
+    @StateObject var eightball = RiveViewModel(fileName: "magic_8-ball_v2", stateMachineName: "Main State Machine")
+    @StateObject var bearGuy = RiveViewModel(fileName: "leg_day_events_example", stateMachineName: "Don't Skip Leg Day")
+    @StateObject var toggle = RiveViewModel(fileName: "light_switch", stateMachineName: "Switch")
     
     var body: some View {
         ScrollView {
             VStack {
-                RiveViewModel(fileName: "hero_editor", stateMachineName: "Jellyfish")
-                    .view()
+                jelly.view()
                     .aspectRatio(1, contentMode: .fit)
                 
-                RiveViewModel(fileName: "play_button_event_example", stateMachineName: "State Machine")
-                    .view()
+                playButton.view()
                     .aspectRatio(1, contentMode: .fit)
 
-                RiveViewModel(fileName: "switch_event_example", stateMachineName: "Main State Machine")
-                    .view()
+                lighthouse.view()
                     .aspectRatio(1, contentMode: .fit)
 
-                RiveViewModel(fileName: "magic_8-ball_v2", stateMachineName: "Main State Machine")
-                    .view()
+                eightball.view()
                     .aspectRatio(1, contentMode: .fit)
 
-                RiveViewModel(fileName: "leg_day_events_example", stateMachineName: "Don't Skip Leg Day")
-                    .view()
+                bearGuy.view()
                     .aspectRatio(1, contentMode: .fit)
 
-                ClockViewModel()
-                    .view()
-                    .aspectRatio(1, contentMode: .fit)
+                clock.controlsView()
 
-                RiveViewModel(fileName: "light_switch", stateMachineName: "Switch")
-                    .view()
+                toggle.view()
                     .aspectRatio(1, contentMode: .fit)
             }
         }
