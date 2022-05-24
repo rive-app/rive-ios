@@ -40,9 +40,11 @@
 - (bool)advanceBy:(double)elapsedSeconds {
     return instance->advance(elapsedSeconds);
 }
+
 - (void)direction:(int)direction {
     instance->direction(direction);
 }
+
 - (int)direction {
     return instance->direction();
 }
@@ -67,8 +69,6 @@
 - (void)dealloc {
     delete instance;
 }
-
-
 
 - (NSInteger)fps {
     return instance->fps();
@@ -106,6 +106,10 @@
         return animation->workEnd() / fps;
     }
     return animation->duration() / fps;
+}
+
+- (bool)hasEnded {
+    return [self time] >= [self endTime];
 }
 
 @end

@@ -74,21 +74,9 @@ open class RiveView: RiveRendererView {
     // MARK: - Controls
     
     /// Starts the render loop
-    internal func play(loop: Loop = .loopAuto, direction: Direction = .directionAuto) {
+    internal func play() {
         eventQueue.add {
             self.playerDelegate?.player(playedWithModel: self.riveModel)
-        }
-        
-        if let animation = riveModel.animation {
-            if loop != .loopAuto {
-                animation.loop(Int32(loop.rawValue))
-            }
-            
-            if direction == .directionForwards {
-                animation.direction(1)
-            } else if direction == .directionBackwards {
-                animation.direction(-1)
-            }
         }
         
         isPlaying = true
@@ -107,8 +95,22 @@ open class RiveView: RiveRendererView {
     
     /// Asks the render loop to stop on the next cycle
     internal func stop() {
-        self.playerDelegate?.player(stoppedWithModel: self.riveModel)
-        isPlaying = false
+        playerDelegate?.player(stoppedWithModel: self.riveModel)
+        lastTime = 0
+        
+        if !isPlaying {
+            advance(delta: 0)
+        } else {
+            isPlaying = false
+        }
+    }
+    
+    internal func reset() {
+        lastTime = 0
+        
+        if !isPlaying {
+            advance(delta: 0)
+        }
     }
     
     // MARK: - Render Loop

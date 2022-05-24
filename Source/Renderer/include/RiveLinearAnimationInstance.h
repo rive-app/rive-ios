@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)duration;
 - (NSInteger)effectiveDuration;
 - (float)effectiveDurationInSeconds;
+- (bool)hasEnded;
 
 @end
 
