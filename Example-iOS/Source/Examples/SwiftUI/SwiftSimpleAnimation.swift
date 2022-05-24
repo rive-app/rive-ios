@@ -12,25 +12,36 @@ import RiveRuntime
 
 struct SwiftSimpleAnimation: DismissableView {
     var dismiss: () -> Void = {}
-    var viewModel = RiveViewModel(fileName: "truck", autoPlay: false)
+    var viewModel = RiveViewModel(fileName: "button", autoPlay: false)
     
     var body: some View {
-        viewModel.view()
-        
-        HStack {
-            PlayerButton(title: "▶︎") {
-                viewModel.play()
+        ZStack {
+            Color.gray
+                
+            VStack {
+                viewModel.view()
+                
+                HStack {
+                    PlayerButton(title: "play") {
+                        viewModel.play(animationName: "active")
+                    }
+                    
+                    PlayerButton(title: "pause") {
+                        viewModel.pause()
+                    }
+                    
+                    PlayerButton(title: "stop") {
+                        viewModel.stop()
+                    }
+                    
+                    PlayerButton(title: "backward.end") {
+                        viewModel.reset()
+                    }
+                }
             }
-            
-            PlayerButton(title: " ▍▍") {
-                viewModel.pause()
-            }
-            
-            PlayerButton(title: "◼︎") {
-                viewModel.stop()
-            }
+            .padding()
         }
-        .padding()
+        .ignoresSafeArea()
     }
     
     struct PlayerButton: View {
@@ -44,7 +55,7 @@ struct SwiftSimpleAnimation: DismissableView {
             } label: {
                 ZStack {
                     Color.blue
-                    Text(title)
+                    Image(systemName: title + ".fill")
                         .foregroundColor(.white)
                 }
                 .aspectRatio(1, contentMode: .fit)

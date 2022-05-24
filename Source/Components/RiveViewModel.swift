@@ -119,29 +119,64 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         didSet { riveView?.alignment = alignment }
     }
     
-    open func play(animationName: String? = nil, loop: Loop? = nil) {
+    /// Starts the active Animation or StateMachine from it's last position. It will start
+    /// from the beginning if the active Animation has ended or a new one is provided.
+    /// - Parameters:
+    ///   - animationName: The name of a new Animation to play on the current Artboard
+    ///   - loop: The loop mode for the active Animation
+    open func play(animationName: String? = nil, loop: Loop = .loopAuto, direction: Direction = .directionAuto) {
         if let name = animationName {
             try! riveModel?.setAnimation(name)
         }
-        if let loop = loop?.rawValue {
-            riveModel?.animation?.loop(Int32(loop))
+        
+        if let animation = riveModel?.animation {
+            if loop != .loopAuto {
+                animation.loop(Int32(loop.rawValue))
+            }
+            
+            if direction == .directionForwards {
+                animation.direction(1)
+            } else if direction == .directionBackwards {
+                animation.direction(-1)
+            }
+            
+            if animation.hasEnded() {
+                // Restarts Animation from beginning
+                animation.setTime(0)
+            }
         }
+        
+        // We're not checking if a StateMachine is "ended" or "ExitState"
+        // But we may want to in the future to enable restarting it by playing again
         
         riveView?.play()
     }
     
+    /// Haults the active Animation or StateMachine and will resume from it's current position when next played
     open func pause() {
         riveView?.pause()
     }
     
+    /// Haults the active Animation or StateMachine and will restart from the beginning when next played
     open func stop() {
+        resetScene()
         riveView?.stop()
-        try! resetModelToDefault()
     }
     
-    @available(*, deprecated, renamed: "stop")
+    /// Sets the active Animation or StateMachine back to their starting position
     open func reset() {
-        stop()
+        resetScene()
+        riveView?.reset()
+    }
+    
+    private func resetScene() {
+        if let stateMachine = riveModel?.stateMachine {
+            // StateMachine can't reset itself so we reload from the Artboard
+            try! riveModel!.setStateMachine(stateMachine.name())
+        }
+        else if let animation = riveModel?.animation {
+            animation.setTime(0)
+        }
     }
     
     // MARK: - RiveModel
