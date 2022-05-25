@@ -48,6 +48,25 @@ Contributing docs to get set up.
 We have provided high level Swift controller and a UIkit view to easily add Rive into your application. All of 
 this is built ontop of an objective c layer that allows for fine grained granular animation control.
 
+## SwiftUI
+
+In both SwiftUI and UIKit/Storyboard usage, you import the `RiveRuntime` into your appropriate files and interface with the `RiveViewModel` to instantiate and control Rive files.
+
+### RiveViewModel
+The simplest way of adding Rive to a View is the following:
+
+```swift
+struct SwiftSimpleAnimation: DismissableView {
+    var dismiss: () -> Void = {}
+    
+    var body: some View {
+        RiveViewModel(fileName: "truck").view()
+    }
+}
+```
+
+Don't forget to call the `.view()` method in the View body! See additional usage below for more configuration options.
+
 ## UIKit
 ### RiveViewModel
 The simplest way of adding Rive to a controller is to make a RiveViewModel and set its view as
@@ -58,7 +77,7 @@ class SimpleAnimationViewController: UIViewController {
     @IBOutlet weak var rview: RiveView!
     
     // Load the truck_v7 resource assets
-    var rSimpleVM: RiveViewModel = RiveModel(fileName: "truck_v7")
+    var rSimpleVM = RiveViewModel(fileName: "truck_v7")
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -73,7 +92,7 @@ URL like so:
 ```swift
 class SimpleAnimationViewController: UIViewController {
     @IBOutlet weak var rview: RiveView!
-    var rSimpleVM: RiveViewModel = RiveModel(webURL: "https://cdn.rive.app/animations/vehicles.riv")
+    var rSimpleVM = RiveViewModel(webURL: "https://cdn.rive.app/animations/vehicles.riv")
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -117,7 +136,7 @@ To understand more on these options, check out the help docs [here](https://help
 To add layout options, you can set it below like:
 
 ```swift
-let rSimpleVM = RiveModel(
+let rSimpleVM = RiveViewModel(
     fileName: "truck_v7", 
     fit: .fitFill,
     alignment: .alignmentBottomLeft
@@ -132,12 +151,12 @@ rSimpleVM.alignment = .alignmentCenter
 ```
 
 ### Playback Controls
-Animations can be controlled in many ways. Again by default, loading a RiveView will autoplay the first 
+Animations can be controlled in many ways. Again by default, loading a RiveViewModel will autoplay the first 
 animation on the first artboard. The artboard and animation can be specified by name however if there 
 are multiple artboards and/or animations defined in the Rive file.
 
 ```swift
-let rMultiVM = RiveModel(
+let rMultiVM = RiveViewModel(
     riveFile: "artboard_animations",
     fit: .fitContain,
     alignment: .alignmentCenter,
@@ -155,43 +174,25 @@ To play an animation named "rollaround":
 rMultiVM.play(animationName: "rollaround")
 ```
 
-Multiple animations can play at the same time, and additional animations can be added at any time:
-
-```swift
-rMultiVM.play(
-    animationNames: ["bouncing", "windshield_wipers"]
-)
-```
-
 When playing animations, the loop mode and direction of the animations can also be set:
 
 ```swift
 rMultiVM.play(
-    animationNames: ["bouncing", "windshield_wipers"],
+    animationName: "rollaround",
     loop: .loopOneShot,
     direction: .directionBackwards
 )
 ```
 
-Similarly, animations can be paused or stopped either all at the same time or one by one.
+Similarly, animations can be paused or stopped.
 
 ```swift
 rMultiVM.stop()
-rMultiVM.stop(animationName:"bouncing")
-rMultiVM.stop(animationNames:["bouncing", "windshield_wipers"])
 ```
 
 ```swift
 rMultiVM.pause()
-rMultiVM.pause(animationName:"bouncing")
-rMultiVM.pause(animationNames:["bouncing", "windshield_wipers"])
 ```
-
-### Mixing
-Mixing goes further than just playing multiple animations at the same time, animations can use 
-a mix factor between 0 and 1, to allow multiple animations effects to blend together. The high 
-level views do not expose this currently. but you can wrap your own render loop around the core 
-libraries. The advance function is where you can specify a mix factor.
 
 ### Delegates & Events
 The `rive-ios` runtime allows for delegates that can be set on the `RiveViewModel`. If provided, 
@@ -216,7 +217,7 @@ the `RivePlayerDelegate`:
 ```swift
 class SimpleAnimation: RiveViewModel {
     init() {
-        let model = RiveModel(fileName: "truck_v7", stateMachineName: "Drive")
+        let model = RiveViewModel(fileName: "truck_v7", stateMachineName: "Drive")
         super.init(model)
     }
     
