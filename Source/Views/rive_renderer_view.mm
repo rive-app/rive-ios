@@ -246,7 +246,7 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
     rive::Vec2D frameLocation(touchLocation.x, touchLocation.y);
     rive::Vec2D convertedLocation = inverse * frameLocation;
     
-    return CGPointMake(convertedLocation.x(), convertedLocation.y());
+    return CGPointMake(convertedLocation.x, convertedLocation.y);
 }
 
 @end
