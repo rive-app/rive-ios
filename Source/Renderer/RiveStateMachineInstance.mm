@@ -96,11 +96,6 @@
     }
 }
 
-- (NSString *)name {
-    std::string str = instance->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
-}
-
 - (NSInteger)inputCount{
     return instance->inputCount();
 }

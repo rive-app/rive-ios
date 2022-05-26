@@ -42,6 +42,8 @@
 		04BE5430264D1F4100427B39 /* LayerState.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE542F264D1F4100427B39 /* LayerState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04BE5434264D267900427B39 /* LayerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5431264D243D00427B39 /* LayerState.mm */; };
 		04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */; };
+		27E49738283FE46800559CAB /* RiveScene.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E49737283FE46800559CAB /* RiveScene.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27E4973A283FE47600559CAB /* RiveScene.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27E49739283FE47600559CAB /* RiveScene.mm */; };
 		2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */ = {isa = PBXBuildFile; fileRef = 2A7079342726277C00C035A1 /* rive_renderer_view.hh */; settings = {ATTRIBUTES = (Public, ); }; };
 		2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2A707936272628AD00C035A1 /* rive_renderer_view.mm */; };
 		C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */; };
@@ -105,6 +107,8 @@
 		04BE542F264D1F4100427B39 /* LayerState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayerState.h; sourceTree = "<group>"; };
 		04BE5431264D243D00427B39 /* LayerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LayerState.mm; sourceTree = "<group>"; };
 		04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RivePrivateHeaders.h; sourceTree = "<group>"; };
+		27E49737283FE46800559CAB /* RiveScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveScene.h; sourceTree = "<group>"; };
+		27E49739283FE47600559CAB /* RiveScene.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveScene.mm; sourceTree = "<group>"; };
 		2A7079342726277C00C035A1 /* rive_renderer_view.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rive_renderer_view.hh; sourceTree = "<group>"; };
 		2A707936272628AD00C035A1 /* rive_renderer_view.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = rive_renderer_view.mm; sourceTree = "<group>"; };
 		C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveFile+Extensions.swift"; sourceTree = "<group>"; };
@@ -147,6 +151,7 @@
 		046FB801264EB632000129B1 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				27E49737283FE46800559CAB /* RiveScene.h */,
 				046FB7EC264EAA60000129B1 /* RiveArtboard.h */,
 				046FB7E7264EAA5F000129B1 /* RiveFile.h */,
 				046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */,
@@ -202,6 +207,7 @@
 		C9BD3927263B64B100696C37 /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
+				27E49739283FE47600559CAB /* RiveScene.mm */,
 				046FB801264EB632000129B1 /* include */,
 				046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */,
 				046FB7EF264EAA60000129B1 /* RiveFile.mm */,
@@ -291,6 +297,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
+				27E49738283FE46800559CAB /* RiveScene.h in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
 				2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */,
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
@@ -424,6 +431,7 @@
 				C3E2B580282F242400A8651B /* RiveStateMachineInstance+Extensions.swift in Sources */,
 				046FB7F5264EAA60000129B1 /* RiveSMIInput.mm in Sources */,
 				C3468E5A27ECC7C6008652FD /* RiveViewModel.swift in Sources */,
+				27E4973A283FE47600559CAB /* RiveScene.mm in Sources */,
 				C3745FD3282BFAB90087F4AF /* FPSCounterView.swift in Sources */,
 				C9C741F524FC510200EF9516 /* Rive.mm in Sources */,
 				046FB7F8264EAA60000129B1 /* RiveStateMachineInstance.mm in Sources */,

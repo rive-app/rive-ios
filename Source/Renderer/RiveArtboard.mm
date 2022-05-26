@@ -22,6 +22,13 @@
     }
 }
 
+- (RiveStateMachineInstance * __nullable)defaultStateMachine {
+    if (auto dsm = _artboardInstance->defaultStateMachine()) {
+        return [[RiveStateMachineInstance alloc] initWithStateMachine: dsm.release()];
+    }
+    return nil;
+}
+
 - (NSInteger)animationCount {
     return _artboardInstance->animationCount();
 }

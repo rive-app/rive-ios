@@ -11,11 +11,10 @@
 #define rive_state_machine_instance_h
 
 #import <Foundation/Foundation.h>
-
+#import <RiveScene.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RiveStateMachine;
 @class RiveSMIInput;
 @class RiveSMIBool;
 @class RiveSMITrigger;
@@ -25,8 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveStateMachineInstance
  */
-@interface RiveStateMachineInstance : NSObject
-- (NSString* )name;
+@interface RiveStateMachineInstance : RiveScene
 - (bool)advanceBy: (double)elapsedSeconds;
 - (const RiveSMIBool *)getBool:(NSString*)name;
 - (const RiveSMITrigger *)getTrigger:(NSString*)name;

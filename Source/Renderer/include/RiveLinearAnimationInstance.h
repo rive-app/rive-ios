@@ -11,13 +11,14 @@
 #define rive_linear_animation_instance_h
 
 #import <Foundation/Foundation.h>
+#import <RiveScene.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /*
  * RiveLinearAnimationInstance
  */
-@interface RiveLinearAnimationInstance : NSObject
+@interface RiveLinearAnimationInstance : RiveScene
 
 - (float)time;
 - (void)setTime:(float) time;
@@ -29,7 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)loop;
 - (void)loop:(int)loopMode;
 - (bool)didLoop;
-- (NSString *)name;
 
 - (NSInteger)fps;
 - (NSInteger)workStart;

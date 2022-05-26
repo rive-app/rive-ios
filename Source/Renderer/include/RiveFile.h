@@ -14,6 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RiveScene;
 @class RiveArtboard;
 @protocol RiveFileDelegate;
 
