@@ -9,10 +9,12 @@
 import SwiftUI
 import Combine
 
-/// An object used for controlling a RiveView. For most common Rive files you should only need to interact with a `RiveViewModel` object.
+/// An object used for controlling a RiveView. For most common Rive files you should only need
+/// to interact with a `RiveViewModel` object.
 ///
 /// - Usage:
-///   - You should initialize with either an Animation name or a StateMachine name, but not both. Only one will be used and if both are given the StateMachine will be used.
+///   - You should initialize with either an Animation name or a StateMachine name, but not both.
+///   Only one will be used and if both are given the StateMachine will be used.
 ///   - Default StateMachine or Animation from the file can be used by leaving their parameters nil
 /// - Examples:
 ///
@@ -56,7 +58,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         
         super.init()
         
-        try! configureModel(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+        sharedInit(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
     }
     
     public init(
@@ -75,7 +77,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         
         super.init()
         
-        try! configureModel(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+        sharedInit(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
     }
     
     public init(
@@ -95,6 +97,18 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         
         riveModel = RiveModel(webURL: webURL, delegate: self)
         defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+    }
+    
+    private func sharedInit(artboardName: String?, stateMachineName: String?, animationName: String?) {
+        try! configureModel(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+        
+        defaultModel = RiveModelBuffer(
+            artboardName: artboardName,
+            stateMachineName: stateMachineName,
+            animationName: animationName
+        )
+        
+        try! riveView?.setModel(riveModel!, autoPlay: autoPlay)
     }
     
     // MARK: - RiveView
@@ -152,31 +166,21 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         riveView?.play()
     }
     
-    /// Haults the active Animation or StateMachine and will resume from it's current position when next played
+    /// Halts the active Animation or StateMachine and will resume from it's current position when next played
     open func pause() {
         riveView?.pause()
     }
     
-    /// Haults the active Animation or StateMachine and will restart from the beginning when next played
+    /// Halts the active Animation or StateMachine and sets it at its starting position
     open func stop() {
-        resetScene()
+        resetCurrentModel()
         riveView?.stop()
     }
     
     /// Sets the active Animation or StateMachine back to their starting position
     open func reset() {
-        resetScene()
+        resetCurrentModel()
         riveView?.reset()
-    }
-    
-    private func resetScene() {
-        if let stateMachine = riveModel?.stateMachine {
-            // StateMachine can't reset itself so we reload from the Artboard
-            try! riveModel!.setStateMachine(stateMachine.name())
-        }
-        else if let animation = riveModel?.animation {
-            animation.setTime(0)
-        }
     }
     
     // MARK: - RiveModel
@@ -206,13 +210,21 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
             // Set default Animation
             try riveModel?.setAnimation()
         }
-        
-        try riveView?.setModel(riveModel!, autoPlay: autoPlay)
-        defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
     }
     
-    private func resetModelToDefault() throws {
-        try configureModel(
+    /// Puts the active Animation or StateMachine back to their starting position
+    private func resetCurrentModel() {
+        guard let model = riveModel else { fatalError("Current model is nil") }
+        try! configureModel(
+            artboardName: model.artboard.name(),
+            stateMachineName: model.stateMachine?.name(),
+            animationName: model.animation?.name()
+        )
+    }
+    
+    /// Sets the Artboard, StateMachine or Animation back to the first one given to the RiveViewModel
+    open func resetToDefaultModel() {
+        try! configureModel(
             artboardName: defaultModel.artboardName,
             stateMachineName: defaultModel.stateMachineName,
             animationName: defaultModel.animationName
@@ -220,7 +232,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     open func triggerInput(_ inputName: String) throws {
-        riveModel?.stateMachine?.getTrigger(inputName)
+        riveModel?.stateMachine?.getTrigger(inputName).fire()
         play()
     }
     
@@ -324,7 +336,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     public func riveFileDidLoad(_ riveFile: RiveFile) throws {
         riveModel = RiveModel(riveFile: riveFile)
         
-        try! configureModel(
+        sharedInit(
             artboardName: defaultModel.artboardName,
             stateMachineName: defaultModel.stateMachineName,
             animationName: defaultModel.animationName

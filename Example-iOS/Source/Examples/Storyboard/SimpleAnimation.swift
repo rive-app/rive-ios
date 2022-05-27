@@ -14,11 +14,8 @@ class SimpleAnimationViewController: UIViewController {
     var viewModel = RiveViewModel(fileName: "truck")
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        let rview = RiveView()
-        view.addSubview(rview)
-        viewModel.setView(rview)
-        rview.frame = view.frame
+        let riveView = viewModel.createRiveView()
+        view.addSubview(riveView)
+        riveView.frame = view.frame
     }
 }

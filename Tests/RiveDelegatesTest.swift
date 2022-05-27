@@ -267,70 +267,70 @@ class DelegatesTest: XCTestCase {
     }
     
     func testStateMachineLayerStatesComplex() throws {
-//        let delegate = DrDelegate()
-//        let file = try RiveFile(testfileName: "what_a_state")
-//        let model = RiveModel(riveFile: file)
-//        let viewModel = RiveViewModel(model, stateMachineName: "State Machine 1", autoPlay: true)
-//        let view = viewModel.createRiveView()
-//
-//        view.stateMachineDelegate = delegate
-//        view.advance(delta:0.0)
-//        XCTAssertEqual(delegate.stateMachineStates.count, 0)
-//        viewModel.play()
-//        // MARK: Input
-//        // lets just start, expect 1 change.
-//        try viewModel.triggerInput("right")
-//        // TODO: looks like we got a bit of a bug here
-//        // If we do not call this advance, the first animation doesnt seem to get the delta applied.
-//        view.advance(delta:0.0)
-//        view.advance(delta:0.4)
-//        XCTAssertEqual(delegate.stateMachineStates.count, 1)
-//        XCTAssertEqual(delegate.stateMachineStates[0], "go right")
-//        XCTAssertEqual(delegate.stateMachineNames.count, 1)
-//        XCTAssertEqual(delegate.stateMachineNames[0], "State Machine 1")
-//        delegate.stateMachineStates.removeAll()
-//
-//        // should be in same animation still. no state change
-//        view.advance(delta:0.4)
-//        XCTAssertEqual(0, delegate.stateMachineStates.count)
-//        XCTAssertEqual(true, viewModel.isPlaying)
-//
-//        // animation came to an end inside this time period, this still means no state change
-//        view.advance(delta:0.4)
-//        XCTAssertEqual(false, viewModel.isPlaying)
-//        XCTAssertEqual(0, delegate.stateMachineStates.count)
-//
-//        // animation is just kinda stuck there. no change no happening.
-//        view.advance(delta:0.4)
-//        XCTAssertEqual(false, viewModel.isPlaying)
-//        XCTAssertEqual(0, delegate.stateMachineStates.count)
-//
-//        // MARK: Input
-//        // ok lets change thigns up again.
-//        try viewModel.triggerInput("change")
-//        view.advance(delta:0.0)
-//        view.advance(delta:0.4)
-//        XCTAssertEqual(true, viewModel.isPlaying)
-//        XCTAssertEqual(1, delegate.stateMachineStates.count)
-//
-//        XCTAssertEqual("change!", delegate.stateMachineStates[0])
-//        delegate.stateMachineStates.removeAll()
-//
-//        // as before lets advance inside the animation -> no change
-//        view.advance(delta:0.4)
-//        XCTAssertEqual(true, viewModel.isPlaying)
-//        XCTAssertEqual(0, delegate.stateMachineStates.count)
-//
-//        // as before lets advance beyond the end of the animaiton, in this case change to exit!
-//        view.advance(delta:0.4)
-//        XCTAssertEqual(false, viewModel.isPlaying)
-//        XCTAssertEqual(1, delegate.stateMachineStates.count)
-//        XCTAssertEqual("ExitState", delegate.stateMachineStates[0])
-//        delegate.stateMachineStates.removeAll()
-//
-//        // chill on exit. no change.
-//        view.advance(delta:0.4)
-//        XCTAssertEqual(false, viewModel.isPlaying)
-//        XCTAssertEqual(0, delegate.stateMachineStates.count)
+        let delegate = DrDelegate()
+        let file = try RiveFile(testfileName: "what_a_state")
+        let model = RiveModel(riveFile: file)
+        let viewModel = RiveViewModel(model, stateMachineName: "State Machine 1", autoPlay: true)
+        let view = viewModel.createRiveView()
+
+        view.stateMachineDelegate = delegate
+        view.advance(delta:0.0)
+        XCTAssertEqual(delegate.stateMachineStates.count, 0)
+        viewModel.play()
+        // MARK: Input
+        // lets just start, expect 1 change.
+        try viewModel.triggerInput("right")
+        // TODO: looks like we got a bit of a bug here
+        // If we do not call this advance, the first animation doesnt seem to get the delta applied.
+        view.advance(delta:0.0)
+        view.advance(delta:0.4)
+        XCTAssertEqual(delegate.stateMachineStates.count, 1)
+        XCTAssertEqual(delegate.stateMachineStates[0], "go right")
+        XCTAssertEqual(delegate.stateMachineNames.count, 1)
+        XCTAssertEqual(delegate.stateMachineNames[0], "State Machine 1")
+        delegate.stateMachineStates.removeAll()
+
+        // should be in same animation still. no state change
+        view.advance(delta:0.4)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
+        XCTAssertEqual(true, viewModel.isPlaying)
+
+        // animation came to an end inside this time period, this still means no state change
+        view.advance(delta:0.4)
+        XCTAssertEqual(false, viewModel.isPlaying)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
+
+        // animation is just kinda stuck there. no change no happening.
+        view.advance(delta:0.4)
+        XCTAssertEqual(false, viewModel.isPlaying)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
+
+        // MARK: Input
+        // ok lets change thigns up again.
+        try viewModel.triggerInput("change")
+        view.advance(delta:0.0)
+        view.advance(delta:0.4)
+        XCTAssertEqual(true, viewModel.isPlaying)
+        XCTAssertEqual(1, delegate.stateMachineStates.count)
+
+        XCTAssertEqual("change!", delegate.stateMachineStates[0])
+        delegate.stateMachineStates.removeAll()
+
+        // as before lets advance inside the animation -> no change
+        view.advance(delta:0.4)
+        XCTAssertEqual(true, viewModel.isPlaying)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
+
+        // as before lets advance beyond the end of the animaiton, in this case change to exit!
+        view.advance(delta:0.4)
+        XCTAssertEqual(false, viewModel.isPlaying)
+        XCTAssertEqual(1, delegate.stateMachineStates.count)
+        XCTAssertEqual("ExitState", delegate.stateMachineStates[0])
+        delegate.stateMachineStates.removeAll()
+
+        // chill on exit. no change.
+        view.advance(delta:0.4)
+        XCTAssertEqual(false, viewModel.isPlaying)
+        XCTAssertEqual(0, delegate.stateMachineStates.count)
     }
 }
