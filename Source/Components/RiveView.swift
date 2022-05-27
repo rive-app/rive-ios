@@ -95,14 +95,10 @@ open class RiveView: RiveRendererView {
     
     /// Asks the render loop to stop on the next cycle
     internal func stop() {
-        playerDelegate?.player(stoppedWithModel: self.riveModel)
-        lastTime = 0
+        playerDelegate?.player(stoppedWithModel: riveModel)
+        isPlaying = false
         
-        if !isPlaying {
-            advance(delta: 0)
-        } else {
-            isPlaying = false
-        }
+        reset()
     }
     
     internal func reset() {

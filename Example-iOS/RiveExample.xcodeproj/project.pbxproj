@@ -49,10 +49,12 @@
 		C324DB5D280728690060589F /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5C280728690060589F /* RiveButton.swift */; };
 		C324DB5F280740FB0060589F /* rbutton.riv in Resources */ = {isa = PBXBuildFile; fileRef = C324DB5E280740FB0060589F /* rbutton.riv */; };
 		C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */; };
-		C3460A002800A6CE002DBCB7 /* bird.riv in Resources */ = {isa = PBXBuildFile; fileRef = C34609FD2800A6CE002DBCB7 /* bird.riv */; };
 		C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E6127FDCBC6008652FD /* SimpleSlider.swift */; };
 		C3745FCE282AE2320087F4AF /* hero_editor.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3745FCB282AE2320087F4AF /* hero_editor.riv */; };
-		C3C07482283D582B00E8EB33 /* button.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C0747F283D582B00E8EB33 /* button.riv */; };
+		C3C074AB283FC75900E8EB33 /* testanimation.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074A7283FC75800E8EB33 /* testanimation.riv */; };
+		C3C074AC283FC75900E8EB33 /* teststatemachine.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074AA283FC75900E8EB33 /* teststatemachine.riv */; };
+		C3C074EE28414F4600E8EB33 /* SwiftTestParityAnimSM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C074ED28414F4600E8EB33 /* SwiftTestParityAnimSM.swift */; };
+		C3C074F2284161E400E8EB33 /* halloween.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074F1284161E400E8EB33 /* halloween.riv */; };
 		C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RiveProgressBar.swift */; };
 		C3D187F728075B6C008B739A /* riveslider.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F628075B6C008B739A /* riveslider.riv */; };
 		C3D187F9280770EA008B739A /* truck.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F8280770EA008B739A /* truck.riv */; };
@@ -153,10 +155,12 @@
 		C324DB5C280728690060589F /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
 		C324DB5E280740FB0060589F /* rbutton.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rbutton.riv; sourceTree = "<group>"; };
 		C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesMaster.swift; sourceTree = "<group>"; };
-		C34609FD2800A6CE002DBCB7 /* bird.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = bird.riv; sourceTree = "<group>"; };
 		C3468E6127FDCBC6008652FD /* SimpleSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleSlider.swift; sourceTree = "<group>"; };
 		C3745FCB282AE2320087F4AF /* hero_editor.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hero_editor.riv; sourceTree = "<group>"; };
-		C3C0747F283D582B00E8EB33 /* button.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = button.riv; sourceTree = "<group>"; };
+		C3C074A7283FC75800E8EB33 /* testanimation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = testanimation.riv; sourceTree = "<group>"; };
+		C3C074AA283FC75900E8EB33 /* teststatemachine.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = teststatemachine.riv; sourceTree = "<group>"; };
+		C3C074ED28414F4600E8EB33 /* SwiftTestParityAnimSM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTestParityAnimSM.swift; sourceTree = "<group>"; };
+		C3C074F1284161E400E8EB33 /* halloween.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = halloween.riv; sourceTree = "<group>"; };
 		C3D187F2280751A8008B739A /* RiveProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveProgressBar.swift; sourceTree = "<group>"; };
 		C3D187F628075B6C008B739A /* riveslider.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider.riv; sourceTree = "<group>"; };
 		C3D187F8280770EA008B739A /* truck.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck.riv; sourceTree = "<group>"; };
@@ -253,7 +257,9 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				C3C0747F283D582B00E8EB33 /* button.riv */,
+				C3C074F1284161E400E8EB33 /* halloween.riv */,
+				C3C074A7283FC75800E8EB33 /* testanimation.riv */,
+				C3C074AA283FC75900E8EB33 /* teststatemachine.riv */,
 				C3E2B5872833ECB500A8651B /* bullet_man_game.riv */,
 				C3745FCB282AE2320087F4AF /* hero_editor.riv */,
 				C3E383472837E6B00029D65E /* watch_v1.riv */,
@@ -264,7 +270,6 @@
 				27108F2C282C96E700A99D81 /* light_switch.riv */,
 				C3D187F628075B6C008B739A /* riveslider.riv */,
 				C324DB5E280740FB0060589F /* rbutton.riv */,
-				C34609FD2800A6CE002DBCB7 /* bird.riv */,
 				0450445E26B3F71E007B25CA /* constrained.riv */,
 				04D5B069266A460C004ACA5B /* nothing.riv */,
 				042C88D42644447500E7DBB2 /* artboard_animations.riv */,
@@ -311,6 +316,7 @@
 				E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */,
 				C3ECAC262817BE4600A81123 /* SwiftTouchEvents.swift */,
 				C3E2B58B2833ECFE00A8651B /* SwiftCannonGame.swift */,
+				C3C074ED28414F4600E8EB33 /* SwiftTestParityAnimSM.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -451,7 +457,6 @@
 				C324DB5F280740FB0060589F /* rbutton.riv in Resources */,
 				C9D3DE5B264F3B51001BA265 /* liquid.riv in Resources */,
 				042C88DF2644447500E7DBB2 /* mascot.riv in Resources */,
-				C3460A002800A6CE002DBCB7 /* bird.riv in Resources */,
 				C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */,
 				042C88DC2644447500E7DBB2 /* pull.riv in Resources */,
 				042C88E32644447500E7DBB2 /* flux_capacitor.riv in Resources */,
@@ -472,17 +477,19 @@
 				C3ECAC2C281837B300A81123 /* leg_day_events_example.riv in Resources */,
 				042C88E12644447500E7DBB2 /* basketball.riv in Resources */,
 				042C88DE2644447500E7DBB2 /* rope.riv in Resources */,
+				C3C074AC283FC75900E8EB33 /* teststatemachine.riv in Resources */,
 				C3ECAC2D281837B300A81123 /* switch_event_example.riv in Resources */,
 				0480028B2729AA4400F7132B /* clean_icon_set.riv in Resources */,
 				04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */,
 				C3745FCE282AE2320087F4AF /* hero_editor.riv in Resources */,
+				C3C074F2284161E400E8EB33 /* halloween.riv in Resources */,
+				C3C074AB283FC75900E8EB33 /* testanimation.riv in Resources */,
 				C3D187F9280770EA008B739A /* truck.riv in Resources */,
 				C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */,
 				C3E2B58A2833ECB500A8651B /* bullet_man_game.riv in Resources */,
 				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
 				042C88E52644447500E7DBB2 /* explorer.riv in Resources */,
 				042C88E22644447500E7DBB2 /* f22.riv in Resources */,
-				C3C07482283D582B00E8EB33 /* button.riv in Resources */,
 				046AFA712673AF04004ED497 /* blendmodes.riv in Resources */,
 				042C88EC2644447500E7DBB2 /* vader.riv in Resources */,
 				C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */,
@@ -512,6 +519,7 @@
 				E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */,
 				042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */,
 				C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */,
+				C3C074EE28414F4600E8EB33 /* SwiftTestParityAnimSM.swift in Sources */,
 				C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */,
 				C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */,
 				C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */,

@@ -29,7 +29,6 @@ open class RiveModel: ObservableObject {
     // MARK: - Setters
     
     open func setArtboard(_ name: String) throws {
-        guard artboard?.name() != name else { return }
         do { artboard = try riveFile.artboard(fromName: name) }
         catch { throw RiveModelError.invalidArtboard(name: name) }
     }
@@ -46,7 +45,6 @@ open class RiveModel: ObservableObject {
     }
     
     open func setStateMachine(_ name: String) throws {
-        guard stateMachine?.name() != name else { return }
         do { stateMachine = try artboard.stateMachine(fromName: name) }
         catch { throw RiveModelError.invalidStateMachine(name: name) }
     }
