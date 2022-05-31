@@ -12,7 +12,7 @@ import SwiftUI
 class RiveSlider: RiveViewModel {
     var progress: Double {
         didSet {
-            try? setInput("FillPercent", value: progress)
+            setInput("FillPercent", value: progress)
         }
     }
     

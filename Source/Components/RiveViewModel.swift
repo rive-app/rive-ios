@@ -231,30 +231,44 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         )
     }
     
-    open func triggerInput(_ inputName: String) throws {
+    
+    /// Provide the active StateMachine a `Trigger` input
+    /// - Parameter inputName: The name of a `Trigger` input on the active StateMachine
+    open func triggerInput(_ inputName: String) {
         riveModel?.stateMachine?.getTrigger(inputName).fire()
         play()
     }
     
-    open func setInput(_ inputName: String, value: Bool) throws {
+    /// Provide the active StateMachine a `Boolean` input
+    /// - Parameters:
+    ///   - inputName: The name of a `Boolean` input on the active StateMachine
+    ///   - value: A Bool value for the input
+    open func setInput(_ inputName: String, value: Bool) {
         riveModel?.stateMachine?.getBool(inputName).setValue(value)
         play()
     }
     
-    open func setInput(_ inputName: String, value: Float) throws {
+    /// Provide the active StateMachine a `Number` input
+    /// - Parameters:
+    ///   - inputName: The name of a `Number` input on the active StateMachine
+    ///   - value: A Float value for the input
+    open func setInput(_ inputName: String, value: Float) {
         riveModel?.stateMachine?.getNumber(inputName).setValue(value)
         play()
     }
     
-    open func setInput(_ inputName: String, value: Double) throws {
-        riveModel?.stateMachine?.getNumber(inputName).setValue(Float(value))
-        play()
+    /// Provide the active StateMachine a `Number` input
+    /// - Parameters:
+    ///   - inputName: The name of a `Number` input on the active StateMachine
+    ///   - value: A Double value for the input
+    open func setInput(_ inputName: String, value: Double) {
+        setInput(inputName, value: Float(value))
     }
     
     // MARK: - SwiftUI Helpers
     
     /// Makes a new `RiveView` for the instance property with data from model which will
-    /// replace any previous `RiveView`. This is called when first drawing a `StandardView`.
+    /// replace any previous `RiveView`. This is called when first drawing a `RiveViewRepresentable`.
     /// - Returns: Reference to the new view that the `RiveViewModel` will be maintaining
     open func createRiveView() -> RiveView {
         let view: RiveView
@@ -271,7 +285,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     /// Gives updated layout values to the provided `RiveView`. This is called in
-    /// the process of re-displaying `StandardView`.
+    /// the process of re-displaying `RiveViewRepresentable`.
     /// - Parameter rview: the `RiveView` that will be updated
     @objc open func update(view: RiveView) {
         view.fit = fit
@@ -279,7 +293,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     /// Assigns the provided `RiveView` to its rview property. This is called when creating a
-    /// `StandardView`
+    /// `RiveViewRepresentable`
     ///
     /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
     fileprivate func registerView(_ view: RiveView) {
@@ -294,21 +308,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     /// This can be added to the body of a SwiftUI `View`
-    open func view() -> some View {
-        return StandardView(viewModel: self)
-    }
-    
-    /// A simple View designed to display
-    public struct StandardView: View {
-        let viewModel: RiveViewModel
-        
-        init(viewModel: RiveViewModel) {
-            self.viewModel = viewModel
-        }
-        
-        public var body: some View {
-            RiveViewRepresentable(viewModel: viewModel)
-        }
+    open func view() -> AnyView {
+        return AnyView(RiveViewRepresentable(viewModel: self))
     }
     
     // MARK: - UIKit Helper

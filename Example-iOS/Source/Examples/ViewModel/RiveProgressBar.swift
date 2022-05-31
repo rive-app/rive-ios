@@ -12,7 +12,7 @@ import SwiftUI
 class RiveProgressBar: RiveViewModel {
     var progress: Double {
         didSet {
-            try? setInput("Energy", value: progress)
+            setInput("Energy", value: progress)
         }
     }
     
@@ -21,8 +21,10 @@ class RiveProgressBar: RiveViewModel {
         super.init(fileName: "energy_bar_example", stateMachineName: "State Machine ", fit: .fitCover)
     }
     
-    func formattedView() -> some View {
-        super.view()
-            .aspectRatio(4, contentMode: .fill)
+    override func view() -> AnyView {
+        AnyView(
+            super.view()
+                .aspectRatio(4, contentMode: .fill)
+        )
     }
 }
