@@ -19,11 +19,11 @@ struct SwiftMultipleAnimations: DismissableView {
         ScrollView{
             VStack {
                 Text("Square - go around")
-                RiveViewModel(fileName: fileName, artboardName: "Square", animationName: "goaround").view()
+                RiveViewModel(fileName: fileName, animationName: "goaround", artboardName: "Square").view()
                     .frame(height:200)
                 
                 Text("Square - roll around")
-                RiveViewModel(fileName: fileName, artboardName: "Square", animationName: "rollaround").view()
+                RiveViewModel(fileName: fileName, animationName: "rollaround", artboardName: "Square").view()
                     .frame(height:200)
                 
                 Text("Circle")

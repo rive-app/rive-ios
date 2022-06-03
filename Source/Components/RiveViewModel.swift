@@ -44,59 +44,98 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     
     public init(
         _ model: RiveModel,
-        stateMachineName: String? = nil,
+        stateMachineName: String?,
         fit: RiveRuntime.Fit = .fitContain,
         alignment: RiveRuntime.Alignment = .alignmentCenter,
         autoPlay: Bool = true,
-        artboardName: String? = nil,
-        animationName: String? = nil
+        artboardName: String? = nil
     ) {
-        self.riveModel = model
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
-        
         super.init()
-        
-        sharedInit(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+        riveModel = model
+        sharedInit(artboardName: artboardName, stateMachineName: stateMachineName, animationName: nil)
+    }
+    
+    public init(
+        _ model: RiveModel,
+        animationName: String? = nil,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoPlay: Bool = true,
+        artboardName: String? = nil
+    ) {
+        self.fit = fit
+        self.alignment = alignment
+        self.autoPlay = autoPlay
+        super.init()
+        riveModel = model
+        sharedInit(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
     }
     
     public init(
         fileName: String,
-        stateMachineName: String? = nil,
+        stateMachineName: String?,
         fit: RiveRuntime.Fit = .fitContain,
         alignment: RiveRuntime.Alignment = .alignmentCenter,
         autoPlay: Bool = true,
-        artboardName: String? = nil,
-        animationName: String? = nil
+        artboardName: String? = nil
     ) {
-        riveModel = try! RiveModel(fileName: fileName)
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
-        
         super.init()
-        
-        sharedInit(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+        riveModel = try! RiveModel(fileName: fileName)
+        sharedInit(artboardName: artboardName, stateMachineName: stateMachineName, animationName: nil)
+    }
+    
+    public init(
+        fileName: String,
+        animationName: String? = nil,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoPlay: Bool = true,
+        artboardName: String? = nil
+    ) {
+        self.fit = fit
+        self.alignment = alignment
+        self.autoPlay = autoPlay
+        super.init()
+        riveModel = try! RiveModel(fileName: fileName)
+        sharedInit(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
     }
     
     public init(
         webURL: String,
-        stateMachineName: String? = nil,
+        stateMachineName: String?,
         fit: RiveRuntime.Fit = .fitContain,
         alignment: RiveRuntime.Alignment = .alignmentCenter,
         autoPlay: Bool = true,
-        artboardName: String? = nil,
-        animationName: String? = nil
+        artboardName: String? = nil
     ) {
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
-        
         super.init()
-        
         riveModel = RiveModel(webURL: webURL, delegate: self)
-        defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
+        defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: nil)
+    }
+    
+    public init(
+        webURL: String,
+        animationName: String? = nil,
+        fit: RiveRuntime.Fit = .fitContain,
+        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        autoPlay: Bool = true,
+        artboardName: String? = nil
+    ) {
+        self.fit = fit
+        self.alignment = alignment
+        self.autoPlay = autoPlay
+        super.init()
+        riveModel = RiveModel(webURL: webURL, delegate: self)
+        defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
     }
     
     private func sharedInit(artboardName: String?, stateMachineName: String?, animationName: String?) {
