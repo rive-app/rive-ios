@@ -33,12 +33,8 @@
     instance->time(time);
 }
 
-- (void)apply {
-    instance->apply();
-}
-
 - (bool)advanceBy:(double)elapsedSeconds {
-    return instance->advance(elapsedSeconds);
+    return instance->advanceAndApply(elapsedSeconds);
 }
 
 - (void)direction:(int)direction {
