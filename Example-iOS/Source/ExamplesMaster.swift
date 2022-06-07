@@ -84,7 +84,7 @@ extension ExamplesMasterTableViewController {
         
         // Views made by the ViewModels
         else if indexPath.section == 2 {
-            let anyView = AnyView(viewModels[indexPath.row].1.view())
+            let anyView = viewModels[indexPath.row].1.view()
             controller = UIHostingController(rootView: anyView)
         }
         

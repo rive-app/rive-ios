@@ -11,10 +11,13 @@ import RiveRuntime
 
 class ClockViewModel: RiveViewModel {
     private var timer: Timer!
+    private var hour: Int = 0
+    private var minute: Int = 0
+    private var second: Int = 0
 
-    @Published var hours: Double = 0 {
+    @Published var time: Double = 0 {
         didSet {
-            try? setInput("isTime", value: hours > 12 ? hours-12 : hours)
+            setInput("isTime", value: time > 12 ? time-12 : time)
         }
     }
     
@@ -25,11 +28,11 @@ class ClockViewModel: RiveViewModel {
                     let date = Date()
                     let calendar = Calendar.current
 
-                    let hour = calendar.component(.hour, from: date)
-                    let minute = calendar.component(.minute, from: date)
-                    let second = calendar.component(.second, from: date)
+                    self.hour = calendar.component(.hour, from: date)
+                    self.minute = calendar.component(.minute, from: date)
+                    self.second = calendar.component(.second, from: date)
 
-                    self.hours = Double(hour) + Double(minute)/60 + Double(second)/1200
+                    self.time = Double(self.hour) + Double(self.minute)/60 + Double(self.second)/1200
                 }
             } else {
                 timer?.invalidate()
@@ -46,39 +49,42 @@ class ClockViewModel: RiveViewModel {
         timer?.invalidate()
     }
     
-    func controlsView() -> some View {
-        return ZStack {
-            Color.gray
-            
-            VStack {
-                view()
-                    .aspectRatio(1, contentMode: .fit)
+    override func view() -> AnyView {
+        AnyView(
+            ZStack {
+                Color.gray
                 
-                Button {
-                    self.followTimer.toggle()
-                } label: {
-                    ZStack {
-                        Color.blue
-                        Text(self.followTimer ? "Real Time" : "Manual")
-                            .bold()
+                VStack {
+                    super.view()
+                        .aspectRatio(1, contentMode: .fit)
+                    
+                    Button {
+                        self.followTimer.toggle()
+                    } label: {
+                        ZStack {
+                            Color.blue
+                            Text(self.followTimer ? "Real Time" : "Manual")
+                                .bold()
+                        }
                     }
-                }
-                .foregroundColor(.white)
-                .frame(width: 200, height: 75, alignment: .center)
-                .cornerRadius(10)
-                .padding()
-                
-                Text("Hour: \(round(hours * 100) / 100)")
                     .foregroundColor(.white)
-                    .padding(.bottom)
-                
-                Slider(value: Binding(
-                    get: { self.hours },
-                    set: { self.hours = round($0 * 100) / 100 }
-                ), in: 0...24, step: 0.01)
-                .padding()
-                .disabled(followTimer)
+                    .frame(width: 200, height: 75, alignment: .center)
+                    .cornerRadius(10)
+                    .padding()
+                    
+                    let normalizedHour = hour%12 == 0 ? 12 : hour%12
+                    Text("Time: \(normalizedHour):\(minute):\(second)")
+                        .foregroundColor(.white)
+                        .padding(.bottom)
+                    
+                    Slider(value: Binding(
+                        get: { self.time },
+                        set: { self.time = round($0 * 100) / 100 }
+                    ), in: 0...24, step: 0.01)
+                    .padding()
+                    .disabled(followTimer)
+                }
             }
-        }
+        )
     }
 }

@@ -37,7 +37,7 @@ struct SwiftTouchEvents: DismissableView {
                 bearGuy.view()
                     .aspectRatio(1, contentMode: .fit)
 
-                clock.controlsView()
+                clock.view()
 
                 toggle.view()
                     .aspectRatio(1, contentMode: .fit)

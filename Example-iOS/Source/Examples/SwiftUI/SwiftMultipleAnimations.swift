@@ -12,7 +12,7 @@ import RiveRuntime
 /// This shows how to utilize one animation file to show content in different artboards and
 /// different animations within those artboards
 struct SwiftMultipleAnimations: DismissableView {
-    private let fileName = "artboard_animations"
+    private let file = try! RiveFile(name: "artboard_animations")
     var dismiss: () -> Void = {}
     
     var body: some View {
@@ -27,14 +27,15 @@ struct SwiftMultipleAnimations: DismissableView {
                     .frame(height:200)
                 
                 Text("Circle")
-                RiveViewModel(fileName: fileName, artboardName: "Circle").view()
-                    .frame(height:200)
+                RiveViewModel(model(), artboardName: "Circle").view()
+                    .aspectRatio(1, contentMode: .fit)
                 
                 Text("Star")
-                RiveViewModel(fileName: fileName, artboardName: "Star").view()
-                    .frame(height:200)
+                RiveViewModel(model(), artboardName: "Star").view()
+                    .aspectRatio(1, contentMode: .fit)
             }
         }
     }
+    
+    func model() -> RiveModel { RiveModel(riveFile: file) }
 }
-

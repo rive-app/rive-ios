@@ -47,7 +47,7 @@ struct SwiftWidgets: DismissableView {
                     
                     VStack {
                         Text("RiveProgressBar:")
-                        rprogress.formattedView()
+                        rprogress.view()
                         
                         Slider(value: Binding(
                             get: {

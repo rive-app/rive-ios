@@ -25,7 +25,7 @@ class RiveButton: RiveViewModel {
     
     func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
         stop()
-        try? setInput(input, value: true)
+        setInput(input, value: true)
     }
     
     func touchEnded(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
@@ -35,6 +35,6 @@ class RiveButton: RiveViewModel {
     }
     
     func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
-        try? setInput(input, value: false)
+        setInput(input, value: false)
     }
 }
