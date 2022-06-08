@@ -38,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (float)effectiveDurationInSeconds;
 - (bool)hasEnded;
 
+// MARK: Debug
++ (int)instanceCount;
++ (void)raiseInstanceCount;
++ (void)reduceInstanceCount;
+
 @end
 
 NS_ASSUME_NONNULL_END

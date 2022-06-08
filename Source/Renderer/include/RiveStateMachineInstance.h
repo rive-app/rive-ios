@@ -56,6 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param touchLocation A CGPoint in the coordinate space of the animating artboard
 - (void)touchCancelledAtLocation:(CGPoint)touchLocation;
 
+// MARK: Debug
++ (int)instanceCount;
++ (void)raiseInstanceCount;
++ (void)reduceInstanceCount;
+
 @end
 
 NS_ASSUME_NONNULL_END

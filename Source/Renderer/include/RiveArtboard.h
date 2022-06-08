@@ -35,6 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer *)renderer;
 
+// MARK: Debug
++ (int)instanceCount;
++ (void)raiseInstanceCount;
++ (void)reduceInstanceCount;
+
 @end
 
 NS_ASSUME_NONNULL_END

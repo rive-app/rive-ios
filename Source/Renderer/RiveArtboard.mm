@@ -10,10 +10,14 @@
 #import <RivePrivateHeaders.h>
 
 
+static int artInstanceCount = 0;
+
 // MARK: - RiveArtboard
 @implementation RiveArtboard
 
 - (instancetype)initWithArtboard:(rive::ArtboardInstance *)riveArtboard {
+    [RiveArtboard raiseInstanceCount];
+    
     if (self = [super init]) {
         _artboardInstance = riveArtboard;
         return self;
@@ -104,7 +108,20 @@
     return CGRectMake(aabb.minX, aabb.minY, aabb.width(), aabb.height());
 }
 
++ (int)instanceCount {
+    return artInstanceCount;
+}
+
++ (void)raiseInstanceCount {
+    artInstanceCount++;
+}
+
++ (void)reduceInstanceCount {
+    artInstanceCount--;
+}
+
 - (void)dealloc {
+    [RiveArtboard reduceInstanceCount];
      delete _artboardInstance;
 }
 

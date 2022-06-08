@@ -9,6 +9,9 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
+
+static int smInstanceCount = 0;
+
 @interface RiveStateMachineInstance ()
 
 /// Holds references to SMIInputs
@@ -25,6 +28,8 @@
 
 // Creates a new RiveStateMachineInstance from a cpp StateMachine
 - (instancetype)initWithStateMachine:(rive::StateMachineInstance *)stateMachine {
+    [RiveStateMachineInstance raiseInstanceCount];
+    
     if (self = [super init]) {
         instance = stateMachine;
         _inputs = [[NSMutableDictionary alloc] init];
@@ -219,7 +224,20 @@
     return machine->layerCount();
 }
 
++ (int)instanceCount {
+    return smInstanceCount;
+}
+
++ (void)raiseInstanceCount {
+    smInstanceCount++;
+}
+
++ (void)reduceInstanceCount {
+    smInstanceCount--;
+}
+
 - (void)dealloc {
+    [RiveStateMachineInstance reduceInstanceCount];
     delete instance;
 }
 

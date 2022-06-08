@@ -9,6 +9,9 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
+
+static int animInstanceCount = 0;
+
 /*
  * RiveLinearAnimationInstance
  */
@@ -17,6 +20,8 @@
 }
 
 - (instancetype)initWithAnimation:(rive::LinearAnimationInstance *)anim {
+    [RiveLinearAnimationInstance raiseInstanceCount];
+    
     if (self = [super init]) {
         instance = anim;
         return self;
@@ -63,6 +68,7 @@
 }
 
 - (void)dealloc {
+    [RiveLinearAnimationInstance reduceInstanceCount];
     delete instance;
 }
 
@@ -106,6 +112,18 @@
 
 - (bool)hasEnded {
     return [self time] >= [self endTime];
+}
+
++ (int)instanceCount {
+    return animInstanceCount;
+}
+
++ (void)raiseInstanceCount {
+    animInstanceCount++;
+}
+
++ (void)reduceInstanceCount {
+    animInstanceCount--;
 }
 
 @end
