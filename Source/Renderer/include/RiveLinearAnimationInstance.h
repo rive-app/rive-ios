@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (float)time;
 - (void)setTime:(float) time;
 - (float)endTime;
-- (void)apply;
 - (bool)advanceBy:(double)elapsedSeconds;
 - (int)direction;
 - (void)direction:(int)direction;

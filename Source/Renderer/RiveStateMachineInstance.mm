@@ -36,7 +36,7 @@
 
 
 - (bool) advanceBy:(double)elapsedSeconds  {
-    return instance->advance(elapsedSeconds);
+    return instance->advanceAndApply(elapsedSeconds);
 }
 
 - (RiveSMIBool *)getBool:(NSString *)name {
