@@ -24,7 +24,7 @@ class RiveSwitch: RiveViewModel {
     }
     
     init() {
-        super.init(fileName: "switch", fit: .fitCover, animationName: startAnimation)
+        super.init(fileName: "switch", animationName: startAnimation, fit: .fitCover)
     }
     
     func view(_ action: ((Bool) -> Void)? = nil) -> some View {

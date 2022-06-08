@@ -17,7 +17,7 @@ struct SwiftTestParityAnimSM: DismissableView {
         SwiftVMPlayer(
             viewModels:
                 RiveViewModel(fileName: "teststatemachine", stateMachineName: "State Machine 1", autoPlay: false),
-                RiveViewModel(fileName: "testanimation", autoPlay: false, animationName: "Move")
+            RiveViewModel(fileName: "testanimation", animationName: "Move", autoPlay: false)
         )
     }
 }
