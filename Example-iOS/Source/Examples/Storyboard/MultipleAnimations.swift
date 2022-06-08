@@ -18,10 +18,10 @@ class MultipleAnimationsController: UIViewController {
     @IBOutlet weak var rviewStar: RiveView!
     
     var rSquareGoAround = RiveViewModel(
-        fileName: "artboard_animations", artboardName: "Square", animationName: "goaround"
+        fileName: "artboard_animations", animationName: "goaround", artboardName: "Square"
     )
     var rSquareRollAround = RiveViewModel(
-        fileName: "artboard_animations", artboardName: "Square", animationName: "rollaround"
+        fileName: "artboard_animations", animationName: "rollaround", artboardName: "Square"
     )
     var rCircle = RiveViewModel(
         fileName: "artboard_animations", artboardName: "Circle"
