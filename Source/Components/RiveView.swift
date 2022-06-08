@@ -169,12 +169,10 @@ open class RiveView: RiveRendererView {
         
         if let stateMachine = riveModel.stateMachine {
             isPlaying = stateMachine.advance(by: delta) && wasPlaying
-            
             stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
         }
         else if let animation = riveModel.animation {
             isPlaying = animation.advance(by: delta) && wasPlaying
-            animation.apply()
             
             if isPlaying {
                 if animation.didLoop() {
@@ -192,8 +190,6 @@ open class RiveView: RiveRendererView {
             }
         }
         
-        // advance the artboard
-        riveModel.artboard.advance(by: delta)
         playerDelegate?.player(didAdvanceby: delta, riveModel: riveModel)
         
         // Trigger a redraw
