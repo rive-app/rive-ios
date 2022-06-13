@@ -103,7 +103,7 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
   return value;
 }
 
-- (void)alignWithRect:(CGRect)rect contentRect:(CGRect)contentRect alignment:(Alignment)alignment fit:(Fit)fit {
+- (void)alignWithRect:(CGRect)rect contentRect:(CGRect)contentRect alignment:(RiveAlignment)alignment fit:(RiveFit)fit {
     rive::AABB frame(rect.origin.x, rect.origin.y,
                    rect.size.width + rect.origin.x,
                    rect.size.height + rect.origin.y);
@@ -161,29 +161,29 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
   [self setPaused:paused];
 }
 
-- (rive::Fit)riveFit:(Fit)fit {
+- (rive::Fit)riveFit:(RiveFit)fit {
     rive::Fit riveFit;
     
     switch (fit) {
-    case fitFill:
+    case fill:
       riveFit = rive::Fit::fill;
       break;
-    case fitContain:
+    case contain:
       riveFit = rive::Fit::contain;
       break;
-    case fitCover:
+    case cover:
       riveFit = rive::Fit::cover;
       break;
-    case fitFitHeight:
+    case fitHeight:
       riveFit = rive::Fit::fitHeight;
       break;
-    case fitFitWidth:
+    case fitWidth:
       riveFit = rive::Fit::fitWidth;
       break;
-    case fitScaleDown:
+    case scaleDown:
       riveFit = rive::Fit::scaleDown;
       break;
-    case fitNone:
+    case noFit:
       riveFit = rive::Fit::none;
       break;
     }
@@ -191,35 +191,35 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
     return riveFit;
 }
 
-- (rive::Alignment)riveAlignment:(Alignment)alignment {
+- (rive::Alignment)riveAlignment:(RiveAlignment)alignment {
     rive::Alignment riveAlignment = rive::Alignment::center;
     
     switch (alignment) {
-    case alignmentTopLeft:
+    case topLeft:
       riveAlignment = rive::Alignment::topLeft;
       break;
-    case alignmentTopCenter:
+    case topCenter:
       riveAlignment = rive::Alignment::topCenter;
       break;
-    case alignmentTopRight:
+    case topRight:
       riveAlignment = rive::Alignment::topRight;
       break;
-    case alignmentCenterLeft:
+    case centerLeft:
       riveAlignment = rive::Alignment::centerLeft;
       break;
-    case alignmentCenter:
+    case center:
       riveAlignment = rive::Alignment::center;
       break;
-    case alignmentCenterRight:
+    case centerRight:
       riveAlignment = rive::Alignment::centerRight;
       break;
-    case alignmentBottomLeft:
+    case bottomLeft:
       riveAlignment = rive::Alignment::bottomLeft;
       break;
-    case alignmentBottomCenter:
+    case bottomCenter:
       riveAlignment = rive::Alignment::bottomCenter;
       break;
-    case alignmentBottomRight:
+    case bottomRight:
       riveAlignment = rive::Alignment::bottomRight;
       break;
     }
@@ -228,7 +228,7 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView *mtkView,
 }
 
 - (CGPoint)artboardLocationFromTouchLocation:(CGPoint)touchLocation
-                               inArtboard:(CGRect)artboardRect fit:(Fit)fit alignment:(Alignment)alignment {
+                               inArtboard:(CGRect)artboardRect fit:(RiveFit)fit alignment:(RiveAlignment)alignment {
     rive::AABB frame(self.frame.origin.x, self.frame.origin.y,
                          self.frame.size.width + self.frame.origin.x,
                          self.frame.size.height + self.frame.origin.y);

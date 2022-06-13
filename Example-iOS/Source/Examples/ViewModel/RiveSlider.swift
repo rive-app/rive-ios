@@ -18,7 +18,7 @@ class RiveSlider: RiveViewModel {
     
     init(_ initialProgress: Double = 0) {
         progress = initialProgress
-        super.init(fileName: "riveslider", stateMachineName: "Slide", fit: .fitScaleDown)
+        super.init(fileName: "riveslider", stateMachineName: "Slide", fit: .scaleDown)
     }
     
     func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {

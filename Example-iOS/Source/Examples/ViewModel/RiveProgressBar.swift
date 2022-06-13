@@ -18,7 +18,7 @@ class RiveProgressBar: RiveViewModel {
     
     init(_ initialProgress: Double = 0) {
         progress = initialProgress
-        super.init(fileName: "energy_bar_example", stateMachineName: "State Machine ", fit: .fitCover)
+        super.init(fileName: "energy_bar_example", stateMachineName: "State Machine ", fit: .cover)
     }
     
     override func view() -> AnyView {
