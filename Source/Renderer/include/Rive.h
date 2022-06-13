@@ -27,48 +27,48 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * LoopMode
  */
-typedef NS_ENUM(NSInteger, Loop) {
-    loopOneShot,
-    loopLoop,
-    loopPingPong,
-    loopAuto
+typedef NS_ENUM(NSInteger, RiveLoop) {
+    oneShot,
+    loop,
+    pingPong,
+    autoLoop
 };
 
 /*
  * Direction
  */
-typedef NS_ENUM(NSInteger, Direction) {
-    directionBackwards,
-    directionForwards,
-    directionAuto,
+typedef NS_ENUM(NSInteger, RiveDirection) {
+    backwards,
+    forwards,
+    autoDirection,
 };
 
 /*
  * Fits
  */
-typedef NS_ENUM(NSInteger, Fit) {
-    fitFill,
-    fitContain,
-    fitCover,
-    fitFitHeight,
-    fitFitWidth,
-    fitScaleDown,
-    fitNone
+typedef NS_ENUM(NSInteger, RiveFit) {
+    fill,
+    contain,
+    cover,
+    fitHeight,
+    fitWidth,
+    scaleDown,
+    noFit
 };
 
 /*
  * Alignments
  */
-typedef NS_ENUM(NSInteger, Alignment) {
-    alignmentTopLeft,
-    alignmentTopCenter,
-    alignmentTopRight,
-    alignmentCenterLeft,
-    alignmentCenter,
-    alignmentCenterRight,
-    alignmentBottomLeft,
-    alignmentBottomCenter,
-    alignmentBottomRight
+typedef NS_ENUM(NSInteger, RiveAlignment) {
+    topLeft,
+    topCenter,
+    topRight,
+    centerLeft,
+    center,
+    centerRight,
+    bottomLeft,
+    bottomCenter,
+    bottomRight
 };
 
 FOUNDATION_EXPORT NSString *const RiveErrorDomain;
@@ -94,7 +94,7 @@ typedef NS_ENUM(NSInteger, RiveErrorCode) {
 @interface RiveRenderer : NSObject
 
 - (instancetype)initWithContext:(nonnull CGContextRef)context;
-- (void)alignWithRect:(CGRect)rect withContentRect:(CGRect)contentRect withAlignment:(Alignment)alignment withFit:(Fit)fit;
+- (void)alignWithRect:(CGRect)rect withContentRect:(CGRect)contentRect withAlignment:(RiveAlignment)alignment withFit:(RiveFit)fit;
 
 @end
 

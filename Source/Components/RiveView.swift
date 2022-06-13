@@ -12,8 +12,8 @@ import Foundation
 open class RiveView: RiveRendererView {
     // MARK: Configuration
     internal weak var riveModel: RiveModel!
-    internal var fit: RiveRuntime.Fit = .fitContain { didSet { setNeedsDisplay() } }
-    internal var alignment: RiveRuntime.Alignment = .alignmentCenter { didSet { setNeedsDisplay() } }
+    internal var fit: RiveFit = .contain { didSet { setNeedsDisplay() } }
+    internal var alignment: RiveAlignment = .center { didSet { setNeedsDisplay() } }
     
     // MARK: Render Loop
     internal private(set) var isPlaying: Bool = false
