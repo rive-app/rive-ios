@@ -26,7 +26,7 @@
 
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"loop" error:nil];
 
-    XCTAssertEqual([animation loop], Loop::loopLoop);
+    XCTAssertEqual([animation loop], RiveLoop::loop);
 }
 
 /*
@@ -38,7 +38,7 @@
 
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"pingpong" error:nil];
     
-    XCTAssertEqual([animation loop], Loop::loopPingPong);
+    XCTAssertEqual([animation loop], RiveLoop::pingPong);
 }
 
 /*
@@ -50,7 +50,7 @@
 
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"oneshot" error:nil];
 
-    XCTAssertEqual([animation loop], Loop::loopOneShot);
+    XCTAssertEqual([animation loop], RiveLoop::oneShot);
 }
 
 /*

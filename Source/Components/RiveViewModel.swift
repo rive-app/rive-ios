@@ -45,8 +45,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     public init(
         _ model: RiveModel,
         stateMachineName: String?,
-        fit: RiveRuntime.Fit = .fitContain,
-        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        fit: RiveFit = .contain,
+        alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
         artboardName: String? = nil
     ) {
@@ -61,8 +61,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     public init(
         _ model: RiveModel,
         animationName: String? = nil,
-        fit: RiveRuntime.Fit = .fitContain,
-        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        fit: RiveFit = .contain,
+        alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
         artboardName: String? = nil
     ) {
@@ -77,8 +77,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     public init(
         fileName: String,
         stateMachineName: String?,
-        fit: RiveRuntime.Fit = .fitContain,
-        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        fit: RiveFit = .contain,
+        alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
         artboardName: String? = nil
     ) {
@@ -93,8 +93,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     public init(
         fileName: String,
         animationName: String? = nil,
-        fit: RiveRuntime.Fit = .fitContain,
-        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        fit: RiveFit = .contain,
+        alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
         artboardName: String? = nil
     ) {
@@ -109,8 +109,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     public init(
         webURL: String,
         stateMachineName: String?,
-        fit: RiveRuntime.Fit = .fitContain,
-        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        fit: RiveFit = .contain,
+        alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
         artboardName: String? = nil
     ) {
@@ -125,8 +125,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     public init(
         webURL: String,
         animationName: String? = nil,
-        fit: RiveRuntime.Fit = .fitContain,
-        alignment: RiveRuntime.Alignment = .alignmentCenter,
+        fit: RiveFit = .contain,
+        alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
         artboardName: String? = nil
     ) {
@@ -164,11 +164,11 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     
     open var autoPlay: Bool
     
-    open var fit: RiveRuntime.Fit = .fitContain {
+    open var fit: RiveFit = .contain {
         didSet { riveView?.fit = fit }
     }
     
-    open var alignment: RiveRuntime.Alignment = .alignmentCenter {
+    open var alignment: RiveAlignment = .center {
         didSet { riveView?.alignment = alignment }
     }
     
@@ -177,19 +177,19 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// - Parameters:
     ///   - animationName: The name of a new Animation to play on the current Artboard
     ///   - loop: The loop mode for the active Animation
-    open func play(animationName: String? = nil, loop: Loop = .loopAuto, direction: Direction = .directionAuto) {
+    open func play(animationName: String? = nil, loop: RiveLoop = .autoLoop, direction: RiveDirection = .autoDirection) {
         if let name = animationName {
             try! riveModel?.setAnimation(name)
         }
         
         if let animation = riveModel?.animation {
-            if loop != .loopAuto {
+            if loop != .autoLoop {
                 animation.loop(Int32(loop.rawValue))
             }
             
-            if direction == .directionForwards {
+            if direction == .forwards {
                 animation.direction(1)
-            } else if direction == .directionBackwards {
+            } else if direction == .backwards {
                 animation.direction(-1)
             }
             

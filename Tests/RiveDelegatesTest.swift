@@ -197,7 +197,7 @@ class DelegatesTest: XCTestCase {
         let view = viewModel.createRiveView()
         
         view.playerDelegate = delegate
-        viewModel.play(animationName: "one", loop: .loopOneShot)
+        viewModel.play(animationName: "one", loop: .oneShot)
         view.advance(delta: Double(viewModel.riveModel!.animation!.effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 0)
@@ -214,7 +214,7 @@ class DelegatesTest: XCTestCase {
         let view = viewModel.createRiveView()
         
         view.playerDelegate = delegate
-        viewModel.play(animationName: "one", loop: .loopLoop)
+        viewModel.play(animationName: "one", loop: .loop)
         view.advance(delta: Double(viewModel.riveModel!.animation!.effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 1)
@@ -231,7 +231,7 @@ class DelegatesTest: XCTestCase {
         let view = viewModel.createRiveView()
         
         view.playerDelegate = delegate
-        viewModel.play(animationName: "one", loop: .loopPingPong)
+        viewModel.play(animationName: "one", loop: .pingPong)
         view.advance(delta: Double(viewModel.riveModel!.animation!.effectiveDurationInSeconds()+0.1))
         
         XCTAssertEqual(delegate.loops.count, 1)
@@ -279,7 +279,7 @@ class DelegatesTest: XCTestCase {
         viewModel.play()
         // MARK: Input
         // lets just start, expect 1 change.
-        try viewModel.triggerInput("right")
+        viewModel.triggerInput("right")
         // TODO: looks like we got a bit of a bug here
         // If we do not call this advance, the first animation doesnt seem to get the delta applied.
         view.advance(delta:0.0)
@@ -307,7 +307,7 @@ class DelegatesTest: XCTestCase {
 
         // MARK: Input
         // ok lets change thigns up again.
-        try viewModel.triggerInput("change")
+        viewModel.triggerInput("change")
         view.advance(delta:0.0)
         view.advance(delta:0.4)
         XCTAssertEqual(true, viewModel.isPlaying)

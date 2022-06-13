@@ -28,14 +28,14 @@ class LayoutViewController: UIViewController {
     func setFit(name: String = "") {
         var fit: Fit = .fitContain
         switch name {
-        case "Fill": fit = .fitFill
-        case "Contain": fit = .fitContain
-        case "Cover": fit = .fitCover
-        case "Fit Width": fit = .fitFitWidth
-        case "Fit Height": fit = .fitFitHeight
-        case "Scale Down": fit = .fitScaleDown
-        case "None": fit = .fitNone
-        default: fit = .fitContain
+        case "Fill": fit = .fill
+        case "Contain": fit = .contain
+        case "Cover": fit = .cover
+        case "Fit Width": fit = .fitWidth
+        case "Fit Height": fit = .fitHeight
+        case "Scale Down": fit = .scaleDown
+        case "None": fit = .noFit
+        default: fit = .contain
         }
         viewModel.fit = fit
     }
@@ -43,16 +43,16 @@ class LayoutViewController: UIViewController {
     func setAlignment(name: String = "") {
         var alignment: Alignment = .alignmentCenter
         switch name {
-        case "Top Left": alignment = .alignmentTopLeft
-        case "Top Center": alignment = .alignmentTopCenter
-        case "Top Right": alignment = .alignmentTopRight
-        case "Center Left": alignment = .alignmentCenterLeft
-        case "Center": alignment = .alignmentCenter
-        case "Center Right": alignment = .alignmentCenterRight
-        case "Bottom Left": alignment = .alignmentBottomLeft
-        case "Bottom Center": alignment = .alignmentBottomCenter
-        case "Bottom Right": alignment = .alignmentBottomRight
-        default: alignment = .alignmentCenter
+        case "Top Left": alignment = .topLeft
+        case "Top Center": alignment = .topCenter
+        case "Top Right": alignment = .topRight
+        case "Center Left": alignment = .centerLeft
+        case "Center": alignment = .center
+        case "Center Right": alignment = .centerRight
+        case "Bottom Left": alignment = .bottomLeft
+        case "Bottom Center": alignment = .bottomCenter
+        case "Bottom Right": alignment = .bottomRight
+        default: alignment = .center
         }
         viewModel.alignment = alignment
     }
