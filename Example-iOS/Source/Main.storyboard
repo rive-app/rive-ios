@@ -96,28 +96,28 @@
                                 <rect key="frame" x="116.5" y="426.5" width="30" height="30"/>
                                 <state key="normal" title="Fill"/>
                                 <connections>
-                                    <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Y41-BP-EjE"/>
+                                    <action selector="fitButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="ory-Ta-MIs"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fF7-wG-Oov">
                                 <rect key="frame" x="180.5" y="426.5" width="53" height="30"/>
                                 <state key="normal" title="Contain"/>
                                 <connections>
-                                    <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Rb7-0D-dRL"/>
+                                    <action selector="fitButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="8QV-RK-jJY"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pUd-0l-Nop">
                                 <rect key="frame" x="98" y="464.5" width="65.5" height="30"/>
                                 <state key="normal" title="Fit Width"/>
                                 <connections>
-                                    <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="ocu-SF-gIr"/>
+                                    <action selector="fitButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="zA8-rW-JlE"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Vz-kr-gCL">
                                 <rect key="frame" x="266.5" y="426.5" width="41" height="30"/>
                                 <state key="normal" title="Cover"/>
                                 <connections>
-                                    <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="24E-zt-a7v"/>
+                                    <action selector="fitButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="ace-ya-eCC"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GdZ-6S-Xlu" customClass="RiveView" customModule="RiveRuntime">
@@ -140,84 +140,84 @@
                                 <rect key="frame" x="173.5" y="464.5" width="67" height="30"/>
                                 <state key="normal" title="Fit Height"/>
                                 <connections>
-                                    <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="4u7-vG-Hlt"/>
+                                    <action selector="fitButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="fic-NT-b7g"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5oe-5V-5Zm">
                                 <rect key="frame" x="188.5" y="502.5" width="37" height="30"/>
                                 <state key="normal" title="None"/>
                                 <connections>
-                                    <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Ih4-mr-Ejn"/>
+                                    <action selector="fitButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="jfd-zo-3xD"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dO7-zS-EmM">
                                 <rect key="frame" x="247.5" y="464.5" width="81" height="30"/>
                                 <state key="normal" title="Scale Down"/>
                                 <connections>
-                                    <action selector="fitButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="pRJ-VJ-BJf"/>
+                                    <action selector="fitButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="Io4-Zi-lG2"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QVr-w0-HOv">
                                 <rect key="frame" x="80" y="622.5" width="57" height="30"/>
                                 <state key="normal" title="Top Left"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="YqT-dS-wUd"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="ZSH-AY-C5H"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0gO-Qa-iuy">
                                 <rect key="frame" x="169" y="622.5" width="76" height="30"/>
                                 <state key="normal" title="Top Center"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Dkc-uO-WzQ"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="gSc-ao-oja"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8ui-GB-0Sy">
                                 <rect key="frame" x="277" y="622.5" width="66" height="30"/>
                                 <state key="normal" title="Top Right"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Z3p-TD-e7n"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="7Pp-Nf-KDv"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CyQ-UX-4Z9">
                                 <rect key="frame" x="67.5" y="698.5" width="81" height="30"/>
                                 <state key="normal" title="Bottom Left"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="n8k-lJ-qjL"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="9mi-e1-bNh"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p3G-Ej-92k">
                                 <rect key="frame" x="156.5" y="698.5" width="101" height="30"/>
                                 <state key="normal" title="Bottom Center"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="7Nz-a5-QZZ"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="FCp-I2-aE7"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1aE-iZ-zYc">
                                 <rect key="frame" x="264.5" y="698.5" width="90" height="30"/>
                                 <state key="normal" title="Bottom Right"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="tXM-XI-ZSo"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="sc7-IE-wcJ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ysz-UL-Mgb">
                                 <rect key="frame" x="69.5" y="660.5" width="77" height="30"/>
                                 <state key="normal" title="Center Left"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="Uma-ud-p4g"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="bA9-gY-jIn"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aBz-ML-kCf">
                                 <rect key="frame" x="183.5" y="660.5" width="47" height="30"/>
                                 <state key="normal" title="Center"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="wfc-aj-dTL"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="mPK-1e-WOL"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zqy-87-clG">
                                 <rect key="frame" x="266.5" y="660.5" width="87" height="30"/>
                                 <state key="normal" title="Center Right"/>
                                 <connections>
-                                    <action selector="alignmentButtonTriggered:" destination="ogd-2a-ycI" eventType="touchUpInside" id="3WP-vG-B6a"/>
+                                    <action selector="alignmentButtonTriggered:" destination="6EP-ej-U9V" eventType="touchUpInside" id="HXe-ZQ-vfO"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -268,11 +268,11 @@
                             <constraint firstItem="0gO-Qa-iuy" firstAttribute="leading" secondItem="QVr-w0-HOv" secondAttribute="trailing" constant="32" id="xPM-ea-xYV"/>
                             <constraint firstItem="GdZ-6S-Xlu" firstAttribute="height" secondItem="rwS-aJ-LZH" secondAttribute="height" multiplier="0.422481" id="zD5-qO-72b"/>
                         </constraints>
-                        <connections>
-                            <outlet property="riveView" destination="GdZ-6S-Xlu" id="kMQ-Kd-ALW"/>
-                        </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Layout" id="hxK-iP-JHb"/>
+                    <connections>
+                        <outlet property="riveView" destination="GdZ-6S-Xlu" id="kan-rh-weo"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iPR-UO-vO8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
