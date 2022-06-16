@@ -11,6 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RiveScene;
 @class RiveLinearAnimationInstance;
 @class RiveStateMachineInstance;
 @class RiveRenderer;
@@ -22,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)name;
 - (CGRect)bounds;
 
+- (RiveScene * __nullable)defaultScene:(NSError **)error;
+
 - (NSInteger)animationCount;
 - (NSArray<NSString *> *)animationNames;
 - (RiveLinearAnimationInstance * __nullable)animationFromIndex:(NSInteger)index error:(NSError **)error;
@@ -29,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)stateMachineCount;
 - (NSArray<NSString *> *)stateMachineNames;
+- (RiveStateMachineInstance * __nullable)defaultStateMachine:(NSError **)error;
 - (RiveStateMachineInstance * __nullable)stateMachineFromIndex:(NSInteger)index error:(NSError **)error;
 - (RiveStateMachineInstance * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
 

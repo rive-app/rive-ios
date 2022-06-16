@@ -34,11 +34,6 @@
     }
 }
 
-
-- (bool) advanceBy:(double)elapsedSeconds  {
-    return instance->advanceAndApply(elapsedSeconds);
-}
-
 - (RiveSMIBool *)getBool:(NSString *)name {
     // Create a unique dictionary name for numbers;
     // this lets us use one dictionary for the three different types
@@ -94,11 +89,6 @@
         _inputs[dictName] = [[RiveSMINumber alloc] initWithSMIInput: smi];;
         return _inputs[dictName];
     }
-}
-
-- (NSString *)name {
-    std::string str = instance->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
 - (NSInteger)inputCount{

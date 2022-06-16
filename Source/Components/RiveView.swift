@@ -167,13 +167,14 @@ open class RiveView: RiveRendererView {
         let wasPlaying = isPlaying
         eventQueue.fireAll()
         
+        if let scene = riveModel.scene {
+            isPlaying = scene.advance(by: delta) && wasPlaying
+        }
+        
         if let stateMachine = riveModel.stateMachine {
-            isPlaying = stateMachine.advance(by: delta) && wasPlaying
             stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
         }
         else if let animation = riveModel.animation {
-            isPlaying = animation.advance(by: delta) && wasPlaying
-            
             if isPlaying {
                 if animation.didLoop() {
                     playerDelegate?.player(loopedWithModel: riveModel, type: Int(animation.loop()))
@@ -203,7 +204,7 @@ open class RiveView: RiveRendererView {
         
         let newFrame = CGRect(origin: rect.origin, size: size)
         align(with: newFrame, contentRect: riveModel.artboard.bounds(), alignment: alignment, fit: fit)
-        draw(with: riveModel.artboard)
+        draw(with: riveModel.scene)
     }
     
     // MARK: - UIResponder

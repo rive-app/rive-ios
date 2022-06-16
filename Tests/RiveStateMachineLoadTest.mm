@@ -68,7 +68,7 @@
  */
 - (void)testArtboardHasNoStateMachine {
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     XCTAssertEqual([artboard animationCount], 0);
     
@@ -80,7 +80,7 @@
 */
 - (void)testArtboardStateMachineAtIndexDoesntExist {
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
 
     NSError* error = nil;
     RiveStateMachineInstance* stateMachine = [artboard stateMachineFromIndex:0 error:&error];
@@ -96,7 +96,7 @@
 */
 - (void)testArtboardStateMachineWithNameDoesntExist {
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
 
     NSError* error = nil;
     RiveStateMachineInstance* stateMachine = [artboard stateMachineFromName:@"boo" error:&error];

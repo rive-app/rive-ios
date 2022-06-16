@@ -28,6 +28,14 @@
 #import "rive/animation/animation_state.hpp"
 
 /*
+ * RiveScene interface
+ */
+@interface RiveScene ()
+- (instancetype)initWithScene:(rive::Scene *)scene;
+- (void)draw:(rive::Renderer *)renderer;
+@end
+
+/*
  * RiveStateMachineInstance interface
  */
 @interface RiveStateMachineInstance ()
@@ -70,7 +78,7 @@
  * RiveArtboard interface
  */
 @interface RiveArtboard ()
-@property (nonatomic, readonly) rive::ArtboardInstance* artboardInstance;
+@property (nonatomic, readonly) rive::ArtboardInstance* instance;
 -(instancetype) initWithArtboard:(rive::ArtboardInstance *) riveArtboard;
 @end
 

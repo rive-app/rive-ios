@@ -37,11 +37,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithResource:(NSString *)resourceName error:(NSError**)error;
 - (nullable instancetype)initWithHttpUrl:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate;
 
-/// Returns a reference to the default artboard
-- (RiveArtboard * __nullable)artboard:(NSError**)error;
-
 /// Returns the number of artboards in the file
 - (NSInteger)artboardCount;
+
+/// Returns a reference to the default artboard
+- (RiveArtboard * __nullable)defaultArtboard:(NSError**)error;
 
 /// Returns the artboard by its index
 - (RiveArtboard * __nullable)artboardFromIndex:(NSInteger)index error:(NSError**)error;

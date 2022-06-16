@@ -15,15 +15,24 @@
 
 - (instancetype)initWithArtboard:(rive::ArtboardInstance *)riveArtboard {
     if (self = [super init]) {
-        _artboardInstance = riveArtboard;
+        _instance = riveArtboard;
         return self;
     } else {
         return NULL;
     }
 }
 
+- (RiveScene *)defaultScene:(NSError **)error {
+    auto scene = _instance->defaultScene();
+    if (scene == nullptr) {
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No default Scene found."], @"name": @"NoSceneFound"}];
+        return nil;
+    }
+    return [[RiveScene alloc] initWithScene:scene.release()];
+}
+
 - (NSInteger)animationCount {
-    return _artboardInstance->animationCount();
+    return _instance->animationCount();
 }
 
 - (RiveLinearAnimationInstance *)animationFromIndex:(NSInteger)index error:(NSError**) error {
@@ -31,12 +40,12 @@
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoAnimationFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Animation found at index %ld.", (long)index], @"name": @"NoAnimationFound"}];
         return nil;
     }
-    return [[RiveLinearAnimationInstance alloc] initWithAnimation: _artboardInstance->animationAt(index).release()];
+    return [[RiveLinearAnimationInstance alloc] initWithAnimation: _instance->animationAt(index).release()];
 }
 
 - (RiveLinearAnimationInstance *)animationFromName:(NSString *)name error:(NSError**) error {
     std::string stdName = std::string([name UTF8String]);
-    rive::LinearAnimationInstance *animation = _artboardInstance->animationNamed(stdName).release();
+    rive::LinearAnimationInstance *animation = _instance->animationNamed(stdName).release();
     if (animation == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoAnimationFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Animation found with name %@.", name], @"name": @"NoAnimationFound"}];
         return nil;
@@ -54,7 +63,16 @@
 
 /// Returns the number of state machines in the artboard
 - (NSInteger)stateMachineCount {
-    return _artboardInstance->stateMachineCount();
+    return _instance->stateMachineCount();
+}
+
+- (RiveStateMachineInstance *)defaultStateMachine:(NSError **)error {
+    rive::StateMachineInstance *machine = _instance->defaultStateMachine().release();
+    if (machine == nullptr) {
+        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No default State Machine found."], @"name": @"NoStateMachineFound"}];
+        return nil;
+    }
+    return [[RiveStateMachineInstance alloc] initWithStateMachine:machine];
 }
 
 /// Returns a state machine at the given index, or null if the index is invalid
@@ -63,13 +81,13 @@
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Machine found at index %ld.", (long)index], @"name": @"NoStateMachineFound"}];
         return nil;
     }
-    return [[RiveStateMachineInstance alloc] initWithStateMachine: _artboardInstance->stateMachineAt(index).release()];
+    return [[RiveStateMachineInstance alloc] initWithStateMachine: _instance->stateMachineAt(index).release()];
 }
 
 /// Returns a state machine with the given name, or null if none exists
 - (RiveStateMachineInstance *)stateMachineFromName:(NSString *)name error:(NSError**)error {
     std::string stdName = std::string([name UTF8String]);
-    rive::StateMachineInstance *machine = _artboardInstance->stateMachineNamed(stdName).release();
+    rive::StateMachineInstance *machine = _instance->stateMachineNamed(stdName).release();
     if (machine == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No State Machine found with name %@.", name], @"name": @"NoStateMachineFound"}];
         return nil;
@@ -87,25 +105,28 @@
 
 
 - (void)advanceBy:(double)elapsedSeconds {
-    _artboardInstance->advance(elapsedSeconds);
+    _instance->advance(elapsedSeconds);
 }
 
+// This isn't used. RiveRendererView gets the Artboard's instance property and calls
+// instance->draw(_renderer) itself. It's because we're not using RiveRenderer; we're
+// using SkiaRenderer.
 - (void)draw:(RiveRenderer *)renderer {
-    _artboardInstance->draw([renderer renderer]);
+    _instance->draw([renderer renderer]);
 }
 
 - (NSString *)name {
-    std::string str = _artboardInstance->name();
+    std::string str = _instance->name();
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
 - (CGRect)bounds {
-    rive::AABB aabb = _artboardInstance->bounds();
+    rive::AABB aabb = _instance->bounds();
     return CGRectMake(aabb.minX, aabb.minY, aabb.width(), aabb.height());
 }
 
 - (void)dealloc {
-     delete _artboardInstance;
+     delete _instance;
 }
 
 @end

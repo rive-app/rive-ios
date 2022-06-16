@@ -25,9 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveStateMachineInstance
  */
-@interface RiveStateMachineInstance : NSObject
-- (NSString* )name;
-- (bool)advanceBy: (double)elapsedSeconds;
+@interface RiveStateMachineInstance : RiveScene
 - (const RiveSMIBool *)getBool:(NSString*)name;
 - (const RiveSMITrigger *)getTrigger:(NSString*)name;
 - (const RiveSMINumber *)getNumber:(NSString*)name;

@@ -33,10 +33,6 @@
     instance->time(time);
 }
 
-- (bool)advanceBy:(double)elapsedSeconds {
-    return instance->advanceAndApply(elapsedSeconds);
-}
-
 - (void)direction:(int)direction {
     instance->direction(direction);
 }
@@ -55,11 +51,6 @@
 
 - (bool)didLoop {
     return instance->didLoop();
-}
-
-- (NSString *)name {
-    std::string str = instance->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
 - (void)dealloc {

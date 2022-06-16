@@ -70,7 +70,7 @@
  */
 - (void)testArtboardHasNoAnimations {
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     XCTAssertEqual([artboard animationCount], 0);
     
@@ -82,7 +82,7 @@
  */
 - (void)testArtboardAnimationAtIndexDoesntExist {
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
 
     NSError* error = nil;
     RiveLinearAnimationInstance* animation = [artboard animationFromIndex:0 error:&error];
@@ -99,7 +99,7 @@
  */
 - (void)testArtboardAnimationWithNameDoesntExist {
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     NSError* error = nil;
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"boo" error:&error];

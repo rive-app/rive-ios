@@ -140,7 +140,7 @@ static rive::SkiaFactory gFactory;
     return false;
 }
 
-- (RiveArtboard *)artboard:(NSError**)error {
+- (RiveArtboard *)defaultArtboard:(NSError**)error {
     auto artboard = riveFile->artboardDefault();
     if (artboard == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardsFound userInfo:@{NSLocalizedDescriptionKey: @"No Artboards Found.", @"name": @"NoArtboardsFound"}];
@@ -149,10 +149,6 @@ static rive::SkiaFactory gFactory;
     else {
         return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
     }
-}
-
-- (NSInteger)artboardCount {
-    return riveFile->artboardCount();
 }
 
 - (RiveArtboard *)artboardFromIndex:(NSInteger)index error:(NSError**)error {
@@ -182,6 +178,10 @@ static rive::SkiaFactory gFactory;
         [artboardNames addObject:[[self artboardFromIndex: i error:nil] name]];
     }
     return artboardNames;
+}
+
+- (NSInteger)artboardCount {
+    return riveFile->artboardCount();
 }
 
 /// Clean up rive file

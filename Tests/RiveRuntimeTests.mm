@@ -129,7 +129,7 @@ UInt8 stateMachineFileBytes[] = {
  */
 - (void)testRetrieveDefaultArtboardFromRiveFile {
     RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156 error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     XCTAssert(artboard != NULL);
     XCTAssert([[artboard name] isEqual: @"New Artboard"]);
 }
@@ -168,7 +168,7 @@ UInt8 stateMachineFileBytes[] = {
  */
 - (void)testRetrieveAnimationCountFromArtboard {
     RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156 error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     NSInteger count = [artboard animationCount];
     XCTAssert(count == 1);
 }
@@ -179,7 +179,7 @@ UInt8 stateMachineFileBytes[] = {
 - (void)testRetrieveFirstAnimation {
     RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156 error:nil];
     XCTAssert(file != NULL);
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     XCTAssert(artboard != NULL);
     XCTAssert([artboard animationCount] == 1);
     
@@ -193,7 +193,7 @@ UInt8 stateMachineFileBytes[] = {
  */
 - (void)testRetrieveAnimationByIndex {
     RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156 error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     RiveLinearAnimationInstance* animation = [artboard animationFromIndex: 0 error:nil];
     XCTAssert(animation != NULL);
@@ -205,7 +205,7 @@ UInt8 stateMachineFileBytes[] = {
  */
 - (void)testRetrieveAnimationByName {
     RiveFile* file = [[RiveFile alloc] initWithBytes: pingPongRiveFileBytes byteLength: 156 error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     NSError* error = nil;
     
     RiveLinearAnimationInstance* animation = [artboard animationFromName: @"Animation 1" error:&error];
@@ -219,7 +219,7 @@ UInt8 stateMachineFileBytes[] = {
 - (void)testRetrieveFirstStateMachine {
     RiveFile* file = [[RiveFile alloc] initWithBytes: stateMachineFileBytes byteLength: 916 error:nil];
     XCTAssert(file != NULL);
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     XCTAssert(artboard != NULL);
     XCTAssert([artboard stateMachineCount] == 1);
     
@@ -234,7 +234,7 @@ UInt8 stateMachineFileBytes[] = {
 - (void)testRetrieveStateMachineByIndex {
     RiveFile* file = [[RiveFile alloc] initWithBytes: stateMachineFileBytes byteLength: 916 error:nil];
     XCTAssert(file != NULL);
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     XCTAssert(artboard != NULL);
     XCTAssert([artboard stateMachineCount] == 1);
     
@@ -263,7 +263,7 @@ UInt8 stateMachineFileBytes[] = {
 - (void)testRetrieveStateMachineByName {
     RiveFile* file = [[RiveFile alloc] initWithBytes: stateMachineFileBytes byteLength: 916 error:nil];
     XCTAssert(file != NULL);
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     XCTAssert(artboard != NULL);
     RiveStateMachineInstance* machine = [artboard stateMachineFromName: @"StateMachine" error:nil];
     XCTAssert(machine != NULL);
@@ -281,7 +281,7 @@ UInt8 stateMachineFileBytes[] = {
  */
 - (void)testCreateStateMachineInstance {
     RiveFile* file = [[RiveFile alloc] initWithBytes: stateMachineFileBytes byteLength: 916 error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     RiveStateMachineInstance* machine = [artboard stateMachineFromIndex:0 error:nil];
     XCTAssert(machine != NULL);

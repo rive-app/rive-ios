@@ -11,8 +11,17 @@ import Foundation
 open class RiveModel: ObservableObject {
     internal private(set) var riveFile: RiveFile
     public private(set) var artboard: RiveArtboard!
-    public internal(set) var stateMachine: RiveStateMachineInstance?
-    public internal(set) var animation: RiveLinearAnimationInstance?
+    public internal(set) var scene: RiveScene!
+    public internal(set) var stateMachine: RiveStateMachineInstance? {
+        didSet {
+            scene = stateMachine ?? scene
+        }
+    }
+    public internal(set) var animation: RiveLinearAnimationInstance? {
+        didSet {
+            scene = animation ?? scene
+        }
+    }
     
     public init(riveFile: RiveFile) {
         self.riveFile = riveFile
@@ -29,44 +38,49 @@ open class RiveModel: ObservableObject {
     // MARK: - Setters
     
     open func setArtboard(_ name: String) throws {
-        do { artboard = try riveFile.artboard(fromName: name) }
-        catch { throw RiveModelError.invalidArtboard(name: name) }
+        artboard = try riveFile.artboard(fromName: name)
     }
     
     open func setArtboard(_ index: Int? = nil) throws {
         if let index = index {
-            do { artboard = try riveFile.artboard(from: index) }
-            catch { throw RiveModelError.invalidArtboard(index: index) }
-        } else {
-            // This tries to find the 'default' Artboard
-            do { artboard = try riveFile.artboard() }
-            catch { throw RiveModelError.invalidArtboard(message: "No Default Artboard") }
+            artboard = try riveFile.artboard(from: index)
+        }
+        else {
+            // Tries to find the 'default' Artboard
+            artboard = try riveFile.defaultArtboard()
         }
     }
     
     open func setStateMachine(_ name: String) throws {
-        do { stateMachine = try artboard.stateMachine(fromName: name) }
-        catch { throw RiveModelError.invalidStateMachine(name: name) }
+        stateMachine = try artboard.stateMachine(fromName: name)
     }
     
     open func setStateMachine(_ index: Int? = nil) throws {
-        // Defaults to 0 as it's assumed to be the first element in the collection
-        let index = index ?? 0
-        do { stateMachine = try artboard.stateMachine(from: index) }
-        catch { throw RiveModelError.invalidStateMachine(index: index) }
+        if let index = index {
+            stateMachine = try artboard.stateMachine(from: index)
+        } else {
+            // Tries to find the 'default' StateMachine
+            stateMachine = try artboard.defaultStateMachine()
+        }
+    }
+    
+    open func setDefaultScene() throws {
+        let newScene = try artboard.defaultScene()
+        if newScene is RiveStateMachineInstance {
+            stateMachine = newScene as? RiveStateMachineInstance
+        } else {
+            animation = newScene as? RiveLinearAnimationInstance
+        }
     }
     
     open func setAnimation(_ name: String) throws {
-        guard animation?.name() != name else { return }
-        do { animation = try artboard.animation(fromName: name) }
-        catch { throw RiveModelError.invalidAnimation(name: name) }
+        animation = try artboard.animation(fromName: name)
     }
     
     open func setAnimation(_ index: Int? = nil) throws {
         // Defaults to 0 as it's assumed to be the first element in the collection
         let index = index ?? 0
-        do { animation = try artboard.animation(from: index) }
-        catch { throw RiveModelError.invalidAnimation(index: index) }
+        animation = try artboard.animation(from: index)
     }
     
     // MARK: -
@@ -83,11 +97,5 @@ open class RiveModel: ObservableObject {
         else {
             return art + "]"
         }
-    }
-    
-    enum RiveModelError: Error {
-        case invalidStateMachine(name: String), invalidStateMachine(index: Int)
-        case invalidAnimation(name: String), invalidAnimation(index: Int)
-        case invalidArtboard(name: String), invalidArtboard(index: Int), invalidArtboard(message: String)
     }
 }

@@ -50,7 +50,7 @@
 - (void)testLoadFlux {
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];
-    RiveArtboard* artboard = [file artboard:&error];
+    RiveArtboard* artboard = [file defaultArtboard:&error];
     XCTAssertEqual(artboard.animationCount, 1);
 }
 
@@ -60,7 +60,7 @@
 - (void)testLoadBuggy {
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"off_road_car_blog" error:&error];
-    RiveArtboard* artboard = [file artboard:&error];
+    RiveArtboard* artboard = [file defaultArtboard:&error];
     XCTAssertEqual(artboard.animationCount, 5);
 }
 

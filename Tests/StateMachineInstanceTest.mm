@@ -23,7 +23,7 @@
 - (void)testNothing {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     RiveStateMachineInstance* stateMachineInstance  = [artboard stateMachineFromName:@"nothing" error:nil];
 
     XCTAssertEqual([stateMachineInstance inputCount], 0);
@@ -35,7 +35,7 @@
 - (void)testNumberInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     RiveStateMachineInstance* stateMachineInstance  = [artboard stateMachineFromName:@"number_input" error:nil];
 
     XCTAssertEqual([stateMachineInstance inputCount], 1);
@@ -58,7 +58,7 @@
 - (void)testBooleanInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     RiveStateMachineInstance* stateMachineInstance = [artboard stateMachineFromName:@"boolean_input" error:nil];
 
     XCTAssertEqual([stateMachineInstance inputCount], 1);
@@ -84,7 +84,7 @@
 - (void)testTriggerInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     RiveStateMachineInstance* stateMachineInstance  = [artboard stateMachineFromName:@"trigger_input" error:nil];
 
     XCTAssertEqual([stateMachineInstance inputCount], 1);
@@ -106,7 +106,7 @@
 - (void)testMixedInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     RiveStateMachineInstance* stateMachineInstance = [artboard stateMachineFromName:@"mixed" error:nil];
 
     XCTAssertEqual([stateMachineInstance inputCount], 6);

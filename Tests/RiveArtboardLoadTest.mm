@@ -48,7 +48,7 @@
     RiveFile* file = [Util loadTestFile:@"noartboard" error:nil];
     
     NSError* error = nil;
-    RiveArtboard* artboard = [file artboard:&error];
+    RiveArtboard* artboard = [file defaultArtboard:&error];
     
     XCTAssertNil(artboard);
     XCTAssertNotNil(error);

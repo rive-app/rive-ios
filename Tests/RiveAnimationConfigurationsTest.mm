@@ -22,7 +22,7 @@
  */
 - (void)testLoop {
     RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
 
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"loop" error:nil];
 
@@ -34,7 +34,7 @@
  */
 - (void)testPingPong {
     RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
 
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"pingpong" error:nil];
     
@@ -46,7 +46,7 @@
  */
 - (void)testOneShot {
     RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
 
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"oneshot" error:nil];
 
@@ -58,7 +58,7 @@
  */
 - (void)testDuration1sec60fps {
     RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"1sec60fps" error:nil];
 
@@ -81,7 +81,7 @@
  */
 - (void)testDuration1sec120fps {
     RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"1sec120fps" error:nil];
 
@@ -97,7 +97,7 @@
  */
 - (void)testDuration1sec60fpsf30f50 {
     RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"1sec60fps_f30f50" error:nil];
 
@@ -124,7 +124,7 @@
  */
 - (void)testDuration1sec120fpsf50f80 {
     RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+    RiveArtboard* artboard = [file defaultArtboard:nil];
     
     RiveLinearAnimationInstance* animation = [artboard animationFromName:@"1sec120fps_f50f80" error:nil];
 

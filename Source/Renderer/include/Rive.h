@@ -13,8 +13,8 @@
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-
 #import <RiveRuntime/RiveFile.h>
+#import <RiveRuntime/RiveScene.hpp>
 #import <RiveRuntime/RiveArtboard.h>
 #import <RiveRuntime/RiveSMIInput.h>
 #import <RiveRuntime/RiveLinearAnimationInstance.h>

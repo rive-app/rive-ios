@@ -22,7 +22,7 @@
 - (void)testNothing {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachine = [[file artboard:nil] stateMachineFromName:@"nothing" error:nil];
+    RiveStateMachineInstance* stateMachine = [[file defaultArtboard:nil] stateMachineFromName:@"nothing" error:nil];
 
     XCTAssertEqual([stateMachine inputCount], 0);
     XCTAssertEqual([stateMachine layerCount], 0);
@@ -34,7 +34,7 @@
 - (void)testOneLayer {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachine = [[file artboard:nil] stateMachineFromName:@"one_layer" error:nil];
+    RiveStateMachineInstance* stateMachine = [[file defaultArtboard:nil] stateMachineFromName:@"one_layer" error:nil];
 
     XCTAssertEqual([stateMachine inputCount], 0);
     XCTAssertEqual([stateMachine layerCount], 1);
@@ -46,7 +46,7 @@
 - (void)testTwoLayers {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachine = [[file artboard:nil] stateMachineFromName:@"two_layers" error:nil];
+    RiveStateMachineInstance* stateMachine = [[file defaultArtboard:nil] stateMachineFromName:@"two_layers" error:nil];
 
     XCTAssertEqual([stateMachine inputCount], 0);
     XCTAssertEqual([stateMachine layerCount], 2);
@@ -58,7 +58,7 @@
 - (void)testNumberInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachine = [[file artboard:nil] stateMachineFromName:@"number_input" error:nil];
+    RiveStateMachineInstance* stateMachine = [[file defaultArtboard:nil] stateMachineFromName:@"number_input" error:nil];
 
     XCTAssertEqual([stateMachine inputCount], 1);
     XCTAssertEqual([stateMachine layerCount], 1);
@@ -78,7 +78,7 @@
 - (void)testBooleanInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachine = [[file artboard:nil] stateMachineFromName:@"boolean_input" error:nil];
+    RiveStateMachineInstance* stateMachine = [[file defaultArtboard:nil] stateMachineFromName:@"boolean_input" error:nil];
 
     XCTAssertEqual([stateMachine inputCount], 1);
     XCTAssertEqual([stateMachine layerCount], 1);
@@ -99,7 +99,7 @@
 - (void)testTriggerInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
 
-    RiveStateMachineInstance* stateMachine = [[file artboard:nil] stateMachineFromName:@"trigger_input" error:nil];
+    RiveStateMachineInstance* stateMachine = [[file defaultArtboard:nil] stateMachineFromName:@"trigger_input" error:nil];
 
     XCTAssertEqual([stateMachine inputCount], 1);
     XCTAssertEqual([stateMachine layerCount], 1);
@@ -119,7 +119,7 @@
 - (void)testMixedInput {
     RiveFile* file = [Util loadTestFile:@"state_machine_configurations" error:nil];
     
-    RiveStateMachineInstance* stateMachine = [[file artboard:nil] stateMachineFromName:@"mixed" error:nil];
+    RiveStateMachineInstance* stateMachine = [[file defaultArtboard:nil] stateMachineFromName:@"mixed" error:nil];
 
     XCTAssertEqual([stateMachine inputCount], 6);
     XCTAssertEqual([stateMachine layerCount], 4);
