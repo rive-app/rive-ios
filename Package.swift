@@ -11,8 +11,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "RiveRuntime",
-            url: "https://github.com/rive-app/rive-ios/releases/download/2.0.25/RiveRuntime.xcframework.zip",
-            checksum: "e9d07548baebfb53acd540b607c80c9ab372e9d7ff68fd806cde0757660fd435"
+            url: "https://github.com/rive-app/rive-ios/releases/download/2.0.26/RiveRuntime.xcframework.zip",
+            checksum: "eabbedc2a1b25f13ea06fbf2080a2d25d4a3c88722690af49600eafd89e46241"
         ),
     ]
 )
