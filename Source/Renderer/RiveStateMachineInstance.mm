@@ -230,10 +230,12 @@ static int smInstanceCount = 0;
 
 + (void)raiseInstanceCount {
     smInstanceCount++;
+    NSLog(@"+ StateMachine: %d", smInstanceCount);
 }
 
 + (void)reduceInstanceCount {
     smInstanceCount--;
+    NSLog(@"- StateMachine: %d", smInstanceCount);
 }
 
 - (void)dealloc {

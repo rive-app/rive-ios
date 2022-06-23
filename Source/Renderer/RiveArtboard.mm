@@ -114,10 +114,12 @@ static int artInstanceCount = 0;
 
 + (void)raiseInstanceCount {
     artInstanceCount++;
+    NSLog(@"+ Artboard: %d", artInstanceCount);
 }
 
 + (void)reduceInstanceCount {
     artInstanceCount--;
+    NSLog(@"- Artboard: %d", artInstanceCount);
 }
 
 - (void)dealloc {

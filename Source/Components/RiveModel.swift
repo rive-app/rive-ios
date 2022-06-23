@@ -23,16 +23,7 @@ open class RiveModel: ObservableObject {
     }
     
     public init(webURL: String, delegate: RiveFileDelegate) {
-        riveFile = RiveFile(httpUrl: webURL, with: delegate)!
-    }
-    
-    deinit {
-        artboard = nil
-        stateMachine = nil
-        animation = nil
-        print("Artboard instances: \(RiveArtboard.instanceCount())")
-        print("Animation instances: \(RiveLinearAnimationInstance.instanceCount())")
-        print("StateMachine instances: \(RiveStateMachineInstance.instanceCount())")
+        riveFile = RiveFile(webURL: webURL, with: delegate)!
     }
     
     // MARK: - Setters
@@ -40,7 +31,6 @@ open class RiveModel: ObservableObject {
     open func setArtboard(_ name: String) throws {
         do { artboard = try riveFile.artboard(fromName: name) }
         catch { throw RiveModelError.invalidArtboard(name: name) }
-        print("Artboard instances: \(RiveArtboard.instanceCount())")
     }
     
     open func setArtboard(_ index: Int? = nil) throws {
@@ -51,14 +41,12 @@ open class RiveModel: ObservableObject {
             // This tries to find the 'default' Artboard
             do { artboard = try riveFile.artboard() }
             catch { throw RiveModelError.invalidArtboard(message: "No Default Artboard") }
-            print("Artboard instances: \(RiveArtboard.instanceCount())")
         }
     }
     
     open func setStateMachine(_ name: String) throws {
         do { stateMachine = try artboard.stateMachine(fromName: name) }
         catch { throw RiveModelError.invalidStateMachine(name: name) }
-        print("StateMachine instances: \(RiveStateMachineInstance.instanceCount())")
     }
     
     open func setStateMachine(_ index: Int? = nil) throws {
@@ -66,14 +54,12 @@ open class RiveModel: ObservableObject {
         let index = index ?? 0
         do { stateMachine = try artboard.stateMachine(from: index) }
         catch { throw RiveModelError.invalidStateMachine(index: index) }
-        print("StateMachine instances: \(RiveStateMachineInstance.instanceCount())")
     }
     
     open func setAnimation(_ name: String) throws {
         guard animation?.name() != name else { return }
         do { animation = try artboard.animation(fromName: name) }
         catch { throw RiveModelError.invalidAnimation(name: name) }
-        print("Animation instances: \(RiveLinearAnimationInstance.instanceCount())")
     }
     
     open func setAnimation(_ index: Int? = nil) throws {
@@ -81,7 +67,6 @@ open class RiveModel: ObservableObject {
         let index = index ?? 0
         do { animation = try artboard.animation(from: index) }
         catch { throw RiveModelError.invalidAnimation(index: index) }
-        print("Animation instances: \(RiveLinearAnimationInstance.instanceCount())")
     }
     
     // MARK: -

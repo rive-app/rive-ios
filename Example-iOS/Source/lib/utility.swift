@@ -40,7 +40,7 @@ struct SwiftVMPlayer: View {
             Color.gray
                 
             VStack {
-                ForEach(0 ..< viewModels.count) { i in
+                ForEach(0 ..< viewModels.count, id:\.self) { i in
                     viewModels[i].view()
                 }
                 

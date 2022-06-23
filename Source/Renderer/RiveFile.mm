@@ -10,13 +10,16 @@
 #import <RivePrivateHeaders.h>
 #include "skia_factory.hpp"
 
-static rive::SkiaFactory gFactory;
+// MARK: - Globals
 
-/*
- * RiveFile
- */
+static rive::SkiaFactory gFactory;
+NSMutableArray<RiveFile*> *riveFileCache = [[NSMutableArray alloc] init];
+
+// MARK: - RiveFile
+ 
 @implementation RiveFile {
     rive::File* riveFile;
+    NSInteger references;
 }
 
 + (uint)majorVersion { return UInt8(rive::File::majorVersion); }
@@ -24,6 +27,11 @@ static rive::SkiaFactory gFactory;
 
 - (nullable instancetype)initWithByteArray:(NSArray *)array error:(NSError**)error {
     if (self = [super init]) {
+        // If we have already loaded this file we return the existing instance
+        if (RiveFile *existingFile = [self registerFileWithKey:array]) {
+            return existingFile;
+        }
+        
         UInt8* bytes;
         @try {
             bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
@@ -48,6 +56,12 @@ static rive::SkiaFactory gFactory;
 
 - (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length error:(NSError**)error {
     if (self = [super init]) {
+        // If we have already loaded this file we return the existing instance
+        auto data = [[NSData alloc] initWithBytes:bytes length:length];
+        if (RiveFile *existingFile = [self registerFileWithKey:data]) {
+            return existingFile;
+        }
+        
         BOOL ok = [self import:bytes byteLength:length error:error];
         if (!ok) {
             return nil;
@@ -61,8 +75,8 @@ static rive::SkiaFactory gFactory;
 /*
  * Creates a RiveFile from a binary resource
  */
-- (nullable instancetype)initWithResource:(NSString *)resourceName withExtension:(NSString *)extension error:(NSError**)error {
-    NSString *filepath = [[NSBundle mainBundle] pathForResource:resourceName ofType:extension];
+- (nullable instancetype)initWithName:(NSString *)fileName withExtension:(NSString *)extension error:(NSError**)error {
+    NSString *filepath = [[NSBundle mainBundle] pathForResource:fileName ofType:extension];
     NSURL *fileUrl = [NSURL fileURLWithPath:filepath];
     NSData *fileData = [NSData dataWithContentsOfURL:fileUrl];
     UInt8 *bytePtr = (UInt8 *)[fileData bytes];
@@ -72,16 +86,23 @@ static rive::SkiaFactory gFactory;
 /*
  * Creates a RiveFile from a binary resource, and assumes the resource extension is '.riv'
  */
-- (nullable instancetype)initWithResource:(NSString *)resourceName error:(NSError**)error {
-    return [self initWithResource:resourceName withExtension:@"riv" error:error];
+- (nullable instancetype)initWithName:(NSString *)fileName error:(NSError**)error {
+    return [self initWithName:fileName withExtension:@"riv" error:error];
 }
 
 /*
  * Creates a RiveFile from an HTTP url
  */
-- (nullable instancetype)initWithHttpUrl:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate {
+- (nullable instancetype)initWithWebURL:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate {
     self.isLoaded = false;
+    
     if (self = [super init]) {
+        // If we have already loaded this file we return the existing instance
+        if (RiveFile *existingFile = [self registerFileWithKey:url]) {
+            [self.delegate riveFileDidLoad:existingFile error:nil];
+            return existingFile;
+        }
+        
         self.delegate = delegate;
         // Set up the http download task
         NSURL *URL = [NSURL URLWithString:url];
@@ -116,6 +137,34 @@ static rive::SkiaFactory gFactory;
         return self;
     }
 
+    return nil;
+}
+
+/// Adds this instance to the riveFileCache if its uuid is not already being used by a file in the cache.
+///
+/// @Returns An existing RiveFile if one in the global riveFileCache matches this instance's _uuid property; nil if not
+/// @param keyObject Any hashable NSObject which is used to make a unique id for this RiveFile.
+/// @Discussion The keyObject should be something unique to the file like the file name, url, byte array, etc
+- (nullable RiveFile *)registerFileWithKey:(NSObject *)keyObject {
+    if (_uuid == 0) {
+        _uuid = [keyObject hash];
+    }
+    
+    for (NSInteger i = 0; i < [riveFileCache count]; i++) {
+        RiveFile *file = [riveFileCache objectAtIndex:i];
+        if ([file uuid] == _uuid) {
+            file->references++;
+            NSLog(@"> Cached RiveFile UUID: %lu, References: %ld", _uuid, (long)file->references);
+            _uuid = 0;
+            return file;
+        }
+    }
+    
+    references++;
+    [riveFileCache addObject:self];
+    NSLog(@"+ Cached RiveFiles: %lu, UUID: %lu", (unsigned long)[riveFileCache count], _uuid);
+    
+    // No RiveFile in the riveFileCache has a matching uuid
     return nil;
 }
 
@@ -186,6 +235,31 @@ static rive::SkiaFactory gFactory;
 
 /// Clean up rive file
 - (void)dealloc {
+    BOOL removed = false;
+    BOOL duplicateCleanup = _uuid == 0; // magic number given to duplicates when registering
+    
+    if (!duplicateCleanup) {
+        for (auto i = 0; i < riveFileCache.count; i++) {
+            if (_uuid == riveFileCache[i].uuid) {
+                RiveFile *cachedFile = [riveFileCache objectAtIndex:i];
+                cachedFile->references--;
+                NSLog(@"< Cached RiveFile UUID: %lu, References: %ld", _uuid, (long)cachedFile->references);
+                
+                if (cachedFile->references <= 0) {
+                    [riveFileCache removeObject:cachedFile];
+                    removed = true;
+                    NSLog(@"- Cached RiveFiles: %lu, UUID: %lu", (unsigned long)[riveFileCache count], _uuid);
+                }
+                
+                break;
+            }
+        }
+    }
+    
+    if (!removed && !duplicateCleanup) {
+        [NSException raise:@"UntrackedRiveFile" format:@"The _uuid property of the RiveFile being deallocated is not in the riveFileCache"];
+    }
+    
     delete riveFile;
 }
 

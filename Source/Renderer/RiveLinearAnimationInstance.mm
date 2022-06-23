@@ -120,10 +120,12 @@ static int animInstanceCount = 0;
 
 + (void)raiseInstanceCount {
     animInstanceCount++;
+    NSLog(@"+ Animation: %d", animInstanceCount);
 }
 
 + (void)reduceInstanceCount {
     animInstanceCount--;
+    NSLog(@"- Animation: %d", animInstanceCount);
 }
 
 @end

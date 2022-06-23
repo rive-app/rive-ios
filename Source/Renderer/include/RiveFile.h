@@ -31,11 +31,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// Delegate for calling when a file has finished loading
 @property id delegate;
 
+/// The unique identifier for the asset used to create this file
+@property (readonly) NSUInteger uuid;
+
 - (nullable instancetype)initWithByteArray:(NSArray *)bytes error:(NSError**)error;
 - (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length error:(NSError**)error;
-- (nullable instancetype)initWithResource:(NSString *)resourceName withExtension:(NSString *)extension error:(NSError**)error;
-- (nullable instancetype)initWithResource:(NSString *)resourceName error:(NSError**)error;
-- (nullable instancetype)initWithHttpUrl:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate;
+- (nullable instancetype)initWithName:(NSString *)fileName withExtension:(NSString *)extension error:(NSError**)error;
+- (nullable instancetype)initWithName:(NSString *)fileName error:(NSError**)error;
+- (nullable instancetype)initWithWebURL:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate;
 
 /// Returns a reference to the default artboard
 - (RiveArtboard * __nullable)artboard:(NSError**)error;
