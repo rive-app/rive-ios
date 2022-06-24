@@ -40,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (RiveLayerState * __nullable)stateChangedFromIndex:(NSInteger)index error:(NSError**)error;
 - (NSArray<NSString *> *)stateChanges;
 
+// MARK: Touch
+
 /// Tells this StateMachineInstance that a user began touching the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating artboard
 - (void)touchBeganAtLocation:(CGPoint)touchLocation;
@@ -55,6 +57,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// Tells this StateMachineInstance that a user cancelled touching the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating artboard
 - (void)touchCancelledAtLocation:(CGPoint)touchLocation;
+
+// MARK: Debug
+
+#if RIVE_ENABLE_REFERENCE_COUNTING
++ (int)instanceCount;
+#endif //RIVE_ENABLE_REFERENCE_COUNTING
 
 @end
 

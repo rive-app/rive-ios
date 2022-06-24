@@ -35,6 +35,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer *)renderer;
 
+// MARK: Debug
+
+#if RIVE_ENABLE_REFERENCE_COUNTING
++ (int)instanceCount;
+#endif //RIVE_ENABLE_REFERENCE_COUNTING
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -27,6 +27,12 @@
 #import "rive/animation/exit_state.hpp"
 #import "rive/animation/animation_state.hpp"
 
+// MARK: - Feature Flags
+
+#define RIVE_ENABLE_REFERENCE_COUNTING false
+
+// MARK: - Public Interfaces
+
 /*
  * RiveStateMachineInstance interface
  */
