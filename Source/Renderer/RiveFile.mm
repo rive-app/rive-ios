@@ -24,6 +24,7 @@ static rive::SkiaFactory gFactory;
 
 - (nullable instancetype)initWithByteArray:(NSArray *)array error:(NSError**)error {
     if (self = [super init]) {
+        _uuid = [array hash];
         UInt8* bytes;
         @try {
             bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
@@ -48,6 +49,9 @@ static rive::SkiaFactory gFactory;
 
 - (nullable instancetype)initWithBytes:(UInt8 *)bytes byteLength:(UInt64)length error:(NSError**)error {
     if (self = [super init]) {
+        auto data = [[NSData alloc] initWithBytes:bytes length:length];
+        _uuid = [data hash];
+        
         BOOL ok = [self import:bytes byteLength:length error:error];
         if (!ok) {
             return nil;
@@ -82,6 +86,7 @@ static rive::SkiaFactory gFactory;
 - (nullable instancetype)initWithHttpUrl:(NSString *)url withDelegate:(id<RiveFileDelegate>)delegate {
     self.isLoaded = false;
     if (self = [super init]) {
+        _uuid = [url hash];
         self.delegate = delegate;
         // Set up the http download task
         NSURL *URL = [NSURL URLWithString:url];
