@@ -8,9 +8,9 @@
 
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
-#include "skia_factory.hpp"
+#include "cg_skia_factory.hpp"
 
-static rive::SkiaFactory gFactory;
+static rive::CGSkiaFactory gFactory;
 
 /*
  * RiveFile
@@ -122,6 +122,7 @@ static rive::SkiaFactory gFactory;
 - (BOOL) import:(UInt8 *)bytes byteLength:(UInt64)length error:(NSError**)error {
     rive::ImportResult result;
     riveFile = rive::File::import(rive::Span(bytes, length), &gFactory, &result).release();
+    
     if (result == rive::ImportResult::success) {
         return true;
     }
