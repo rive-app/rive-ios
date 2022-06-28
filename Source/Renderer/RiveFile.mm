@@ -8,7 +8,7 @@
 
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
-#include "cg_skia_factory.hpp"
+#include "CGSkiaFactory.hpp"
 
 static rive::CGSkiaFactory gFactory;
 
