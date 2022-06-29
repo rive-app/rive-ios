@@ -12,12 +12,16 @@
 
 #include "skia_factory.hpp"
 
+#ifdef RIVE_BUILD_FOR_APPLE
+
 namespace rive {
 
 struct CGSkiaFactory : public SkiaFactory {
-    std::vector<uint8_t> platformDecode(rive::Span<const uint8_t> span, ImageInfo* info) override;
+    std::vector<uint8_t> platformDecode(Span<const uint8_t> span, SkiaFactory::ImageInfo* info) override;
 };
 
 } // namespace
+
+#endif // RIVE_BUILD_FOR_APPLE
 
 #endif /* CGSkiaFactory_hpp */

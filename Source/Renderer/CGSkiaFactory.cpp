@@ -9,12 +9,16 @@
 
 #include "CGSkiaFactory.hpp"
 #include "rive/core/type_conversions.hpp"
-
-#include <CoreGraphics/CoreGraphics.h>
-#include <ImageIO/ImageIO.h>
-#include <MobileCoreServices/MobileCoreServices.h>
-
 #include <vector>
+
+#ifdef RIVE_BUILD_FOR_APPLE
+
+#ifdef RIVE_BUILD_FOR_OSX
+    #include <ApplicationServices/ApplicationServices.h>
+#elif defined (RIVE_BUILD_FOR_IOS)
+    #include <ImageIO/ImageIO.h>
+    #include <CoreGraphics/CoreGraphics.h>
+#endif
 
 // Helper that remembers to call CFRelease when an object goes out of scope.
 template <typename T> class AutoCF {
@@ -92,3 +96,5 @@ std::vector<uint8_t> CGSkiaFactory::platformDecode(rive::Span<const uint8_t> spa
     info->rowBytes = rowBytes;
     return pixels;
 };
+
+#endif // Apple
