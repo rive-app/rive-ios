@@ -9,10 +9,18 @@
 import Foundation
 
 open class RiveModel: ObservableObject {
+    private static let enableFileCache = false
     private let fileUUID: UInt
     
     internal static var fileCache: RiveFileCache = RiveFileCache()
-    internal weak var riveFile: RiveFile! { RiveModel.fileCache.reference(with: fileUUID)!.file }
+    internal var uncachedRiveFile: RiveFile!
+    internal weak var riveFile: RiveFile! {
+        if RiveModel.enableFileCache {
+            return RiveModel.fileCache.reference(with: fileUUID)!.file
+        } else {
+            return uncachedRiveFile
+        }
+    }
     
     public private(set) var artboard: RiveArtboard!
     public internal(set) var stateMachine: RiveStateMachineInstance?
@@ -20,24 +28,33 @@ open class RiveModel: ObservableObject {
     
     public init(riveFile: RiveFile) {
         fileUUID = riveFile.uuid
-        RiveModel.fileCache.add(riveFile)
+        sharedInit(file: riveFile)
     }
     
     public init(fileName: String) throws {
         let file = try RiveFile(name: fileName)
         fileUUID = file.uuid
-        RiveModel.fileCache.add(file)
+        sharedInit(file: file)
     }
     
     public init(webURL: String, delegate: RiveFileDelegate) {
         let file = RiveFile(httpUrl: webURL, with: delegate)!
         fileUUID = file.uuid
-        RiveModel.fileCache.add(file)
+        sharedInit(file: file)
+    }
+    
+    private func sharedInit(file: RiveFile) {
+        if RiveModel.enableFileCache {
+            RiveModel.fileCache.add(file)
+        } else {
+            uncachedRiveFile = file
+        }
     }
     
     deinit {
-        RiveModel.fileCache.remove(riveFile)
-        //print("RiveView deinit")
+        if RiveModel.enableFileCache {
+            RiveModel.fileCache.remove(riveFile)
+        }
     }
     
     // MARK: - Setters
@@ -131,6 +148,7 @@ internal class RiveFileCache {
             cachedRef.referenceCount += 1
             print("RiveFile UUID: \(cachedRef.file.uuid) referenced -- References: \(cachedRef.referenceCount) -- Files cached: \(fileReferences.count)")
         }
+        
         // The RiveFile is new so we add it to the cache
         else {
             let reference = RiveFileReference(file: file)
@@ -150,6 +168,7 @@ internal class RiveFileCache {
                 fileReferences.removeAll { $0.file.uuid == file.uuid }
                 print("RiveFile UUID: \(file.uuid) removed -- Files cached: \(fileReferences.count)")
             }
+            
             // The cached RiveFile has references to it
             else {
                 print("RiveFile UUID: \(file.uuid) unreferenced -- References: \(cachedRef.referenceCount) -- Files cached: \(fileReferences.count)")
