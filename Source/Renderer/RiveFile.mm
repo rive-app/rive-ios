@@ -8,9 +8,9 @@
 
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
-#include "skia_factory.hpp"
+#import <cg_skia_factory.hpp>
 
-static rive::SkiaFactory gFactory;
+static rive::CGSkiaFactory gFactory;
 
 /*
  * RiveFile
