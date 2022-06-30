@@ -8,7 +8,7 @@
 
 import Foundation
 
-open class RiveModel: ObservableObject {
+open class RiveModel {
     internal private(set) var riveFile: RiveFile
     public private(set) var artboard: RiveArtboard!
     public internal(set) var stateMachine: RiveStateMachineInstance?

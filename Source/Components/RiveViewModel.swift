@@ -347,6 +347,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     /// This can be added to the body of a SwiftUI `View`
+    @available(iOS 13.0, *)
     open func view() -> AnyView {
         return AnyView(RiveViewRepresentable(viewModel: self))
     }
@@ -392,7 +393,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
 }
 
-/// This makes a SwiftUI digestable view from an `RiveViewModel` and its `RiveView`
+/// This makes a SwiftUI digestable `View` from a `RiveViewModel` and its `RiveView`
+@available(iOS 13.0, *)
 public struct RiveViewRepresentable: UIViewRepresentable {
     let viewModel: RiveViewModel
     
