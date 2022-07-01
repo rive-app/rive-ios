@@ -27,19 +27,8 @@ open class RiveView: RiveRendererView {
     
     // MARK: Debug
     private var fpsCounter: FPSCounterView? = nil
-    public var showFPS: Bool = false {
-        didSet {
-            if showFPS && fpsCounter == nil {
-                fpsCounter = FPSCounterView()
-                addSubview(fpsCounter!)
-            }
-            
-            if !showFPS {
-                fpsCounter?.removeFromSuperview()
-                fpsCounter = nil
-            }
-        }
-    }
+    public var showFPS: Bool = RiveView.showFPSCounter { didSet { setFPSCounterState() } }
+    public static var showFPSCounter = false
     
     /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
     public init() {
@@ -68,7 +57,7 @@ open class RiveView: RiveRendererView {
             advance(delta: 0)
         }
         
-        showFPS = false
+        showFPS = RiveView.showFPSCounter
     }
     
     // MARK: - Controls
@@ -247,6 +236,21 @@ open class RiveView: RiveRendererView {
         if let stateMachine = riveModel.stateMachine {
             action(stateMachine, artboardLocation)
             play()
+        }
+    }
+    
+    // MARK: - Debug
+    
+    private func setFPSCounterState() {
+        // Create a new counter view
+        if showFPS && fpsCounter == nil {
+            fpsCounter = FPSCounterView()
+            addSubview(fpsCounter!)
+        }
+        
+        if !showFPS {
+            fpsCounter?.removeFromSuperview()
+            fpsCounter = nil
         }
     }
 }
