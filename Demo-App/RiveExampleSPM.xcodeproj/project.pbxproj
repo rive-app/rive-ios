@@ -1,0 +1,399 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C30EB0EF286FE16A00451EE2 /* interactive_rings.riv in Resources */ = {isa = PBXBuildFile; fileRef = C30EB0EE286FE16A00451EE2 /* interactive_rings.riv */; };
+		C30EB0F5286FEF7500451EE2 /* confetti.riv in Resources */ = {isa = PBXBuildFile; fileRef = C30EB0F4286FEF7500451EE2 /* confetti.riv */; };
+		C30EB0F9286FF65100451EE2 /* play_pause.riv in Resources */ = {isa = PBXBuildFile; fileRef = C30EB0F8286FF65100451EE2 /* play_pause.riv */; };
+		C36D8A8B286F86A600C97125 /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36D8A8A286F86A600C97125 /* ExampleApp.swift */; };
+		C36D8A8D286F86A600C97125 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36D8A8C286F86A600C97125 /* SplashScreen.swift */; };
+		C36D8A8F286F86A800C97125 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C36D8A8E286F86A800C97125 /* Assets.xcassets */; };
+		C36D8A92286F86A800C97125 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C36D8A91286F86A800C97125 /* Preview Assets.xcassets */; };
+		C36D8A9A286F876700C97125 /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = C36D8A99286F876700C97125 /* RiveRuntime */; };
+		C36D8A9D286F92B300C97125 /* windy_tree.riv in Resources */ = {isa = PBXBuildFile; fileRef = C36D8A9C286F92B300C97125 /* windy_tree.riv */; };
+		C36D8AA3286FA47000C97125 /* rive_animation_logo.riv in Resources */ = {isa = PBXBuildFile; fileRef = C36D8AA2286FA47000C97125 /* rive_animation_logo.riv */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C30EB0EE286FE16A00451EE2 /* interactive_rings.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = interactive_rings.riv; sourceTree = "<group>"; };
+		C30EB0F4286FEF7500451EE2 /* confetti.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = confetti.riv; sourceTree = "<group>"; };
+		C30EB0F8286FF65100451EE2 /* play_pause.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = play_pause.riv; sourceTree = "<group>"; };
+		C36D8A87286F86A600C97125 /* RiveExampleSPM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiveExampleSPM.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C36D8A8A286F86A600C97125 /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
+		C36D8A8C286F86A600C97125 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
+		C36D8A8E286F86A800C97125 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C36D8A91286F86A800C97125 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		C36D8A9C286F92B300C97125 /* windy_tree.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = windy_tree.riv; sourceTree = "<group>"; };
+		C36D8AA2286FA47000C97125 /* rive_animation_logo.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rive_animation_logo.riv; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C36D8A84286F86A600C97125 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C36D8A9A286F876700C97125 /* RiveRuntime in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C36D8A7E286F86A600C97125 = {
+			isa = PBXGroup;
+			children = (
+				C36D8A89286F86A600C97125 /* RiveExampleSPM */,
+				C36D8A88286F86A600C97125 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C36D8A88286F86A600C97125 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C36D8A87286F86A600C97125 /* RiveExampleSPM.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C36D8A89286F86A600C97125 /* RiveExampleSPM */ = {
+			isa = PBXGroup;
+			children = (
+				C36D8A9B286F928000C97125 /* Rive Files */,
+				C36D8A8A286F86A600C97125 /* ExampleApp.swift */,
+				C36D8A8C286F86A600C97125 /* SplashScreen.swift */,
+				C36D8A8E286F86A800C97125 /* Assets.xcassets */,
+				C36D8A90286F86A800C97125 /* Preview Content */,
+			);
+			path = RiveExampleSPM;
+			sourceTree = "<group>";
+		};
+		C36D8A90286F86A800C97125 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				C36D8A91286F86A800C97125 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		C36D8A9B286F928000C97125 /* Rive Files */ = {
+			isa = PBXGroup;
+			children = (
+				C36D8AA2286FA47000C97125 /* rive_animation_logo.riv */,
+				C36D8A9C286F92B300C97125 /* windy_tree.riv */,
+				C30EB0EE286FE16A00451EE2 /* interactive_rings.riv */,
+				C30EB0F4286FEF7500451EE2 /* confetti.riv */,
+				C30EB0F8286FF65100451EE2 /* play_pause.riv */,
+			);
+			path = "Rive Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C36D8A86286F86A600C97125 /* RiveExampleSPM */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C36D8A95286F86A800C97125 /* Build configuration list for PBXNativeTarget "RiveExampleSPM" */;
+			buildPhases = (
+				C36D8A83286F86A600C97125 /* Sources */,
+				C36D8A84286F86A600C97125 /* Frameworks */,
+				C36D8A85286F86A600C97125 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RiveExampleSPM;
+			packageProductDependencies = (
+				C36D8A99286F876700C97125 /* RiveRuntime */,
+			);
+			productName = RiveExampleSPM;
+			productReference = C36D8A87286F86A600C97125 /* RiveExampleSPM.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C36D8A7F286F86A600C97125 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1340;
+				LastUpgradeCheck = 1340;
+				TargetAttributes = {
+					C36D8A86286F86A600C97125 = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+				};
+			};
+			buildConfigurationList = C36D8A82286F86A600C97125 /* Build configuration list for PBXProject "RiveExampleSPM" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C36D8A7E286F86A600C97125;
+			packageReferences = (
+				C36D8A98286F876700C97125 /* XCRemoteSwiftPackageReference "rive-ios" */,
+			);
+			productRefGroup = C36D8A88286F86A600C97125 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C36D8A86286F86A600C97125 /* RiveExampleSPM */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C36D8A85286F86A600C97125 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C30EB0EF286FE16A00451EE2 /* interactive_rings.riv in Resources */,
+				C30EB0F5286FEF7500451EE2 /* confetti.riv in Resources */,
+				C30EB0F9286FF65100451EE2 /* play_pause.riv in Resources */,
+				C36D8A92286F86A800C97125 /* Preview Assets.xcassets in Resources */,
+				C36D8AA3286FA47000C97125 /* rive_animation_logo.riv in Resources */,
+				C36D8A9D286F92B300C97125 /* windy_tree.riv in Resources */,
+				C36D8A8F286F86A800C97125 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C36D8A83286F86A600C97125 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C36D8A8D286F86A600C97125 /* SplashScreen.swift in Sources */,
+				C36D8A8B286F86A600C97125 /* ExampleApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C36D8A93286F86A800C97125 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C36D8A94286F86A800C97125 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C36D8A96286F86A800C97125 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"RiveExampleSPM/Preview Content\"";
+				DEVELOPMENT_TEAM = 8MJH2BEKLZ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExampleSPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C36D8A97286F86A800C97125 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"RiveExampleSPM/Preview Content\"";
+				DEVELOPMENT_TEAM = 8MJH2BEKLZ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExampleSPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C36D8A82286F86A600C97125 /* Build configuration list for PBXProject "RiveExampleSPM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C36D8A93286F86A800C97125 /* Debug */,
+				C36D8A94286F86A800C97125 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C36D8A95286F86A800C97125 /* Build configuration list for PBXNativeTarget "RiveExampleSPM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C36D8A96286F86A800C97125 /* Debug */,
+				C36D8A97286F86A800C97125 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C36D8A98286F876700C97125 /* XCRemoteSwiftPackageReference "rive-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rive-app/rive-ios";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C36D8A99286F876700C97125 /* RiveRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C36D8A98286F876700C97125 /* XCRemoteSwiftPackageReference "rive-ios" */;
+			productName = RiveRuntime;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C36D8A7F286F86A600C97125 /* Project object */;
+}
