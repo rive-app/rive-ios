@@ -13,6 +13,11 @@ struct SwiftCannonGame: DismissableView {
     var dismiss: () -> Void = {}
     
     var body: some View {
-        RiveViewModel(fileName: "bullet_man_game", stateMachineName: "State Machine 1").view()
+        // MARK: RiveViewModel
+        // This view model controls a file configured with:
+        // - StateMachine
+        // - Listeners
+        
+        RiveViewModel(fileName: "bullet_man_game").view()
     }
 }

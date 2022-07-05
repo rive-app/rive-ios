@@ -114,6 +114,15 @@ static int artInstanceCount = 0;
     return [[RiveStateMachineInstance alloc] initWithStateMachine: machine];
 }
 
+- (RiveStateMachineInstance *)defaultStateMachine {
+    rive::StateMachineInstance *machine = _artboardInstance->defaultStateMachine().release();
+    if (machine == nullptr) {
+//        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No default State Machine found."], @"name": @"NoStateMachineFound"}];
+        return nil;
+    }
+    return [[RiveStateMachineInstance alloc] initWithStateMachine:machine];
+}
+
 - (NSArray *)stateMachineNames{
     NSMutableArray *stateMachineNames = [NSMutableArray array];
     for (NSUInteger i=0; i<[self stateMachineCount]; i++){

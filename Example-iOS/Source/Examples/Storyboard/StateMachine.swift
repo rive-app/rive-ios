@@ -35,6 +35,8 @@ class StateMachineView: UIView {
 }
 
 class StateMachineViewController: UIViewController {
+    // MARK: RiveViewModel
+    // This view model specifies the exact StateMachine that it wants from the file
     var viewModel = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
     
     override public func loadView() {
@@ -47,16 +49,16 @@ class StateMachineViewController: UIViewController {
         viewModel.setView(stateMachineView.riveView)
         
         stateMachineView.beginnerButtonAction = {
-            try? self.viewModel.setInput("Level", value: 0.0)
+            self.viewModel.setInput("Level", value: 0.0)
         }
         stateMachineView.intermediateButtonAction = {
-            try? self.viewModel.setInput("Level", value: 1.0)
+            self.viewModel.setInput("Level", value: 1.0)
         }
         stateMachineView.expertButtonAction = {
-            try? self.viewModel.setInput("Level", value: 2.0)
+            self.viewModel.setInput("Level", value: 2.0)
         }
         stateMachineView.resetButtonAction = {
-            try? self.viewModel.reset()
+            self.viewModel.reset()
         }
     }
     
