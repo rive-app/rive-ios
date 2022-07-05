@@ -10,8 +10,12 @@ import SwiftUI
 import RiveRuntime
 
 struct SwiftStateMachine: DismissableView {
-    var stateChanger = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
     var dismiss: () -> Void = {}
+    
+    // MARK: RiveViewModel
+    // This view model specifies the exact StateMachine that it wants from the file
+    
+    var stateChanger = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
     
     var body: some View {
         ScrollView{
@@ -21,13 +25,13 @@ struct SwiftStateMachine: DismissableView {
                 
                 HStack{
                     Button("Beginner") {
-                        try? stateChanger.setInput("Level", value: 0.0)
+                        stateChanger.setInput("Level", value: 0.0)
                     }
                     Button("Intermediate") {
-                        try? stateChanger.setInput("Level", value: 1.0)
+                        stateChanger.setInput("Level", value: 1.0)
                     }
                     Button("Expert") {
-                        try? stateChanger.setInput("Level", value: 2.0)
+                        stateChanger.setInput("Level", value: 2.0)
                     }
                 }
                 

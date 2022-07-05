@@ -226,28 +226,35 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     
     /// Instantiates elements in the model needed to play in a `RiveView`
     private func configureModel(artboardName: String? = nil, stateMachineName: String? = nil, animationName: String? = nil) throws {
+        guard let model = riveModel else { fatalError("Cannot configure nil RiveModel") }
+        
         if let name = artboardName {
-            try riveModel?.setArtboard(name)
+            try model.setArtboard(name)
         } else {
             // Keep current Artboard if there is one
-            if riveModel?.artboard == nil {
+            if model.artboard == nil {
                 // Set default Artboard if not
-                try riveModel?.setArtboard()
+                try model.setArtboard()
             }
         }
         
-        riveModel?.animation = nil
-        riveModel?.stateMachine = nil
+        model.animation = nil
+        model.stateMachine = nil
         
         if let name = stateMachineName {
-            try riveModel?.setStateMachine(name)
+            try model.setStateMachine(name)
         }
         else if let name = animationName {
-            try riveModel?.setAnimation(name)
+            try model.setAnimation(name)
         }
+        
+        // Find defaults
         else {
-            // Set default Animation
-            try riveModel?.setAnimation()
+            // Attempts to set a default StateMachine first
+            if ((try? model.setStateMachine()) == nil) {
+                // If it fails, attempts a default Animation
+                try model.setAnimation()
+            }
         }
     }
     

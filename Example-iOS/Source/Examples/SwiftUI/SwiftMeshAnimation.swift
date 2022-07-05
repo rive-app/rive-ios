@@ -10,16 +10,19 @@ import SwiftUI
 import RiveRuntime
 
 struct SwiftMeshAnimation: DismissableView {
+    var dismiss: () -> Void = {}
+    
+    // MARK: RiveViewModel
+    // This view model specifies the exact StateMachine that it wants from the file
     var tapePlayer = RiveViewModel(fileName: "prop_example", stateMachineName: "State Machine 1")
     @State var isTapped: Bool = false
-    var dismiss: () -> Void = {}
     
     var body: some View {
         tapePlayer.view()
             .aspectRatio(1, contentMode: .fit)
             .onTapGesture {
                 isTapped = !isTapped
-                try? tapePlayer.setInput("Hover", value: isTapped)
+                tapePlayer.setInput("Hover", value: isTapped)
             }
     }
 }

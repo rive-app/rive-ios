@@ -30,43 +30,56 @@ open class RiveModel: ObservableObject {
     
     open func setArtboard(_ name: String) throws {
         do { artboard = try riveFile.artboard(fromName: name) }
-        catch { throw RiveModelError.invalidArtboard(name: name) }
+        catch { throw RiveModelError.invalidArtboard("Name \(name) not found") }
     }
     
     open func setArtboard(_ index: Int? = nil) throws {
         if let index = index {
             do { artboard = try riveFile.artboard(from: index) }
-            catch { throw RiveModelError.invalidArtboard(index: index) }
+            catch { throw RiveModelError.invalidArtboard("Index \(index) not found") }
         } else {
             // This tries to find the 'default' Artboard
             do { artboard = try riveFile.artboard() }
-            catch { throw RiveModelError.invalidArtboard(message: "No Default Artboard") }
+            catch { throw RiveModelError.invalidArtboard("No Default Artboard") }
         }
     }
     
     open func setStateMachine(_ name: String) throws {
         do { stateMachine = try artboard.stateMachine(fromName: name) }
-        catch { throw RiveModelError.invalidStateMachine(name: name) }
+        catch { throw RiveModelError.invalidStateMachine("Name \(name) not found") }
     }
     
     open func setStateMachine(_ index: Int? = nil) throws {
-        // Defaults to 0 as it's assumed to be the first element in the collection
-        let index = index ?? 0
-        do { stateMachine = try artboard.stateMachine(from: index) }
-        catch { throw RiveModelError.invalidStateMachine(index: index) }
+        do {
+            // Set by index
+            if let index = index {
+                stateMachine = try artboard.stateMachine(from: index)
+            }
+            
+            // Set from Artboard's default StateMachine configured in editor
+            else if let defaultStateMachine = artboard.defaultStateMachine() {
+                stateMachine = defaultStateMachine
+            }
+            
+            // Set by index 0 as a fallback
+            else {
+                stateMachine = try artboard.stateMachine(from: 0)
+            }
+        }
+        catch { throw RiveModelError.invalidStateMachine("Index \(index ?? 0) not found") }
     }
     
     open func setAnimation(_ name: String) throws {
         guard animation?.name() != name else { return }
         do { animation = try artboard.animation(fromName: name) }
-        catch { throw RiveModelError.invalidAnimation(name: name) }
+        catch { throw RiveModelError.invalidAnimation("Name \(name) not found") }
     }
     
     open func setAnimation(_ index: Int? = nil) throws {
         // Defaults to 0 as it's assumed to be the first element in the collection
         let index = index ?? 0
         do { animation = try artboard.animation(from: index) }
-        catch { throw RiveModelError.invalidAnimation(index: index) }
+        catch { throw RiveModelError.invalidAnimation("Index \(index) not found") }
     }
     
     // MARK: -
@@ -86,8 +99,8 @@ open class RiveModel: ObservableObject {
     }
     
     enum RiveModelError: Error {
-        case invalidStateMachine(name: String), invalidStateMachine(index: Int)
-        case invalidAnimation(name: String), invalidAnimation(index: Int)
-        case invalidArtboard(name: String), invalidArtboard(index: Int), invalidArtboard(message: String)
+        case invalidStateMachine(_ message: String)
+        case invalidAnimation(_ message: String)
+        case invalidArtboard(_ message: String)
     }
 }

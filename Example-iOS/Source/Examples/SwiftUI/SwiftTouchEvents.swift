@@ -11,13 +11,19 @@ import RiveRuntime
 
 struct SwiftTouchEvents: DismissableView {
     var dismiss: () -> Void = {}
+    
+    // MARK: RiveViewModels
+    // Each of the these view models controls a file configured with:
+    // - State Machine
+    // - Listeners
+    
     @StateObject var clock = ClockViewModel()
-    @StateObject var jelly = RiveViewModel(fileName: "hero_editor", stateMachineName: "Jellyfish")
-    @StateObject var playButton = RiveViewModel(fileName: "play_button_event_example", stateMachineName: "State Machine")
-    @StateObject var lighthouse = RiveViewModel(fileName: "switch_event_example", stateMachineName: "Main State Machine")
-    @StateObject var eightball = RiveViewModel(fileName: "magic_8-ball_v2", stateMachineName: "Main State Machine")
-    @StateObject var bearGuy = RiveViewModel(fileName: "leg_day_events_example", stateMachineName: "Don't Skip Leg Day")
-    @StateObject var toggle = RiveViewModel(fileName: "light_switch", stateMachineName: "Switch")
+    @StateObject var jelly = RiveViewModel(fileName: "hero_editor")
+    @StateObject var playButton = RiveViewModel(fileName: "play_button_event_example")
+    @StateObject var lighthouse = RiveViewModel(fileName: "switch_event_example")
+    @StateObject var eightball = RiveViewModel(fileName: "magic_8-ball_v2")
+    @StateObject var bearGuy = RiveViewModel(fileName: "leg_day_events_example")
+    @StateObject var toggle = RiveViewModel(fileName: "light_switch")
     
     var body: some View {
         ScrollView {

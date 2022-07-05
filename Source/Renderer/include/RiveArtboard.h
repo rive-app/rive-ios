@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString *> *)stateMachineNames;
 - (RiveStateMachineInstance * __nullable)stateMachineFromIndex:(NSInteger)index error:(NSError **)error;
 - (RiveStateMachineInstance * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
+- (RiveStateMachineInstance * __nullable)defaultStateMachine;
 
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer *)renderer;
