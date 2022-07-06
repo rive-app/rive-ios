@@ -9,21 +9,55 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
-/*
- * RiveLinearAnimationInstance
- */
+// MARK: - Globals
+
+static int animInstanceCount = 0;
+
+// MARK: - RiveLinearAnimationInstance
+
 @implementation RiveLinearAnimationInstance {
     rive::LinearAnimationInstance *instance;
 }
 
+// MARK: Lifecycle
+
 - (instancetype)initWithAnimation:(rive::LinearAnimationInstance *)anim {
     if (self = [super init]) {
+#if RIVE_ENABLE_REFERENCE_COUNTING
+        [RiveLinearAnimationInstance raiseInstanceCount];
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
         instance = anim;
         return self;
     } else {
         return nil;
     }
 }
+
+- (void)dealloc {
+#if RIVE_ENABLE_REFERENCE_COUNTING
+    [RiveLinearAnimationInstance reduceInstanceCount];
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
+    
+    delete instance;
+}
+
+// MARK: Reference Counting
+
++ (int)instanceCount {
+    return animInstanceCount;
+}
+
++ (void)raiseInstanceCount {
+    animInstanceCount++;
+    NSLog(@"+ Animation: %d", animInstanceCount);
+}
+
++ (void)reduceInstanceCount {
+    animInstanceCount--;
+    NSLog(@"- Animation: %d", animInstanceCount);
+}
+
+// MARK: C++ Bindings
 
 - (float)time {
     return instance->time();
@@ -60,10 +94,6 @@
 - (NSString *)name {
     std::string str = instance->name();
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
-}
-
-- (void)dealloc {
-    delete instance;
 }
 
 - (NSInteger)fps {
@@ -103,6 +133,8 @@
     }
     return animation->duration() / fps;
 }
+
+// MARK: Helpers
 
 - (bool)hasEnded {
     return [self time] >= [self endTime];

@@ -56,9 +56,7 @@ In both SwiftUI and UIKit/Storyboard usage, you import the `RiveRuntime` into yo
 The simplest way of adding Rive to a View is the following:
 
 ```swift
-struct SwiftSimpleAnimation: DismissableView {
-    var dismiss: () -> Void = {}
-    
+struct AnimationView: View {
     var body: some View {
         RiveViewModel(fileName: "truck").view()
     }
@@ -73,15 +71,14 @@ The simplest way of adding Rive to a controller is to make a RiveViewModel and s
 the `RiveView` when it is loaded.
 
 ```swift
-class SimpleAnimationViewController: UIViewController {
-    @IBOutlet weak var rview: RiveView!
+class AnimationViewController: UIViewController {
+    @IBOutlet weak var riveView: RiveView!
     
     // Load the truck_v7 resource assets
-    var rSimpleVM = RiveViewModel(fileName: "truck_v7")
+    var viewModel = RiveViewModel(fileName: "truck_v7")
 
     override public func viewDidLoad() {
-        super.viewDidLoad()
-        rSimpleVM.setView(rview)
+        viewModel.setView(riveView)
     }
 }
 ```
@@ -90,13 +87,12 @@ Rive will autoplay the first animation found in the Rive file passed in. You can
 URL like so:
 
 ```swift
-class SimpleAnimationViewController: UIViewController {
-    @IBOutlet weak var rview: RiveView!
-    var rSimpleVM = RiveViewModel(webURL: "https://cdn.rive.app/animations/vehicles.riv")
+class AnimationViewController: UIViewController {
+    @IBOutlet weak var riveView: RiveView!
+    var viewModel = RiveViewModel(webURL: "https://cdn.rive.app/animations/vehicles.riv")
 
     override public func viewDidLoad() {
-        super.viewDidLoad()
-        rSimpleVM.setView(rview)
+        viewModel.setView(riveView)
     }
 }
 ```
@@ -136,7 +132,7 @@ To understand more on these options, check out the help docs [here](https://help
 To add layout options, you can set it below like:
 
 ```swift
-let rSimpleVM = RiveViewModel(
+let viewModel = RiveViewModel(
     fileName: "truck_v7", 
     fit: .fitFill,
     alignment: .alignmentBottomLeft
@@ -146,8 +142,8 @@ let rSimpleVM = RiveViewModel(
 or anytime afterwards.
 
 ```swift
-rSimpleVM.fit = .fitCover
-rSimpleVM.alignment = .alignmentCenter
+viewModel.fit = .fitCover
+viewModel.alignment = .alignmentCenter
 ```
 
 ### Playback Controls
@@ -156,13 +152,13 @@ animation on the first artboard. The artboard and animation can be specified by 
 are multiple artboards and/or animations defined in the Rive file.
 
 ```swift
-let rMultiVM = RiveViewModel(
+let viewModel = RiveViewModel(
     riveFile: "artboard_animations",
+    animationName: "rollaround",
     fit: .fitContain,
     alignment: .alignmentCenter,
-    artboardName: "Square",
-    animationName: "rollaround",
-    autoplay: true
+    autoplay: true,
+    artboardName: "Square"
 )
 ```
 
@@ -171,13 +167,13 @@ Furthermore animations can be controlled later too:
 To play an animation named "rollaround":
 
 ```swift
-rMultiVM.play(animationName: "rollaround")
+viewModel.play(animationName: "rollaround")
 ```
 
 When playing animations, the loop mode and direction of the animations can also be set:
 
 ```swift
-rMultiVM.play(
+viewModel.play(
     animationName: "rollaround",
     loop: .loopOneShot,
     direction: .directionBackwards
@@ -187,11 +183,11 @@ rMultiVM.play(
 Similarly, animations can be paused or stopped.
 
 ```swift
-rMultiVM.stop()
+viewModel.stop()
 ```
 
 ```swift
-rMultiVM.pause()
+viewModel.pause()
 ```
 
 ### Delegates & Events
@@ -200,46 +196,37 @@ these delegates will be fired whenever a matching event is triggered to be able 
 listen for certain events in the Rive animation cycle.
 
 Currently, there exist the following delegates: 
-- `RivePlayerDelegate` - Hook into animation lifecycle events
-    - `loop`: `(animation animationName: String, type: Int) {}`
-    - `play`: `(animation animationName: String, isStateMachine: Bool) {}`
-    - `pause`: `(animation animationName: String, isStateMachine: Int) {}`
-    - `stop`: `(animation animationName: String, isStateMachine: Int) {}`
-- `RiveStateDelegate` - Hook into state changes on a state machine lifecycle
-    - `stateChange`: `(_ stateMachineName: String, _ stateName: String) {}`
-- `RiveInputDelegate` - Hook into changes to available input states
-    - `inputs`: `(_ inputs: [StateMachineInput]) {}`
+- `RivePlayerDelegate` - Hook into the playback events
+- `RiveStateMachineDelegate` - Hook into state changes on a state machine lifecycle
 
 You can create your own delegate or mix in with the `RiveViewModel`, implementing as many protocols 
 as are needed. Below is an example of how to customize a RiveViewModel's implementation of 
 the `RivePlayerDelegate`:
 
 ```swift
-class SimpleAnimation: RiveViewModel {
+class FancyViewModel: RiveViewModel {
     init() {
-        let model = RiveViewModel(fileName: "truck_v7", stateMachineName: "Drive")
-        super.init(model)
-    }
-    
-    override func setView(rview view: RiveView) {
-        super.setView(view)
-        rview?.playerDelegate = self
+        super.init(fileName: "fancy_rive_file", animationName: "Drive")
     }
 
-    override func loop(animation animationName: String, type: Int) {
-        // do things when the animation loops playing.
+    override func player(loopedWithModel riveModel: RiveModel?, type: Int) {
+        // do things when the animation loops.
     }
     
-    override func play(animation animationName: String, isStateMachine: Bool) {
+    override func player(playedWithModel riveModel: RiveModel?) {
         // do things when the animation starts playing.
     }
 
-    override func pause(animation animationName: String, isStateMachine: Bool) {
+    override func player(pausedWithModel riveModel: RiveModel?) {
         // do things when the animation is paused.
     }
     
-    override func stop(animation animationName: String, isStateMachine: Bool) {
+    override func player(stoppedWithModel riveModel: RiveModel?) {
         // do things when the animation is stopped.
+    }
+    
+    override func player(didAdvanceby seconds: Double, riveModel: RiveModel?) {
+        // do something every time the RiveView advances during its render loop
     }
 }
 ```
@@ -248,12 +235,11 @@ Then you would instantiate your view model and configure it with the `RiveView` 
 
 ```swift
 class SimpleAnimationViewController: UIViewController {
-    @IBOutlet weak var rview: RiveView!
-    var rAnimationVM: RiveViewModel = SimpleAnimation()
+    @IBOutlet weak var riveView: RiveView!
+    var fancyVM = FancyViewModel()
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        rAnimationVM.setView(rview)
+        fancyVM.setView(riveView)
     }
 }
 ```

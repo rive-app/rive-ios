@@ -9,18 +9,55 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
+// MARK: - Globals
+
+static int artInstanceCount = 0;
 
 // MARK: - RiveArtboard
+
 @implementation RiveArtboard
+
+// MARK: LifeCycle
 
 - (instancetype)initWithArtboard:(rive::ArtboardInstance *)riveArtboard {
     if (self = [super init]) {
+        
+#if RIVE_ENABLE_REFERENCE_COUNTING
+        [RiveArtboard raiseInstanceCount];
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
+        
         _artboardInstance = riveArtboard;
         return self;
     } else {
         return NULL;
     }
 }
+
+- (void)dealloc {
+#if RIVE_ENABLE_REFERENCE_COUNTING
+    [RiveArtboard reduceInstanceCount];
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
+    
+     delete _artboardInstance;
+}
+
+// MARK: Reference Counting
+
++ (int)instanceCount {
+    return artInstanceCount;
+}
+
++ (void)raiseInstanceCount {
+    artInstanceCount++;
+    NSLog(@"+ Artboard: %d", artInstanceCount);
+}
+
++ (void)reduceInstanceCount {
+    artInstanceCount--;
+    NSLog(@"- Artboard: %d", artInstanceCount);
+}
+
+// MARK: C++ Bindings
 
 - (NSInteger)animationCount {
     return _artboardInstance->animationCount();
@@ -102,10 +139,6 @@
 - (CGRect)bounds {
     rive::AABB aabb = _artboardInstance->bounds();
     return CGRectMake(aabb.minX, aabb.minY, aabb.width(), aabb.height());
-}
-
-- (void)dealloc {
-     delete _artboardInstance;
 }
 
 @end

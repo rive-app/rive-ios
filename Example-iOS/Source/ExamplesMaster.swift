@@ -11,7 +11,6 @@ import RiveRuntime
 
 class ExamplesMasterTableViewController: UITableViewController {
     
-    
     // MARK: Storyboard Examples
     /// Sourced from the `Main` storyboard
     private let storyboardIDs: [String] = [
@@ -114,6 +113,26 @@ extension ExamplesMasterTableViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 3
+    }
+    
+    override func viewDidLoad() {
+        addFPSToggleButton()
+    }
+    
+    @objc private func toggleFPSCounter() {
+        RiveView.showFPSCounters.toggle()
+        addFPSToggleButton()
+    }
+    
+    private func addFPSToggleButton() {
+        let item = UIBarButtonItem(
+            title:  "FPS: " + (RiveView.showFPSCounters ? "On" : "Off"),
+            style:  RiveView.showFPSCounters ? .done : .plain,
+            target: self,
+            action: #selector(toggleFPSCounter)
+        )
+        
+        navigationItem.rightBarButtonItem = item
     }
     
     private func typeErased<Content: DismissableView>(dismissableView: Content) -> AnyView {

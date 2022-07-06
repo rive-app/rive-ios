@@ -9,23 +9,32 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
+// MARK: - Globals
+
+static int smInstanceCount = 0;
+
+// MARK: - RiveStateMachineInstance
+
 @interface RiveStateMachineInstance ()
 
 /// Holds references to SMIInputs
 @property NSMutableDictionary *inputs;
 
 @end
-
-/*
- * RiveStateMachineInstance
- */
+ 
 @implementation RiveStateMachineInstance {
     rive::StateMachineInstance *instance;
 }
 
+// MARK: Lifecycle
+
 // Creates a new RiveStateMachineInstance from a cpp StateMachine
 - (instancetype)initWithStateMachine:(rive::StateMachineInstance *)stateMachine {
     if (self = [super init]) {
+#if RIVE_ENABLE_REFERENCE_COUNTING
+        [RiveStateMachineInstance raiseInstanceCount];
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
+        
         instance = stateMachine;
         _inputs = [[NSMutableDictionary alloc] init];
         return self;
@@ -34,6 +43,32 @@
     }
 }
 
+- (void)dealloc {
+#if RIVE_ENABLE_REFERENCE_COUNTING
+    [RiveStateMachineInstance reduceInstanceCount];
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
+    
+    delete instance;
+}
+
+// MARK: Reference Counting
+
++ (int)instanceCount {
+    [RiveStateMachineInstance reduceInstanceCount];
+    return smInstanceCount;
+}
+
++ (void)raiseInstanceCount {
+    smInstanceCount++;
+    NSLog(@"+ StateMachine: %d", smInstanceCount);
+}
+
++ (void)reduceInstanceCount {
+    smInstanceCount--;
+    NSLog(@"- StateMachine: %d", smInstanceCount);
+}
+
+// MARK: C++ Bindings
 
 - (bool) advanceBy:(double)elapsedSeconds  {
     return instance->advanceAndApply(elapsedSeconds);
@@ -197,6 +232,13 @@
     return inputNames;
 }
 
+- (NSInteger)layerCount {
+    auto machine = instance->stateMachine();
+    return machine->layerCount();
+}
+
+// MARK: Touch
+
 - (void)touchBeganAtLocation:(CGPoint)touchLocation {
     instance->pointerDown(rive::Vec2D(touchLocation.x, touchLocation.y));
     NSLog(@"SMI: pointerDown at x:%f, y:%f", touchLocation.x, touchLocation.y);
@@ -212,15 +254,6 @@
 
 - (void)touchCancelledAtLocation:(CGPoint)touchLocation {
     instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y));
-}
-
-- (NSInteger)layerCount {
-    auto machine = instance->stateMachine();
-    return machine->layerCount();
-}
-
-- (void)dealloc {
-    delete instance;
 }
 
 @end
