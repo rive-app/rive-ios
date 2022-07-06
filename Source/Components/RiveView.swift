@@ -27,7 +27,9 @@ open class RiveView: RiveRendererView {
     
     // MARK: Debug
     private var fpsCounter: FPSCounterView? = nil
-    public var showFPS: Bool = RiveView.showFPSCounters { didSet { setFPSCounterState() } }
+    /// Shows or hides the FPS counter on this RiveView
+    public var showFPS: Bool = RiveView.showFPSCounters { didSet { setFPSCounterVisibility() } }
+    /// Shows or hides the FPS counters on all RiveViews
     public static var showFPSCounters = false
     
     /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
@@ -57,7 +59,7 @@ open class RiveView: RiveRendererView {
             advance(delta: 0)
         }
         
-        showFPS = RiveView.showFPSCounters
+        setFPSCounterVisibility()
     }
     
     // MARK: - Controls
@@ -241,7 +243,7 @@ open class RiveView: RiveRendererView {
     
     // MARK: - Debug
     
-    private func setFPSCounterState() {
+    private func setFPSCounterVisibility() {
         // Create a new counter view
         if showFPS && fpsCounter == nil {
             fpsCounter = FPSCounterView()
