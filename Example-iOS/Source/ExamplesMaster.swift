@@ -120,18 +120,17 @@ extension ExamplesMasterTableViewController {
     }
     
     @objc private func toggleFPSCounter() {
-        RiveView.showFPSCounter.toggle()
+        RiveView.showFPSCounters.toggle()
         addFPSToggleButton()
     }
     
     private func addFPSToggleButton() {
-        let item: UIBarButtonItem
-        
-        if RiveView.showFPSCounter {
-            item = UIBarButtonItem(title: "FPS: On", style: .plain, target: self, action:  #selector(toggleFPSCounter))
-        } else {
-            item = UIBarButtonItem(title: "FPS: Off", style: .plain, target: self, action:  #selector(toggleFPSCounter))
-        }
+        let item = UIBarButtonItem(
+            title:  "FPS: " + (RiveView.showFPSCounters ? "On" : "Off"),
+            style:  RiveView.showFPSCounters ? .done : .plain,
+            target: self,
+            action: #selector(toggleFPSCounter)
+        )
         
         navigationItem.rightBarButtonItem = item
     }
