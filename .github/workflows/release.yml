@@ -2,15 +2,61 @@ name: Create a Release
 
 on:
   workflow_dispatch:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
+    inputs:
+      major:
+        description: 'Major'
+        type: boolean
+        default: false
+      minor:
+        description: 'Minor'
+        type: boolean
+        default: false
 
 jobs:
+  build-skia:
+    strategy:
+      matrix:
+        arch: ["x86" , "x64", "arm", "arm64", "iossim_arm64"]
+        
+    runs-on: macos-12
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-west-2
+          role-to-assume:  ${{ secrets.ACTIONS_ROLE }}
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with: 
+          submodules: true
+          token: ${{ secrets.PAT_GITHUB }}
+
+      - name: Update Java
+        uses: actions/setup-java@v2
+        with: 
+          distribution: 'zulu' 
+          java-version: '16'
+
+      - name: Installing pre-requisites
+        run: |
+          set -x
+          # Install some dependencies & premake5
+          brew install ninja
+          wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz
+          tar -xf premake-5.0.0-beta1-macosx.tar.gz
+          mkdir bin
+          cp premake5 bin/premake5
+          sudo chmod a+x premake5
+          sudo mv premake5 /usr/local/bin
+      - name: Build skia files
+        run: ./scripts/build.skia.sh -a ${{ matrix.arch }}
+
   determine_version:
     name: Determine the next build version
-    if: github.event.pull_request.merged == true
+    needs: build-skia
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.echo_version.outputs.version }}
@@ -25,27 +71,37 @@ jobs:
         run: npm run release -- --ci --release-version | tail -n 1 > RELEASE_VERSION
         working-directory: ./.github/release
         env:
-          GITHUB_TOKEN: ${{ secrets.RIVE_REPO_PAT }}
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
       - id: echo_version
         run: echo "::set-output name=version::$(cat ./.github/release/RELEASE_VERSION)"
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    if: github.event.pull_request.merged == true
     runs-on: macos-12
     needs: [determine_version]
     outputs:
       checksum: ${{steps.get_checksum.outputs.checksum}}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.RIVE_REPO_PAT }}
-          submodules: recursive
-      - name: Init submodule
-        run: git submodule update --init
-      - name: Configure Skia
-        run: sh ./scripts/configure.sh
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with: 
+          submodules: true
+          token: ${{ secrets.PAT_GITHUB }}
+      - name: Copy build files
+        run: ./scripts/copy.build.files.sh
+      - name: Installing pre-requisites
+        run: |
+          set -x
+          # Install some dependencies & premake5
+          brew install ninja
+          wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz
+          tar -xf premake-5.0.0-beta1-macosx.tar.gz
+          mkdir bin
+          cp premake5 bin/premake5
+          sudo chmod a+x premake5
+          sudo mv premake5 /usr/local/bin      
+      - name: Build everything (using the cache, we should make an archive of course)
+        run: ./scripts/build.sh all
       - name: Update Marketing versions
         run: agvtool new-marketing-version ${{ needs.determine_version.outputs.version }}
       - name: Upload versionFiles
@@ -88,12 +144,11 @@ jobs:
 
   do_release:
     name: Do the actual release
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     needs: [determine_version, build_framework]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install dependencies
@@ -145,11 +200,24 @@ jobs:
         with:
           name: RiveRuntime.xcframework.zip
           path: archive/
-      - name: Bump version number, update changelog, push and tag
+      - if : ${{ inputs.major == true }}
+        name: Major Release - Bump version number, update changelog, push and tag
+        run: npm run release -- major --ci
+        working-directory: ./.github/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+      - if : ${{inputs.major == false && inputs.minor == true}}
+        name: Minor release - Bump version number, update changelog, push and tag
+        run: npm run release -- minor --ci
+        working-directory: ./.github/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+      - if : ${{inputs.major == false && inputs.minor == false}}
+        name: Build release - Bump version number, update changelog, push and tag
         run: npm run release -- --ci
         working-directory: ./.github/release
         env:
-          GITHUB_TOKEN: ${{ secrets.RIVE_REPO_PAT }}
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
 
   publish_cocoapods:
     name: Publish framework to cocoapods

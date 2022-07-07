@@ -2,18 +2,74 @@ name: Run Rive tests
 
 on:
   push:
+    branches:
+      - main
 
 jobs:
+  build-skia:
+    strategy:
+      matrix:
+        arch: ["x86" , "x64", "arm", "arm64", "iossim_arm64"]
+        
+    runs-on: macos-12
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-west-2
+          role-to-assume:  ${{ secrets.ACTIONS_ROLE }}
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with: 
+          submodules: true
+          token: ${{ secrets.PAT_GITHUB }}
+
+      - name: Update Java
+        uses: actions/setup-java@v2
+        with: 
+          distribution: 'zulu' 
+          java-version: '16'
+
+      - name: Installing pre-requisites
+        run: |
+          set -x
+          # Install some dependencies & premake5
+          brew install ninja
+          wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz
+          tar -xf premake-5.0.0-beta1-macosx.tar.gz
+          mkdir bin
+          cp premake5 bin/premake5
+          sudo chmod a+x premake5
+          sudo mv premake5 /usr/local/bin      
+      - name: Build skia files
+        run: ./scripts/build.skia.sh -a ${{ matrix.arch }}
+
   run_tests:
     name: Run Rive tests
+    needs: build-skia
     runs-on: macos-12
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          token: ${{ secrets.RIVE_REPO_PAT }}
-          submodules: recursive
-      - name: Get Skia Headers
-        run: sh ./scripts/configure.sh
+          token: ${{ secrets.PAT_GITHUB }}
+          submodules: true
+      - name: Installing pre-requisites
+        run: |
+          set -x
+          # Install some dependencies & premake5
+          brew install ninja
+          wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz
+          tar -xf premake-5.0.0-beta1-macosx.tar.gz
+          mkdir bin
+          cp premake5 bin/premake5
+          sudo chmod a+x premake5
+          sudo mv premake5 /usr/local/bin      
+      - name: Build everything (using the cache, we should make an archive of course)
+        run: ./scripts/build.sh ios_sim debug
       - name: Testing iOS app
-        run: sh ./scripts/test.sh
+        run: ./scripts/test.sh
+  

@@ -11,22 +11,14 @@ Check out the repository, making sure to include the submodules. It is important
  `git clone --recurse-submodules git@github.com:rive-app/rive-ios.git`
 
 The package relies on skia, as well as rive-cpp in order to be built. To shorten the build cycle, we rely on compiled libraries for skia, rive & rive-skia-renderer.
-The `./scripts/configure.sh` script will download or build appropriate libraries, be sure to run configure when making changes to our rive-cpp submodule. 
+The `./scripts/build.sh all` script will download or build appropriate libraries, be sure to run configure when making changes to our rive-cpp submodule. 
 
 ### Uploading caches
 
 If you are contributing and you have access to Rives' aws environment, make you sure install `aws-cli` and configure it with your credentials. If you run into permission issues here `aws sts get-caller-identity` can help make sure that your local developer environment is setup to talk to AWS correctly.
 See https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
-Note: on Mac, I just did 'brew install awscli'
-
-Set the `RIVE_UPLOAD_IOS_ARCHIVE` env variable to `TRUE`
-
-`RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh`
-
-and it will upload caches when feasible.  To force a rebuild, add `rebuild` as an argument...
-
-`RIVE_UPLOAD_IOS_ARCHIVE=TRUE ./scripts/configure.sh rebuild`
+Note: on a Mac with brew, you can simply run 'brew install awscli'
 
 Note: the 'dependencies' directory is just a cache of what the configure.sh script downloads. It can be removed if you suspect is is out of date, and then just rerun the script (./scripts/configure.sh)
 

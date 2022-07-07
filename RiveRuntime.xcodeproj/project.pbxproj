@@ -625,7 +625,7 @@
 					dependencies/includes/skia/include/effects,
 					dependencies/includes/skia/include/gpu,
 					dependencies/includes/skia/include/config,
-					"dependencies/includes/rive-cpp/include",
+					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
@@ -686,7 +686,7 @@
 					dependencies/includes/skia/include/effects,
 					dependencies/includes/skia/include/gpu,
 					dependencies/includes/skia/include/config,
-					"dependencies/includes/rive-cpp/include",
+					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
@@ -733,7 +733,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = "submodules/rive-cpp/include";
+				"HEADER_SEARCH_PATHS[arch=*]" = "dependencies/includes/rive/include";
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -754,7 +754,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = "submodules/rive-cpp/include";
+				"HEADER_SEARCH_PATHS[arch=*]" = "dependencies/includes/rive/include";
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
