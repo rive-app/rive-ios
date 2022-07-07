@@ -26,7 +26,7 @@ class LayoutViewController: UIViewController {
     }
     
     func setFit(name: String = "") {
-        var fit: Fit = .fitContain
+        var fit: RiveFit = .contain
         switch name {
         case "Fill": fit = .fill
         case "Contain": fit = .contain
@@ -41,7 +41,7 @@ class LayoutViewController: UIViewController {
     }
     
     func setAlignment(name: String = "") {
-        var alignment: Alignment = .alignmentCenter
+        var alignment: RiveAlignment = .center
         switch name {
         case "Top Left": alignment = .topLeft
         case "Top Center": alignment = .topCenter
