@@ -37,7 +37,7 @@
  * RiveStateMachineInstance interface
  */
 @interface RiveStateMachineInstance ()
-- (instancetype)initWithStateMachine:(rive::StateMachineInstance *)stateMachine;
+- (instancetype)initWithStateMachine:(std::unique_ptr<rive::StateMachineInstance>)stateMachine;
 @end
 
 /*
@@ -69,15 +69,15 @@
  * RiveLinearAnimationInstance interface
  */
 @interface RiveLinearAnimationInstance ()
-- (instancetype)initWithAnimation:(const rive::LinearAnimationInstance *)riveAnimation;
+- (instancetype)initWithAnimation:(std::unique_ptr<rive::LinearAnimationInstance>)riveAnimation;
 @end
 
 /*
  * RiveArtboard interface
  */
 @interface RiveArtboard ()
-@property (nonatomic, readonly) rive::ArtboardInstance* artboardInstance;
--(instancetype) initWithArtboard:(rive::ArtboardInstance *) riveArtboard;
+-(rive::ArtboardInstance *) artboardInstance;
+-(instancetype) initWithArtboard:(std::unique_ptr<rive::ArtboardInstance>) riveArtboard;
 @end
 
 /*

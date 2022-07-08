@@ -23,19 +23,19 @@ static int smInstanceCount = 0;
 @end
  
 @implementation RiveStateMachineInstance {
-    rive::StateMachineInstance *instance;
+    std::unique_ptr<rive::StateMachineInstance> instance;
 }
 
 // MARK: Lifecycle
 
 // Creates a new RiveStateMachineInstance from a cpp StateMachine
-- (instancetype)initWithStateMachine:(rive::StateMachineInstance *)stateMachine {
+- (instancetype)initWithStateMachine:(std::unique_ptr<rive::StateMachineInstance>)stateMachine {
     if (self = [super init]) {
 #if RIVE_ENABLE_REFERENCE_COUNTING
         [RiveStateMachineInstance raiseInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
         
-        instance = stateMachine;
+        instance = std::move(stateMachine);
         _inputs = [[NSMutableDictionary alloc] init];
         return self;
     } else {
@@ -48,7 +48,7 @@ static int smInstanceCount = 0;
     [RiveStateMachineInstance reduceInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
     
-    delete instance;
+    instance.reset(nullptr);
 }
 
 // MARK: Reference Counting

@@ -16,17 +16,17 @@ static int animInstanceCount = 0;
 // MARK: - RiveLinearAnimationInstance
 
 @implementation RiveLinearAnimationInstance {
-    rive::LinearAnimationInstance *instance;
+    std::unique_ptr<rive::LinearAnimationInstance> instance;
 }
 
 // MARK: Lifecycle
 
-- (instancetype)initWithAnimation:(rive::LinearAnimationInstance *)anim {
+- (instancetype)initWithAnimation:(std::unique_ptr<rive::LinearAnimationInstance>)anim {
     if (self = [super init]) {
 #if RIVE_ENABLE_REFERENCE_COUNTING
         [RiveLinearAnimationInstance raiseInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
-        instance = anim;
+        instance = std::move(anim);
         return self;
     } else {
         return nil;
@@ -38,7 +38,7 @@ static int animInstanceCount = 0;
     [RiveLinearAnimationInstance reduceInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
     
-    delete instance;
+    instance.reset(nullptr);
 }
 
 // MARK: Reference Counting

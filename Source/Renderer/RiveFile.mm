@@ -16,7 +16,7 @@ static rive::CGSkiaFactory gFactory;
  * RiveFile
  */
 @implementation RiveFile {
-    rive::File* riveFile;
+    std::unique_ptr<rive::File> riveFile;
 }
 
 + (uint)majorVersion { return UInt8(rive::File::majorVersion); }
@@ -121,8 +121,9 @@ static rive::CGSkiaFactory gFactory;
 
 - (BOOL) import:(UInt8 *)bytes byteLength:(UInt64)length error:(NSError**)error {
     rive::ImportResult result;
-    riveFile = rive::File::import(rive::Span(bytes, length), &gFactory, &result).release();
+    auto file = rive::File::import(rive::Span(bytes, length), &gFactory, &result);
     if (result == rive::ImportResult::success) {
+        riveFile = std::move(file);
         return true;
     }
 
@@ -147,7 +148,7 @@ static rive::CGSkiaFactory gFactory;
         return nil;
     }
     else {
-        return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
+        return [[RiveArtboard alloc] initWithArtboard: std::move(artboard)];
     }
 }
 
@@ -161,7 +162,7 @@ static rive::CGSkiaFactory gFactory;
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Artboard Found at index %ld.", (long)index], @"name": @"NoArtboardFound"}];
         return nil;
     }
-    return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
+    return [[RiveArtboard alloc] initWithArtboard: std::move(artboard)];
 }
 
 - (RiveArtboard *)artboardFromName:(NSString *)name error:(NSError**)error {
@@ -171,7 +172,7 @@ static rive::CGSkiaFactory gFactory;
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoArtboardFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No Artboard Found with name %@.", name], @"name": @"NoArtboardFound"}];
         return nil;
     } else {
-        return [[RiveArtboard alloc] initWithArtboard: artboard.release()];
+        return [[RiveArtboard alloc] initWithArtboard: std::move(artboard)];
     }
 }
 
@@ -186,7 +187,7 @@ static rive::CGSkiaFactory gFactory;
 
 /// Clean up rive file
 - (void)dealloc {
-    delete riveFile;
+    riveFile.reset(nullptr);
 }
 
 @end
