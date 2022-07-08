@@ -14,45 +14,21 @@
 #import <vector>
 #import "rive/renderer.hpp"
 
-namespace rive
-{
+namespace rive {
 
     /*
      * RenderPaint
      */
 
-    enum class RiveGradient
-    {
-        None,
-        Linear,
-        Radial
-    };
+    enum class RiveGradient { None, Linear, Radial };
 
-    enum class RivePaintStyle
-    {
-        None,
-        Stroke,
-        Fill
-    };
+    enum class RivePaintStyle { None, Stroke, Fill };
 
-    enum class RiveStrokeJoin
-    {
-        None,
-        Miter,
-        Round,
-        Bevel
-    };
+    enum class RiveStrokeJoin { None, Miter, Round, Bevel };
 
-    enum class RiveStrokeCap
-    {
-        None,
-        Butt,
-        Round,
-        Square
-    };
+    enum class RiveStrokeCap { None, Butt, Round, Square };
 
-    enum class RiveBlendMode : unsigned int
-    {
+    enum class RiveBlendMode : unsigned int {
         None = 0,
         SrcOver = static_cast<int>(BlendMode::srcOver),
         Screen = static_cast<int>(BlendMode::screen),
@@ -72,8 +48,7 @@ namespace rive
         Luminosity = static_cast<int>(BlendMode::luminosity)
     };
 
-    class RiveRenderPaint : public RenderPaint
-    {
+    class RiveRenderPaint : public RenderPaint {
     private:
     public:
         CGColorRef cgColor = NULL;
@@ -82,15 +57,15 @@ namespace rive
         RiveStrokeCap strokeCap = RiveStrokeCap::None;
         RiveBlendMode currentBlendMode;
         float paintThickness;
-        
+
         // Gradient data
         RiveGradient gradientType = RiveGradient::None;
         CGGradientRef gradient = NULL;
         CGPoint gradientStart;
         CGPoint gradientEnd;
         std::vector<CGFloat> colorStops;
-        std::vector<CGFloat> stops; 
-        
+        std::vector<CGFloat> stops;
+
         RiveRenderPaint();
         ~RiveRenderPaint();
 
@@ -106,17 +81,9 @@ namespace rive
      * RenderPath
      */
 
-    enum class RivePathCommandType
-    {
-        MoveTo,
-        LineTo,
-        CubicTo,
-        Reset,
-        Close
-    };
+    enum class RivePathCommandType { MoveTo, LineTo, CubicTo, Reset, Close };
 
-    struct RivePathCommand
-    {
+    struct RivePathCommand {
         RivePathCommandType command;
         float x;
         float y;
@@ -126,21 +93,20 @@ namespace rive
         float outY;
     };
 
-    class RiveRenderPath : public RenderPath
-    {
+    class RiveRenderPath : public RenderPath {
     private:
         CGMutablePathRef path;
         FillRule m_FillRule;
-        
+
     public:
         RiveRenderPath();
         ~RiveRenderPath();
-    
+
         CGMutablePathRef getPath() { return path; }
         FillRule getFillRule() { return m_FillRule; }
-        
+
         void reset() override;
-        void addRenderPath(RenderPath *path, const Mat2D &transform) override;
+        void addRenderPath(RenderPath* path, const Mat2D& transform) override;
         void fillRule(FillRule value) override;
         void moveTo(float x, float y) override;
         void lineTo(float x, float y) override;
@@ -152,20 +118,19 @@ namespace rive
      * Renderer
      */
 
-    class RiveRenderer : public Renderer
-    {
+    class RiveRenderer : public Renderer {
     private:
         CGContextRef ctx;
 
     public:
         RiveRenderer(CGContextRef context) : ctx(context) {}
         ~RiveRenderer();
-        
+
         void save() override;
         void restore() override;
-        void transform(const Mat2D &transform) override;
-        void drawPath(RenderPath *path, RenderPaint *paint) override;
-        void clipPath(RenderPath *path) override;
+        void transform(const Mat2D& transform) override;
+        void drawPath(RenderPath* path, RenderPaint* paint) override;
+        void clipPath(RenderPath* path) override;
     };
 } // namespace rive
 
