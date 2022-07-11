@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)stateMachineCount;
 - (NSArray<NSString *> *)stateMachineNames;
-- (RiveStateMachineInstance * __nullable)defaultStateMachine:(NSError **)error;
+- (RiveStateMachineInstance * __nullable)defaultStateMachine;
 - (RiveStateMachineInstance * __nullable)stateMachineFromIndex:(NSInteger)index error:(NSError **)error;
 - (RiveStateMachineInstance * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
 

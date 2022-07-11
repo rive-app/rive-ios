@@ -31,7 +31,7 @@
  * RiveScene interface
  */
 @interface RiveScene ()
-- (instancetype)initWithScene:(rive::Scene *)scene;
+- (rive::Scene *)instance;
 - (void)draw:(rive::Renderer *)renderer;
 @end
 

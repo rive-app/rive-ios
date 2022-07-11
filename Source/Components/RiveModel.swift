@@ -11,17 +11,9 @@ import Foundation
 open class RiveModel: ObservableObject {
     internal private(set) var riveFile: RiveFile
     public private(set) var artboard: RiveArtboard!
-    public internal(set) var scene: RiveScene!
-    public internal(set) var stateMachine: RiveStateMachineInstance? {
-        didSet {
-            scene = stateMachine ?? scene
-        }
-    }
-    public internal(set) var animation: RiveLinearAnimationInstance? {
-        didSet {
-            scene = animation ?? scene
-        }
-    }
+    public internal(set) var stateMachine: RiveStateMachineInstance?
+    public internal(set) var animation: RiveLinearAnimationInstance?
+    public weak var scene: RiveScene? { stateMachine ?? animation }
     
     public init(riveFile: RiveFile) {
         self.riveFile = riveFile
@@ -38,49 +30,68 @@ open class RiveModel: ObservableObject {
     // MARK: - Setters
     
     open func setArtboard(_ name: String) throws {
-        artboard = try riveFile.artboard(fromName: name)
+        do { artboard = try riveFile.artboard(fromName: name) }
+        catch { throw RiveModelError.invalidArtboard("Name \(name) not found") }
     }
     
     open func setArtboard(_ index: Int? = nil) throws {
         if let index = index {
-            artboard = try riveFile.artboard(from: index)
-        }
-        else {
-            // Tries to find the 'default' Artboard
-            artboard = try riveFile.defaultArtboard()
-        }
-    }
-    
-    open func setStateMachine(_ name: String) throws {
-        stateMachine = try artboard.stateMachine(fromName: name)
-    }
-    
-    open func setStateMachine(_ index: Int? = nil) throws {
-        if let index = index {
-            stateMachine = try artboard.stateMachine(from: index)
+            do { artboard = try riveFile.artboard(from: index) }
+            catch { throw RiveModelError.invalidArtboard("Index \(index) not found") }
         } else {
-            // Tries to find the 'default' StateMachine
-            stateMachine = try artboard.defaultStateMachine()
+            // This tries to find the 'default' Artboard
+            do { artboard = try riveFile.defaultArtboard() }
+            catch { throw RiveModelError.invalidArtboard("No Default Artboard") }
         }
     }
     
     open func setDefaultScene() throws {
-        let newScene = try artboard.defaultScene()
-        if newScene is RiveStateMachineInstance {
-            stateMachine = newScene as? RiveStateMachineInstance
-        } else {
-            animation = newScene as? RiveLinearAnimationInstance
+        let scene = try artboard.defaultScene()
+        
+        if scene is RiveStateMachineInstance {
+            stateMachine = scene as? RiveStateMachineInstance
+        }
+        else {
+            animation = scene as? RiveLinearAnimationInstance
         }
     }
     
+    open func setStateMachine(_ name: String) throws {
+        do { stateMachine = try artboard.stateMachine(fromName: name) }
+        catch { throw RiveModelError.invalidStateMachine("Name \(name) not found") }
+    }
+    
+    open func setStateMachine(_ index: Int? = nil) throws {
+        do {
+            // Set by index
+            if let index = index {
+                stateMachine = try artboard.stateMachine(from: index)
+            }
+            
+            // Set from Artboard's default StateMachine configured in editor
+            else if let defaultStateMachine = artboard.defaultStateMachine() {
+                stateMachine = defaultStateMachine
+            }
+            
+            // Set by index 0 as a fallback
+            else {
+                stateMachine = try artboard.stateMachine(from: 0)
+            }
+        }
+        catch { throw RiveModelError.invalidStateMachine("Index \(index ?? 0) not found") }
+    }
+    
     open func setAnimation(_ name: String) throws {
-        animation = try artboard.animation(fromName: name)
+        guard animation?.name() != name else { return }
+        do { animation = try artboard.animation(fromName: name) }
+        catch { throw RiveModelError.invalidAnimation("Name \(name) not found") }
     }
     
     open func setAnimation(_ index: Int? = nil) throws {
         // Defaults to 0 as it's assumed to be the first element in the collection
         let index = index ?? 0
-        animation = try artboard.animation(from: index)
+        do { animation = try artboard.animation(from: index) }
+        catch { throw RiveModelError.invalidAnimation("Index \(index) not found") }
     }
     
     // MARK: -
@@ -97,5 +108,11 @@ open class RiveModel: ObservableObject {
         else {
             return art + "]"
         }
+    }
+    
+    enum RiveModelError: Error {
+        case invalidStateMachine(_ message: String)
+        case invalidAnimation(_ message: String)
+        case invalidArtboard(_ message: String)
     }
 }

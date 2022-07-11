@@ -25,6 +25,10 @@
     }
 }
 
+- (rive::Scene *)instance {
+    return instance;
+}
+
 - (float)time {
     return instance->time();
 }

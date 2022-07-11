@@ -34,6 +34,10 @@
     }
 }
 
+- (rive::Scene *)instance {
+    return instance;
+}
+
 - (RiveSMIBool *)getBool:(NSString *)name {
     // Create a unique dictionary name for numbers;
     // this lets us use one dictionary for the three different types

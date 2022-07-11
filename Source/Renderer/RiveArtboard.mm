@@ -24,11 +24,22 @@
 
 - (RiveScene *)defaultScene:(NSError **)error {
     auto scene = _instance->defaultScene();
+    
     if (scene == nullptr) {
         *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No default Scene found."], @"name": @"NoSceneFound"}];
         return nil;
     }
-    return [[RiveScene alloc] initWithScene:scene.release()];
+    
+    // TODO: Fix this disgusting hack
+    // -1 is a magic number that scene gives for
+    // the duration when it represents a state machine
+    if (scene->durationSeconds() == -1) {
+        rive::StateMachineInstance *machineInstance = (rive::StateMachineInstance *)scene.release();
+        return [[RiveStateMachineInstance alloc] initWithStateMachine:machineInstance];
+    } else {
+        rive::LinearAnimationInstance *animInstance = (rive::LinearAnimationInstance *)scene.release();
+        return [[RiveLinearAnimationInstance alloc] initWithAnimation:animInstance];
+    }
 }
 
 - (NSInteger)animationCount {
@@ -66,10 +77,9 @@
     return _instance->stateMachineCount();
 }
 
-- (RiveStateMachineInstance *)defaultStateMachine:(NSError **)error {
+- (RiveStateMachineInstance *)defaultStateMachine {
     rive::StateMachineInstance *machine = _instance->defaultStateMachine().release();
     if (machine == nullptr) {
-        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No default State Machine found."], @"name": @"NoStateMachineFound"}];
         return nil;
     }
     return [[RiveStateMachineInstance alloc] initWithStateMachine:machine];

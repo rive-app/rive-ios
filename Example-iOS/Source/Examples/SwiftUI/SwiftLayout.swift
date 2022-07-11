@@ -17,7 +17,7 @@ struct SwiftLayout: DismissableView {
     
     var body: some View {
         VStack {
-            RiveViewModel(fileName: "off_road_car_blog", fit: fit, alignment: alignment).view()
+            RiveViewModel(fileName: "truck_v7", fit: fit, alignment: alignment).view()
         }
         HStack {
             Text("Fit")

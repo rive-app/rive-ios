@@ -153,8 +153,8 @@
 			isa = PBXGroup;
 			children = (
 				046FB7E7264EAA5F000129B1 /* RiveFile.h */,
-				C39E7647285AE42500D30612 /* RiveScene.hpp */,
 				046FB7EC264EAA60000129B1 /* RiveArtboard.h */,
+				C39E7647285AE42500D30612 /* RiveScene.hpp */,
 				046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */,
 				046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */,
 				046FB7EB264EAA60000129B1 /* RiveSMIInput.h */,
@@ -210,8 +210,8 @@
 			children = (
 				046FB801264EB632000129B1 /* include */,
 				046FB7EF264EAA60000129B1 /* RiveFile.mm */,
-				C39E764A285AE51900D30612 /* RiveScene.mm */,
 				046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */,
+				C39E764A285AE51900D30612 /* RiveScene.mm */,
 				046FB7E4264EAA5F000129B1 /* RiveLinearAnimationInstance.mm */,
 				046FB7E8264EAA5F000129B1 /* RiveStateMachineInstance.mm */,
 				046FB7E5264EAA5F000129B1 /* RiveSMIInput.mm */,
