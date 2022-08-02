@@ -7,7 +7,8 @@ set -ex
 path=`readlink -f "${BASH_SOURCE:-$0}"`
 DEV_SCRIPT_DIR=`dirname $path`
 
-if git remote -v | grep ios;
+
+if [ -d "$DEV_SCRIPT_DIR/../submodules/rive-cpp" ];
 then
     export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../submodules/rive-cpp"
 else

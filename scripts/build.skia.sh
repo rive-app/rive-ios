@@ -37,7 +37,7 @@ export SKIA_DIR_NAME="skia"
 # we can have multiple at the same time...
 export ARCHIVE_CONTENTS_NAME="archive_contents_$ARCH_NAME"
 
-if git remote -v | grep ios;
+if [ -d "$DEV_SCRIPT_DIR/../submodules/rive-cpp" ];
 then
     export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../submodules/rive-cpp"
 else
