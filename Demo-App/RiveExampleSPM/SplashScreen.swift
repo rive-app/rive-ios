@@ -60,10 +60,10 @@ struct SplashScreen: View {
                     rings.view()
                         .aspectRatio(contentMode: .fit)
                         .opacity(0.5)
+                        .padding(30)
                         .onTapGesture { togglePlay() }
                         .onLongPressGesture { togglePlay() }
                 }
-                .padding(30)
             }
             
             VStack {

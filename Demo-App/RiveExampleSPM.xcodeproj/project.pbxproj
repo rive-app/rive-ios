@@ -16,7 +16,7 @@
 		C36D8A92286F86A800C97125 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C36D8A91286F86A800C97125 /* Preview Assets.xcassets */; };
 		C36D8A9A286F876700C97125 /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = C36D8A99286F876700C97125 /* RiveRuntime */; };
 		C36D8A9D286F92B300C97125 /* windy_tree.riv in Resources */ = {isa = PBXBuildFile; fileRef = C36D8A9C286F92B300C97125 /* windy_tree.riv */; };
-		C36D8AA3286FA47000C97125 /* rive_animation_logo.riv in Resources */ = {isa = PBXBuildFile; fileRef = C36D8AA2286FA47000C97125 /* rive_animation_logo.riv */; };
+		C378724328789199000B7560 /* rive_animation_logo.riv in Resources */ = {isa = PBXBuildFile; fileRef = C378724228789199000B7560 /* rive_animation_logo.riv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +29,7 @@
 		C36D8A8E286F86A800C97125 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C36D8A91286F86A800C97125 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C36D8A9C286F92B300C97125 /* windy_tree.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = windy_tree.riv; sourceTree = "<group>"; };
-		C36D8AA2286FA47000C97125 /* rive_animation_logo.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rive_animation_logo.riv; sourceTree = "<group>"; };
+		C378724228789199000B7560 /* rive_animation_logo.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rive_animation_logo.riv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,7 +83,7 @@
 		C36D8A9B286F928000C97125 /* Rive Files */ = {
 			isa = PBXGroup;
 			children = (
-				C36D8AA2286FA47000C97125 /* rive_animation_logo.riv */,
+				C378724228789199000B7560 /* rive_animation_logo.riv */,
 				C36D8A9C286F92B300C97125 /* windy_tree.riv */,
 				C30EB0EE286FE16A00451EE2 /* interactive_rings.riv */,
 				C30EB0F4286FEF7500451EE2 /* confetti.riv */,
@@ -159,8 +159,8 @@
 				C30EB0EF286FE16A00451EE2 /* interactive_rings.riv in Resources */,
 				C30EB0F5286FEF7500451EE2 /* confetti.riv in Resources */,
 				C30EB0F9286FF65100451EE2 /* play_pause.riv in Resources */,
+				C378724328789199000B7560 /* rive_animation_logo.riv in Resources */,
 				C36D8A92286F86A800C97125 /* Preview Assets.xcassets in Resources */,
-				C36D8AA3286FA47000C97125 /* rive_animation_logo.riv in Resources */,
 				C36D8A9D286F92B300C97125 /* windy_tree.riv in Resources */,
 				C36D8A8F286F86A800C97125 /* Assets.xcassets in Resources */,
 			);
