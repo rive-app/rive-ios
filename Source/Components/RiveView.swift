@@ -189,8 +189,8 @@ open class RiveView: RiveRendererView {
     
     /// This is called in the middle of drawRect
     override public func drawRive(_ rect: CGRect, size: CGSize) {
-        // This prevents breaking when loading RiveFile from web
-        guard riveModel != nil else { return }
+        // This prevents breaking when loading RiveFile async
+        guard riveModel.artboard != nil else { return }
         
         let newFrame = CGRect(origin: rect.origin, size: size)
         align(with: newFrame, contentRect: riveModel.artboard.bounds(), alignment: alignment, fit: fit)
@@ -200,45 +200,58 @@ open class RiveView: RiveRendererView {
     // MARK: - UIResponder
     
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let location = touches.first!.location(in: self)
-        handleTouch(location: location) { $0.touchBegan(atLocation: $1) }
-        stateMachineDelegate?.touchBegan?(onArtboard: riveModel.artboard, atLocation: location)
+        handleTouch(touches.first!, delegate: stateMachineDelegate?.touchBegan) {
+            $0.touchBegan(atLocation: $1)
+        }
     }
     
     open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let location = touches.first!.location(in: self)
-        handleTouch(location: location) { $0.touchMoved(atLocation: $1) }
-        stateMachineDelegate?.touchMoved?(onArtboard: riveModel.artboard, atLocation: location)
+        handleTouch(touches.first!, delegate: stateMachineDelegate?.touchMoved) {
+            $0.touchMoved(atLocation: $1)
+        }
     }
     
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let location = touches.first!.location(in: self)
-        handleTouch(location: location) { $0.touchEnded(atLocation: $1) }
-        stateMachineDelegate?.touchEnded?(onArtboard: riveModel.artboard, atLocation: location)
+        handleTouch(touches.first!, delegate: stateMachineDelegate?.touchEnded) {
+            $0.touchEnded(atLocation: $1)
+        }
     }
     
     open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let location = touches.first!.location(in: self)
-        handleTouch(location: location) { $0.touchCancelled(atLocation: $1) }
-        stateMachineDelegate?.touchCancelled?(onArtboard: riveModel.artboard, atLocation: location)
+        handleTouch(touches.first!, delegate: stateMachineDelegate?.touchCancelled) {
+            $0.touchCancelled(atLocation: $1)
+        }
     }
     
     /// Sends incoming touch event to all playing `RiveStateMachineInstance`'s
     /// - Parameters:
-    ///   - location: The `CGPoint` where the touch occurred in `RiveView` coordinate space
-    ///   - action: Param1: A playing `RiveStateMachineInstance`, Param2: `CGPoint` location where touch occurred in `artboard` coordinate space
-    private func handleTouch(location: CGPoint, action: (RiveStateMachineInstance, CGPoint)->Void) {
+    ///   - touch: The `CGPoint` where the touch occurred in `RiveView` coordinate space
+    ///   - delegateAction: The delegate callback that should be triggered by this touch event
+    ///   - stateMachineAction: Param1: A playing `RiveStateMachineInstance`, Param2: `CGPoint`
+    ///   location where touch occurred in `artboard` coordinate space
+    private func handleTouch(
+        _ touch: UITouch,
+        delegate delegateAction: ((RiveArtboard?, CGPoint)->Void)?,
+        stateMachineAction: (RiveStateMachineInstance, CGPoint)->Void
+    ) {
+        guard let artboard = riveModel.artboard else { return }
+        guard let stateMachine = riveModel.stateMachine else { return }
+        let location = touch.location(in: self)
+        
         let artboardLocation = artboardLocation(
             fromTouchLocation: location,
-            inArtboard: riveModel.artboard.bounds(),
+            inArtboard: artboard.bounds(),
             fit: fit,
             alignment: alignment
         )
         
-        if let stateMachine = riveModel.stateMachine {
-            action(stateMachine, artboardLocation)
-            play()
-        }
+        stateMachineAction(stateMachine, artboardLocation)
+        play()
+        
+        // We send back the touch location in UIView coordinates because
+        // users cannot query or manually control the coordinates of elements
+        // in the Artboard. So that information would be of no use.
+        delegateAction?(artboard, location)
     }
     
     // MARK: - Debug
