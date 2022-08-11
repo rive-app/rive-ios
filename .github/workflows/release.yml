@@ -87,8 +87,6 @@ jobs:
         with: 
           submodules: true
           token: ${{ secrets.PAT_GITHUB }}
-      - name: Copy build files
-        run: ./scripts/copy.build.files.sh
       - name: Installing pre-requisites
         run: |
           set -x
