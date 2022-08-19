@@ -6,12 +6,10 @@
 //  Copyright © 2021 Rive. All rights reserved.
 //
 
-
 #ifndef rive_state_machine_instance_h
 #define rive_state_machine_instance_h
 
 #import <Foundation/Foundation.h>
-
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,19 +24,19 @@ NS_ASSUME_NONNULL_BEGIN
  * RiveStateMachineInstance
  */
 @interface RiveStateMachineInstance : NSObject
-- (NSString* )name;
-- (bool)advanceBy: (double)elapsedSeconds;
-- (const RiveSMIBool *)getBool:(NSString*)name;
-- (const RiveSMITrigger *)getTrigger:(NSString*)name;
-- (const RiveSMINumber *)getNumber:(NSString*)name;
-- (NSArray<NSString *> *)inputNames;
+- (NSString*)name;
+- (bool)advanceBy:(double)elapsedSeconds;
+- (const RiveSMIBool*)getBool:(NSString*)name;
+- (const RiveSMITrigger*)getTrigger:(NSString*)name;
+- (const RiveSMINumber*)getNumber:(NSString*)name;
+- (NSArray<NSString*>*)inputNames;
 - (NSInteger)inputCount;
 - (NSInteger)layerCount;
-- (RiveSMIInput * __nullable)inputFromIndex:(NSInteger)index error:(NSError**)error;
-- (RiveSMIInput * __nullable)inputFromName:(NSString*)name error:(NSError**)error;
+- (RiveSMIInput* __nullable)inputFromIndex:(NSInteger)index error:(NSError**)error;
+- (RiveSMIInput* __nullable)inputFromName:(NSString*)name error:(NSError**)error;
 - (NSInteger)stateChangedCount;
-- (RiveLayerState * __nullable)stateChangedFromIndex:(NSInteger)index error:(NSError**)error;
-- (NSArray<NSString *> *)stateChanges;
+- (RiveLayerState* __nullable)stateChangedFromIndex:(NSInteger)index error:(NSError**)error;
+- (NSArray<NSString*>*)stateChanges;
 
 // MARK: Touch
 
@@ -62,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if RIVE_ENABLE_REFERENCE_COUNTING
 + (int)instanceCount;
-#endif //RIVE_ENABLE_REFERENCE_COUNTING
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
 
 @end
 

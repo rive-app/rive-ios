@@ -6,7 +6,6 @@
 //  Copyright © 2021 Rive. All rights reserved.
 //
 
-
 #ifndef rive_linear_animation_instance_h
 #define rive_linear_animation_instance_h
 
@@ -20,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RiveLinearAnimationInstance : NSObject
 
 - (float)time;
-- (void)setTime:(float) time;
+- (void)setTime:(float)time;
 - (float)endTime;
 - (bool)advanceBy:(double)elapsedSeconds;
 - (int)direction;
@@ -28,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)loop;
 - (void)loop:(int)loopMode;
 - (bool)didLoop;
-- (NSString *)name;
+- (NSString*)name;
 
 - (NSInteger)fps;
 - (NSInteger)workStart;
@@ -42,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if RIVE_ENABLE_REFERENCE_COUNTING
 + (int)instanceCount;
-#endif //RIVE_ENABLE_REFERENCE_COUNTING
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
 
 @end
 

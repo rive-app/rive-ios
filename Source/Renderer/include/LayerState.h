@@ -6,7 +6,6 @@
 //  Copyright © 2020 Rive. All rights reserved.
 //
 
-
 #ifndef layer_state_h
 #define layer_state_h
 
@@ -21,13 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RiveLayerState : NSObject
 
-- (const void *)rive_layer_state;
+- (const void*)rive_layer_state;
 - (bool)isEntryState;
 - (bool)isExitState;
 - (bool)isAnyState;
 - (bool)isAnimationState;
-- (NSString *)name;
-
+- (NSString*)name;
 
 @end
 
@@ -35,28 +33,28 @@ NS_ASSUME_NONNULL_BEGIN
  * RiveExitState
  */
 @interface RiveExitState : RiveLayerState
-- (NSString *)name;
+- (NSString*)name;
 @end
 
 /*
  * RiveEntryState
  */
 @interface RiveEntryState : RiveLayerState
-- (NSString *)name;
+- (NSString*)name;
 @end
 
 /*
  * RiveAnyState
  */
 @interface RiveAnyState : RiveLayerState
-- (NSString *)name;
+- (NSString*)name;
 @end
 
 /*
  * RiveAnimationState
  */
 @interface RiveAnimationState : RiveLayerState
-- (NSString *)name;
+- (NSString*)name;
 @end
 
 /*
@@ -64,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This catches new states that haven't been added to iOS runtime yet
  */
 @interface RiveUnknownState : RiveLayerState
-- (NSString *)name;
+- (NSString*)name;
 @end
 
 NS_ASSUME_NONNULL_END

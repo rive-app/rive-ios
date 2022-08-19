@@ -11,5 +11,4 @@
 
 #import "RiveRuntime/Runtime/RiveFile.h"
 
-
 #endif /* TestHeader_h */

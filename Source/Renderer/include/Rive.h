@@ -6,13 +6,11 @@
 //  Copyright © 2020 Rive. All rights reserved.
 //
 
-
 #ifndef rive_h
 #define rive_h
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
-
 
 #import <RiveRuntime/RiveFile.h>
 #import <RiveRuntime/RiveArtboard.h>
@@ -21,71 +19,57 @@
 #import <RiveRuntime/RiveStateMachineInstance.h>
 #import <RiveRuntime/LayerState.h>
 
-
 NS_ASSUME_NONNULL_BEGIN
 
 /*
  * LoopMode
  */
-typedef NS_ENUM(NSInteger, RiveLoop) {
-    oneShot,
-    loop,
-    pingPong,
-    autoLoop
-};
+typedef NS_ENUM(NSInteger, RiveLoop) { oneShot, loop, pingPong, autoLoop };
 
 /*
  * Direction
  */
 typedef NS_ENUM(NSInteger, RiveDirection) {
-    backwards,
-    forwards,
-    autoDirection,
+  backwards,
+  forwards,
+  autoDirection,
 };
 
 /*
  * Fits
  */
-typedef NS_ENUM(NSInteger, RiveFit) {
-    fill,
-    contain,
-    cover,
-    fitHeight,
-    fitWidth,
-    scaleDown,
-    noFit
-};
+typedef NS_ENUM(NSInteger, RiveFit) { fill, contain, cover, fitHeight, fitWidth, scaleDown, noFit };
 
 /*
  * Alignments
  */
 typedef NS_ENUM(NSInteger, RiveAlignment) {
-    topLeft,
-    topCenter,
-    topRight,
-    centerLeft,
-    center,
-    centerRight,
-    bottomLeft,
-    bottomCenter,
-    bottomRight
+  topLeft,
+  topCenter,
+  topRight,
+  centerLeft,
+  center,
+  centerRight,
+  bottomLeft,
+  bottomCenter,
+  bottomRight
 };
 
-FOUNDATION_EXPORT NSString *const RiveErrorDomain;
+FOUNDATION_EXPORT NSString* const RiveErrorDomain;
 
 typedef NS_ENUM(NSInteger, RiveErrorCode) {
-    RiveNoArtboardsFound = 100,
-    RiveNoArtboardFound = 101,
-    RiveNoAnimations = 200,
-    RiveNoAnimationFound = 201,
-    RiveNoStateMachines = 300,
-    RiveNoStateMachineFound = 301,
-    RiveNoStateMachineInputFound = 400,
-    RiveUnknownStateMachineInput = 401,
-    RiveNoStateChangeFound = 402,
-    RiveUnsupportedVersion = 500,
-    RiveMalformedFile = 600,
-    RiveUnknownError = 700,
+  RiveNoArtboardsFound = 100,
+  RiveNoArtboardFound = 101,
+  RiveNoAnimations = 200,
+  RiveNoAnimationFound = 201,
+  RiveNoStateMachines = 300,
+  RiveNoStateMachineFound = 301,
+  RiveNoStateMachineInputFound = 400,
+  RiveUnknownStateMachineInput = 401,
+  RiveNoStateChangeFound = 402,
+  RiveUnsupportedVersion = 500,
+  RiveMalformedFile = 600,
+  RiveUnknownError = 700,
 };
 
 /*
@@ -94,7 +78,10 @@ typedef NS_ENUM(NSInteger, RiveErrorCode) {
 @interface RiveRenderer : NSObject
 
 - (instancetype)initWithContext:(nonnull CGContextRef)context;
-- (void)alignWithRect:(CGRect)rect withContentRect:(CGRect)contentRect withAlignment:(RiveAlignment)alignment withFit:(RiveFit)fit;
+- (void)alignWithRect:(CGRect)rect
+      withContentRect:(CGRect)contentRect
+        withAlignment:(RiveAlignment)alignment
+              withFit:(RiveFit)fit;
 
 @end
 

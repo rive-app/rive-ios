@@ -19,28 +19,30 @@ NS_ASSUME_NONNULL_BEGIN
 //
 @interface RiveArtboard : NSObject
 
-- (NSString *)name;
+- (NSString*)name;
 - (CGRect)bounds;
 
 - (NSInteger)animationCount;
-- (NSArray<NSString *> *)animationNames;
-- (RiveLinearAnimationInstance * __nullable)animationFromIndex:(NSInteger)index error:(NSError **)error;
-- (RiveLinearAnimationInstance * __nullable)animationFromName:(NSString *)name error:(NSError **)error;
+- (NSArray<NSString*>*)animationNames;
+- (RiveLinearAnimationInstance* __nullable)animationFromIndex:(NSInteger)index
+                                                        error:(NSError**)error;
+- (RiveLinearAnimationInstance* __nullable)animationFromName:(NSString*)name error:(NSError**)error;
 
 - (NSInteger)stateMachineCount;
-- (NSArray<NSString *> *)stateMachineNames;
-- (RiveStateMachineInstance * __nullable)stateMachineFromIndex:(NSInteger)index error:(NSError **)error;
-- (RiveStateMachineInstance * __nullable)stateMachineFromName:(NSString *)name error:(NSError **)error;
-- (RiveStateMachineInstance * __nullable)defaultStateMachine;
+- (NSArray<NSString*>*)stateMachineNames;
+- (RiveStateMachineInstance* __nullable)stateMachineFromIndex:(NSInteger)index
+                                                        error:(NSError**)error;
+- (RiveStateMachineInstance* __nullable)stateMachineFromName:(NSString*)name error:(NSError**)error;
+- (RiveStateMachineInstance* __nullable)defaultStateMachine;
 
 - (void)advanceBy:(double)elapsedSeconds;
-- (void)draw:(RiveRenderer *)renderer;
+- (void)draw:(RiveRenderer*)renderer;
 
 // MARK: Debug
 
 #if RIVE_ENABLE_REFERENCE_COUNTING
 + (int)instanceCount;
-#endif //RIVE_ENABLE_REFERENCE_COUNTING
+#endif // RIVE_ENABLE_REFERENCE_COUNTING
 
 @end
 

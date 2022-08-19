@@ -44,7 +44,7 @@
  * RiveSMIInput interface
  */
 @interface RiveSMIInput ()
-- (instancetype)initWithSMIInput:(const rive::SMIInput *)riveSMIInput;
+- (instancetype)initWithSMIInput:(const rive::SMIInput*)riveSMIInput;
 @end
 
 /*
@@ -76,25 +76,23 @@
  * RiveArtboard interface
  */
 @interface RiveArtboard ()
--(rive::ArtboardInstance *) artboardInstance;
--(instancetype) initWithArtboard:(std::unique_ptr<rive::ArtboardInstance>) riveArtboard;
+- (rive::ArtboardInstance*)artboardInstance;
+- (instancetype)initWithArtboard:(std::unique_ptr<rive::ArtboardInstance>)riveArtboard;
 @end
 
 /*
  * RiveRenderer interface
  */
 @interface RiveRenderer ()
-@property (nonatomic, readonly) rive::Renderer* renderer;
--(rive::Renderer *) renderer;
+@property(nonatomic, readonly) rive::Renderer* renderer;
+- (rive::Renderer*)renderer;
 @end
-
 
 /*
  * RiveLayerState interface
  */
 @interface RiveLayerState ()
-- (instancetype) initWithLayerState:(const rive::LayerState *)layerState;
+- (instancetype)initWithLayerState:(const rive::LayerState*)layerState;
 @end
-
 
 #endif /* RivePrivateHeaders_h */

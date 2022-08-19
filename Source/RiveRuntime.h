@@ -14,7 +14,8 @@ FOUNDATION_EXPORT double RiveRuntimeVersionNumber;
 //! Project version string for RiveRuntime.
 FOUNDATION_EXPORT const unsigned char RiveRuntimeVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <RiveRuntime/PublicHeader.h>
+// In this header, you should import all the public headers of your framework using statements like
+// #import <RiveRuntime/PublicHeader.h>
 #import <RiveRuntime/Rive.h>
 #import <RiveRuntime/LayerState.h>
 #import <RiveRuntime/RiveFile.h>

@@ -10,8 +10,7 @@
 #define util_h
 
 @interface Util : NSObject
-+ (RiveFile* __nullable) loadTestFile: (NSString *)filename error:(NSError**)error;
++ (RiveFile* __nullable)loadTestFile:(NSString*)filename error:(NSError**)error;
 @end
-
 
 #endif /* util_h */

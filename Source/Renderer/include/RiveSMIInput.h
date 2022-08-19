@@ -6,7 +6,6 @@
 //  Copyright © 2021 Rive. All rights reserved.
 //
 
-
 #ifndef rive_smi_input_h
 #define rive_smi_input_h
 
@@ -18,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
  * SMITrigger
  */
 @interface RiveSMIInput : NSObject
-- (NSString *)name;
+- (NSString*)name;
 - (bool)isBoolean;
 - (bool)isTrigger;
 - (bool)isNumber;
@@ -50,4 +49,3 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 #endif /* rive_smi_input_h */
-
