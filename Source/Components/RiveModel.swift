@@ -28,14 +28,24 @@ open class RiveModel: ObservableObject {
     
     // MARK: - Setters
     
+    /// Sets a new Artboard and makes the current StateMachine and Animation nil
     open func setArtboard(_ name: String) throws {
-        do { artboard = try riveFile.artboard(fromName: name) }
+        do {
+            stateMachine = nil
+            animation = nil
+            artboard = try riveFile.artboard(fromName: name)
+        }
         catch { throw RiveModelError.invalidArtboard("Name \(name) not found") }
     }
     
+    /// Sets a new Artboard and makes the current StateMachine and Animation nil
     open func setArtboard(_ index: Int? = nil) throws {
         if let index = index {
-            do { artboard = try riveFile.artboard(from: index) }
+            do {
+                stateMachine = nil
+                animation = nil
+                artboard = try riveFile.artboard(from: index)
+            }
             catch { throw RiveModelError.invalidArtboard("Index \(index) not found") }
         } else {
             // This tries to find the 'default' Artboard
