@@ -13,6 +13,8 @@ Check out this repository, making sure to include the submodules. It is importan
 The package relies on [Skia](https://skia.org/), as well as [rive-cpp](https://github.com/rive-app/rive-cpp) in order to be built. To shorten the build cycle, we rely on compiled libraries for skia, rive & rive-skia-renderer.
 The `./scripts/build.sh all` script will download or build appropriate libraries, be sure to run configure when making changes to our rive-cpp submodule.
 
+Rive is constantly making use of the latest clang features, so please ensure your Xcode and Xcode Command Line Tools are up to date with the latest versions.
+
 ### Uploading caches
 
 If you are contributing and you have access to Rives' AWS environment, make you sure install `aws-cli` and configure it with your credentials. If you run into permission issues here `aws sts get-caller-identity` can help make sure that your local developer environment is setup to talk to AWS correctly.
