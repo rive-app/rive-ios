@@ -10,8 +10,8 @@ import SwiftUI
 import RiveRuntime
 
 @available(*, deprecated, message: "Use method in RiveFile+Extensions instead")
-func getBytes(resourceName: String, resourceExt: String=".riv") -> [UInt8] {
-    guard let url = Bundle.main.url(forResource: resourceName, withExtension: resourceExt) else {
+func getBytes(resourceName: String, resourceExt: String=".riv", bundle: Bundle) -> [UInt8] {
+    guard let url = bundle.url(forResource: resourceName, withExtension: resourceExt) else {
         fatalError("Failed to locate \(resourceName) in bundle.")
     }
     guard let data = try? Data(contentsOf: url) else {
@@ -23,8 +23,8 @@ func getBytes(resourceName: String, resourceExt: String=".riv") -> [UInt8] {
 }
 
 @available(*, deprecated, message: "Use convenience init in RiveFile+Extensions instead")
-func getRiveFile(resourceName: String, resourceExt: String=".riv") throws -> RiveFile{
-    let byteArray = getBytes(resourceName: resourceName, resourceExt: resourceExt)
+func getRiveFile(resourceName: String, resourceExt: String=".riv", bundle: Bundle = .main) throws -> RiveFile{
+    let byteArray = getBytes(resourceName: resourceName, resourceExt: resourceExt, bundle: bundle)
     return try RiveFile(byteArray: byteArray)
 }
 

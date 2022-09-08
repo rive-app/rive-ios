@@ -18,8 +18,8 @@ open class RiveModel: ObservableObject {
         self.riveFile = riveFile
     }
     
-    public init(fileName: String) throws {
-        riveFile = try RiveFile(name: fileName)
+    public init(fileName: String, bundle: Bundle = .main) throws {
+        riveFile = try RiveFile(name: fileName, bundle: bundle)
     }
     
     public init(webURL: String, delegate: RiveFileDelegate) {
