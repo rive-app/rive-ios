@@ -31,9 +31,9 @@ The library is distributed both through Swift Package Manager and Cocoapods.
 
 ## Getting Started
 
-Follow along with the link below for a quick start in getting Rive React Native integrated into your multi-platform applications.
+Follow along with the link below for a quick start in getting Rive iOS integrated into your multi-platform applications.
 
-[Getting Started with Rive in iOS](https://github.com/rive-app/rive-ios)
+[Getting Started with Rive in iOS]([https://github.com/rive-app/rive-ios](https://help.rive.app/runtimes/overview/ios/#getting-started))
 
 ## Supported Devices
 
