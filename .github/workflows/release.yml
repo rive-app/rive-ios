@@ -219,7 +219,6 @@ jobs:
 
   publish_cocoapods:
     name: Publish framework to cocoapods
-    if: github.event.pull_request.merged == true
     runs-on: macos-12
     needs: [determine_version, build_framework, do_release]
     steps:
