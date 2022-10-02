@@ -1,6 +1,7 @@
-![Build Status](https://github.com/rive-app/rive-ios/actions/workflows/build_frameworks.yml/badge.svg) 
+![Build Status](https://github.com/rive-app/rive-ios/actions/workflows/build_frameworks.yml/badge.svg)
 ![Discord badge](https://img.shields.io/discord/532365473602600965)
 ![Twitter handle](https://img.shields.io/twitter/follow/rive_app.svg?style=social&label=Follow)
+
 # Rive iOS
 
 ![Rive hero image](https://rive-app.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fff44ed5f-1eea-4154-81ef-84547e61c3fd%2Frive_notion.png?table=block&id=f198cab2-c0bc-4ce8-970c-42220379bcf3&spaceId=9c949665-9ad9-445f-b9c4-5ee204f8b60c&width=2000&userId=&cache=v2)
@@ -31,9 +32,9 @@ The library is distributed both through Swift Package Manager and Cocoapods.
 
 ## Getting Started
 
-Follow along with the link below for a quick start in getting Rive React Native integrated into your multi-platform applications.
+Follow along with the link below for a quick start in getting Rive iOS integrated into your multi-platform applications.
 
-[Getting Started with Rive in iOS](https://github.com/rive-app/rive-ios)
+[Getting Started with Rive in iOS](https://help.rive.app/runtimes/overview/ios)
 
 ## Supported Devices
 
@@ -41,9 +42,9 @@ Currently, this runtime library supports a minimum iOS version of **14.0+**. Dev
 
 ## Examples
 
-Check out the `Demo-App/` folder and `Example-iOS/` folder for example applications using the Rive iOS runtime. It  showcases a number of ways to use the Rive component and `useRef` hook pattern:
+Check out the `Demo-App/` folder and `Example-iOS/` folder for example applications using the Rive iOS runtime. It showcases a number of ways to use the high-level `RiveViewModel` API through UIKit and SwiftUI examples, including:
 
-- Setting a Rive file via a URL, or asset in the Android/iOS projects
+- Setting a Rive file via a URL or asset in the bundle
 - Setting layout and loop mode options
 - Displaying single or multiple animations / artboards on one component
 - Setting up and maniuplating a state machine via inputs
