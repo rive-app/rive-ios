@@ -16,12 +16,14 @@
 #endif
 
 // Helper that remembers to call CFRelease when an object goes out of scope.
-template <typename T> class AutoCF {
+template <typename T> class AutoCF
+{
     T m_Obj;
 
 public:
     AutoCF(T obj) : m_Obj(obj) {}
-    ~AutoCF() {
+    ~AutoCF()
+    {
         if (m_Obj)
             CFRelease(m_Obj);
     }
@@ -34,39 +36,50 @@ public:
 using namespace rive;
 
 std::vector<uint8_t> CGSkiaFactory::platformDecode(Span<const uint8_t> span,
-                                                   SkiaFactory::ImageInfo* info) {
+                                                   SkiaFactory::ImageInfo* info)
+{
     std::vector<uint8_t> pixels;
 
     AutoCF data = CFDataCreateWithBytesNoCopy(nullptr, span.data(), span.size(), nullptr);
-    if (!data) {
+    if (!data)
+    {
         return pixels;
     }
 
     AutoCF source = CGImageSourceCreateWithData(data, nullptr);
-    if (!source) {
+    if (!source)
+    {
         return pixels;
     }
 
     AutoCF image = CGImageSourceCreateImageAtIndex(source, 0, nullptr);
-    if (!image) {
+    if (!image)
+    {
         return pixels;
     }
 
     bool isOpaque = false;
-    switch (CGImageGetAlphaInfo(image.get())) {
+    switch (CGImageGetAlphaInfo(image.get()))
+    {
         case kCGImageAlphaNone:
         case kCGImageAlphaNoneSkipFirst:
-        case kCGImageAlphaNoneSkipLast: isOpaque = true; break;
-        default: break;
+        case kCGImageAlphaNoneSkipLast:
+            isOpaque = true;
+            break;
+        default:
+            break;
     }
 
     // Now create a drawing context to produce RGBA pixels
 
     const size_t bitsPerComponent = 8;
     CGBitmapInfo cgInfo = kCGBitmapByteOrder32Big; // rgba
-    if (isOpaque) {
+    if (isOpaque)
+    {
         cgInfo |= kCGImageAlphaNoneSkipLast;
-    } else {
+    }
+    else
+    {
         cgInfo |= kCGImageAlphaPremultipliedLast; // premul
     }
     const size_t width = CGImageGetWidth(image);
@@ -79,7 +92,8 @@ std::vector<uint8_t> CGSkiaFactory::platformDecode(Span<const uint8_t> span,
     AutoCF cs = CGColorSpaceCreateDeviceRGB();
     AutoCF cg =
         CGBitmapContextCreate(pixels.data(), width, height, bitsPerComponent, rowBytes, cs, cgInfo);
-    if (!cg) {
+    if (!cg)
+    {
         pixels.clear();
         return pixels;
     }
