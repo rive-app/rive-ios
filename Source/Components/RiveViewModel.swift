@@ -332,20 +332,23 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     
     /// Gives updated layout values to the provided `RiveView`. This is called in
     /// the process of re-displaying `RiveViewRepresentable`.
-    /// - Parameter rview: the `RiveView` that will be updated
+    /// - Parameter view: the `RiveView` that will be updated
     @objc open func update(view: RiveView) {
         view.fit = fit
         view.alignment = alignment
     }
     
-    /// Assigns the provided `RiveView` to its rview property. This is called when creating a
-    /// `RiveViewRepresentable`
+    /// Assigns the provided `RiveView` to the riveView property. This is called when
+    /// creating a `RiveViewRepresentable` in the `.view()` method for SwiftUI and when
+    /// adding to the view hierarchy with `.createRiveView()` in UIKit.
     ///
-    /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
+    /// - Parameter view: the `RiveView` that this `RiveViewModel` will maintain
     fileprivate func registerView(_ view: RiveView) {
         riveView = view
         riveView!.playerDelegate = self
         riveView!.stateMachineDelegate = self
+        riveView!.fit = fit
+        riveView!.alignment = alignment
     }
     
     /// Stops maintaining a connection to any `RiveView`
@@ -363,7 +366,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// This can be used to connect with and configure an `RiveView` that was created elsewhere.
     /// Does not need to be called when updating an already configured `RiveView`. Useful for
     /// attaching views created in a `UIViewController` or Storyboard.
-    /// - Parameter view: the `Rview` that this `RiveViewModel` will maintain
+    /// - Parameter view: the `RiveView` that this `RiveViewModel` will maintain
     @objc open func setView(_ view: RiveView) {
         registerView(view)
         try! riveView!.setModel(riveModel!, autoPlay: autoPlay)
