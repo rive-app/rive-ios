@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       major:
-        description: 'Major'
+        description: "Major"
         type: boolean
         default: false
       minor:
-        description: 'Minor'
+        description: "Minor"
         type: boolean
         default: false
 
@@ -16,8 +16,8 @@ jobs:
   build-skia:
     strategy:
       matrix:
-        arch: ["x86" , "x64", "arm", "arm64", "iossim_arm64"]
-        
+        arch: ["x86", "x64", "arm", "arm64", "iossim_arm64"]
+
     runs-on: macos-12
     permissions:
       id-token: write
@@ -27,29 +27,30 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-west-2
-          role-to-assume:  ${{ secrets.ACTIONS_ROLE }}
+          role-to-assume: ${{ secrets.ACTIONS_ROLE }}
       - name: Checkout Code
         uses: actions/checkout@v3
-        with: 
+        with:
           submodules: true
           token: ${{ secrets.PAT_GITHUB }}
 
       - name: Update Java
         uses: actions/setup-java@v2
-        with: 
-          distribution: 'zulu' 
-          java-version: '16'
+        with:
+          distribution: "zulu"
+          java-version: "16"
 
       - name: Installing pre-requisites
         run: |
           set -x
           # Install some dependencies & premake5
           brew install ninja
-          wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz
-          tar -xf premake-5.0.0-beta1-macosx.tar.gz
+          curl https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz -L -o premake_macosx.tar.gz
+          tar -xvf premake_macosx.tar.gz 2>/dev/null
+          rm premake_macosx.tar.gz
+          sudo chmod a+x premake5
           mkdir bin
           cp premake5 bin/premake5
-          sudo chmod a+x premake5
           sudo mv premake5 /usr/local/bin
       - name: Build skia files
         run: ./scripts/build.skia.sh -a ${{ matrix.arch }}
@@ -84,7 +85,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        with: 
+        with:
           submodules: true
           token: ${{ secrets.PAT_GITHUB }}
       - name: Installing pre-requisites
@@ -92,12 +93,13 @@ jobs:
           set -x
           # Install some dependencies & premake5
           brew install ninja
-          wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz
-          tar -xf premake-5.0.0-beta1-macosx.tar.gz
+          curl https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz -L -o premake_macosx.tar.gz
+          tar -xvf premake_macosx.tar.gz 2>/dev/null
+          rm premake_macosx.tar.gz
           mkdir bin
-          cp premake5 bin/premake5
           sudo chmod a+x premake5
-          sudo mv premake5 /usr/local/bin      
+          cp premake5 bin/premake5
+          sudo mv premake5 /usr/local/bin
       - name: Build everything (using the cache, we should make an archive of course)
         run: ./scripts/build.sh all
       - name: Update Marketing versions
@@ -198,19 +200,19 @@ jobs:
         with:
           name: RiveRuntime.xcframework.zip
           path: archive/
-      - if : ${{ inputs.major == true }}
+      - if: ${{ inputs.major == true }}
         name: Major Release - Bump version number, update changelog, push and tag
         run: npm run release -- major --ci
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-      - if : ${{inputs.major == false && inputs.minor == true}}
+      - if: ${{inputs.major == false && inputs.minor == true}}
         name: Minor release - Bump version number, update changelog, push and tag
         run: npm run release -- minor --ci
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-      - if : ${{inputs.major == false && inputs.minor == false}}
+      - if: ${{inputs.major == false && inputs.minor == false}}
         name: Build release - Bump version number, update changelog, push and tag
         run: npm run release -- --ci
         working-directory: ./.github/release
