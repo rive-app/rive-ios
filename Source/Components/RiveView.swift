@@ -22,8 +22,8 @@ open class RiveView: RiveRendererView {
     private var eventQueue = EventQueue()
     
     // MARK: Delegates
-    public var playerDelegate: RivePlayerDelegate?
-    public var stateMachineDelegate: RiveStateMachineDelegate?
+    public weak var playerDelegate: RivePlayerDelegate?
+    public weak var stateMachineDelegate: RiveStateMachineDelegate?
     
     // MARK: Debug
     private var fpsCounter: FPSCounterView? = nil
