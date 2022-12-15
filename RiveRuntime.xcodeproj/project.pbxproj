@@ -155,16 +155,17 @@
 		046FB801264EB632000129B1 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				274175FB286DB9CE000A60D1 /* cg_skia_factory.hpp */,
-				046FB7EC264EAA60000129B1 /* RiveArtboard.h */,
+				C9C741F224FC510200EF9516 /* Rive.h */,
 				046FB7E7264EAA5F000129B1 /* RiveFile.h */,
+				046FB7EC264EAA60000129B1 /* RiveArtboard.h */,
+				2A7079342726277C00C035A1 /* rive_renderer_view.hh */,
 				046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */,
 				046FB7EB264EAA60000129B1 /* RiveSMIInput.h */,
 				046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */,
-				C9C741F224FC510200EF9516 /* Rive.h */,
 				C9601F29250C25830032AA07 /* RiveRenderer.hpp */,
 				04BE542F264D1F4100427B39 /* LayerState.h */,
 				04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */,
+				274175FB286DB9CE000A60D1 /* cg_skia_factory.hpp */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -190,50 +191,33 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
-		C34609FA27FF9027002DBCB7 /* Extensions */ = {
+		C3468E5627EB9858008652FD /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				C9C73ED424FC478800EF9516 /* RiveRuntime.h */,
+				C3745FD2282BFAB90087F4AF /* FPSCounterView.swift */,
 				C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */,
 				C3E2B57F282F242400A8651B /* RiveStateMachineInstance+Extensions.swift */,
 			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		C3468E5627EB9858008652FD /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				C3468E5727EB9887008652FD /* RiveView.swift */,
-				C3468E5927ECC7C6008652FD /* RiveViewModel.swift */,
-				C3468E5B27ED4C41008652FD /* RiveModel.swift */,
-			);
-			path = Components;
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		C9BD3927263B64B100696C37 /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
-				274175FC286DB9CE000A60D1 /* cg_skia_factory.cpp */,
 				046FB801264EB632000129B1 /* include */,
-				046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */,
-				046FB7EF264EAA60000129B1 /* RiveFile.mm */,
-				046FB7E4264EAA5F000129B1 /* RiveLinearAnimationInstance.mm */,
-				046FB7E5264EAA5F000129B1 /* RiveSMIInput.mm */,
-				046FB7E8264EAA5F000129B1 /* RiveStateMachineInstance.mm */,
 				C9C741F324FC510200EF9516 /* Rive.mm */,
+				046FB7EF264EAA60000129B1 /* RiveFile.mm */,
+				046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */,
+				2A707936272628AD00C035A1 /* rive_renderer_view.mm */,
+				046FB7E4264EAA5F000129B1 /* RiveLinearAnimationInstance.mm */,
+				046FB7E8264EAA5F000129B1 /* RiveStateMachineInstance.mm */,
+				046FB7E5264EAA5F000129B1 /* RiveSMIInput.mm */,
 				C9601F2A250C25930032AA07 /* RiveRenderer.mm */,
 				04BE5431264D243D00427B39 /* LayerState.mm */,
+				274175FC286DB9CE000A60D1 /* cg_skia_factory.cpp */,
 			);
 			path = Renderer;
-			sourceTree = "<group>";
-		};
-		C9BD3928263B65B100696C37 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				2A707936272628AD00C035A1 /* rive_renderer_view.mm */,
-				2A7079342726277C00C035A1 /* rive_renderer_view.hh */,
-				C3745FD2282BFAB90087F4AF /* FPSCounterView.swift */,
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		C9C73EC724FC478800EF9516 = {
@@ -257,11 +241,11 @@
 		C9C73ED324FC478800EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				C9C73ED424FC478800EF9516 /* RiveRuntime.h */,
-				C3468E5627EB9858008652FD /* Components */,
-				C34609FA27FF9027002DBCB7 /* Extensions */,
-				C9BD3928263B65B100696C37 /* Views */,
+				C3468E5727EB9887008652FD /* RiveView.swift */,
+				C3468E5927ECC7C6008652FD /* RiveViewModel.swift */,
+				C3468E5B27ED4C41008652FD /* RiveModel.swift */,
 				C9BD3927263B64B100696C37 /* Renderer */,
+				C3468E5627EB9858008652FD /* Utils */,
 				C9C73ED524FC478800EF9516 /* Info.plist */,
 			);
 			path = Source;
@@ -733,7 +717,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = "dependencies/includes/rive/include";
+				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -754,7 +738,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = "dependencies/includes/rive/include";
+				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
