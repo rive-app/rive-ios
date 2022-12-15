@@ -311,6 +311,11 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         setInput(inputName, value: Float(value))
     }
     
+    // TODO: Replace this with a more robust structure of the file's contents
+    open func artboardNames() -> [String] {
+        return riveModel?.riveFile.artboardNames() ?? []
+    }
+    
     // MARK: - SwiftUI Helpers
     
     /// Makes a new `RiveView` for the instance property with data from model which will
