@@ -357,7 +357,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     /// Stops maintaining a connection to any `RiveView`
-    fileprivate func deregisterView() {
+    open func deregisterView() {
         riveView = nil
     }
     
