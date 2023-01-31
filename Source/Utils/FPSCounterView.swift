@@ -10,8 +10,9 @@ import UIKit
 
 class FPSCounterView: UILabel {
     private let fpsFormatter = NumberFormatter()
-    private let updateInterval: Double = 0.5
-    private var timeSinceUpdate: Double = 0
+    private let updateInterval: Double = 1.0
+    private var timestampOnLastUpdate: CFTimeInterval = 0
+    private var framesDrawnSinceLastUpdate: Int = 0
     
     internal convenience init() {
         self.init(frame: CGRect(x: 1, y: 1, width: 70, height: 20))
@@ -29,14 +30,20 @@ class FPSCounterView: UILabel {
         fpsFormatter.roundingMode = .down
     }
     
-    internal func elapsed(time elapsedTime: Double) {
-        if elapsedTime != 0 {
-            timeSinceUpdate += elapsedTime
-            
-            if timeSinceUpdate >= updateInterval {
-                timeSinceUpdate = 0
-                text = fpsFormatter.string(from: NSNumber(value: 1 / elapsedTime))! + "fps"
-            }
+    internal func didDrawFrame(timestamp: CFTimeInterval) {
+        if (timestampOnLastUpdate == 0) {
+            timestampOnLastUpdate = timestamp
+            framesDrawnSinceLastUpdate = 0
+            return
+        }
+
+        framesDrawnSinceLastUpdate += 1
+
+        let elapsedSinceLastUpdate = timestamp - timestampOnLastUpdate
+        if elapsedSinceLastUpdate >= updateInterval {
+            text = fpsFormatter.string(from: NSNumber(value: Double(framesDrawnSinceLastUpdate) / elapsedSinceLastUpdate))! + "fps"
+            timestampOnLastUpdate = timestamp
+            framesDrawnSinceLastUpdate = 0
         }
     }
     

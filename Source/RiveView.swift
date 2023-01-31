@@ -142,7 +142,6 @@ open class RiveView: RiveRendererView {
         
         // Calculate the time elapsed between ticks
         let elapsedTime = timestamp - lastTime
-        fpsCounter?.elapsed(time: elapsedTime)
         lastTime = timestamp
         advance(delta: elapsedTime)
         if !isPlaying {
@@ -195,6 +194,10 @@ open class RiveView: RiveRendererView {
         let newFrame = CGRect(origin: rect.origin, size: size)
         align(with: newFrame, contentRect: riveModel.artboard.bounds(), alignment: alignment, fit: fit)
         draw(with: riveModel.artboard)
+
+        if let displayLink = displayLinkProxy?.displayLink {
+            fpsCounter?.didDrawFrame(timestamp:displayLink.timestamp)
+        }
     }
     
     // MARK: - UIResponder
