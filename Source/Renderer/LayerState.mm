@@ -88,8 +88,12 @@
 - (NSString*)name
 {
     auto inst = [self rive_layer_state];
-    auto str = ((const rive::AnimationState*)inst)->animation()->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    auto animation = ((const rive::AnimationState*)inst)->animation();
+    
+    if (animation == nil){
+        return [NSString stringWithCString:"Unknown" encoding:[NSString defaultCStringEncoding]];
+    }
+    return [NSString stringWithCString:animation->name().c_str() encoding:[NSString defaultCStringEncoding]];
 }
 @end
 

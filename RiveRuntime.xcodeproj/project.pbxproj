@@ -42,6 +42,8 @@
 		04BE5430264D1F4100427B39 /* LayerState.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE542F264D1F4100427B39 /* LayerState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04BE5434264D267900427B39 /* LayerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5431264D243D00427B39 /* LayerState.mm */; };
 		04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */; };
+		04ED72F1299C114000E8DE53 /* RiveViewModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04ED72F0299C114000E8DE53 /* RiveViewModelTest.swift */; };
+		04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04ED72F2299C115100E8DE53 /* empty_animation_state.riv */; };
 		274175FD286DB9CE000A60D1 /* cg_skia_factory.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 274175FB286DB9CE000A60D1 /* cg_skia_factory.hpp */; };
 		274175FE286DB9CE000A60D1 /* cg_skia_factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 274175FC286DB9CE000A60D1 /* cg_skia_factory.cpp */; };
 		2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */ = {isa = PBXBuildFile; fileRef = 2A7079342726277C00C035A1 /* rive_renderer_view.hh */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -109,6 +111,8 @@
 		04BE542F264D1F4100427B39 /* LayerState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayerState.h; sourceTree = "<group>"; };
 		04BE5431264D243D00427B39 /* LayerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LayerState.mm; sourceTree = "<group>"; };
 		04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RivePrivateHeaders.h; sourceTree = "<group>"; };
+		04ED72F0299C114000E8DE53 /* RiveViewModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RiveViewModelTest.swift; sourceTree = "<group>"; };
+		04ED72F2299C115100E8DE53 /* empty_animation_state.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty_animation_state.riv; sourceTree = "<group>"; };
 		274175FB286DB9CE000A60D1 /* cg_skia_factory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cg_skia_factory.hpp; sourceTree = "<group>"; };
 		274175FC286DB9CE000A60D1 /* cg_skia_factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cg_skia_factory.cpp; sourceTree = "<group>"; };
 		2A7079342726277C00C035A1 /* rive_renderer_view.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rive_renderer_view.hh; sourceTree = "<group>"; };
@@ -177,6 +181,7 @@
 				04BE5419264A823000427B39 /* animationconfigurations.riv */,
 				04BE53FC2649403600427B39 /* flux_capacitor.riv */,
 				04BE54012649403600427B39 /* junk.riv */,
+				04ED72F2299C115100E8DE53 /* empty_animation_state.riv */,
 				04BE53FF2649403600427B39 /* multiple_animations.riv */,
 				04BE54022649403600427B39 /* multiple_state_machines.riv */,
 				04BE54002649403600427B39 /* multipleartboards.riv */,
@@ -265,6 +270,7 @@
 				04BE541D264AC7A600427B39 /* RiveArtboardLoadTest.mm */,
 				04BE541F264ACFC200427B39 /* RiveStateMachineLoadTest.mm */,
 				04BE5421264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm */,
+				04ED72F0299C114000E8DE53 /* RiveViewModelTest.swift */,
 				04BE5426264C02AA00427B39 /* StateMachineInstanceTest.mm */,
 				04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */,
 				C38BB5F528762B720039E385 /* RiveStateMachineTest.swift */,
@@ -397,6 +403,7 @@
 				04BE54082649403600427B39 /* flux_capacitor.riv in Resources */,
 				04BE54052649403600427B39 /* noartboard.riv in Resources */,
 				04BE540B2649403600427B39 /* multiple_animations.riv in Resources */,
+				04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */,
 				04BE54062649403600427B39 /* off_road_car_blog.riv in Resources */,
 				04BE540C2649403600427B39 /* multipleartboards.riv in Resources */,
 				04BE540D2649403600427B39 /* junk.riv in Resources */,
@@ -441,6 +448,7 @@
 				04BE541E264AC7A600427B39 /* RiveArtboardLoadTest.mm in Sources */,
 				04BE542D264C1A3300427B39 /* RiveDelegatesTest.swift in Sources */,
 				04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */,
+				04ED72F1299C114000E8DE53 /* RiveViewModelTest.swift in Sources */,
 				04BE541C264A90D600427B39 /* RiveAnimationLoadTest.mm in Sources */,
 				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */,
 				04BE5413264943BB00427B39 /* util.mm in Sources */,
