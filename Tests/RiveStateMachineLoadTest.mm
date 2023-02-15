@@ -6,7 +6,6 @@
 //  Copyright © 2021 Rive. All rights reserved.
 //
 
-
 #import <XCTest/XCTest.h>
 #import "Rive.h"
 #import "util.h"
@@ -20,65 +19,72 @@
 /*
  * Test first StateMachine
  */
-- (void)testStateMachineFirstStateMachine {
+- (void)testStateMachineFirstStateMachine
+{
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"multipleartboards" error:&error];
     RiveArtboard* artboard = [file artboardFromName:@"artboard1" error:&error];
-    
+
     RiveStateMachineInstance* animationByIndex = [artboard stateMachineFromIndex:0 error:&error];
     XCTAssertNil(error);
-    RiveStateMachineInstance* animationByName = [artboard stateMachineFromName:@"artboard1stateMachine1" error:&error];
+    RiveStateMachineInstance* animationByName =
+        [artboard stateMachineFromName:@"artboard1stateMachine1" error:&error];
     XCTAssertNil(error);
-    
+
     XCTAssertTrue([animationByName.name isEqualToString:animationByIndex.name]);
-    
-    NSArray *target = [NSArray arrayWithObjects:@"artboard1stateMachine1", nil];
-    XCTAssertTrue([[artboard stateMachineNames] isEqualToArray: target]);
+
+    NSArray* target = [NSArray arrayWithObjects:@"artboard1stateMachine1", nil];
+    XCTAssertTrue([[artboard stateMachineNames] isEqualToArray:target]);
 }
 
 /*
  * Test second StateMachine
  */
-- (void)testStateMachineSecondStateMachine {
+- (void)testStateMachineSecondStateMachine
+{
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"multipleartboards" error:&error];
     RiveArtboard* artboard = [file artboardFromName:@"artboard2" error:&error];
-    
+
     RiveStateMachineInstance* animationByIndex = [artboard stateMachineFromIndex:0 error:&error];
     XCTAssertNil(error);
-    RiveStateMachineInstance* animationByName = [artboard stateMachineFromName:@"artboard2stateMachine1" error:&error];
+    RiveStateMachineInstance* animationByName =
+        [artboard stateMachineFromName:@"artboard2stateMachine1" error:&error];
     XCTAssertNil(error);
-    
+
     XCTAssertTrue([animationByName.name isEqualToString:animationByIndex.name]);
-    
+
     RiveStateMachineInstance* animation2ByIndex = [artboard stateMachineFromIndex:1 error:&error];
     XCTAssertNil(error);
-    RiveStateMachineInstance* animation2ByName = [artboard stateMachineFromName:@"artboard2stateMachine2" error:&error];
+    RiveStateMachineInstance* animation2ByName =
+        [artboard stateMachineFromName:@"artboard2stateMachine2" error:&error];
     XCTAssertNil(error);
-    
+
     XCTAssertTrue([animation2ByIndex.name isEqualToString:animation2ByName.name]);
-    
-    
-    NSArray *target = [NSArray arrayWithObjects:@"artboard2animation1", @"artboard2animation2", nil];
-    XCTAssertTrue([[artboard animationNames] isEqualToArray: target]);
+
+    NSArray* target =
+        [NSArray arrayWithObjects:@"artboard2animation1", @"artboard2animation2", nil];
+    XCTAssertTrue([[artboard animationNames] isEqualToArray:target]);
 }
 
 /*
  * Test no state machines
  */
-- (void)testArtboardHasNoStateMachine {
+- (void)testArtboardHasNoStateMachine
+{
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
     RiveArtboard* artboard = [file artboard:nil];
-    
+
     XCTAssertEqual([artboard animationCount], 0);
-    
-    XCTAssertTrue([[artboard animationNames] isEqualToArray: [NSArray array]]);
+
+    XCTAssertTrue([[artboard animationNames] isEqualToArray:[NSArray array]]);
 }
 
 /*
-* Test access index doesnt exist
-*/
-- (void)testArtboardStateMachineAtIndexDoesntExist {
+ * Test access index doesnt exist
+ */
+- (void)testArtboardStateMachineAtIndexDoesntExist
+{
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
     RiveArtboard* artboard = [file artboard:nil];
 
@@ -92,9 +98,10 @@
 }
 
 /*
-* Test access name doesnt exist
-*/
-- (void)testArtboardStateMachineWithNameDoesntExist {
+ * Test access name doesnt exist
+ */
+- (void)testArtboardStateMachineWithNameDoesntExist
+{
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
     RiveArtboard* artboard = [file artboard:nil];
 

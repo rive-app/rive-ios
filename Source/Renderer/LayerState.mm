@@ -9,40 +9,51 @@
 #import "Rive.h"
 #import "RivePrivateHeaders.h"
 
-@implementation RiveLayerState {
+@implementation RiveLayerState
+{
     const rive::LayerState* instance;
 }
 
-- (instancetype) initWithLayerState:(const rive::LayerState *)layerState{
-    if (self = [super init]) {
+- (instancetype)initWithLayerState:(const rive::LayerState*)layerState
+{
+    if (self = [super init])
+    {
         self->instance = layerState;
         return self;
-    } else {
+    }
+    else
+    {
         return nil;
     }
 }
 
-- (const void *)rive_layer_state {
+- (const void*)rive_layer_state
+{
     return instance;
 }
 
-- (bool)isEntryState {
+- (bool)isEntryState
+{
     return instance->is<rive::EntryState>();
 }
 
-- (bool)isExitState {
+- (bool)isExitState
+{
     return instance->is<rive::ExitState>();
 }
 
-- (bool)isAnyState {
+- (bool)isAnyState
+{
     return instance->is<rive::AnyState>();
 }
 
-- (bool)isAnimationState {
+- (bool)isAnimationState
+{
     return instance->is<rive::AnimationState>();
 }
 
-- (NSString *)name {
+- (NSString*)name
+{
     return @"RiveLayerState";
 }
 
@@ -50,29 +61,32 @@
 
 @implementation RiveAnyState
 
-- (NSString *)name{
+- (NSString*)name
+{
     return @"AnyState";
 }
 @end
 
 @implementation RiveEntryState
 
-- (NSString *)name{
+- (NSString*)name
+{
     return @"EntryState";
 }
 @end
 
-
 @implementation RiveExitState
 
-- (NSString *)name{
+- (NSString*)name
+{
     return @"ExitState";
 }
 @end
 
 @implementation RiveAnimationState
 
-- (NSString *)name{
+- (NSString*)name
+{
     auto inst = [self rive_layer_state];
     auto str = ((const rive::AnimationState*)inst)->animation()->name();
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
@@ -81,7 +95,8 @@
 
 @implementation RiveUnknownState
 
-- (NSString *)name{
+- (NSString*)name
+{
     return @"UnknownState";
 }
 @end

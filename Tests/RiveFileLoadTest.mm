@@ -19,7 +19,8 @@
 /*
  * Test loading junk, should complain.
  */
-- (void)testLoadFile {
+- (void)testLoadFile
+{
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"junk" error:&error];
 
@@ -33,7 +34,8 @@
 /*
  * Test loading format 6 file. this should complain
  */
-- (void)testLoadFormat6 {
+- (void)testLoadFormat6
+{
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"sample6" error:&error];
 
@@ -47,7 +49,8 @@
 /*
  * Test loading format Flux file
  */
-- (void)testLoadFlux {
+- (void)testLoadFlux
+{
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];
     RiveArtboard* artboard = [file artboard:&error];
@@ -57,7 +60,8 @@
 /*
  * Test loading format Buggy file
  */
-- (void)testLoadBuggy {
+- (void)testLoadBuggy
+{
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"off_road_car_blog" error:&error];
     RiveArtboard* artboard = [file artboard:&error];

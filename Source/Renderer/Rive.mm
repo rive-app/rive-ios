@@ -9,4 +9,4 @@
 #import "Rive.h"
 #import "RivePrivateHeaders.h"
 
-NSString *const RiveErrorDomain = @"rive.app.ios.runtime";
+NSString* const RiveErrorDomain = @"rive.app.ios.runtime";

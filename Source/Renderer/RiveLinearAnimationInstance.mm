@@ -15,120 +15,148 @@ static int animInstanceCount = 0;
 
 // MARK: - RiveLinearAnimationInstance
 
-@implementation RiveLinearAnimationInstance {
+@implementation RiveLinearAnimationInstance
+{
     std::unique_ptr<rive::LinearAnimationInstance> instance;
 }
 
 // MARK: Lifecycle
 
-- (instancetype)initWithAnimation:(std::unique_ptr<rive::LinearAnimationInstance>)anim {
-    if (self = [super init]) {
+- (instancetype)initWithAnimation:(std::unique_ptr<rive::LinearAnimationInstance>)anim
+{
+    if (self = [super init])
+    {
 #if RIVE_ENABLE_REFERENCE_COUNTING
         [RiveLinearAnimationInstance raiseInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
         instance = std::move(anim);
         return self;
-    } else {
+    }
+    else
+    {
         return nil;
     }
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
 #if RIVE_ENABLE_REFERENCE_COUNTING
     [RiveLinearAnimationInstance reduceInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
-    
+
     instance.reset(nullptr);
 }
 
 // MARK: Reference Counting
 
-+ (int)instanceCount {
++ (int)instanceCount
+{
     return animInstanceCount;
 }
 
-+ (void)raiseInstanceCount {
++ (void)raiseInstanceCount
+{
     animInstanceCount++;
     NSLog(@"+ Animation: %d", animInstanceCount);
 }
 
-+ (void)reduceInstanceCount {
++ (void)reduceInstanceCount
+{
     animInstanceCount--;
     NSLog(@"- Animation: %d", animInstanceCount);
 }
 
 // MARK: C++ Bindings
 
-- (float)time {
+- (float)time
+{
     return instance->time();
 }
 
-- (void)setTime:(float) time {
+- (void)setTime:(float)time
+{
     instance->time(time);
 }
 
-- (bool)advanceBy:(double)elapsedSeconds {
+- (bool)advanceBy:(double)elapsedSeconds
+{
     return instance->advanceAndApply(elapsedSeconds);
 }
 
-- (void)direction:(int)direction {
+- (void)direction:(int)direction
+{
     instance->direction(direction);
 }
 
-- (int)direction {
+- (int)direction
+{
     return instance->direction();
 }
 
-- (int)loop {
+- (int)loop
+{
     return instance->loopValue();
 }
 
-- (void)loop:(int)loopType {
+- (void)loop:(int)loopType
+{
     instance->loopValue(loopType);
 }
 
-- (bool)didLoop {
+- (bool)didLoop
+{
     return instance->didLoop();
 }
 
-- (NSString *)name {
+- (NSString*)name
+{
     std::string str = instance->name();
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
-- (NSInteger)fps {
+- (NSInteger)fps
+{
     return instance->fps();
 }
 
-- (NSInteger)workStart {
+- (NSInteger)workStart
+{
     return instance->animation()->workStart();
 }
 
-- (NSInteger)workEnd {
+- (NSInteger)workEnd
+{
     return instance->animation()->workEnd();
 }
 
-- (NSInteger)duration {
+- (NSInteger)duration
+{
     return instance->animation()->duration();
 }
 
-- (NSInteger)effectiveDuration {
-    if (self.workStart == UINT_MAX) {
+- (NSInteger)effectiveDuration
+{
+    if (self.workStart == UINT_MAX)
+    {
         return instance->animation()->duration();
-        
-    }else {
+    }
+    else
+    {
         return self.workEnd - self.workStart;
     }
 }
 
-- (float)effectiveDurationInSeconds {
+- (float)effectiveDurationInSeconds
+{
     return [self effectiveDuration] / (float)instance->fps();
 }
 
-- (float)endTime {
+- (float)endTime
+{
     float fps = instance->fps();
     auto animation = instance->animation();
-    if (animation->enableWorkArea()){
+    if (animation->enableWorkArea())
+    {
         return animation->workEnd() / fps;
     }
     return animation->duration() / fps;
@@ -136,7 +164,8 @@ static int animInstanceCount = 0;
 
 // MARK: Helpers
 
-- (bool)hasEnded {
+- (bool)hasEnded
+{
     return [self time] >= [self endTime];
 }
 
