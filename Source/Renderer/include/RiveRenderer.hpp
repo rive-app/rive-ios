@@ -139,7 +139,7 @@ public:
     CGMutablePathRef getPath() { return path; }
     FillRule getFillRule() { return m_FillRule; }
 
-    void reset() override;
+    void rewind() override;
     void addRenderPath(RenderPath* path, const Mat2D& transform) override;
     void fillRule(FillRule value) override;
     void moveTo(float x, float y) override;

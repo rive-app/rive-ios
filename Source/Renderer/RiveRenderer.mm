@@ -181,7 +181,7 @@ void RiveRenderPath::close()
     CGPathCloseSubpath(path);
 }
 
-void RiveRenderPath::reset()
+void RiveRenderPath::rewind()
 {
     //    NSLog(@" --- RenderPath::reset");
     CGPathRelease(path);
