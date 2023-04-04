@@ -11,7 +11,7 @@ import Foundation
 
 open class RiveView: RiveRendererView {
     // MARK: Configuration
-    internal weak var riveModel: RiveModel!
+    internal weak var riveModel: RiveModel?
     internal var fit: RiveFit = .contain { didSet { setNeedsDisplay() } }
     internal var alignment: RiveAlignment = .center { didSet { setNeedsDisplay() } }
     
@@ -157,11 +157,10 @@ open class RiveView: RiveRendererView {
         let wasPlaying = isPlaying
         eventQueue.fireAll()
         
-        if let stateMachine = riveModel.stateMachine {
+        if let stateMachine = riveModel?.stateMachine {
             isPlaying = stateMachine.advance(by: delta) && wasPlaying
             stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
-        }
-        else if let animation = riveModel.animation {
+        } else if let animation = riveModel?.animation {
             isPlaying = animation.advance(by: delta) && wasPlaying
             
             if isPlaying {
@@ -189,12 +188,12 @@ open class RiveView: RiveRendererView {
     /// This is called in the middle of drawRect
     override public func drawRive(_ rect: CGRect, size: CGSize) {
         // This prevents breaking when loading RiveFile async
-        guard riveModel.artboard != nil else { return }
+        guard let artboard = riveModel?.artboard else { return }
         
         let newFrame = CGRect(origin: rect.origin, size: size)
-        align(with: newFrame, contentRect: riveModel.artboard.bounds(), alignment: alignment, fit: fit)
-        draw(with: riveModel.artboard)
-
+        align(with: newFrame, contentRect: artboard.bounds(), alignment: alignment, fit: fit)
+        draw(with: artboard)
+        
         if let displayLink = displayLinkProxy?.displayLink {
             fpsCounter?.didDrawFrame(timestamp:displayLink.timestamp)
         }
@@ -237,8 +236,8 @@ open class RiveView: RiveRendererView {
         delegate delegateAction: ((RiveArtboard?, CGPoint)->Void)?,
         stateMachineAction: (RiveStateMachineInstance, CGPoint)->Void
     ) {
-        guard let artboard = riveModel.artboard else { return }
-        guard let stateMachine = riveModel.stateMachine else { return }
+        guard let artboard = riveModel?.artboard else { return }
+        guard let stateMachine = riveModel?.stateMachine else { return }
         let location = touch.location(in: self)
         
         let artboardLocation = artboardLocation(
