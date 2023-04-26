@@ -14,10 +14,13 @@ struct SwiftMeshAnimation: DismissableView {
     
     // MARK: RiveViewModel
     // This view model specifies the exact StateMachine that it wants from the file
-    var tapePlayer = RiveViewModel(fileName: "prop_example", stateMachineName: "State Machine 1")
+
+    // TODO: 
+    // Review viewmodel set-up here to avoid recreation & also loading files on launch.
     @State var isTapped: Bool = false
     
     var body: some View {
+        let tapePlayer = RiveViewModel(fileName: "prop_example", stateMachineName: "State Machine 1")
         tapePlayer.view()
             .aspectRatio(1, contentMode: .fit)
             .onTapGesture {

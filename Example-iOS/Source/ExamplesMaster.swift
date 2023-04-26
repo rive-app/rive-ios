@@ -15,6 +15,7 @@ class ExamplesMasterTableViewController: UITableViewController {
     /// Sourced from the `Main` storyboard
     private let storyboardIDs: [String] = [
         "Simple Animation",
+        "Simple Http Animation",
         "Layout",
         "MultipleAnimations",
         "State Machine",
@@ -41,8 +42,8 @@ class ExamplesMasterTableViewController: UITableViewController {
     // MARK: ViewModel Examples
     /// Made from `RiveViewModels`' default `.view()` method
     private let viewModels: [(String, RiveViewModel)] = [
-        ("Clock",   ClockViewModel()),
-        ("Slider",  RiveSlider())
+       ("Clock",   ClockViewModel()),
+       ("Slider",  RiveSlider())
     ]
 }
 

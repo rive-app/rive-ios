@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property bool isLoaded;
 
 /// Delegate for calling when a file has finished loading
-@property id delegate;
+@property(weak) id delegate;
 
 - (nullable instancetype)initWithByteArray:(NSArray*)bytes error:(NSError**)error;
 - (nullable instancetype)initWithBytes:(UInt8*)bytes

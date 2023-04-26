@@ -5,12 +5,16 @@
 #import <Metal/Metal.h>
 
 @interface RiveRendererView : MTKView
-    @property (strong) id<MTLDevice> metalDevice;
-    @property (strong) id<MTLCommandQueue> metalQueue;
-    - (instancetype)initWithFrame:(CGRect)frameRect;
-    - (void)alignWithRect:(CGRect)rect contentRect:(CGRect)contentRect alignment:(RiveAlignment)alignment fit:(RiveFit)fit;
-    - (void)drawWithArtboard:(RiveArtboard*)artboard;
-    - (void)drawRive:(CGRect)rect size:(CGSize)size;
-    - (bool)isPaused;
-    - (CGPoint)artboardLocationFromTouchLocation:(CGPoint)touchLocation inArtboard:(CGRect)artboardRect fit:(RiveFit)fit alignment:(RiveAlignment)alignment;
+- (instancetype)initWithFrame:(CGRect)frameRect;
+- (void)alignWithRect:(CGRect)rect
+          contentRect:(CGRect)contentRect
+            alignment:(RiveAlignment)alignment
+                  fit:(RiveFit)fit;
+- (void)drawWithArtboard:(RiveArtboard*)artboard;
+- (void)drawRive:(CGRect)rect size:(CGSize)size;
+- (bool)isPaused;
+- (CGPoint)artboardLocationFromTouchLocation:(CGPoint)touchLocation
+                                  inArtboard:(CGRect)artboardRect
+                                         fit:(RiveFit)fit
+                                   alignment:(RiveAlignment)alignment;
 @end

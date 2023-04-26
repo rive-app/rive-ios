@@ -14,10 +14,8 @@ struct SwiftStateMachine: DismissableView {
     
     // MARK: RiveViewModel
     // This view model specifies the exact StateMachine that it wants from the file
-    
-    var stateChanger = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
-    
     var body: some View {
+        let stateChanger = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
         ScrollView{
             VStack {
                 stateChanger.view()

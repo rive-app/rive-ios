@@ -18,11 +18,13 @@ struct SwiftWidgets: DismissableView {
     /// Tracks the health value coming from the slide for the progress bar
     @State var health: Double = 0
     
-    var rslider = RiveSlider()
-    var rprogress = RiveProgressBar()
-    var rswitch = RiveSwitch()
     
     var body: some View {
+        
+        let rslider = RiveSlider()
+        let rprogress = RiveProgressBar()
+        let rswitch = RiveSwitch()
+        
         ZStack {
             Color.gray
                 .ignoresSafeArea()

@@ -39,6 +39,7 @@ import Combine
 /// }
 /// ```
 open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
+    // TODO: could be a weak ref, need to look at this in more detail. 
     open private(set) var riveView: RiveView?
     private var defaultModel: RiveModelBuffer!
     

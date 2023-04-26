@@ -108,6 +108,8 @@ static rive::CGSkiaFactory gFactory;
         self.delegate = delegate;
         // Set up the http download task
         NSURL* URL = [NSURL URLWithString:url];
+        // TODO: we are still adding 8MB of memory when we load our first http url.
+        // note: Could use shared session.
         NSURLSession* session = [NSURLSession
             sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
         NSURLSessionTask* task = [session
@@ -137,6 +139,7 @@ static rive::CGSkiaFactory gFactory;
 
         // Kick off the http download
         [task resume];
+        [session finishTasksAndInvalidate];
 
         // Return the as yet uninitialized RiveFile
         return self;

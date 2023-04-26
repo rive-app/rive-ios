@@ -12,30 +12,30 @@ import RiveRuntime
 /// This shows how to utilize one animation file to show content in different artboards and
 /// different animations within those artboards
 struct SwiftMultipleAnimations: DismissableView {
-    private let file = try! RiveFile(name: "artboard_animations")
     var dismiss: () -> Void = {}
-    
+
     var body: some View {
+        let file = try! RiveFile(name: "artboard_animations")
         ScrollView{
             VStack {
                 Text("Square - go around")
-                RiveViewModel(model(), animationName: "goaround", artboardName: "Square").view()
+                RiveViewModel(model(file: file), animationName: "goaround", artboardName: "Square").view()
                     .aspectRatio(1, contentMode: .fit)
                 
                 Text("Square - roll around")
-                RiveViewModel(model(), animationName: "rollaround", artboardName: "Square").view()
+                RiveViewModel(model(file:file), animationName: "rollaround", artboardName: "Square").view()
                     .aspectRatio(1, contentMode: .fit)
                 
                 Text("Circle")
-                RiveViewModel(model(), artboardName: "Circle").view()
+                RiveViewModel(model(file:file), artboardName: "Circle").view()
                     .aspectRatio(1, contentMode: .fit)
                 
                 Text("Star")
-                RiveViewModel(model(), artboardName: "Star").view()
+                RiveViewModel(model(file:file), artboardName: "Star").view()
                     .aspectRatio(1, contentMode: .fit)
             }
         }
     }
     
-    func model() -> RiveModel { RiveModel(riveFile: file) }
+    func model(file: RiveFile) -> RiveModel { RiveModel(riveFile: file) }
 }

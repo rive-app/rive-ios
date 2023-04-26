@@ -24,16 +24,25 @@ class ClockViewModel: RiveViewModel {
     @Published var followTimer: Bool = false {
         didSet {
             if followTimer {
-                timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-                    let date = Date()
-                    let calendar = Calendar.current
+                timer = Timer.scheduledTimer(
+                    withTimeInterval: 1.0,
+                    repeats: true,
+                    block: { [weak self] timer in
+                        guard let self else {
+                            timer.invalidate();
+                            return
+                        }
 
-                    self.hour = calendar.component(.hour, from: date)
-                    self.minute = calendar.component(.minute, from: date)
-                    self.second = calendar.component(.second, from: date)
+                        let date = Date()
+                        let calendar = Calendar.current
 
-                    self.time = Double(self.hour) + Double(self.minute)/60 + Double(self.second)/1200
-                }
+                        self.hour = calendar.component(.hour, from: date)
+                        self.minute = calendar.component(.minute, from: date)
+                        self.second = calendar.component(.second, from: date)
+
+                        self.time = Double(self.hour) + Double(self.minute)/60 + Double(self.second)/1200
+                    }
+                )
             } else {
                 timer?.invalidate()
             }

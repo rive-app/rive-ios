@@ -34,6 +34,7 @@
 		042C88EA2644447500E7DBB2 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D82644447500E7DBB2 /* skills.riv */; };
 		042C88EB2644447500E7DBB2 /* clipping.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D92644447500E7DBB2 /* clipping.riv */; };
 		042C88EC2644447500E7DBB2 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
+		0448838F29F82DD000D7523E /* SimpleHttpAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0448838C29F82DD000D7523E /* SimpleHttpAnimation.swift */; };
 		0450446126B3F71E007B25CA /* constrained.riv in Resources */ = {isa = PBXBuildFile; fileRef = 0450445E26B3F71E007B25CA /* constrained.riv */; };
 		046AFA712673AF04004ED497 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		046AFA732673B00B004ED497 /* BlendModes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046AFA722673B00B004ED497 /* BlendModes.swift */; };
@@ -141,6 +142,7 @@
 		042C88D82644447500E7DBB2 /* skills.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = skills.riv; sourceTree = "<group>"; };
 		042C88D92644447500E7DBB2 /* clipping.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = clipping.riv; sourceTree = "<group>"; };
 		042C88DA2644447500E7DBB2 /* vader.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = vader.riv; sourceTree = "<group>"; };
+		0448838C29F82DD000D7523E /* SimpleHttpAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleHttpAnimation.swift; sourceTree = "<group>"; };
 		0450445E26B3F71E007B25CA /* constrained.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = constrained.riv; sourceTree = "<group>"; };
 		046AFA6E2673AF04004ED497 /* blendmodes.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = blendmodes.riv; sourceTree = "<group>"; };
 		046AFA722673B00B004ED497 /* BlendModes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlendModes.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				042C88872643DB7100E7DBB2 /* SimpleAnimation.swift */,
+				0448838C29F82DD000D7523E /* SimpleHttpAnimation.swift */,
 				C3468E6127FDCBC6008652FD /* SimpleSlider.swift */,
 				042C888B2643EEE300E7DBB2 /* Layout.swift */,
 				042C888F2644250D00E7DBB2 /* MultipleAnimations.swift */,
@@ -510,6 +513,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0448838F29F82DD000D7523E /* SimpleHttpAnimation.swift in Sources */,
 				C324DB5D280728690060589F /* RiveButton.swift in Sources */,
 				C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */,
 				C3E2B58C2833ECFE00A8651B /* SwiftCannonGame.swift in Sources */,

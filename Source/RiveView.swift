@@ -270,6 +270,10 @@ open class RiveView: RiveRendererView {
             fpsCounter = nil
         }
     }
+    
+    deinit {
+        stopTimer()
+    }
 }
 
 @objc public protocol RiveStateMachineDelegate: AnyObject {
