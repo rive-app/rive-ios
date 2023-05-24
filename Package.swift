@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "RiveRuntime",
-    platforms: [.iOS("14.0")],
+    platforms: [.iOS("14.0"), .macOS("13.1")],
     products: [
         .library(
             name: "RiveRuntime",
@@ -11,8 +11,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "RiveRuntime",
-            url: "https://github.com/rive-app/rive-ios/releases/download/3.1.12/RiveRuntime.xcframework.zip",
-            checksum: "9665449ceb82a24afaef55b8d88167251fb2175c78c7e8eda2bdeb14461d611d"
+            url: "https://github.com/rive-app/rive-ios/releases/download/3.1.13/RiveRuntime.xcframework.zip",
+            checksum: "aae162691044d0afa6d431ae535db8a601fbeeaf8a3a7c5bd8ad92ed11c4497f"
         ),
     ]
 )
