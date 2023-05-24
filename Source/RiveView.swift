@@ -12,13 +12,13 @@ import Foundation
 open class RiveView: RiveRendererView {
     // MARK: Configuration
     internal weak var riveModel: RiveModel?
-    internal var fit: RiveFit = .contain { didSet { setNeedsDisplay() } }
-    internal var alignment: RiveAlignment = .center { didSet { setNeedsDisplay() } }
+    internal var fit: RiveFit = .contain { didSet { needsDisplay() } }
+    internal var alignment: RiveAlignment = .center { didSet { needsDisplay() } }
     
     // MARK: Render Loop
     internal private(set) var isPlaying: Bool = false
     private var lastTime: CFTimeInterval = 0
-    private var displayLinkProxy: CADisplayLinkProxy?
+    private var displayLinkProxy: DisplayLinkProxy?
     private var eventQueue = EventQueue()
     
     // MARK: Delegates
@@ -46,12 +46,25 @@ open class RiveView: RiveRendererView {
         super.init(coder: aDecoder)
     }
     
+    private func needsDisplay() {
+        #if os(iOS)
+            setNeedsDisplay()
+        #else
+            needsDisplay=true
+        #endif
+    }
+    
     /// This resets the view with the new model. Useful when the `RiveView` was initialized without one.
     open func setModel(_ model: RiveModel, autoPlay: Bool = true) throws {
         stopTimer()
         isPlaying = false
         riveModel = model
-        isOpaque = false
+        #if os(iOS)
+            isOpaque = false
+        #else
+            layer?.isOpaque=false
+        #endif
+        
         
         if autoPlay {
             play()
@@ -103,8 +116,9 @@ open class RiveView: RiveRendererView {
     // MARK: - Render Loop
     
     private func startTimer() {
+        
         if displayLinkProxy == nil {
-            displayLinkProxy = CADisplayLinkProxy(
+            displayLinkProxy = DisplayLinkProxy(
                 handle: { [weak self] in
                     self?.tick()
                 },
@@ -112,9 +126,11 @@ open class RiveView: RiveRendererView {
                 forMode: .common
             )
         }
-        if displayLinkProxy?.displayLink?.isPaused == true {
-            displayLinkProxy?.displayLink?.isPaused = false
-        }
+        #if os(iOS)
+            if displayLinkProxy?.displayLink?.isPaused == true {
+                displayLinkProxy?.displayLink?.isPaused = false
+            }
+        #endif
     }
     
     private func stopTimer() {
@@ -124,17 +140,22 @@ open class RiveView: RiveRendererView {
         fpsCounter?.stopped()
     }
     
+    private func timestamp() -> Double {
+        return Date().timeIntervalSince1970
+    }
+        
+    
     /// Start a redraw:
     /// - determine the elapsed time
     /// - advance the artbaord, which will invalidate the display.
     /// - if the artboard has come to a stop, stop.
     @objc fileprivate func tick() {
-        guard let displayLink = displayLinkProxy?.displayLink else {
+        guard displayLinkProxy?.displayLink != nil else {
             stopTimer()
             return
         }
         
-        let timestamp = displayLink.timestamp
+        let timestamp = timestamp()
         // last time needs to be set on the first tick
         if lastTime == 0 {
             lastTime = timestamp
@@ -142,6 +163,14 @@ open class RiveView: RiveRendererView {
         
         // Calculate the time elapsed between ticks
         let elapsedTime = timestamp - lastTime
+        
+        #if os(iOS)
+            fpsCounter?.didDrawFrame(timestamp: timestamp)
+        #else
+            fpsCounter?.elapsed(time: elapsedTime)
+        #endif
+            
+        
         lastTime = timestamp
         advance(delta: elapsedTime)
         if !isPlaying {
@@ -182,7 +211,7 @@ open class RiveView: RiveRendererView {
         playerDelegate?.player(didAdvanceby: delta, riveModel: riveModel)
         
         // Trigger a redraw
-        setNeedsDisplay()
+        needsDisplay()
     }
     
     /// This is called in the middle of drawRect
@@ -194,67 +223,141 @@ open class RiveView: RiveRendererView {
         align(with: newFrame, contentRect: artboard.bounds(), alignment: alignment, fit: fit)
         draw(with: artboard)
         
-        if let displayLink = displayLinkProxy?.displayLink {
-            fpsCounter?.didDrawFrame(timestamp:displayLink.timestamp)
-        }
     }
     
     // MARK: - UIResponder
-    
-    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches.first!, delegate: stateMachineDelegate?.touchBegan) {
-            $0.touchBegan(atLocation: $1)
+    #if os(iOS)
+        open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+            handleTouch(touches.first!, delegate: stateMachineDelegate?.touchBegan) {
+                $0.touchBegan(atLocation: $1)
+            }
         }
-    }
-    
-    open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches.first!, delegate: stateMachineDelegate?.touchMoved) {
-            $0.touchMoved(atLocation: $1)
-        }
-    }
-    
-    open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches.first!, delegate: stateMachineDelegate?.touchEnded) {
-            $0.touchEnded(atLocation: $1)
-        }
-    }
-    
-    open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        handleTouch(touches.first!, delegate: stateMachineDelegate?.touchCancelled) {
-            $0.touchCancelled(atLocation: $1)
-        }
-    }
-    
-    /// Sends incoming touch event to all playing `RiveStateMachineInstance`'s
-    /// - Parameters:
-    ///   - touch: The `CGPoint` where the touch occurred in `RiveView` coordinate space
-    ///   - delegateAction: The delegate callback that should be triggered by this touch event
-    ///   - stateMachineAction: Param1: A playing `RiveStateMachineInstance`, Param2: `CGPoint`
-    ///   location where touch occurred in `artboard` coordinate space
-    private func handleTouch(
-        _ touch: UITouch,
-        delegate delegateAction: ((RiveArtboard?, CGPoint)->Void)?,
-        stateMachineAction: (RiveStateMachineInstance, CGPoint)->Void
-    ) {
-        guard let artboard = riveModel?.artboard else { return }
-        guard let stateMachine = riveModel?.stateMachine else { return }
-        let location = touch.location(in: self)
         
-        let artboardLocation = artboardLocation(
-            fromTouchLocation: location,
-            inArtboard: artboard.bounds(),
-            fit: fit,
-            alignment: alignment
-        )
+        open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+            handleTouch(touches.first!, delegate: stateMachineDelegate?.touchMoved) {
+                $0.touchMoved(atLocation: $1)
+            }
+        }
         
-        stateMachineAction(stateMachine, artboardLocation)
-        play()
+        open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+            handleTouch(touches.first!, delegate: stateMachineDelegate?.touchEnded) {
+                $0.touchEnded(atLocation: $1)
+            }
+        }
         
-        // We send back the touch location in UIView coordinates because
-        // users cannot query or manually control the coordinates of elements
-        // in the Artboard. So that information would be of no use.
-        delegateAction?(artboard, location)
-    }
+        open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+            handleTouch(touches.first!, delegate: stateMachineDelegate?.touchCancelled) {
+                $0.touchCancelled(atLocation: $1)
+            }
+        }
+        
+        /// Sends incoming touch event to all playing `RiveStateMachineInstance`'s
+        /// - Parameters:
+        ///   - touch: The `CGPoint` where the touch occurred in `RiveView` coordinate space
+        ///   - delegateAction: The delegate callback that should be triggered by this touch event
+        ///   - stateMachineAction: Param1: A playing `RiveStateMachineInstance`, Param2: `CGPoint`
+        ///   location where touch occurred in `artboard` coordinate space
+        private func handleTouch(
+            _ touch: UITouch,
+            delegate delegateAction: ((RiveArtboard?, CGPoint)->Void)?,
+            stateMachineAction: (RiveStateMachineInstance, CGPoint)->Void
+        ) {
+            guard let artboard = riveModel?.artboard else { return }
+            guard let stateMachine = riveModel?.stateMachine else { return }
+            let location = touch.location(in: self)
+            
+            let artboardLocation = artboardLocation(
+                fromTouchLocation: location,
+                inArtboard: artboard.bounds(),
+                fit: fit,
+                alignment: alignment
+            )
+            
+            stateMachineAction(stateMachine, artboardLocation)
+            play()
+            
+            // We send back the touch location in UIView coordinates because
+            // users cannot query or manually control the coordinates of elements
+            // in the Artboard. So that information would be of no use.
+            delegateAction?(artboard, location)
+        }
+    #else
+        open override func mouseDown(with event: NSEvent) {
+            handleTouch(event, delegate: stateMachineDelegate?.touchBegan) {
+                $0.touchBegan(atLocation: $1)
+            }
+        }
+        
+        open override func mouseMoved(with event: NSEvent) {
+            handleTouch(event, delegate: stateMachineDelegate?.touchMoved) {
+                $0.touchMoved(atLocation: $1)
+            }
+        }
+        
+        open override func mouseDragged(with event: NSEvent) {
+            handleTouch(event, delegate: stateMachineDelegate?.touchMoved) {
+                $0.touchMoved(atLocation: $1)
+            }
+        }
+        
+        open override func mouseUp(with event: NSEvent) {
+            handleTouch(event, delegate: stateMachineDelegate?.touchEnded) {
+                $0.touchEnded(atLocation: $1)
+            }
+        }
+        
+        open override func mouseExited(with event: NSEvent) {
+            handleTouch(event, delegate: stateMachineDelegate?.touchCancelled) {
+                $0.touchCancelled(atLocation: $1)
+            }
+        }
+        
+        open override func updateTrackingAreas() {
+            addTrackingArea(
+                NSTrackingArea(
+                    rect: self.bounds,
+                    options: [.mouseEnteredAndExited, .mouseMoved, .activeInKeyWindow],
+                    owner: self,
+                    userInfo: nil
+                )
+            )
+        }
+        
+        /// Sends incoming touch event to all playing `RiveStateMachineInstance`'s
+        /// - Parameters:
+        ///   - touch: The `CGPoint` where the touch occurred in `RiveView` coordinate space
+        ///   - delegateAction: The delegate callback that should be triggered by this touch event
+        ///   - stateMachineAction: Param1: A playing `RiveStateMachineInstance`, Param2: `CGPoint`
+        ///   location where touch occurred in `artboard` coordinate space
+        private func handleTouch(
+            _ event: NSEvent,
+            delegate delegateAction: ((RiveArtboard?, CGPoint)->Void)?,
+            stateMachineAction: (RiveStateMachineInstance, CGPoint)->Void
+        ) {
+            guard let artboard = riveModel?.artboard else { return }
+            guard let stateMachine = riveModel?.stateMachine else { return }
+            let location = convert(event.locationInWindow, from: nil)
+            
+            // This is conforms the point to UIView coordinates which the
+            // RiveRendererView expects in its artboardLocation method
+            let locationFlippedY = CGPoint(x: location.x, y: frame.height - location.y)
+            
+            let artboardLocation = artboardLocation(
+                fromTouchLocation: locationFlippedY,
+                inArtboard: artboard.bounds(),
+                fit: fit,
+                alignment: alignment
+            )
+            
+            stateMachineAction(stateMachine, artboardLocation)
+            play()
+            
+            // We send back the touch location in NSView coordinates because
+            // users cannot query or manually control the coordinates of elements
+            // in the Artboard. So that information would be of no use.
+            delegateAction?(artboard, location)
+        }
+    #endif
     
     // MARK: - Debug
     
@@ -294,30 +397,59 @@ public protocol RivePlayerDelegate: AnyObject {
     func player(didAdvanceby seconds: Double, riveModel: RiveModel?)
 }
 
-class CADisplayLinkProxy {
-    var displayLink: CADisplayLink?
-    var handle: (() -> Void)?
-    private var runloop: RunLoop
-    private var mode: RunLoop.Mode
+#if os(iOS)
+    fileprivate class DisplayLinkProxy {
+        var displayLink: CADisplayLink?
+        var handle: (() -> Void)?
+        private var runloop: RunLoop
+        private var mode: RunLoop.Mode
 
-    init(handle: (() -> Void)?, to runloop: RunLoop, forMode mode: RunLoop.Mode) {
-        self.handle = handle
-        self.runloop = runloop
-        self.mode = mode
-        displayLink = CADisplayLink(target: self, selector: #selector(updateHandle))
-        displayLink?.add(to: runloop, forMode: mode)
-    }
+        init(handle: (() -> Void)?, to runloop: RunLoop, forMode mode: RunLoop.Mode) {
+            self.handle = handle
+            self.runloop = runloop
+            self.mode = mode
+            displayLink = CADisplayLink(target: self, selector: #selector(updateHandle))
+            displayLink?.add(to: runloop, forMode: mode)
+        }
 
-    @objc func updateHandle() {
-        handle?()
-    }
+        @objc func updateHandle() {
+            handle?()
+        }
 
-    func invalidate() {
-        displayLink?.remove(from: runloop, forMode: mode)
-        displayLink?.invalidate()
-        displayLink = nil
+        func invalidate() {
+            displayLink?.remove(from: runloop, forMode: mode)
+            displayLink?.invalidate()
+            displayLink = nil
+        }
     }
-}
+#else
+    fileprivate class DisplayLinkProxy {
+        var displayLink: CVDisplayLink?
+        
+        init?(handle: (() -> Void)!, to runloop: RunLoop, forMode mode: RunLoop.Mode) {
+            //ignore runloop/formode
+            let error = CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
+            if error != kCVReturnSuccess { return nil }
+            
+            CVDisplayLinkSetOutputHandler(displayLink!) { dl, ts, tsDisplay, _, _ in
+                DispatchQueue.main.async {
+                    handle()
+                }
+                return kCVReturnSuccess
+            }
+            
+            CVDisplayLinkStart(displayLink!)
+        }
+
+        func invalidate() {
+            
+            if let displayLink = displayLink {
+                CVDisplayLinkStop(displayLink)
+                self.displayLink = nil
+            }
+        }
+    }
+#endif
 
 /// Tracks a queue of events that haven't been fired yet. We do this so that we're not calling delegates and modifying state
 /// while a view is updating (e.g. being initialized, as we autoplay and fire play events during the view's init otherwise

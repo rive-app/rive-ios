@@ -112,19 +112,13 @@ jobs:
             RiveRuntime.xcodeproj/project.pbxproj
             Source/Info.plist
             Tests/Info.plist
-      - id: build_iphoneos
-        name: Build release iphoneos framework
-        run: sh ./scripts/build_framework.sh  -t iphoneos -c Release
-      - id: build_iphonesimulator
-        name: Build release iphonesimulator framework
-        run: sh ./scripts/build_framework.sh  -t iphonesimulator -c Release
-      - id: merge_frameworks
-        if: steps.build_iphoneos.conclusion == 'success' && steps.build_iphonesimulator.conclusion == 'success'
-        name: Merge created frameworks
-        run: sh ./scripts/merge_frameworks.sh -c Release
+      - id: build_frameworks
+        name: Build frameworks
+        run: sh ./scripts/build_framework.sh -c Release
       - id: zip
         name: Zip the framework
-        run: zip -r RiveRuntime.xcframework.zip RiveRuntime.xcframework
+        # --symlinks is critical here to retain the structure of a macos framework.
+        run: zip --symlinks -r RiveRuntime.xcframework.zip RiveRuntime.xcframework
         working-directory: ./archive
       - id: get_checksum
         name: Add the checksum of the zip file into our environment

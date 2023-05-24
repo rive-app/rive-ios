@@ -6,6 +6,7 @@
 //  Copyright © 2022 Rive. All rights reserved.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 class FPSCounterView: UILabel {
@@ -51,3 +52,49 @@ class FPSCounterView: UILabel {
         text = "Stopped"
     }
 }
+#else
+import AppKit
+
+class FPSCounterView: NSTextField {
+    private let fpsFormatter = NumberFormatter()
+    private let updateInterval: Double = 0.5
+    private var timeSinceUpdate: Double = 0
+
+    internal convenience init() {
+        self.init(frame: CGRect(x: 1, y: 1, width: 70, height: 15))
+        isBezeled = false
+        isEditable = false
+        isSelectable = false
+        
+        backgroundColor = .darkGray
+        textColor = .white
+        alignment = .center
+        font = NSFont.systemFont(ofSize: 11, weight: .regular)
+        alphaValue = 0.75
+        
+        //clipsToBounds = true
+        //layer?.cornerRadius = 5
+        stringValue = "..."
+
+        fpsFormatter.minimumFractionDigits = 2
+        fpsFormatter.maximumFractionDigits = 2
+        fpsFormatter.roundingMode = .down
+    }
+
+    internal func elapsed(time elapsedTime: Double) {
+        if elapsedTime != 0 {
+            timeSinceUpdate += elapsedTime
+
+            if timeSinceUpdate >= updateInterval {
+                timeSinceUpdate = 0
+                stringValue = fpsFormatter.string(from: NSNumber(value: 1 / elapsedTime))! + "fps"
+            }
+        }
+    }
+
+    internal func stopped() {
+        stringValue = "Stopped"
+    }
+}
+
+#endif

@@ -1,15 +1,12 @@
 #!/bin/bash
 set -ex
 
-ARCH_X86=x86
 ARCH_X64=x64
-ARCH_ARM=arm
 ARCH_ARM64=arm64
-ARCH_SIM_ARM64=iossim_arm64
 
 usage() {
     printf "Usage: %s -a arch\n" "$0"
-    printf "\t-a Specify an architecture (i.e. '%s', '%s', '%s', '%s', '%s')\n" $ARCH_X86 $ARCH_X64 $ARCH_ARM $ARCH_ARM64 $ARCH_SIM_ARM64
+    printf "\t-a Specify an architecture (i.e. '%s', '%s')\n" $ARCH_X64 $ARCH_ARM64
     exit 1 # Exit script after printing help
 }
 
@@ -30,12 +27,12 @@ DEV_SCRIPT_DIR=`dirname $path`
 
 export SKIA_REPO="https://github.com/rive-app/skia"
 export SKIA_BRANCH="rive"
-export COMPILE_TARGET="ios_$EXPECTED_NDK_VERSION_$ARCH_NAME"
-export CACHE_NAME="rive_skia_ios"
-export MAKE_SKIA_FILE="make_skia_ios.sh"
+export COMPILE_TARGET="macos_$EXPECTED_NDK_VERSION_$ARCH_NAME"
+export CACHE_NAME="rive_skia_macos"
+export MAKE_SKIA_FILE="make_skia_macos.sh"
 export SKIA_DIR_NAME="skia"
 # we can have multiple at the same time...
-export ARCHIVE_CONTENTS_NAME="archive_contents_ios_$ARCH_NAME"
+export ARCHIVE_CONTENTS_NAME="archive_contents_macos_$ARCH_NAME" 
 
 if [ -d "$DEV_SCRIPT_DIR/../submodules/rive-cpp" ];
 then
@@ -46,5 +43,5 @@ fi
 
 # Build skia
 pushd "$RIVE_RUNTIME_DIR"/skia/dependencies
-./make_skia_ios.sh $ARCH_NAME
+./make_skia_macos.sh $ARCH_NAME
 popd

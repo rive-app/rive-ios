@@ -2,7 +2,12 @@
 
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
+
+#if __has_include(<UIKit/UIKit.h>)
 #import <UIKit/UIKit.h>
+#else
+#import <AppKit/AppKit.h>
+#endif
 
 #include "include/core/SkCanvas.h"
 #include "include/core/SkSurface.h"
@@ -205,10 +210,12 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView* mtkView, GrDirectContext* grContext
         return;
     }
     auto canvas = surface->getCanvas();
+
     rive::SkiaRenderer renderer(canvas);
     _renderer = &renderer;
     canvas->clear(SkColor((0x00000000)));
     _renderer->save();
+
     [self drawRive:rect size:size];
     _renderer->restore();
 

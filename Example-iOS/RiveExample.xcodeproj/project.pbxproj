@@ -43,6 +43,56 @@
 		04D5B06C266A460C004ACA5B /* nothing.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04D5B069266A460C004ACA5B /* nothing.riv */; };
 		04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		04DB5938266A348C0020A7E8 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		04E51C362A151A1E0075E473 /* Example__macOS_App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E51C352A151A1E0075E473 /* Example__macOS_App.swift */; };
+		04E51C382A151A1E0075E473 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E51C372A151A1E0075E473 /* ContentView.swift */; };
+		04E51C3A2A151A1F0075E473 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04E51C392A151A1F0075E473 /* Assets.xcassets */; };
+		04E51C3D2A151A1F0075E473 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04E51C3C2A151A1F0075E473 /* Preview Assets.xcassets */; };
+		04E51C422A151B3C0075E473 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
+		04E51C432A151B3C0075E473 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		04E51C452A151C230075E473 /* halloween.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074F1284161E400E8EB33 /* halloween.riv */; };
+		04E51C462A151C230075E473 /* testanimation.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074A7283FC75800E8EB33 /* testanimation.riv */; };
+		04E51C472A151C230075E473 /* teststatemachine.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074AA283FC75900E8EB33 /* teststatemachine.riv */; };
+		04E51C482A151C230075E473 /* bullet_man_game.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3E2B5872833ECB500A8651B /* bullet_man_game.riv */; };
+		04E51C492A151C230075E473 /* hero_editor.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3745FCB282AE2320087F4AF /* hero_editor.riv */; };
+		04E51C4A2A151C230075E473 /* watch_v1.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3E383472837E6B00029D65E /* watch_v1.riv */; };
+		04E51C4B2A151C230075E473 /* leg_day_events_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC29281837B300A81123 /* leg_day_events_example.riv */; };
+		04E51C4C2A151C230075E473 /* play_button_event_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC28281837B300A81123 /* play_button_event_example.riv */; };
+		04E51C4D2A151C230075E473 /* switch_event_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC2A281837B300A81123 /* switch_event_example.riv */; };
+		04E51C4E2A151C230075E473 /* magic_8-ball_v2.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3ECAC222817BE1100A81123 /* magic_8-ball_v2.riv */; };
+		04E51C4F2A151C230075E473 /* light_switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = 27108F2C282C96E700A99D81 /* light_switch.riv */; };
+		04E51C502A151C230075E473 /* riveslider.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F628075B6C008B739A /* riveslider.riv */; };
+		04E51C512A151C230075E473 /* rbutton.riv in Resources */ = {isa = PBXBuildFile; fileRef = C324DB5E280740FB0060589F /* rbutton.riv */; };
+		04E51C522A151C230075E473 /* constrained.riv in Resources */ = {isa = PBXBuildFile; fileRef = 0450445E26B3F71E007B25CA /* constrained.riv */; };
+		04E51C532A151C230075E473 /* nothing.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04D5B069266A460C004ACA5B /* nothing.riv */; };
+		04E51C542A151C230075E473 /* artboard_animations.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D42644447500E7DBB2 /* artboard_animations.riv */; };
+		04E51C552A151C230075E473 /* basketball.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CF2644447500E7DBB2 /* basketball.riv */; };
+		04E51C562A151C230075E473 /* clean_icon_set.riv in Resources */ = {isa = PBXBuildFile; fileRef = 048002882729AA4400F7132B /* clean_icon_set.riv */; };
+		04E51C572A151C230075E473 /* clipping.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D92644447500E7DBB2 /* clipping.riv */; };
+		04E51C582A151C230075E473 /* explorer.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D32644447500E7DBB2 /* explorer.riv */; };
+		04E51C592A151C230075E473 /* f22.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D02644447500E7DBB2 /* f22.riv */; };
+		04E51C5A2A151C230075E473 /* flux_capacitor.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D12644447500E7DBB2 /* flux_capacitor.riv */; };
+		04E51C5B2A151C230075E473 /* juice_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9CE8265263B90E000F98DDB /* juice_v7.riv */; };
+		04E51C5C2A151C230075E473 /* life_bar.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9D3DE67264F49F4001BA265 /* life_bar.riv */; };
+		04E51C5D2A151C230075E473 /* prop_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874B27E1158E0056F24B /* prop_example.riv */; };
+		04E51C5E2A151C230075E473 /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
+		04E51C5F2A151C230075E473 /* energy_bar_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874727E115170056F24B /* energy_bar_example.riv */; };
+		04E51C602A151C230075E473 /* liquid.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9D3DE5A264F3B51001BA265 /* liquid.riv */; };
+		04E51C612A151C230075E473 /* loopy.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D62644447500E7DBB2 /* loopy.riv */; };
+		04E51C622A151C230075E473 /* mascot.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CD2644447400E7DBB2 /* mascot.riv */; };
+		04E51C632A151C230075E473 /* neostream.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D22644447500E7DBB2 /* neostream.riv */; };
+		04E51C642A151C230075E473 /* off_road_car_blog.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D72644447500E7DBB2 /* off_road_car_blog.riv */; };
+		04E51C652A151C230075E473 /* progress.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CE2644447500E7DBB2 /* progress.riv */; };
+		04E51C662A151C230075E473 /* pull.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CA2644447400E7DBB2 /* pull.riv */; };
+		04E51C672A151C230075E473 /* rope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CC2644447400E7DBB2 /* rope.riv */; };
+		04E51C682A151C230075E473 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D82644447500E7DBB2 /* skills.riv */; };
+		04E51C692A151C230075E473 /* switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9E040A8264DFCFD009ABC7C /* switch.riv */; };
+		04E51C6A2A151C230075E473 /* trailblaze.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D52644447500E7DBB2 /* trailblaze.riv */; };
+		04E51C6B2A151C230075E473 /* ui_swipe_left_to_delete.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CB2644447400E7DBB2 /* ui_swipe_left_to_delete.riv */; };
+		04E51C6C2A151C230075E473 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
+		04E51C6D2A151C230075E473 /* wacky.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88C92644447400E7DBB2 /* wacky.riv */; };
+		04E51C6E2A151C230075E473 /* truck.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F8280770EA008B739A /* truck.riv */; };
+		04E51C6F2A151C230075E473 /* truck_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9BD3925263B5FC700696C37 /* truck_v7.riv */; };
+		04E51C702A151C230075E473 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
 		27108F2F282C96E700A99D81 /* light_switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = 27108F2C282C96E700A99D81 /* light_switch.riv */; };
 		C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5528071EB80060589F /* RiveSwitch.swift */; };
@@ -101,6 +151,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		04E51C442A151B3C0075E473 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				04E51C432A151B3C0075E473 /* RiveRuntime.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C7420224FC53CF00EF9516 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -150,6 +211,12 @@
 		04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RiveRuntime.xcodeproj; path = ../RiveRuntime.xcodeproj; sourceTree = "<group>"; };
 		04C4C83D2646FE410047E614 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		04D5B069266A460C004ACA5B /* nothing.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nothing.riv; sourceTree = "<group>"; };
+		04E51C332A151A1E0075E473 /* Example (macOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Example (macOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		04E51C352A151A1E0075E473 /* Example__macOS_App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Example__macOS_App.swift; sourceTree = "<group>"; };
+		04E51C372A151A1E0075E473 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		04E51C392A151A1F0075E473 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		04E51C3C2A151A1F0075E473 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		04E51C3E2A151A1F0075E473 /* Example__macOS_.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example__macOS_.entitlements; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
 		27108F2C282C96E700A99D81 /* light_switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = light_switch.riv; sourceTree = "<group>"; };
 		C324DB5528071EB80060589F /* RiveSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitch.swift; sourceTree = "<group>"; };
@@ -176,7 +243,7 @@
 		C3ECAC2A281837B300A81123 /* switch_event_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = switch_event_example.riv; sourceTree = "<group>"; };
 		C3ECAC2E281840A300A81123 /* ClockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockViewModel.swift; sourceTree = "<group>"; };
 		C9BD3925263B5FC700696C37 /* truck_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = truck_v7.riv; sourceTree = "<group>"; };
-		C9C73E9424FC471E00EF9516 /* RiveExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiveExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9C73E9424FC471E00EF9516 /* Example (iOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Example (iOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C73E9724FC471E00EF9516 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C9C73E9D24FC471E00EF9516 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -198,6 +265,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		04E51C302A151A1E0075E473 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04E51C422A151B3C0075E473 /* RiveRuntime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +308,26 @@
 				042C888D2644230700E7DBB2 /* utility.swift */,
 			);
 			path = lib;
+			sourceTree = "<group>";
+		};
+		04E51C342A151A1E0075E473 /* Example (macOS) */ = {
+			isa = PBXGroup;
+			children = (
+				04E51C352A151A1E0075E473 /* Example__macOS_App.swift */,
+				04E51C372A151A1E0075E473 /* ContentView.swift */,
+				04E51C392A151A1F0075E473 /* Assets.xcassets */,
+				04E51C3E2A151A1F0075E473 /* Example__macOS_.entitlements */,
+				04E51C3B2A151A1F0075E473 /* Preview Content */,
+			);
+			path = "Example (macOS)";
+			sourceTree = "<group>";
+		};
+		04E51C3B2A151A1F0075E473 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				04E51C3C2A151A1F0075E473 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		C3ECAC322818608B00A81123 /* Examples */ = {
@@ -329,6 +424,7 @@
 			children = (
 				C9696B0E24FC6FD10041502A /* Assets */,
 				C9C73E9624FC471E00EF9516 /* Source */,
+				04E51C342A151A1E0075E473 /* Example (macOS) */,
 				C9C73E9524FC471E00EF9516 /* Products */,
 				C9C741FF24FC53CF00EF9516 /* Frameworks */,
 			);
@@ -337,7 +433,8 @@
 		C9C73E9524FC471E00EF9516 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C9C73E9424FC471E00EF9516 /* RiveExample.app */,
+				C9C73E9424FC471E00EF9516 /* Example (iOS).app */,
+				04E51C332A151A1E0075E473 /* Example (macOS).app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -377,9 +474,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C9C73E9324FC471E00EF9516 /* RiveExample */ = {
+		04E51C322A151A1E0075E473 /* Example (macOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C9C73EBE24FC471E00EF9516 /* Build configuration list for PBXNativeTarget "RiveExample" */;
+			buildConfigurationList = 04E51C3F2A151A1F0075E473 /* Build configuration list for PBXNativeTarget "Example (macOS)" */;
+			buildPhases = (
+				04E51C2F2A151A1E0075E473 /* Sources */,
+				04E51C302A151A1E0075E473 /* Frameworks */,
+				04E51C312A151A1E0075E473 /* Resources */,
+				04E51C442A151B3C0075E473 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Example (macOS)";
+			productName = "Example (macOS)";
+			productReference = 04E51C332A151A1E0075E473 /* Example (macOS).app */;
+			productType = "com.apple.product-type.application";
+		};
+		C9C73E9324FC471E00EF9516 /* Example (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C9C73EBE24FC471E00EF9516 /* Build configuration list for PBXNativeTarget "Example (iOS)" */;
 			buildPhases = (
 				04A8F6C026452E27002C909A /* Frameworks */,
 				C9C73E9024FC471E00EF9516 /* Sources */,
@@ -390,9 +505,9 @@
 			);
 			dependencies = (
 			);
-			name = RiveExample;
+			name = "Example (iOS)";
 			productName = RiveExample;
-			productReference = C9C73E9424FC471E00EF9516 /* RiveExample.app */;
+			productReference = C9C73E9424FC471E00EF9516 /* Example (iOS).app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -401,10 +516,13 @@
 		C9C73E8C24FC471E00EF9516 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1160;
+				LastSwiftUpdateCheck = 1420;
 				LastUpgradeCheck = 1310;
 				ORGANIZATIONNAME = Rive;
 				TargetAttributes = {
+					04E51C322A151A1E0075E473 = {
+						CreatedOnToolsVersion = 14.2;
+					};
 					C9C73E9324FC471E00EF9516 = {
 						CreatedOnToolsVersion = 11.6;
 					};
@@ -429,7 +547,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				C9C73E9324FC471E00EF9516 /* RiveExample */,
+				C9C73E9324FC471E00EF9516 /* Example (iOS) */,
+				04E51C322A151A1E0075E473 /* Example (macOS) */,
 			);
 		};
 /* End PBXProject section */
@@ -452,6 +571,59 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		04E51C312A151A1E0075E473 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04E51C452A151C230075E473 /* halloween.riv in Resources */,
+				04E51C462A151C230075E473 /* testanimation.riv in Resources */,
+				04E51C472A151C230075E473 /* teststatemachine.riv in Resources */,
+				04E51C482A151C230075E473 /* bullet_man_game.riv in Resources */,
+				04E51C492A151C230075E473 /* hero_editor.riv in Resources */,
+				04E51C4A2A151C230075E473 /* watch_v1.riv in Resources */,
+				04E51C4B2A151C230075E473 /* leg_day_events_example.riv in Resources */,
+				04E51C4C2A151C230075E473 /* play_button_event_example.riv in Resources */,
+				04E51C4D2A151C230075E473 /* switch_event_example.riv in Resources */,
+				04E51C4E2A151C230075E473 /* magic_8-ball_v2.riv in Resources */,
+				04E51C4F2A151C230075E473 /* light_switch.riv in Resources */,
+				04E51C502A151C230075E473 /* riveslider.riv in Resources */,
+				04E51C512A151C230075E473 /* rbutton.riv in Resources */,
+				04E51C522A151C230075E473 /* constrained.riv in Resources */,
+				04E51C532A151C230075E473 /* nothing.riv in Resources */,
+				04E51C542A151C230075E473 /* artboard_animations.riv in Resources */,
+				04E51C552A151C230075E473 /* basketball.riv in Resources */,
+				04E51C562A151C230075E473 /* clean_icon_set.riv in Resources */,
+				04E51C572A151C230075E473 /* clipping.riv in Resources */,
+				04E51C582A151C230075E473 /* explorer.riv in Resources */,
+				04E51C592A151C230075E473 /* f22.riv in Resources */,
+				04E51C5A2A151C230075E473 /* flux_capacitor.riv in Resources */,
+				04E51C5B2A151C230075E473 /* juice_v7.riv in Resources */,
+				04E51C5C2A151C230075E473 /* life_bar.riv in Resources */,
+				04E51C5D2A151C230075E473 /* prop_example.riv in Resources */,
+				04E51C5E2A151C230075E473 /* two_bone_ik.riv in Resources */,
+				04E51C5F2A151C230075E473 /* energy_bar_example.riv in Resources */,
+				04E51C602A151C230075E473 /* liquid.riv in Resources */,
+				04E51C612A151C230075E473 /* loopy.riv in Resources */,
+				04E51C622A151C230075E473 /* mascot.riv in Resources */,
+				04E51C632A151C230075E473 /* neostream.riv in Resources */,
+				04E51C642A151C230075E473 /* off_road_car_blog.riv in Resources */,
+				04E51C652A151C230075E473 /* progress.riv in Resources */,
+				04E51C662A151C230075E473 /* pull.riv in Resources */,
+				04E51C672A151C230075E473 /* rope.riv in Resources */,
+				04E51C682A151C230075E473 /* skills.riv in Resources */,
+				04E51C692A151C230075E473 /* switch.riv in Resources */,
+				04E51C6A2A151C230075E473 /* trailblaze.riv in Resources */,
+				04E51C6B2A151C230075E473 /* ui_swipe_left_to_delete.riv in Resources */,
+				04E51C6C2A151C230075E473 /* vader.riv in Resources */,
+				04E51C6D2A151C230075E473 /* wacky.riv in Resources */,
+				04E51C6E2A151C230075E473 /* truck.riv in Resources */,
+				04E51C6F2A151C230075E473 /* truck_v7.riv in Resources */,
+				04E51C702A151C230075E473 /* blendmodes.riv in Resources */,
+				04E51C3D2A151A1F0075E473 /* Preview Assets.xcassets in Resources */,
+				04E51C3A2A151A1F0075E473 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C73E9224FC471E00EF9516 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -509,6 +681,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		04E51C2F2A151A1E0075E473 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04E51C382A151A1E0075E473 /* ContentView.swift in Sources */,
+				04E51C362A151A1E0075E473 /* Example__macOS_App.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C73E9024FC471E00EF9516 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -544,6 +725,66 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		04E51C402A151A1F0075E473 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = "Example (macOS)/Example__macOS_.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
+				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Rive. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		04E51C412A151A1F0075E473 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = "Example (macOS)/Example__macOS_.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
+				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Rive. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		C9C73EBC24FC471E00EF9516 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -705,6 +946,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		04E51C3F2A151A1F0075E473 /* Build configuration list for PBXNativeTarget "Example (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				04E51C402A151A1F0075E473 /* Debug */,
+				04E51C412A151A1F0075E473 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C9C73E8F24FC471E00EF9516 /* Build configuration list for PBXProject "RiveExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -714,7 +964,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C9C73EBE24FC471E00EF9516 /* Build configuration list for PBXNativeTarget "RiveExample" */ = {
+		C9C73EBE24FC471E00EF9516 /* Build configuration list for PBXNativeTarget "Example (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C9C73EBF24FC471E00EF9516 /* Debug */,
