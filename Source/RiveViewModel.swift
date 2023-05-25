@@ -428,7 +428,9 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         
         public static func dismantleUIView(_ view: RiveView, coordinator: Coordinator) {
             view.stop()
-            coordinator.viewModel.deregisterView()
+            if (view == coordinator.viewModel.riveView) {
+                coordinator.viewModel.deregisterView()
+            }
         }
         
         /// Constructs a coordinator for managing updating state
