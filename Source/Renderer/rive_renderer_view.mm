@@ -306,10 +306,9 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView* mtkView, GrDirectContext* grContext
                                          fit:(RiveFit)fit
                                    alignment:(RiveAlignment)alignment
 {
-    rive::AABB frame(self.frame.origin.x,
-                     self.frame.origin.y,
-                     self.frame.size.width + self.frame.origin.x,
-                     self.frame.size.height + self.frame.origin.y);
+    // Note, we've offset the frame by the frame.origin before
+    // but in testing our touch location seems to already take this into account
+    rive::AABB frame(0, 0, self.frame.size.width, self.frame.size.height);
 
     rive::AABB content(artboardRect.origin.x,
                        artboardRect.origin.y,
