@@ -647,16 +647,21 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lskia_ios",
 					"-lrive",
+					"-lrive_harfbuzz",
+					"-lrive_sheenbidi",
 					"-lrive_skia_renderer",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lskia_ios_sim",
 					"-lrive_sim",
+					"-lrive_harfbuzz_sim",
+					"-lrive_sheenbidi_sim",
 					"-lrive_skia_renderer_sim",
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lskia_macos",
-					"-lrive_macos",
+					"-lrive_harfbuzz_macos",
+					"-lrive_sheenbidi_macos",
 					"-lrive_skia_renderer_macos",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
@@ -720,16 +725,22 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lskia_ios",
 					"-lrive",
+					"-lrive_harfbuzz",
+					"-lrive_sheenbidi",
 					"-lrive_skia_renderer",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lskia_ios_sim",
 					"-lrive_sim",
+					"-lrive_harfbuzz_sim",
+					"-lrive_sheenbidi_sim",
 					"-lrive_skia_renderer_sim",
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lskia_macos",
 					"-lrive_macos",
+					"-lrive_harfbuzz_macos",
+					"-lrive_sheenbidi_macos",
 					"-lrive_skia_renderer_macos",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
