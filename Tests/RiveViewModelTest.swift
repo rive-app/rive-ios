@@ -22,4 +22,15 @@ class RiveViewModelTest: XCTestCase {
         
         view.advance(delta: 0.1)
     }
+    
+    func testChangingTextRun() throws {
+        let file = try RiveFile(testfileName: "testtext")
+        let model = RiveModel(riveFile: file)
+        let viewModel = RiveViewModel(model, autoPlay: false)
+        let view = viewModel.createRiveView()
+        
+        XCTAssertEqual(viewModel.getTextRunValue("MyRun"), "Hello there")
+        try viewModel.setTextRunValue("MyRun", textValue: "Hello test")
+        XCTAssertEqual(viewModel.getTextRunValue("MyRun"), "Hello test")
+    }
 }

@@ -316,6 +316,29 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         setInput(inputName, value: Float(value))
     }
     
+    /// Get a text value from a specified text run
+    /// - Parameters:
+    ///   - textRunName: The name of a `Text Run` on the active Artboard
+    /// - Returns: String text value of the specified text run if applicable
+    open func getTextRunValue(_ textRunName: String) -> String? {
+        if let textRun = riveModel?.artboard?.textRun(textRunName) {
+            return textRun.text()
+        }
+        return nil
+    }
+    
+    /// Set a text value for a specified text run
+    /// - Parameters:
+    ///   - textRunName: The name of a `Text Run` on the active Artboard
+    ///   - value: A String value for the text run
+    open func setTextRunValue(_ textRunName: String, textValue: String) throws {
+        if let textRun = riveModel?.artboard?.textRun(textRunName) {
+            textRun.setText(textValue)
+        } else {
+            throw RiveError.textValueRunError("Could not set text value on text run: \(textRunName) as the text run could not be found from the active artboard")
+        }
+    }
+    
     // TODO: Replace this with a more robust structure of the file's contents
     open func artboardNames() -> [String] {
         return riveModel?.riveFile.artboardNames() ?? []
@@ -410,6 +433,10 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     open func player(loopedWithModel riveModel: RiveModel?, type: Int) { }
     open func player(stoppedWithModel riveModel: RiveModel?) { }
     open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
+    
+    enum RiveError: Error {
+        case textValueRunError(_ message: String)
+    }
 }
 
 #if os(iOS)  

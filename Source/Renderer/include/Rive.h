@@ -17,6 +17,7 @@
 #import <RiveRuntime/RiveSMIInput.h>
 #import <RiveRuntime/RiveLinearAnimationInstance.h>
 #import <RiveRuntime/RiveStateMachineInstance.h>
+#import <RiveRuntime/RiveTextValueRun.h>
 #import <RiveRuntime/LayerState.h>
 
 NS_ASSUME_NONNULL_BEGIN

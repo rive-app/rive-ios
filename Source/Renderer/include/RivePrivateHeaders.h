@@ -26,6 +26,7 @@
 #import "rive/animation/any_state.hpp"
 #import "rive/animation/exit_state.hpp"
 #import "rive/animation/animation_state.hpp"
+#import "rive/text/text_value_run.hpp"
 
 // MARK: - Feature Flags
 
@@ -63,6 +64,13 @@
  * SMIBool interface
  */
 @interface RiveSMIBool ()
+@end
+
+/*
+ * RiveTextValueRun interface
+ */
+@interface RiveTextValueRun ()
+- (instancetype)initWithTextValueRun:(const rive::TextValueRun*)riveTextValueRun;
 @end
 
 /*

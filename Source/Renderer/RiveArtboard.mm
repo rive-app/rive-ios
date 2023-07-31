@@ -217,4 +217,11 @@ static int artInstanceCount = 0;
     return CGRectMake(aabb.minX, aabb.minY, aabb.width(), aabb.height());
 }
 
+- (RiveTextValueRun*)textRun:(NSString*)name
+{
+    const std::string stdName = std::string([name UTF8String]);
+    auto riveTextRun = _artboardInstance->find<rive::TextValueRun>(stdName);
+    return [[RiveTextValueRun alloc] initWithTextValueRun:std::move(riveTextRun)];
+}
+
 @end

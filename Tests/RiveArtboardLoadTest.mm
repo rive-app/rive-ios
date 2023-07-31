@@ -113,4 +113,32 @@
     [file artboardFromName:@"bone" error:nil];
 }
 
+/*
+ * Test getting a RiveTextValueRun
+ */
+- (void)testGettingTextRunValue
+{
+    RiveFile* file = [Util loadTestFile:@"testtext" error:nil];
+    NSError* error = nil;
+    RiveArtboard* artboard = [file artboardFromName:@"New Artboard" error:&error];
+    RiveTextValueRun* textRun = [artboard textRun:@"MyRun"];
+
+    XCTAssertTrue([[textRun text] isEqualToString:@"Hello there"]);
+}
+
+/*
+ * Test setting a RiveTextValueRun text value
+ */
+- (void)testSettingTextRunValue
+{
+    RiveFile* file = [Util loadTestFile:@"testtext" error:nil];
+    NSError* error = nil;
+    RiveArtboard* artboard = [file artboardFromName:@"New Artboard" error:&error];
+    RiveTextValueRun* textRun = [artboard textRun:@"MyRun"];
+    XCTAssertTrue([[textRun text] isEqualToString:@"Hello there"]);
+    [textRun setText:@"Hello text"];
+
+    XCTAssertTrue([[textRun text] isEqualToString:@"Hello text"]);
+}
+
 @end

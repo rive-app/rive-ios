@@ -62,6 +62,9 @@
 		C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C73ED424FC478800EF9516 /* RiveRuntime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C741F424FC510200EF9516 /* Rive.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C741F224FC510200EF9516 /* Rive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C741F524FC510200EF9516 /* Rive.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C741F324FC510200EF9516 /* Rive.mm */; };
+		E57798A62A72C9C500FF25C3 /* RiveTextValueRun.mm in Sources */ = {isa = PBXBuildFile; fileRef = E57798A52A72C9C500FF25C3 /* RiveTextValueRun.mm */; };
+		E57798A72A72EEAD00FF25C3 /* RiveTextValueRun.h in Headers */ = {isa = PBXBuildFile; fileRef = E57798A12A72C81F00FF25C3 /* RiveTextValueRun.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E57798AB2A7310B700FF25C3 /* testtext.riv in Resources */ = {isa = PBXBuildFile; fileRef = E57798AA2A7310B700FF25C3 /* testtext.riv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +138,9 @@
 		C9C73EE124FC478900EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9C741F224FC510200EF9516 /* Rive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rive.h; sourceTree = "<group>"; };
 		C9C741F324FC510200EF9516 /* Rive.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Rive.mm; sourceTree = "<group>"; };
+		E57798A12A72C81F00FF25C3 /* RiveTextValueRun.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = RiveTextValueRun.h; sourceTree = "<group>"; };
+		E57798A52A72C9C500FF25C3 /* RiveTextValueRun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveTextValueRun.mm; sourceTree = "<group>"; };
+		E57798AA2A7310B700FF25C3 /* testtext.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = testtext.riv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +176,7 @@
 				04BE542F264D1F4100427B39 /* LayerState.h */,
 				04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */,
 				274175FB286DB9CE000A60D1 /* cg_skia_factory.hpp */,
+				E57798A12A72C81F00FF25C3 /* RiveTextValueRun.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -183,6 +190,7 @@
 				04BE54012649403600427B39 /* junk.riv */,
 				04ED72F2299C115100E8DE53 /* empty_animation_state.riv */,
 				04BE53FF2649403600427B39 /* multiple_animations.riv */,
+				E57798AA2A7310B700FF25C3 /* testtext.riv */,
 				04BE54022649403600427B39 /* multiple_state_machines.riv */,
 				04BE54002649403600427B39 /* multipleartboards.riv */,
 				04BE53FE2649403600427B39 /* noanimation.riv */,
@@ -219,6 +227,7 @@
 				046FB7E8264EAA5F000129B1 /* RiveStateMachineInstance.mm */,
 				046FB7E5264EAA5F000129B1 /* RiveSMIInput.mm */,
 				C9601F2A250C25930032AA07 /* RiveRenderer.mm */,
+				E57798A52A72C9C500FF25C3 /* RiveTextValueRun.mm */,
 				04BE5431264D243D00427B39 /* LayerState.mm */,
 				274175FC286DB9CE000A60D1 /* cg_skia_factory.cpp */,
 			);
@@ -298,6 +307,7 @@
 				274175FD286DB9CE000A60D1 /* cg_skia_factory.hpp in Headers */,
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
 				046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */,
+				E57798A72A72EEAD00FF25C3 /* RiveTextValueRun.h in Headers */,
 				046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */,
 				04BE5430264D1F4100427B39 /* LayerState.h in Headers */,
 				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
@@ -403,6 +413,7 @@
 				04BE54082649403600427B39 /* flux_capacitor.riv in Resources */,
 				04BE54052649403600427B39 /* noartboard.riv in Resources */,
 				04BE540B2649403600427B39 /* multiple_animations.riv in Resources */,
+				E57798AB2A7310B700FF25C3 /* testtext.riv in Resources */,
 				04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */,
 				04BE54062649403600427B39 /* off_road_car_blog.riv in Resources */,
 				04BE540C2649403600427B39 /* multipleartboards.riv in Resources */,
@@ -437,6 +448,7 @@
 				046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */,
 				046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */,
 				046FB7F4264EAA60000129B1 /* RiveLinearAnimationInstance.mm in Sources */,
+				E57798A62A72C9C500FF25C3 /* RiveTextValueRun.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

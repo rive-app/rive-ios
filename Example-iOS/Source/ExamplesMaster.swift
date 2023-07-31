@@ -35,7 +35,8 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("MultipleAnimations",  typeErased(dismissableView: SwiftMultipleAnimations())),
         ("Cannon Game",         typeErased(dismissableView: SwiftCannonGame())),
         ("State Machine",       typeErased(dismissableView: SwiftStateMachine())),
-        ("Mesh Animation",      typeErased(dismissableView: SwiftMeshAnimation()))
+        ("Mesh Animation",      typeErased(dismissableView: SwiftMeshAnimation())),
+        ("Playing with Text",   typeErased(dismissableView: TextInputView()))
     ]
     
     

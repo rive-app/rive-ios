@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveLinearAnimationInstance;
 @class RiveStateMachineInstance;
 @class RiveRenderer;
+@class RiveTextValueRun;
 
 // MARK: - RiveArtboard
 //
@@ -34,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         error:(NSError**)error;
 - (RiveStateMachineInstance* __nullable)stateMachineFromName:(NSString*)name error:(NSError**)error;
 - (RiveStateMachineInstance* __nullable)defaultStateMachine;
+
+- (RiveTextValueRun* __nullable)textRun:(NSString*)name;
 
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer*)renderer;
