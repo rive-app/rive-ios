@@ -67,8 +67,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
         working-directory: ./.github/release
-      - id: determine_version
-        name: Get Version
+      - if: ${{ inputs.major == true }}
+        id: determine_version_major
+        name: Get Version - MAJOR
+        run: npm run release -- major --ci --release-version | tail -n 1 > RELEASE_VERSION
+        working-directory: ./.github/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+      - if: ${{inputs.major == false && inputs.minor == true}}
+        id: determine_version_minor
+        name: Get Version - MINOR
+        run: npm run release -- minor --ci --release-version | tail -n 1 > RELEASE_VERSION
+        working-directory: ./.github/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+      - if: ${{ inputs.major == false && inputs.minor == false }}
+        id: determine_version_patch
+        name: Get Version - PATCH
         run: npm run release -- --ci --release-version | tail -n 1 > RELEASE_VERSION
         working-directory: ./.github/release
         env:
