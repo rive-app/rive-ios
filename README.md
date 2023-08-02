@@ -50,6 +50,10 @@ Check out the `Demo-App/` folder and `Example-iOS/` folder for example applicati
 - Setting up and maniuplating a state machine via inputs
 - ...and more!
 
+### Awesome Rive
+
+For even more examples and resources on using Rive at runtime or in other tools, checkout the [awesome-rive](https://github.com/rive-app/awesome-rive) repo.
+
 ## Migration Guides
 
 Using an older version of the runtime and need to learn how to upgrade to the latest version? Check out the migration guides below in our help center that help guide you through version bumps; breaking changes and all!
