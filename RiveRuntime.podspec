@@ -27,8 +27,7 @@ Pod::Spec.new do |spec|
     LICENSE
   }
   spec.authors = { "Matt LaRose" => "mattlarose@users.noreply.github.com" }
-  spec.ios.deployment_target  = '14.0'
-  spec.osx.deployment_target  = '13.1'
+  spec.platform = :ios, "14.0"
   spec.swift_version          = '5.0'
   spec.source       = { 
     :http => "https://github.com/mattlarose/rive-ios/releases/download/5.1.2/RiveRuntime.xcframework.zip",
