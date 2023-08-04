@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
   spec.version      = "5.1.2"
   spec.summary      = "iOS SDK to render Rive animations"
   spec.description  = "Rive is a real-time interactive design and animation tool. Use our collaborative editor to create motion graphics that respond to different states and user inputs. Then load your animations into apps, games, and websites with our lightweight open-source runtimes."
-  spec.homepage     = "https://github.com/rive-app/rive-ios"
+  spec.homepage     = "https://github.com/mattlarose/rive-ios"
   spec.license      = { :type => "MIT", :text => <<-LICENSE
     Copyright (c) 2020-2022 Rive
 
@@ -26,12 +26,12 @@ Pod::Spec.new do |spec|
     SOFTWARE.
     LICENSE
   }
-  spec.authors = { "Luigi Rosso" => "luigi@rive.app" }
+  spec.authors = { "Matt LaRose" => "mattlarose@users.noreply.github.com" }
   spec.ios.deployment_target  = '14.0'
   spec.osx.deployment_target  = '13.1'
   spec.swift_version          = '5.0'
   spec.source       = { 
-    :http => "https://github.com/rive-app/rive-ios/releases/download/5.1.2/RiveRuntime.xcframework.zip",
+    :http => "https://github.com/mattlarose/rive-ios/releases/download/5.1.2/RiveRuntime.xcframework.zip",
   }
   spec.ios.vendored_frameworks = 'RiveRuntime.xcframework'
   spec.osx.vendored_frameworks = 'RiveRuntime.xcframework'
