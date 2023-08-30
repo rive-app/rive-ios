@@ -4,11 +4,11 @@ We want this community to be friendly and respectful to each other. Please follo
 
 ## Development workflow
 
-To get started with the project, please install a few pre-requisites:  [ninja](https://formulae.brew.sh/formula/ninja) & [premake5](https://premake.github.io/). [Homebrew](https://formulae.brew.sh/) will install both [git-lfs](https://formulae.brew.sh/formula/git-lfs) and ninja, for premake5 you will need to download the binary, and make sure its available on your path. Moving the executable to `/usr/local/bin/` will work.
+To get started with the project, please install a few pre-requisites: [ninja](https://formulae.brew.sh/formula/ninja) & [premake5](https://premake.github.io/). [Homebrew](https://formulae.brew.sh/) will install both [git-lfs](https://formulae.brew.sh/formula/git-lfs) and ninja, for premake5 you will need to download the binary, and make sure its available on your path. Moving the executable to `/usr/local/bin/` will work.
 
 Check out this repository, making sure to include the submodules. It is important to use ssh to checkout this repo, as the submodules are linked via ssh.
 
- `git clone --recurse-submodules git@github.com:rive-app/rive-ios.git`
+`git clone --recurse-submodules git@github.com:rive-app/rive-ios.git`
 
 The package relies on [Skia](https://skia.org/), as well as [rive-cpp](https://github.com/rive-app/rive-cpp) in order to be built. To shorten the build cycle, we rely on compiled libraries for skia, rive & rive-skia-renderer.
 The `./scripts/build.sh all` script will download or build appropriate libraries, be sure to run configure when making changes to our rive-cpp submodule.
@@ -30,12 +30,13 @@ Changes within the rive-ios should just be reflected when you make builds.
 If you make changes within the `rive-cpp` submodule you will need to compile the prebuilt libraries, this can take a reasonably long time, but as long as you are working on rive-cpp with no uncommitted changes, it will fall back to using the cache, so you will only need to build once.
 
 ### Testing changes
+
 In addition to tests in the project, you may want to visually test out any changes by running the `Example-iOS` app at the top-level. Open the `RiveExample.xcodeproj` project in XCode. Make sure you have the local build of iOS run before testing out this application. Feel free to bring in additional Rives to the `assets/` folder. Ensure you add the Rive to the targets by checking the checkbox "Add to targets: RiveExample" when dragging assets into the folder so it can be properly included in the assets bundle and referenced accordingly in the example app.
 
 ### Linting and tests
 
-* We currently do not have any automatic linting set up.
-* Tests are run on pull request, and you should be able to run tests via xcode in the `RiveRuntime` project
+- We currently do not have any automatic linting set up.
+- Tests are run on pull request, and you should be able to run tests via xcode in the `RiveRuntime` project
 
 ## Scripts
 
