@@ -58,6 +58,21 @@
 }
 
 /*
+ * Test loading format Flux file with Rive Renderer.
+ */
+- (void)testLoadFluxWithPLS
+{
+    if ([[RenderContextManager shared] getRiveRendererContext] != nil)
+    {
+        [[RenderContextManager shared] setDefaultRenderer:RendererType::riveRenderer];
+    }
+    NSError* error = nil;
+    RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];
+    RiveArtboard* artboard = [file artboard:&error];
+    XCTAssertEqual(artboard.animationCount, 1);
+}
+
+/*
  * Test loading format Buggy file
  */
 - (void)testLoadBuggy

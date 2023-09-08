@@ -8,9 +8,8 @@
 
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
-#import <cg_skia_factory.hpp>
-
-static rive::CGSkiaFactory gFactory;
+#import <RenderContext.hh>
+#import <RenderContextManager.h>
 
 /*
  * RiveFile
@@ -151,7 +150,10 @@ static rive::CGSkiaFactory gFactory;
 - (BOOL)import:(UInt8*)bytes byteLength:(UInt64)length error:(NSError**)error
 {
     rive::ImportResult result;
-    auto file = rive::File::import(rive::Span(bytes, length), &gFactory, &result);
+    RenderContext* renderContext = [[RenderContextManager shared] getDefaultContext];
+    assert(renderContext);
+    rive::Factory* factory = [renderContext factory];
+    auto file = rive::File::import(rive::Span(bytes, length), factory, &result);
     if (result == rive::ImportResult::success)
     {
         riveFile = std::move(file);

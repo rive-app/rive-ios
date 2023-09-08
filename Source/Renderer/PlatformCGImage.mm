@@ -1,12 +1,9 @@
 /*
- * Copyright 2022 Rive
+ * Copyright 2023 Rive
  */
 
-#include "cg_skia_factory.hpp"
+#import <PlatformCGImage.h>
 #include "rive/core/type_conversions.hpp"
-#include <vector>
-
-#ifdef RIVE_BUILD_FOR_APPLE
 
 #if defined(RIVE_BUILD_FOR_OSX)
 #include <ApplicationServices/ApplicationServices.h>
@@ -33,29 +30,26 @@ public:
     T get() const { return m_Obj; }
 };
 
-using namespace rive;
-
-std::vector<uint8_t> CGSkiaFactory::platformDecode(Span<const uint8_t> span,
-                                                   SkiaFactory::ImageInfo* info)
+bool PlatformCGImageDecode(const uint8_t* encodedBytes,
+                           size_t encodedSizeInBytes,
+                           PlatformCGImage* platformImage)
 {
-    std::vector<uint8_t> pixels;
-
-    AutoCF data = CFDataCreateWithBytesNoCopy(nullptr, span.data(), span.size(), nullptr);
+    AutoCF data = CFDataCreate(kCFAllocatorDefault, encodedBytes, encodedSizeInBytes);
     if (!data)
     {
-        return pixels;
+        return false;
     }
 
     AutoCF source = CGImageSourceCreateWithData(data, nullptr);
     if (!source)
     {
-        return pixels;
+        return false;
     }
 
     AutoCF image = CGImageSourceCreateImageAtIndex(source, 0, nullptr);
     if (!image)
     {
-        return pixels;
+        return false;
     }
 
     bool isOpaque = false;
@@ -87,6 +81,7 @@ std::vector<uint8_t> CGSkiaFactory::platformDecode(Span<const uint8_t> span,
     const size_t rowBytes = width * 4; // 4 bytes per pixel
     const size_t size = rowBytes * height;
 
+    std::vector<uint8_t> pixels;
     pixels.resize(size);
 
     AutoCF cs = CGColorSpaceCreateDeviceRGB();
@@ -94,19 +89,15 @@ std::vector<uint8_t> CGSkiaFactory::platformDecode(Span<const uint8_t> span,
         CGBitmapContextCreate(pixels.data(), width, height, bitsPerComponent, rowBytes, cs, cgInfo);
     if (!cg)
     {
-        pixels.clear();
-        return pixels;
+        return false;
     }
 
     CGContextSetBlendMode(cg, kCGBlendModeCopy);
     CGContextDrawImage(cg, CGRectMake(0, 0, width, height), image);
 
-    info->alphaType = isOpaque ? AlphaType::opaque : AlphaType::premul;
-    info->colorType = ColorType::rgba;
-    info->width = castTo<uint32_t>(width);
-    info->height = castTo<uint32_t>(height);
-    info->rowBytes = rowBytes;
-    return pixels;
-};
-
-#endif // RIVE_BUILD_FOR_APPLE
+    platformImage->width = rive::castTo<uint32_t>(width);
+    platformImage->height = rive::castTo<uint32_t>(height);
+    platformImage->opaque = isOpaque;
+    platformImage->pixels = std::move(pixels);
+    return true;
+}

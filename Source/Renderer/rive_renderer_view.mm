@@ -9,153 +9,42 @@
 #import <AppKit/AppKit.h>
 #endif
 
-#include "include/core/SkCanvas.h"
-#include "include/core/SkSurface.h"
-#include "include/core/SkSurfaceProps.h"
-#include "include/gpu/GrBackendSurface.h"
-#include "include/gpu/GrDirectContext.h"
-#include "include/gpu/mtl/GrMtlBackendContext.h"
-#include "skia_renderer.hpp"
-
 #import "RivePrivateHeaders.h"
-
-/// SkiaMetalContext knows how to construct & provide a graphics context for a given device.
-/// This Can be used directly as an alternative to using the SkiaContextManager, for more
-/// fine grained control of skia contexts
-@interface SkiaMetalContext : NSObject
-@property(strong) id<MTLDevice> metalDevice;
-@property(strong) id<MTLCommandQueue> metalQueue;
-@property sk_sp<GrDirectContext> graphicsContext;
-@end
-
-@implementation SkiaMetalContext
-
-- (instancetype)init
-{
-    self = [super init];
-    [self setMetalDevice:MTLCreateSystemDefaultDevice()];
-    if (![self metalDevice])
-    {
-        NSLog(@"Metal is not supported on this device");
-        return nil;
-    }
-    [self setMetalQueue:[[self metalDevice] newCommandQueue]];
-
-    GrMtlBackendContext metalBackendContext;
-    metalBackendContext.fDevice = sk_ret_cfp((__bridge const void*)self.metalDevice);
-    metalBackendContext.fQueue = sk_ret_cfp((__bridge const void*)self.metalQueue);
-
-    _graphicsContext = GrDirectContext::MakeMetal(metalBackendContext, GrContextOptions());
-
-    if (!_graphicsContext)
-    {
-        NSLog(@"GrDirectContext::MakeMetal failed");
-        return nil;
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    _graphicsContext.reset(nil);
-}
-
-@end
-
-SkiaMetalContext* MakeSkiaMetalContext() { return [[SkiaMetalContext alloc] init]; }
-
-/// The SkiaContextManager is used to allow us to share a skia context, while there is an active
-/// view. It has a weak ref to a SkiaMetalContext, which means that when no more RiveRenderViews
-/// require these, they can be freed When that drops to 0, we allow the SkiaContext to be garbage
-/// collected.
-@interface SkiaContextManager : NSObject
-- (SkiaMetalContext*)getContext;
-+ (SkiaContextManager*)shared;
-@end
-
-@implementation SkiaContextManager
-__weak SkiaMetalContext* skiaMetalContext;
-
-// The context manager is a singleton.
-+ (SkiaContextManager*)shared
-{
-    static SkiaContextManager* single = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      single = [[self alloc] init];
-    });
-    return single;
-}
-
-- (SkiaMetalContext*)getContext
-{
-    if (skiaMetalContext != nullptr)
-    {
-        return skiaMetalContext;
-    }
-    else
-    {
-        SkiaMetalContext* temp = skiaMetalContext = MakeSkiaMetalContext();
-        skiaMetalContext = temp;
-        return temp;
-    }
-}
-
-@end
-
-sk_sp<SkSurface> SkMtkViewToSurface(MTKView* mtkView, GrDirectContext* grContext)
-{
-    if (!grContext || MTLPixelFormatDepth32Float_Stencil8 != [mtkView depthStencilPixelFormat] ||
-        MTLPixelFormatBGRA8Unorm != [mtkView colorPixelFormat])
-    {
-        return nullptr;
-    }
-    const SkColorType colorType = kBGRA_8888_SkColorType;
-    sk_sp<SkColorSpace> colorSpace = nullptr;
-    const GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin;
-    const SkSurfaceProps surfaceProps(SkSurfaceProps::kUseDeviceIndependentFonts_Flag,
-                                      SkPixelGeometry::kUnknown_SkPixelGeometry);
-    int sampleCount = (int)[mtkView sampleCount];
-    return SkSurface::MakeFromMTKView(grContext,
-                                      (__bridge GrMTLHandle)mtkView,
-                                      origin,
-                                      sampleCount,
-                                      colorType,
-                                      colorSpace,
-                                      &surfaceProps);
-}
+#import <RenderContext.hh>
+#import <RenderContextManager.h>
 
 @implementation RiveRendererView
 {
-    SkiaMetalContext* skiaContext;
-    rive::SkiaRenderer* _renderer;
+    RenderContext* _renderContext;
+    rive::Renderer* _renderer;
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder
 {
     self = [super initWithCoder:decoder];
 
-    skiaContext = [[SkiaContextManager shared] getContext];
-    self.device = [skiaContext metalDevice];
+    _renderContext = [[RenderContextManager shared] getDefaultContext];
+    assert(_renderContext);
+    self.device = [_renderContext metalDevice];
 
-    [self setDepthStencilPixelFormat:MTLPixelFormatDepth32Float_Stencil8];
+    [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
     [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
-    [self setFramebufferOnly:false];
+    [self setFramebufferOnly:_renderContext.framebufferOnly];
     [self setSampleCount:1];
     return self;
 }
 
 - (instancetype)initWithFrame:(CGRect)frameRect
 {
-    skiaContext = [[SkiaContextManager shared] getContext];
+    _renderContext = [[RenderContextManager shared] getDefaultContext];
+    assert(_renderContext);
 
-    auto value = [super initWithFrame:frameRect device:[skiaContext metalDevice]];
+    auto value = [super initWithFrame:frameRect device:_renderContext.metalDevice];
 
-    [self setDepthStencilPixelFormat:MTLPixelFormatDepth32Float_Stencil8];
+    [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
     [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
-    [self setFramebufferOnly:false];
+    [self setFramebufferOnly:_renderContext.framebufferOnly];
     [self setSampleCount:1];
-    //    [self setPreferredFramesPerSecond:60];
     return value;
 }
 
@@ -202,28 +91,15 @@ sk_sp<SkSurface> SkMtkViewToSurface(MTKView* mtkView, GrDirectContext* grContext
     {
         return;
     }
-    CGSize size = [self drawableSize];
-    sk_sp<SkSurface> surface = SkMtkViewToSurface(self, [skiaContext graphicsContext].get());
-    if (!surface)
-    {
-        NSLog(@"error: no sksurface");
-        return;
-    }
-    auto canvas = surface->getCanvas();
 
-    rive::SkiaRenderer renderer(canvas);
-    _renderer = &renderer;
-    canvas->clear(SkColor((0x00000000)));
+    _renderer = [_renderContext beginFrame:self];
     _renderer->save();
-
-    [self drawRive:rect size:size];
+    [self drawRive:rect size:self.drawableSize];
     _renderer->restore();
-
-    surface->flushAndSubmit();
-    surface = nullptr;
+    [_renderContext endFrame];
     _renderer = nullptr;
 
-    id<MTLCommandBuffer> commandBuffer = [[skiaContext metalQueue] commandBuffer];
+    id<MTLCommandBuffer> commandBuffer = [_renderContext.metalQueue commandBuffer];
     [commandBuffer presentDrawable:[self currentDrawable]];
     [commandBuffer commit];
     bool paused = [self isPaused];

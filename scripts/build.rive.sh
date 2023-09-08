@@ -13,6 +13,14 @@ else
     export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../../runtime"
 fi
 
+if [ -d "$RIVE_RUNTIME_DIR/../pls" ]; then
+    # pls exists where we expected to find it
+    export RIVE_PLS_DIR="$RIVE_RUNTIME_DIR/../pls"
+else
+    # pls is not present -- build the null library instead
+    export RIVE_PLS_DIR="$DEV_SCRIPT_DIR/../Source/Renderer/NullPLS"
+fi
+
 make_dependency_directories() {
     rm -fr $DEV_SCRIPT_DIR/../dependencies
 
@@ -23,9 +31,10 @@ make_dependency_directories() {
     mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/skia
     mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/rive
+    mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/pls
 }
 
-build_renderer() {
+build_skia_renderer() {
     # NOTE: we do not currently use debug, so lets not build debug
     pushd $RIVE_RUNTIME_DIR/skia/renderer
     ./build.sh -p ios clean
@@ -40,7 +49,7 @@ build_renderer() {
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 }
 
-build_renderer_sim() {
+build_skia_renderer_sim() {
     # NOTE: we do not currently use debug, so lets not build debug
     pushd $RIVE_RUNTIME_DIR/skia/renderer
     ./build.sh -p ios_sim clean
@@ -56,7 +65,7 @@ build_renderer_sim() {
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 }
 
-build_renderer_macosx() {
+build_skia_renderer_macosx() {
     # NOTE: we do not currently use debug, so lets not build debug
     pushd $RIVE_RUNTIME_DIR/skia/renderer
     ./build.sh -p macosx clean
@@ -69,6 +78,42 @@ build_renderer_macosx() {
 
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
+}
+
+build_pls_renderer() {
+    pushd $RIVE_PLS_DIR/out
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=ios gmake2
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
+    popd
+
+    cp -r $RIVE_PLS_DIR/out/iphoneos_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
+
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
+}
+
+build_pls_renderer_sim() {
+    pushd $RIVE_PLS_DIR/out
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=ios --variant=simulator gmake2
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
+    popd
+
+    cp -r $RIVE_PLS_DIR/out/iphonesimulator_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a
+
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
+}
+
+build_pls_renderer_macosx() {
+    pushd $RIVE_PLS_DIR/out
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=macosx gmake2
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
+    popd
+
+    cp -r $RIVE_PLS_DIR/out/$1/librive_pls_renderer_macos.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
+
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
 }
 
 finalize_skia() {
@@ -103,12 +148,18 @@ case $1 in
 all)
     make_dependency_directories
     finalize_skia
-    build_renderer debug
-    build_renderer release
-    build_renderer_sim debug
-    build_renderer_sim release
-    build_renderer_macosx debug
-    build_renderer_macosx release
+    build_skia_renderer debug
+    build_skia_renderer release
+    build_skia_renderer_sim debug
+    build_skia_renderer_sim release
+    build_skia_renderer_macosx debug
+    build_skia_renderer_macosx release
+    build_pls_renderer debug
+    build_pls_renderer release
+    build_pls_renderer_sim debug
+    build_pls_renderer_sim release
+    build_pls_renderer_macosx debug
+    build_pls_renderer_macosx release
     ;;
 macosx)
     if (($# < 2)); then
@@ -118,7 +169,8 @@ macosx)
     release | debug)
         make_dependency_directories
         finalize_skia
-        build_renderer_macosx $2
+        build_skia_renderer_macosx $2
+        build_pls_renderer_macosx $2
         ;;
     *)
         usage
@@ -133,7 +185,8 @@ ios)
     release | debug)
         make_dependency_directories
         finalize_skia
-        build_renderer $2
+        build_skia_renderer $2
+        build_pls_renderer $2
         ;;
     *)
         usage
@@ -148,7 +201,8 @@ ios_sim)
     release | debug)
         make_dependency_directories
         finalize_skia
-        build_renderer_sim $2
+        build_skia_renderer_sim $2
+        build_pls_renderer_sim $2
         ;;
     *)
         usage
