@@ -13,12 +13,14 @@ else
     export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../../runtime"
 fi
 
-if [ -d "$RIVE_RUNTIME_DIR/../pls" ]; then
-    # pls exists where we expected to find it
-    export RIVE_PLS_DIR="$RIVE_RUNTIME_DIR/../pls"
-else
-    # pls is not present -- build the null library instead
-    export RIVE_PLS_DIR="$DEV_SCRIPT_DIR/../Source/Renderer/NullPLS"
+if [[ -z "${RIVE_PLS_DIR}" ]]; then
+    if [ -d "$RIVE_RUNTIME_DIR/../pls" ]; then
+        # pls exists where we expected to find it
+        export RIVE_PLS_DIR="$RIVE_RUNTIME_DIR/../pls"
+    else
+        # pls is not present -- build the null library instead
+        export RIVE_PLS_DIR="$DEV_SCRIPT_DIR/../Source/Renderer/NullPLS"
+    fi
 fi
 
 make_dependency_directories() {

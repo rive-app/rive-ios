@@ -277,7 +277,9 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
 @implementation RenderContextManager
 {
     __weak SkiaContext* _skiaContextWeakPtr;
+#if !defined(RIVE_NO_PLS)
     __weak RiveRendererContext* _riveRendererContextWeakPtr;
+#endif
 }
 
 // The context manager is a singleton.
@@ -299,15 +301,8 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
 
 - (RenderContext*)getDefaultContext
 {
-#if TARGET_OS_SIMULATOR
-    // The simulator does not support the feature set required for the Rive renderer.
-    return [self getSkiaContext];
-#elif defined(RIVE_NO_PLS)
-    return [self getSkiaContext];
-#else
     return self.defaultRenderer == RendererType::skiaRenderer ? [self getSkiaContext]
                                                               : [self getRiveRendererContext];
-#endif
 }
 
 - (RenderContext*)getSkiaContext
@@ -326,7 +321,13 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
 
 - (RenderContext*)getRiveRendererContext
 {
-#if !defined(RIVE_NO_PLS)
+#if defined(RIVE_NO_PLS)
+    NSLog(@"error: build does not include Rive Renderer");
+    return nil;
+#elif TARGET_OS_SIMULATOR
+    NSLog(@"error: Rive Renderer is not supported on the simulator");
+    return nil;
+#else
     // Convert our weak reference to strong before trying to work with it. A weak pointer is liable
     // to be released out from under us at any moment.
     // https://stackoverflow.com/questions/15674320/understanding-weak-reference
@@ -337,8 +338,6 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
         _riveRendererContextWeakPtr = strongPtr;
     }
     return strongPtr;
-#else
-    return nil;
 #endif
 }
 
