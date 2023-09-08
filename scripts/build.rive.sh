@@ -13,7 +13,13 @@ else
     export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../../runtime"
 fi
 
-RIVE_PLS_DIR=$RIVE_RUNTIME_DIR/../pls
+if [ -d "$RIVE_RUNTIME_DIR/../pls" ]; then
+    # pls exists where we expected to find it
+    export RIVE_PLS_DIR="$RIVE_RUNTIME_DIR/../pls"
+else
+    # pls is not present -- build the null library instead
+    export RIVE_PLS_DIR="$DEV_SCRIPT_DIR/../Source/Renderer/NullPLS"
+fi
 
 make_dependency_directories() {
     rm -fr $DEV_SCRIPT_DIR/../dependencies
@@ -75,57 +81,39 @@ build_skia_renderer_macosx() {
 }
 
 build_pls_renderer() {
-    if [ -d "$RIVE_PLS_DIR" ]; then
-        pushd $RIVE_PLS_DIR/out
-        premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=ios gmake2
-        make config=$1 clean
-        make config=$1 -j12 rive_pls_renderer
-        popd
+    pushd $RIVE_PLS_DIR/out
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=ios gmake2
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
+    popd
 
-        cp -r $RIVE_PLS_DIR/out/iphoneos_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
+    cp -r $RIVE_PLS_DIR/out/iphoneos_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
 
-        cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
-    else
-        # TODO: this fixes the compile without PLS, but linking will still fail because it won't
-        # find librive_pls_renderer.a.
-        cp -r $DEV_SCRIPT_DIR/../Source/Renderer/NullPLS/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
-    fi
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
 }
 
 build_pls_renderer_sim() {
-    if [ -d "$RIVE_PLS_DIR" ]; then
-        pushd $RIVE_PLS_DIR/out
-        premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=ios --variant=simulator gmake2
-        make config=$1 clean
-        make config=$1 -j12 rive_pls_renderer
-        popd
+    pushd $RIVE_PLS_DIR/out
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=ios --variant=simulator gmake2
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
+    popd
 
-        cp -r $RIVE_PLS_DIR/out/iphonesimulator_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a
+    cp -r $RIVE_PLS_DIR/out/iphonesimulator_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a
 
-        cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
-    else
-        # TODO: this fixes the compile without PLS, but linking will still fail because it won't
-        # find librive_pls_renderer_sim.a.
-        cp -r $DEV_SCRIPT_DIR/../Source/Renderer/NullPLS/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
-    fi
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
 }
 
 build_pls_renderer_macosx() {
-    if [ -d "$RIVE_PLS_DIR" ]; then
-        pushd $RIVE_PLS_DIR/out
-        premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=macosx gmake2
-        make config=$1 clean
-        make config=$1 -j12 rive_pls_renderer
-        popd
+    pushd $RIVE_PLS_DIR/out
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=macosx gmake2
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
+    popd
 
-        cp -r $RIVE_PLS_DIR/out/$1/librive_pls_renderer_macos.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
+    cp -r $RIVE_PLS_DIR/out/$1/librive_pls_renderer_macos.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
 
-        cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
-    else
-        # TODO: this fixes the compile without PLS, but linking will still fail because it won't
-        # find librive_pls_renderer_macosx.a.
-        cp -r $DEV_SCRIPT_DIR/../Source/Renderer/NullPLS/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
-    fi
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
 }
 
 finalize_skia() {

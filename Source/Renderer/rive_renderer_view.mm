@@ -15,7 +15,7 @@
 
 @implementation RiveRendererView
 {
-    RenderContext* renderContext;
+    RenderContext* _renderContext;
     rive::Renderer* _renderer;
 }
 
@@ -23,25 +23,27 @@
 {
     self = [super initWithCoder:decoder];
 
-    renderContext = [[RenderContextManager shared] getDefaultContext];
-    self.device = [renderContext metalDevice];
+    _renderContext = [[RenderContextManager shared] getDefaultContext];
+    assert(_renderContext);
+    self.device = [_renderContext metalDevice];
 
-    [self setDepthStencilPixelFormat:renderContext.depthStencilPixelFormat];
+    [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
     [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
-    [self setFramebufferOnly:renderContext.framebufferOnly];
+    [self setFramebufferOnly:_renderContext.framebufferOnly];
     [self setSampleCount:1];
     return self;
 }
 
 - (instancetype)initWithFrame:(CGRect)frameRect
 {
-    renderContext = [[RenderContextManager shared] getDefaultContext];
+    _renderContext = [[RenderContextManager shared] getDefaultContext];
+    assert(_renderContext);
 
-    auto value = [super initWithFrame:frameRect device:renderContext.metalDevice];
+    auto value = [super initWithFrame:frameRect device:_renderContext.metalDevice];
 
-    [self setDepthStencilPixelFormat:renderContext.depthStencilPixelFormat];
+    [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
     [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
-    [self setFramebufferOnly:renderContext.framebufferOnly];
+    [self setFramebufferOnly:_renderContext.framebufferOnly];
     [self setSampleCount:1];
     return value;
 }
@@ -90,14 +92,14 @@
         return;
     }
 
-    _renderer = [renderContext beginFrame:self];
+    _renderer = [_renderContext beginFrame:self];
     _renderer->save();
     [self drawRive:rect size:self.drawableSize];
     _renderer->restore();
-    [renderContext endFrame];
+    [_renderContext endFrame];
     _renderer = nullptr;
 
-    id<MTLCommandBuffer> commandBuffer = [renderContext.metalQueue commandBuffer];
+    id<MTLCommandBuffer> commandBuffer = [_renderContext.metalQueue commandBuffer];
     [commandBuffer presentDrawable:[self currentDrawable]];
     [commandBuffer commit];
     bool paused = [self isPaused];

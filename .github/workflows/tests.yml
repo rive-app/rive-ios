@@ -58,6 +58,7 @@ jobs:
         with:
           token: ${{ secrets.PAT_GITHUB }}
           submodules: true
+
       - name: Installing pre-requisites
         run: |
           set -x
@@ -70,7 +71,28 @@ jobs:
           mkdir bin
           cp premake5 bin/premake5
           sudo mv premake5 /usr/local/bin
-      - name: Build everything (using the cache, we should make an archive of course)
+
+      - name: Build everything without Rive Renderer (using the cache, we should make an archive of course)
         run: ./scripts/build.sh ios_sim debug
-      - name: Testing iOS app
+
+      - name: Testing iOS app without Rive Renderer
+        run: ./scripts/test.sh
+
+      - name: Get Renderer ref
+        id: renderer-ref
+        run: echo "REF_VALUE=$(cat .rive_renderer)" >> $GITHUB_OUTPUT
+
+      - name: Checkout Rive Renderer Repo
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repository: ${{ secrets.RIVE_RENDERER_REPO }}
+          token: ${{ secrets.PAT_GITHUB }}
+          path: ./submodules/pls
+          ref: ${{ steps.renderer-ref.outputs.REF_VALUE }}
+
+      - name: Build everything with Rive Renderer
+        run: ./scripts/build.sh ios_sim debug
+
+      - name: Testing iOS app with Rive Renderer
         run: ./scripts/test.sh

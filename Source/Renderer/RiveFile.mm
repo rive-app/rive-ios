@@ -150,8 +150,9 @@
 - (BOOL)import:(UInt8*)bytes byteLength:(UInt64)length error:(NSError**)error
 {
     rive::ImportResult result;
-    RenderContext* defaultContext = [[RenderContextManager shared] getDefaultContext];
-    rive::Factory* factory = [defaultContext factory];
+    RenderContext* renderContext = [[RenderContextManager shared] getDefaultContext];
+    assert(renderContext);
+    rive::Factory* factory = [renderContext factory];
     auto file = rive::File::import(rive::Span(bytes, length), factory, &result);
     if (result == rive::ImportResult::success)
     {
