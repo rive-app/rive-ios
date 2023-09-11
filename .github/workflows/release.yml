@@ -129,6 +129,7 @@ jobs:
           sudo chmod a+x premake5
           cp premake5 bin/premake5
           sudo mv premake5 /usr/local/bin
+          pip3 install ply
       - name: Build everything (using the cache, we should make an archive of course)
         run: ./scripts/build.sh all
       - name: Update Marketing versions

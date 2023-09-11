@@ -72,6 +72,7 @@ jobs:
           mkdir bin
           cp premake5 bin/premake5
           sudo mv premake5 /usr/local/bin
+          pip3 install ply
 
       - name: Build everything WITHOUT Rive Renderer
         run: ./scripts/build.sh ios_sim debug

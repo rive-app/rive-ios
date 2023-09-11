@@ -8,6 +8,11 @@ newoption {
     description = ''
 }
 
+newoption {
+    trigger = 'fat-lib',
+    description = ''
+}
+
 -- Build a no-op librive_pls_renderer.a so xcode still sees a static library to link with when the
 -- module isn't available.
 project 'rive_pls_renderer'
@@ -25,6 +30,14 @@ do
         iphoneos_sysroot = os.outputof('xcrun --sdk iphoneos --show-sdk-path')
         iphonesimulator_sysroot = os.outputof('xcrun --sdk iphonesimulator --show-sdk-path')
 
+        filter {'system:macosx'}
+        do
+            buildoptions {
+                '-arch x86_64',
+                '-arch arm64',
+            }
+        end
+
         filter {'system:ios', 'options:variant=system'}
         do
             targetdir 'iphoneos_%{cfg.buildcfg}'
@@ -32,6 +45,8 @@ do
             buildoptions {
                 '--target=arm64-apple-ios13.0.0',
                 '-mios-version-min=13.0.0',
+                '-arch arm64',
+                '-arch arm64e',
                 '-isysroot ' .. iphoneos_sysroot
             }
         end
