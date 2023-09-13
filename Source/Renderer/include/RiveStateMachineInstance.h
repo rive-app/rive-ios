@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveSMITrigger;
 @class RiveSMINumber;
 @class RiveLayerState;
+@class RiveEvent;
 
 /*
  * RiveStateMachineInstance
@@ -37,6 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)stateChangedCount;
 - (RiveLayerState* __nullable)stateChangedFromIndex:(NSInteger)index error:(NSError**)error;
 - (NSArray<NSString*>*)stateChanges;
+/// Returns number of reported events on the state machine since the last frame
+- (NSInteger)reportedEventCount;
+/// Returns a RiveEvent from the list of reported events at the given index
+- (const RiveEvent*)reportedEventAt:(NSInteger)index;
 
 // MARK: Touch
 

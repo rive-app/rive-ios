@@ -133,6 +133,10 @@
 		E57798AC2A731C5800FF25C3 /* testtext.riv in Resources */ = {isa = PBXBuildFile; fileRef = E577989D2A72C77900FF25C3 /* testtext.riv */; };
 		E57798AE2A73264100FF25C3 /* text_test_2.riv in Resources */ = {isa = PBXBuildFile; fileRef = E57798AD2A73264100FF25C3 /* text_test_2.riv */; };
 		E57798AF2A73264100FF25C3 /* text_test_2.riv in Resources */ = {isa = PBXBuildFile; fileRef = E57798AD2A73264100FF25C3 /* text_test_2.riv */; };
+		E5964AAB2A9CD49200140479 /* SwiftEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5964AAA2A9CD49200140479 /* SwiftEvents.swift */; };
+		E5964AAC2A9CD49200140479 /* SwiftEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5964AAA2A9CD49200140479 /* SwiftEvents.swift */; };
+		E5964AB12A9CDB2100140479 /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5964AB02A9CDB2100140479 /* rating_animation.riv */; };
+		E5964AB22A9CDB2100140479 /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5964AB02A9CDB2100140479 /* rating_animation.riv */; };
 		E5A7874A27E115170056F24B /* energy_bar_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874727E115170056F24B /* energy_bar_example.riv */; };
 		E5A7874C27E1158E0056F24B /* prop_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874B27E1158E0056F24B /* prop_example.riv */; };
 		E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */; };
@@ -262,6 +266,8 @@
 		E577989D2A72C77900FF25C3 /* testtext.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = testtext.riv; sourceTree = "<group>"; };
 		E57798A82A730A9B00FF25C3 /* SwiftTestText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTestText.swift; sourceTree = "<group>"; };
 		E57798AD2A73264100FF25C3 /* text_test_2.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = text_test_2.riv; sourceTree = "<group>"; };
+		E5964AAA2A9CD49200140479 /* SwiftEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftEvents.swift; sourceTree = "<group>"; };
+		E5964AB02A9CDB2100140479 /* rating_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rating_animation.riv; sourceTree = "<group>"; };
 		E5A7874727E115170056F24B /* energy_bar_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = energy_bar_example.riv; sourceTree = "<group>"; };
 		E5A7874B27E1158E0056F24B /* prop_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = prop_example.riv; sourceTree = "<group>"; };
 		E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMeshAnimation.swift; sourceTree = "<group>"; };
@@ -371,6 +377,7 @@
 				C3E383472837E6B00029D65E /* watch_v1.riv */,
 				C3ECAC29281837B300A81123 /* leg_day_events_example.riv */,
 				C3ECAC28281837B300A81123 /* play_button_event_example.riv */,
+				E5964AB02A9CDB2100140479 /* rating_animation.riv */,
 				C3ECAC2A281837B300A81123 /* switch_event_example.riv */,
 				C3ECAC222817BE1100A81123 /* magic_8-ball_v2.riv */,
 				E577989D2A72C77900FF25C3 /* testtext.riv */,
@@ -426,6 +433,7 @@
 				C3E2B58B2833ECFE00A8651B /* SwiftCannonGame.swift */,
 				C3C074ED28414F4600E8EB33 /* SwiftTestParityAnimSM.swift */,
 				E57798A82A730A9B00FF25C3 /* SwiftTestText.swift */,
+				E5964AAA2A9CD49200140479 /* SwiftEvents.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -611,6 +619,7 @@
 				04E51C5A2A151C230075E473 /* flux_capacitor.riv in Resources */,
 				04E51C5B2A151C230075E473 /* juice_v7.riv in Resources */,
 				04E51C5C2A151C230075E473 /* life_bar.riv in Resources */,
+				E5964AB22A9CDB2100140479 /* rating_animation.riv in Resources */,
 				04E51C5D2A151C230075E473 /* prop_example.riv in Resources */,
 				04E51C5E2A151C230075E473 /* two_bone_ik.riv in Resources */,
 				04E51C5F2A151C230075E473 /* energy_bar_example.riv in Resources */,
@@ -682,6 +691,7 @@
 				042C88E22644447500E7DBB2 /* f22.riv in Resources */,
 				046AFA712673AF04004ED497 /* blendmodes.riv in Resources */,
 				042C88EC2644447500E7DBB2 /* vader.riv in Resources */,
+				E5964AB12A9CDB2100140479 /* rating_animation.riv in Resources */,
 				C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */,
 				0450446126B3F71E007B25CA /* constrained.riv in Resources */,
 				C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */,
@@ -701,6 +711,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				04E51C382A151A1E0075E473 /* ContentView.swift in Sources */,
+				E5964AAC2A9CD49200140479 /* SwiftEvents.swift in Sources */,
 				04E51C362A151A1E0075E473 /* Example__macOS_App.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -726,6 +737,7 @@
 				C3ECAC2F281840A300A81123 /* ClockViewModel.swift in Sources */,
 				04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */,
 				C9C73E9A24FC471E00EF9516 /* SceneDelegate.swift in Sources */,
+				E5964AAB2A9CD49200140479 /* SwiftEvents.swift in Sources */,
 				04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */,
 				C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */,
 				042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */,

@@ -187,6 +187,13 @@ open class RiveView: RiveRendererView {
         eventQueue.fireAll()
         
         if let stateMachine = riveModel?.stateMachine {
+            let firedEventCount = stateMachine.reportedEventCount()
+            if (firedEventCount > 0) {
+                for i in 0..<firedEventCount {
+                    let event = stateMachine.reportedEvent(at: i)
+                    stateMachineDelegate?.onRiveEventReceived?(onRiveEvent: event)
+                }
+            }    
             isPlaying = stateMachine.advance(by: delta) && wasPlaying
             stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
         } else if let animation = riveModel?.animation {
@@ -387,6 +394,7 @@ open class RiveView: RiveRendererView {
     
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, receivedInput input: StateMachineInput)
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, didChangeState stateName: String)
+    @objc optional func onRiveEventReceived(onRiveEvent riveEvent: RiveEvent)
 }
 
 public protocol RivePlayerDelegate: AnyObject {

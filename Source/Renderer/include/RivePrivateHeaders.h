@@ -27,6 +27,11 @@
 #import "rive/animation/exit_state.hpp"
 #import "rive/animation/animation_state.hpp"
 #import "rive/text/text_value_run.hpp"
+#import "rive/event.hpp"
+#include "rive/open_url_event.hpp"
+#include "rive/custom_property_boolean.hpp"
+#include "rive/custom_property_string.hpp"
+#include "rive/custom_property_number.hpp"
 
 // MARK: - Feature Flags
 
@@ -64,6 +69,14 @@
  * SMIBool interface
  */
 @interface RiveSMIBool ()
+@end
+
+/**
+ * RiveEvent interface
+ */
+@interface RiveEvent ()
+- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent
+                  delay:(float)delay;
 @end
 
 /*

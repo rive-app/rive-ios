@@ -257,6 +257,25 @@ static int smInstanceCount = 0;
     return instance->stateChangedCount();
 }
 
+- (NSInteger)reportedEventCount
+{
+    return instance->reportedEventCount();
+}
+
+
+- (RiveEvent*)_convertEvent:(const rive::Event*)event delay:(float)delay
+{
+    if (event->is<rive::OpenUrlEvent>())
+    {
+        return [[RiveOpenUrlEvent alloc] initWithRiveEvent:event delay:delay];
+    }
+    else if (event->is<rive::Event>())
+    {
+        return [[RiveGeneralEvent alloc] initWithRiveEvent:event delay:delay];
+    }
+    return nil;
+}
+
 - (RiveLayerState*)_convertLayerState:(const rive::LayerState*)layerState
 {
     if (layerState->is<rive::EntryState>())
@@ -278,6 +297,18 @@ static int smInstanceCount = 0;
     else
     {
         return [[RiveUnknownState alloc] initWithLayerState:layerState];
+    }
+}
+
+- (RiveEvent*)reportedEventAt:(NSInteger)index
+{
+    const rive::EventReport report = instance->reportedEventAt(index);
+    const rive::Event* event = report.event();
+    if (event == nullptr)
+    {
+        return nil;
+    } else {
+        return [self _convertEvent:event delay:report.secondsDelay()];
     }
 }
 

@@ -38,6 +38,7 @@ class DrDelegate: RivePlayerDelegate, RiveStateMachineDelegate {
     var loops = [String]()
     var stateMachineNames = [String]()
     var stateMachineStates = [String]()
+    var events = [RiveEvent]()
     
     func player(playedWithModel riveModel: RiveModel?) {
         if let stateMachineName = riveModel?.stateMachine?.name() {
@@ -80,6 +81,10 @@ class DrDelegate: RivePlayerDelegate, RiveStateMachineDelegate {
     func stateMachine(_ stateMachine: RiveStateMachineInstance, didChangeState stateName: String) {
         stateMachineNames.append(stateMachine.name())
         stateMachineStates.append(stateName)
+    }
+    
+    func onRiveEventReceived(onRiveEvent riveEvent: RiveEvent) {
+        events.append(riveEvent)
     }
 }
 
@@ -238,6 +243,32 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.linearAnimaitonPlays.count, 1)
         XCTAssertEqual(delegate.linearAnimaitonPauses.count, 0)
         XCTAssertEqual(delegate.linearAnimaitonStops.count, 0)
+    }
+    
+    func testGeneralEventsReported() throws {
+        let delegate = DrDelegate()
+        let file = try RiveFile(testfileName: "rating_animation")
+        let model = RiveModel(riveFile: file)
+        let viewModel = RiveViewModel(model, stateMachineName: "State Machine 1", autoPlay: true)
+        let view = viewModel.createRiveView()
+        
+        view.playerDelegate = delegate
+        view.stateMachineDelegate = delegate
+        viewModel.setInput("rating", value: 2.0)
+        view.advance(delta:0.0)
+        view.advance(delta:0.1)
+
+        XCTAssertEqual(delegate.events.count, 1)
+        XCTAssertEqual(delegate.events.first?.name(), "rating2")
+        XCTAssertTrue(delegate.events.first is RiveGeneralEvent)
+        
+        viewModel.setInput("rating", value: 5.0)
+        view.advance(delta:0.0)
+        view.advance(delta:0.1)
+        XCTAssertEqual(delegate.events.count, 3)
+        XCTAssertEqual(delegate.events.last?.name(), "gotorive")
+        XCTAssertTrue(delegate.events.last is RiveOpenUrlEvent)
+        XCTAssertTrue((delegate.events.last as? RiveOpenUrlEvent)?.url != nil)
     }
     
     func testStateMachineLayerStates() throws {

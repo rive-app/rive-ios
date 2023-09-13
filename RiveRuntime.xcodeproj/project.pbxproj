@@ -68,6 +68,10 @@
 		E57798A62A72C9C500FF25C3 /* RiveTextValueRun.mm in Sources */ = {isa = PBXBuildFile; fileRef = E57798A52A72C9C500FF25C3 /* RiveTextValueRun.mm */; };
 		E57798A72A72EEAD00FF25C3 /* RiveTextValueRun.h in Headers */ = {isa = PBXBuildFile; fileRef = E57798A12A72C81F00FF25C3 /* RiveTextValueRun.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E57798AB2A7310B700FF25C3 /* testtext.riv in Resources */ = {isa = PBXBuildFile; fileRef = E57798AA2A7310B700FF25C3 /* testtext.riv */; };
+		E5964A962A965A9300140479 /* RiveEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = E5964A952A965A9300140479 /* RiveEvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E5964A982A9697B600140479 /* RiveEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5964A972A9697B600140479 /* RiveEvent.mm */; };
+		E599DCF92AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
+		E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,6 +151,9 @@
 		E57798A12A72C81F00FF25C3 /* RiveTextValueRun.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = RiveTextValueRun.h; sourceTree = "<group>"; };
 		E57798A52A72C9C500FF25C3 /* RiveTextValueRun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveTextValueRun.mm; sourceTree = "<group>"; };
 		E57798AA2A7310B700FF25C3 /* testtext.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = testtext.riv; sourceTree = "<group>"; };
+		E5964A952A965A9300140479 /* RiveEvent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = RiveEvent.h; sourceTree = "<group>"; };
+		E5964A972A9697B600140479 /* RiveEvent.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveEvent.mm; sourceTree = "<group>"; };
+		E599DCF82AAFA06100D1E49A /* rating_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rating_animation.riv; path = "Example-iOS/Assets/rating_animation.riv"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,6 +192,7 @@
 				E57798A12A72C81F00FF25C3 /* RiveTextValueRun.h */,
 				83DE4CA62AAAE72000B88B72 /* RenderContext.hh */,
 				83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */,
+				E5964A952A965A9300140479 /* RiveEvent.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -199,6 +207,7 @@
 				04ED72F2299C115100E8DE53 /* empty_animation_state.riv */,
 				04BE53FF2649403600427B39 /* multiple_animations.riv */,
 				E57798AA2A7310B700FF25C3 /* testtext.riv */,
+				E599DCF82AAFA06100D1E49A /* rating_animation.riv */,
 				04BE54022649403600427B39 /* multiple_state_machines.riv */,
 				04BE54002649403600427B39 /* multipleartboards.riv */,
 				04BE53FE2649403600427B39 /* noanimation.riv */,
@@ -239,6 +248,8 @@
 				E57798A52A72C9C500FF25C3 /* RiveTextValueRun.mm */,
 				04BE5431264D243D00427B39 /* LayerState.mm */,
 				83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */,
+				274175FC286DB9CE000A60D1 /* cg_skia_factory.cpp */,
+				E5964A972A9697B600140479 /* RiveEvent.mm */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -320,6 +331,7 @@
 				E57798A72A72EEAD00FF25C3 /* RiveTextValueRun.h in Headers */,
 				046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */,
 				04BE5430264D1F4100427B39 /* LayerState.h in Headers */,
+				E5964A962A965A9300140479 /* RiveEvent.h in Headers */,
 				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
 				04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */,
 				C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */,
@@ -410,6 +422,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E599DCF92AAFA06100D1E49A /* rating_animation.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,6 +439,7 @@
 				04BE540B2649403600427B39 /* multiple_animations.riv in Resources */,
 				E57798AB2A7310B700FF25C3 /* testtext.riv in Resources */,
 				04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */,
+				E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */,
 				04BE54062649403600427B39 /* off_road_car_blog.riv in Resources */,
 				04BE540C2649403600427B39 /* multipleartboards.riv in Resources */,
 				04BE540D2649403600427B39 /* junk.riv in Resources */,
@@ -447,6 +461,7 @@
 				2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */,
 				C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */,
 				C3468E5827EB9887008652FD /* RiveView.swift in Sources */,
+				E5964A982A9697B600140479 /* RiveEvent.mm in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
 				C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */,
 				83DE4C912AA8DD7B00B88B72 /* RenderContextManager.mm in Sources */,

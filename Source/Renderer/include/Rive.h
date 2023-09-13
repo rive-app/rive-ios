@@ -18,6 +18,7 @@
 #import <RiveRuntime/RiveLinearAnimationInstance.h>
 #import <RiveRuntime/RiveStateMachineInstance.h>
 #import <RiveRuntime/RiveTextValueRun.h>
+#import <RiveRuntime/RiveEvent.h>
 #import <RiveRuntime/LayerState.h>
 #import <RiveRuntime/RenderContextManager.h>
 
