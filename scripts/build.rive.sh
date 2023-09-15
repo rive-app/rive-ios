@@ -84,7 +84,7 @@ build_skia_renderer_macosx() {
 
 build_pls_renderer() {
     pushd $RIVE_PLS_DIR/out
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --fat-lib --no-rive-decoders --os=ios gmake2
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=ios gmake2
     make config=release clean
     make config=release -j12 rive_pls_renderer
     popd
@@ -97,7 +97,7 @@ build_pls_renderer() {
 
 build_pls_renderer_sim() {
     pushd $RIVE_PLS_DIR/out
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --fat-lib --no-rive-decoders --os=ios --variant=simulator gmake2
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=ios --variant=simulator gmake2
     make config=release clean
     make config=release -j12 rive_pls_renderer
     popd
@@ -110,7 +110,7 @@ build_pls_renderer_sim() {
 
 build_pls_renderer_macosx() {
     pushd $RIVE_PLS_DIR/out
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --fat-lib --no-rive-decoders --os=macosx gmake2
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=macosx gmake2
     make config=release clean
     make config=release -j12 rive_pls_renderer
     popd

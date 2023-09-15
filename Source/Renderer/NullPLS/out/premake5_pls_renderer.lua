@@ -9,7 +9,7 @@ newoption {
 }
 
 newoption {
-    trigger = 'fat-lib',
+    trigger = 'universal-release',
     description = ''
 }
 
@@ -46,7 +46,6 @@ do
                 '--target=arm64-apple-ios13.0.0',
                 '-mios-version-min=13.0.0',
                 '-arch arm64',
-                '-arch arm64e',
                 '-isysroot ' .. iphoneos_sysroot
             }
         end
