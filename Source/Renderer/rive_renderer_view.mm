@@ -93,11 +93,14 @@
     }
 
     _renderer = [_renderContext beginFrame:self];
-    _renderer->save();
-    [self drawRive:rect size:self.drawableSize];
-    _renderer->restore();
+    if (_renderer != nil)
+    {
+        _renderer->save();
+        [self drawRive:rect size:self.drawableSize];
+        _renderer->restore();
+    }
     [_renderContext endFrame];
-    _renderer = nullptr;
+    _renderer = nil;
 
     id<MTLCommandBuffer> commandBuffer = [_renderContext.metalQueue commandBuffer];
     [commandBuffer presentDrawable:[self currentDrawable]];

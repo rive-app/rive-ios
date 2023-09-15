@@ -5,6 +5,7 @@
 #import <RenderContextManager.h>
 #import <RenderContext.hh>
 
+#import <AutoCF.h>
 #import <PlatformCGImage.h>
 
 @implementation RenderContext
@@ -32,6 +33,8 @@
 #include "include/gpu/mtl/GrMtlBackendContext.h"
 #include "skia_renderer.hpp"
 #include "skia_factory.hpp"
+#include "cg_factory.hpp"
+#include "cg_renderer.hpp"
 
 @interface SkiaContext : RenderContext
 - (rive::Factory*)factory;
@@ -95,8 +98,8 @@
             return pixels;
         }
     };
-    static CGSkiaFactory gFactory;
-    return &gFactory;
+    static CGSkiaFactory factory;
+    return &factory;
 }
 
 static sk_sp<SkSurface> mtk_view_to_sk_surface(MTKView* mtkView, GrDirectContext* grContext)
@@ -250,6 +253,16 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
         return nullptr;
     }
 
+    switch (view.colorPixelFormat)
+    {
+        case MTLPixelFormatBGRA8Unorm:
+        case MTLPixelFormatRGBA8Unorm:
+            break;
+        default:
+            NSLog(@"error: unsupported colorPixelFormat on MTKView");
+            return nullptr;
+    }
+
     if (_renderTarget == nullptr || _renderTarget->width() != view.drawableSize.width ||
         _renderTarget->height() != view.drawableSize.height)
     {
@@ -274,12 +287,130 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
 
 #endif // !defined(RIVE_NO_PLS)
 
+@interface CGRendererContext : RenderContext
+- (rive::Renderer*)beginFrame:(MTKView*)view;
+- (void)endFrame;
+@end
+
+constexpr static int kBufferRingSize = 3;
+
+@implementation CGRendererContext
+{
+    id<MTLTexture> _renderTargetTexture;
+    id<MTLBuffer> _buffers[kBufferRingSize];
+    int _currentBufferIdx;
+    AutoCF<CGContextRef> _cgContext;
+    std::unique_ptr<rive::CGRenderer> _renderer;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+
+    _renderTargetTexture = nil;
+    for (int i = 0; i < kBufferRingSize; ++i)
+    {
+        _buffers[i] = nil;
+    }
+    _currentBufferIdx = -1;
+
+    self.metalDevice = MTLCreateSystemDefaultDevice();
+    if (!self.metalDevice)
+    {
+        NSLog(@"Metal is not supported on this device");
+        return nil;
+    }
+    self.metalQueue = [self.metalDevice newCommandQueue];
+    self.depthStencilPixelFormat = MTLPixelFormatInvalid;
+    self.framebufferOnly = NO;
+    return self;
+}
+
+- (rive::Factory*)factory
+{
+    static rive::CGFactory factory;
+    return &factory;
+}
+
+- (rive::Renderer*)beginFrame:(MTKView*)view
+{
+    uint32_t cgBitmapInfo;
+    switch (view.colorPixelFormat)
+    {
+        case MTLPixelFormatBGRA8Unorm:
+            cgBitmapInfo = kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst;
+            break;
+        case MTLPixelFormatRGBA8Unorm:
+            cgBitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast;
+            break;
+        default:
+            NSLog(@"error: unsupported colorPixelFormat on MTKView");
+            return nullptr;
+    }
+
+    id<CAMetalDrawable> surface = view.currentDrawable;
+    _renderTargetTexture = surface.texture;
+    if (!_renderTargetTexture)
+    {
+        NSLog(@"error: no surface texture on MTKView");
+        return nullptr;
+    }
+
+    _currentBufferIdx = (_currentBufferIdx + 1) % kBufferRingSize;
+    size_t bufferSize = _renderTargetTexture.height * _renderTargetTexture.width * 4;
+    if (_buffers[_currentBufferIdx] == nil ||
+        _buffers[_currentBufferIdx].allocatedSize != bufferSize)
+    {
+        _buffers[_currentBufferIdx] =
+            [self.metalDevice newBufferWithLength:bufferSize options:MTLResourceStorageModeShared];
+    }
+    AutoCF<CGColorSpaceRef> colorSpace = CGColorSpaceCreateDeviceRGB();
+    _cgContext.adopt(CGBitmapContextCreate(_buffers[_currentBufferIdx].contents,
+                                           _renderTargetTexture.width,
+                                           _renderTargetTexture.height,
+                                           8,
+                                           _renderTargetTexture.width * 4,
+                                           colorSpace,
+                                           cgBitmapInfo));
+
+    _renderer = std::make_unique<rive::CGRenderer>(
+        _cgContext, _renderTargetTexture.width, _renderTargetTexture.height);
+    return _renderer.get();
+}
+
+- (void)endFrame
+{
+    if (_cgContext != nil)
+    {
+        id<MTLCommandBuffer> commandBuffer = [self.metalQueue commandBuffer];
+        id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+        [blitEncoder copyFromBuffer:_buffers[_currentBufferIdx]
+                       sourceOffset:0
+                  sourceBytesPerRow:_renderTargetTexture.width * 4
+                sourceBytesPerImage:_renderTargetTexture.height * _renderTargetTexture.width * 4
+                         sourceSize:MTLSizeMake(
+                                        _renderTargetTexture.width, _renderTargetTexture.height, 1)
+                          toTexture:_renderTargetTexture
+                   destinationSlice:0
+                   destinationLevel:0
+                  destinationOrigin:MTLOriginMake(0, 0, 0)];
+        [blitEncoder endEncoding];
+        [commandBuffer commit];
+    }
+    _renderTargetTexture = nil;
+    _renderer = nullptr;
+    _cgContext.adopt(nullptr);
+}
+
+@end
+
 @implementation RenderContextManager
 {
     __weak SkiaContext* _skiaContextWeakPtr;
 #if !defined(RIVE_NO_PLS)
     __weak RiveRendererContext* _riveRendererContextWeakPtr;
 #endif
+    __weak CGRendererContext* _cgContextWeakPtr;
 }
 
 // The context manager is a singleton.
@@ -301,8 +432,15 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
 
 - (RenderContext*)getDefaultContext
 {
-    return self.defaultRenderer == RendererType::skiaRenderer ? [self getSkiaContext]
-                                                              : [self getRiveRendererContext];
+    switch (self.defaultRenderer)
+    {
+        case RendererType::skiaRenderer:
+            return [self getSkiaContext];
+        case RendererType::riveRenderer:
+            return [self getRiveRendererContext];
+        case RendererType::cgRenderer:
+            return [self getCGRendererContext];
+    }
 }
 
 - (RenderContext*)getSkiaContext
@@ -339,6 +477,20 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
     }
     return strongPtr;
 #endif
+}
+
+- (RenderContext*)getCGRendererContext
+{
+    // Convert our weak reference to strong before trying to work with it. A weak pointer is liable
+    // to be released out from under us at any moment.
+    // https://stackoverflow.com/questions/15674320/understanding-weak-reference
+    CGRendererContext* strongPtr = _cgContextWeakPtr;
+    if (strongPtr == nil)
+    {
+        strongPtr = [[CGRendererContext alloc] init];
+        _cgContextWeakPtr = strongPtr;
+    }
+    return strongPtr;
 }
 
 @end

@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, RendererType) { skiaRenderer, riveRenderer };
+typedef NS_ENUM(NSInteger, RendererType) { skiaRenderer, riveRenderer, cgRenderer };
 
 @class RenderContext;
 
@@ -19,4 +19,5 @@ typedef NS_ENUM(NSInteger, RendererType) { skiaRenderer, riveRenderer };
 - (RenderContext*)getDefaultContext;
 - (RenderContext*)getSkiaContext;
 - (RenderContext*)getRiveRendererContext;
+- (RenderContext*)getCGRendererContext;
 @end
