@@ -85,12 +85,12 @@ build_skia_renderer_macosx() {
 build_pls_renderer() {
     pushd $RIVE_PLS_DIR/out
     premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=ios gmake2
-    make config=release clean
-    make config=release -j12 rive_pls_renderer
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
     popd
 
-    cp -r $RIVE_PLS_DIR/out/iphoneos_release/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/debug/librive_pls_renderer.a
-    cp -r $RIVE_PLS_DIR/out/iphoneos_release/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/release/librive_pls_renderer.a
+    cp -r $RIVE_PLS_DIR/out/iphoneos_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
+    $DEV_SCRIPT_DIR/strip_static_lib.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
 
     cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
 }
@@ -98,12 +98,12 @@ build_pls_renderer() {
 build_pls_renderer_sim() {
     pushd $RIVE_PLS_DIR/out
     premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=ios --variant=simulator gmake2
-    make config=release clean
-    make config=release -j12 rive_pls_renderer
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
     popd
 
-    cp -r $RIVE_PLS_DIR/out/iphonesimulator_release/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/debug/librive_pls_renderer_sim.a
-    cp -r $RIVE_PLS_DIR/out/iphonesimulator_release/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/release/librive_pls_renderer_sim.a
+    cp -r $RIVE_PLS_DIR/out/iphonesimulator_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a
+    $DEV_SCRIPT_DIR/strip_static_lib_fat.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a arm64 x86_64
 
     cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
 }
@@ -111,12 +111,12 @@ build_pls_renderer_sim() {
 build_pls_renderer_macosx() {
     pushd $RIVE_PLS_DIR/out
     premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=macosx gmake2
-    make config=release clean
-    make config=release -j12 rive_pls_renderer
+    make config=$1 clean
+    make config=$1 -j12 rive_pls_renderer
     popd
 
-    cp -r $RIVE_PLS_DIR/out/release/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/debug/librive_pls_renderer_macos.a
-    cp -r $RIVE_PLS_DIR/out/release/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/release/librive_pls_renderer_macos.a
+    cp -r $RIVE_PLS_DIR/out/$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_macos.a
+    $DEV_SCRIPT_DIR/strip_static_lib_fat.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_macos.a arm64 x86_64
 
     cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
 }
@@ -159,9 +159,12 @@ all)
     build_skia_renderer_sim release
     build_skia_renderer_macosx debug
     build_skia_renderer_macosx release
-    build_pls_renderer
-    build_pls_renderer_sim
-    build_pls_renderer_macosx
+    build_pls_renderer debug
+    build_pls_renderer release
+    build_pls_renderer_sim debug
+    build_pls_renderer_sim release
+    build_pls_renderer_macosx debug
+    build_pls_renderer_macosx release
     ;;
 macosx)
     if (($# < 2)); then
@@ -172,7 +175,7 @@ macosx)
         make_dependency_directories
         finalize_skia
         build_skia_renderer_macosx $2
-        build_pls_renderer_macosx
+        build_pls_renderer_macosx $2
         ;;
     *)
         usage
@@ -188,7 +191,7 @@ ios)
         make_dependency_directories
         finalize_skia
         build_skia_renderer $2
-        build_pls_renderer
+        build_pls_renderer $2
         ;;
     *)
         usage
@@ -204,7 +207,7 @@ ios_sim)
         make_dependency_directories
         finalize_skia
         build_skia_renderer_sim $2
-        build_pls_renderer_sim
+        build_pls_renderer_sim $2
         ;;
     *)
         usage
