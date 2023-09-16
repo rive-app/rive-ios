@@ -6,7 +6,7 @@ SCRIPT_DIR=$(dirname $path)
 TMP_DIR="$SCRIPT_DIR/strip_static_lib_fat_tmp"
 
 BASENAME=${1##*/}
-LIB=$(realpath $1)
+LIB=$( cd "$(dirname "$1")" ; pwd -P )/$BASENAME
 shift
 
 if [ -d $TMP_DIR ]; then

@@ -18,7 +18,7 @@ if [ -d $TMP_DIR ]; then
 fi
 
 BASENAME=${1##*/}
-LIB=$(realpath $1)
+LIB=$( cd "$(dirname "$1")" ; pwd -P )/$BASENAME
 
 mkdir $TMP_DIR
 cp $LIB $TMP_DIR
