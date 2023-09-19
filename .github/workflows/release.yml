@@ -93,7 +93,7 @@ jobs:
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    runs-on: macos-12
+    runs-on: [self-hosted, macOS, ARM64]
     needs: [determine_version]
     outputs:
       checksum: ${{steps.get_checksum.outputs.checksum}}
