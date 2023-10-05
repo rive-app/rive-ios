@@ -881,6 +881,22 @@
             </objects>
             <point key="canvasLocation" x="5304" y="-358"/>
         </scene>
+        <!--Stress Test Example-->
+        <scene sceneID="BJl-SY-XuL">
+            <objects>
+                <viewController storyboardIdentifier="Stress Test" title="Stress Test Example" id="z8m-Vh-cMa" customClass="StressTestViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="DfU-QA-wiO">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="i01-I9-9w7"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Stress Test" id="bxs-ia-TOh"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LZR-GS-Huz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2377" y="-358"/>
+        </scene>
     </scenes>
     <resources>
         <systemColor name="systemBackgroundColor">

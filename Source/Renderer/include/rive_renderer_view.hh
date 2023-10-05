@@ -10,6 +10,9 @@
           contentRect:(CGRect)contentRect
             alignment:(RiveAlignment)alignment
                   fit:(RiveFit)fit;
+- (void)save;
+- (void)restore;
+- (void)transform:(float)xx xy:(float)xy yx:(float)yx yy:(float)yy tx:(float)tx ty:(float)ty;
 - (void)drawWithArtboard:(RiveArtboard*)artboard;
 - (void)drawRive:(CGRect)rect size:(CGSize)size;
 - (bool)isPaused;

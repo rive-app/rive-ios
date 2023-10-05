@@ -220,9 +220,9 @@ open class RiveView: RiveRendererView {
         // Trigger a redraw
         needsDisplay()
     }
-    
-    /// This is called in the middle of drawRect
-    override public func drawRive(_ rect: CGRect, size: CGSize) {
+    /// This is called in the middle of drawRect. Override this method to implement
+    /// custom draw logic
+    override open func drawRive(_ rect: CGRect, size: CGSize) {
         // This prevents breaking when loading RiveFile async
         guard let artboard = riveModel?.artboard else { return }
         

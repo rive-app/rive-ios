@@ -68,9 +68,27 @@
 
     _renderer->align(riveFit, riveAlignment, frame, content);
 }
+- (void)save
+{
+    assert(_renderer != nil);
+    _renderer->save();
+}
+
+- (void)restore
+{
+    assert(_renderer != nil);
+    _renderer->restore();
+}
+
+- (void)transform:(float)xx xy:(float)xy yx:(float)yx yy:(float)yy tx:(float)tx ty:(float)ty
+{
+    assert(_renderer != nil);
+    _renderer->transform(rive::Mat2D{xx, xy, yx, yy, tx, ty});
+}
 
 - (void)drawWithArtboard:(RiveArtboard*)artboard
 {
+    assert(_renderer != nil);
     [artboard artboardInstance]->draw(_renderer);
 }
 

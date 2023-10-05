@@ -20,7 +20,8 @@ class ExamplesMasterTableViewController: UITableViewController {
         "MultipleAnimations",
         "State Machine",
         "Blend Mode",
-        "Slider Widget"
+        "Slider Widget",
+        "Stress Test"
     ]
     
     

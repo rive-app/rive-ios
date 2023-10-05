@@ -95,6 +95,10 @@
 		04E51C702A151C230075E473 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
 		27108F2F282C96E700A99D81 /* light_switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = 27108F2C282C96E700A99D81 /* light_switch.riv */; };
+		83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C89ACA29886ECB00044C17 /* StressTest.swift */; };
+		83C89ACF2988709400044C17 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
+		83C89AD1298870A700044C17 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
+		83DE4CB52AB397A800B88B72 /* Bear.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83DE4CB42AB3974300B88B72 /* Bear.riv */; };
 		C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5528071EB80060589F /* RiveSwitch.swift */; };
 		C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5A2807216B0060589F /* RiveSlider.swift */; };
 		C324DB5D280728690060589F /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5C280728690060589F /* RiveButton.swift */; };
@@ -228,6 +232,10 @@
 		04E51C3E2A151A1F0075E473 /* Example__macOS_.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example__macOS_.entitlements; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
 		27108F2C282C96E700A99D81 /* light_switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = light_switch.riv; sourceTree = "<group>"; };
+		83C89ACA29886ECB00044C17 /* StressTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressTest.swift; sourceTree = "<group>"; };
+		83C89ACE2988709400044C17 /* marty.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = marty.riv; sourceTree = "<group>"; };
+		83C89AD0298870A700044C17 /* paper.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = paper.riv; sourceTree = "<group>"; };
+		83DE4CB42AB3974300B88B72 /* Bear.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bear.riv; sourceTree = "<group>"; };
 		C324DB5528071EB80060589F /* RiveSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitch.swift; sourceTree = "<group>"; };
 		C324DB5A2807216B0060589F /* RiveSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSlider.swift; sourceTree = "<group>"; };
 		C324DB5C280728690060589F /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
@@ -303,6 +311,7 @@
 				042C888F2644250D00E7DBB2 /* MultipleAnimations.swift */,
 				046AFA722673B00B004ED497 /* BlendModes.swift */,
 				04C4C83D2646FE410047E614 /* StateMachine.swift */,
+				83C89ACA29886ECB00044C17 /* StressTest.swift */,
 			);
 			path = Storyboard;
 			sourceTree = "<group>";
@@ -369,6 +378,9 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				83DE4CB42AB3974300B88B72 /* Bear.riv */,
+				83C89AD0298870A700044C17 /* paper.riv */,
+				83C89ACE2988709400044C17 /* marty.riv */,
 				C3C074F1284161E400E8EB33 /* halloween.riv */,
 				C3C074A7283FC75800E8EB33 /* testanimation.riv */,
 				C3C074AA283FC75900E8EB33 /* teststatemachine.riv */,
@@ -672,6 +684,7 @@
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
 				C3D187F728075B6C008B739A /* riveslider.riv in Resources */,
+				83C89ACF2988709400044C17 /* marty.riv in Resources */,
 				C3ECAC2C281837B300A81123 /* leg_day_events_example.riv in Resources */,
 				042C88E12644447500E7DBB2 /* basketball.riv in Resources */,
 				042C88DE2644447500E7DBB2 /* rope.riv in Resources */,
@@ -692,8 +705,10 @@
 				046AFA712673AF04004ED497 /* blendmodes.riv in Resources */,
 				042C88EC2644447500E7DBB2 /* vader.riv in Resources */,
 				E5964AB12A9CDB2100140479 /* rating_animation.riv in Resources */,
+				83C89AD1298870A700044C17 /* paper.riv in Resources */,
 				C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */,
 				0450446126B3F71E007B25CA /* constrained.riv in Resources */,
+				83DE4CB52AB397A800B88B72 /* Bear.riv in Resources */,
 				C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */,
 				042C88DB2644447500E7DBB2 /* wacky.riv in Resources */,
 				E5A7874A27E115170056F24B /* energy_bar_example.riv in Resources */,
@@ -731,6 +746,7 @@
 				042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */,
 				C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */,
 				C3C074EE28414F4600E8EB33 /* SwiftTestParityAnimSM.swift in Sources */,
+				83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */,
 				C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */,
 				C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */,
 				C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */,
