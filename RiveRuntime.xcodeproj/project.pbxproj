@@ -670,6 +670,7 @@
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/pls/include,
+					dependencies/includes/cg_renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -695,6 +696,7 @@
 					"-lrive_sheenbidi",
 					"-lrive_skia_renderer",
 					"-lrive_pls_renderer",
+					"-lrive_cg_renderer",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lskia_ios_sim",
@@ -703,6 +705,7 @@
 					"-lrive_sheenbidi_sim",
 					"-lrive_skia_renderer_sim",
 					"-lrive_pls_renderer_sim",
+					"-lrive_cg_renderer_sim",
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lskia_macos",
@@ -710,6 +713,7 @@
 					"-lrive_sheenbidi_macos",
 					"-lrive_skia_renderer_macos",
 					"-lrive_pls_renderer_macos",
+					"-lrive_cg_renderer_macos",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -751,6 +755,7 @@
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/pls/include,
+					dependencies/includes/cg_renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -778,6 +783,7 @@
 					"-lrive_sheenbidi",
 					"-lrive_skia_renderer",
 					"-lrive_pls_renderer",
+					"-lrive_cg_renderer",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lskia_ios_sim",
@@ -786,6 +792,7 @@
 					"-lrive_sheenbidi_sim",
 					"-lrive_skia_renderer_sim",
 					"-lrive_pls_renderer_sim",
+					"-lrive_cg_renderer_sim",
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lskia_macos",
@@ -794,6 +801,7 @@
 					"-lrive_sheenbidi_macos",
 					"-lrive_skia_renderer_macos",
 					"-lrive_pls_renderer_macos",
+					"-lrive_cg_renderer_macos",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";

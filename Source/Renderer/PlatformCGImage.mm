@@ -3,8 +3,17 @@
  */
 
 #import <PlatformCGImage.h>
-#import <AutoCF.h>
 #include "rive/core/type_conversions.hpp"
+#include "utils/auto_cf.hpp"
+
+#include <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
+#include <CoreGraphics/CoreGraphics.h>
+#include <ImageIO/ImageIO.h>
+#elif TARGET_OS_MAC
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 bool PlatformCGImageDecode(const uint8_t* encodedBytes,
                            size_t encodedSizeInBytes,

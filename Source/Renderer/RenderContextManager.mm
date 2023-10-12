@@ -5,8 +5,9 @@
 #import <RenderContextManager.h>
 #import <RenderContext.hh>
 
-#import <AutoCF.h>
 #import <PlatformCGImage.h>
+
+#include "utils/auto_cf.hpp"
 
 @implementation RenderContext
 
@@ -365,13 +366,13 @@ constexpr static int kBufferRingSize = 3;
             [self.metalDevice newBufferWithLength:bufferSize options:MTLResourceStorageModeShared];
     }
     AutoCF<CGColorSpaceRef> colorSpace = CGColorSpaceCreateDeviceRGB();
-    _cgContext.adopt(CGBitmapContextCreate(_buffers[_currentBufferIdx].contents,
-                                           _renderTargetTexture.width,
-                                           _renderTargetTexture.height,
-                                           8,
-                                           _renderTargetTexture.width * 4,
-                                           colorSpace,
-                                           cgBitmapInfo));
+    _cgContext = AutoCF(CGBitmapContextCreate(_buffers[_currentBufferIdx].contents,
+                                              _renderTargetTexture.width,
+                                              _renderTargetTexture.height,
+                                              8,
+                                              _renderTargetTexture.width * 4,
+                                              colorSpace,
+                                              cgBitmapInfo));
 
     _renderer = std::make_unique<rive::CGRenderer>(
         _cgContext, _renderTargetTexture.width, _renderTargetTexture.height);
@@ -399,7 +400,7 @@ constexpr static int kBufferRingSize = 3;
     }
     _renderTargetTexture = nil;
     _renderer = nullptr;
-    _cgContext.adopt(nullptr);
+    _cgContext = nullptr;
 }
 
 @end
