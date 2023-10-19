@@ -15,6 +15,14 @@ The `./scripts/build.sh all` script will download or build appropriate libraries
 
 Rive is constantly making use of the latest clang features, so please ensure your Xcode and Xcode Command Line Tools are up to date with the latest versions.
 
+## Targets / Schemes
+
+The example app has different targets/schemes. The `example` targets make use of the local Rive dependency and the `preview` targets make use of a hosted version of Rive - to make it easy to run without needing to do all of the local development setup. If you're making changes to the underlying Rive package and need to test the example app, be sure to set the target/scheme to `example`. See [Customizing the build schemes for a project](https://developer.apple.com/documentation/xcode/customizing-the-build-schemes-for-a-project) for more information.
+
+## Releasing
+
+After releasing a new Rive runtime version you'll need to manually update the Rive dependency for the `preview` targets. This is to ensure that anyone evaluating Rive is using the latest hosted version. Right click the `RiveRuntime` dependency in the inspector and select `Update Package`. If there is a major version bump it will need to be configured in the project settings, by updating the minimum version in the `Package Dependencies` section for the `RiveExample` project.
+
 ### Uploading caches
 
 If you are contributing and you have access to Rives' AWS environment, make you sure install `aws-cli` and configure it with your credentials. If you run into permission issues here `aws sts get-caller-identity` can help make sure that your local developer environment is setup to talk to AWS correctly.

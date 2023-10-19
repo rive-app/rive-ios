@@ -42,7 +42,11 @@ Currently, this runtime library supports a minimum iOS version of **14.0+**. Dev
 
 ## Examples
 
-Check out the `Demo-App/` folder and `Example-iOS/` folder for example applications using the Rive iOS/macOS runtime. It showcases a number of ways to use the high-level `RiveViewModel` API through UIKit and SwiftUI examples, including:
+Check out the `Example-iOS/` folder for an example application using the Rive iOS/macOS runtime.
+
+Open the project in XCode and ensure the selected scheme/target is set to `Preview`/`Preview (macOS)`. These schemes make use of the hosted Rive package dependency. The other targets are for local development and require additional configuration and set-up. See [Customizing the build schemes for a project](https://developer.apple.com/documentation/xcode/customizing-the-build-schemes-for-a-project) for instructions to switch schemes, and `CONTRIBUTING.md` for more information.
+
+The example showcases a number of ways to use the high-level `RiveViewModel` API through UIKit and SwiftUI examples, including:
 
 - Setting a Rive file via a URL or asset in the bundle
 - Setting layout and loop mode options
