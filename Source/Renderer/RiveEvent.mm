@@ -9,7 +9,6 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 
-
 /*
  * RiveEvent
  */
@@ -24,8 +23,7 @@
     return instance;
 }
 
-- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent
-                        delay:(float)delay
+- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent delay:(float)delay
 {
     if (self = [super init])
     {
@@ -58,7 +56,7 @@
 - (NSDictionary<NSString*, id>*)properties
 {
     bool hasCustomProperties = false;
-    NSMutableDictionary<NSString *, id>* customProperties = [NSMutableDictionary dictionary];
+    NSMutableDictionary<NSString*, id>* customProperties = [NSMutableDictionary dictionary];
     for (auto child : ((const rive::Event*)instance)->children())
     {
         if (child->is<rive::CustomProperty>())
@@ -66,22 +64,32 @@
             std::string eventName = child->name();
             if (!eventName.empty())
             {
-                NSString* convertedName = [NSString stringWithCString:eventName.c_str() encoding:[NSString defaultCStringEncoding]];
+                NSString* convertedName =
+                    [NSString stringWithCString:eventName.c_str()
+                                       encoding:[NSString defaultCStringEncoding]];
                 switch (child->coreType())
                 {
-                    case rive::CustomPropertyBoolean::typeKey: {
-                        bool customBoolValue = child->as<rive::CustomPropertyBoolean>()->propertyValue();
+                    case rive::CustomPropertyBoolean::typeKey:
+                    {
+                        bool customBoolValue =
+                            child->as<rive::CustomPropertyBoolean>()->propertyValue();
                         customProperties[convertedName] = @(customBoolValue);
                         break;
                     }
-                    case rive::CustomPropertyString::typeKey: {
-                        std::string customStringValue = child->as<rive::CustomPropertyString>()->propertyValue();
-                        NSString* convertedStringValue = [NSString stringWithCString:customStringValue.c_str() encoding:[NSString defaultCStringEncoding]];
+                    case rive::CustomPropertyString::typeKey:
+                    {
+                        std::string customStringValue =
+                            child->as<rive::CustomPropertyString>()->propertyValue();
+                        NSString* convertedStringValue =
+                            [NSString stringWithCString:customStringValue.c_str()
+                                               encoding:[NSString defaultCStringEncoding]];
                         customProperties[convertedName] = convertedStringValue;
                         break;
                     }
-                    case rive::CustomPropertyNumber::typeKey: {
-                        float customNumValue = child->as<rive::CustomPropertyNumber>()->propertyValue();
+                    case rive::CustomPropertyNumber::typeKey:
+                    {
+                        float customNumValue =
+                            child->as<rive::CustomPropertyNumber>()->propertyValue();
                         customProperties[convertedName] = @(customNumValue);
                         break;
                     }
@@ -90,7 +98,8 @@
             }
         }
     }
-    if (hasCustomProperties) {
+    if (hasCustomProperties)
+    {
         return customProperties;
     }
     return nil;
@@ -132,6 +141,7 @@
             targetString = "_top";
             break;
     }
-    return [NSString stringWithCString:targetString.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:targetString.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 @end

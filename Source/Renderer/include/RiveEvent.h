@@ -13,8 +13,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RiveEventReport: NSObject
-- (float) secondsDelay;
+@interface RiveEventReport : NSObject
+- (float)secondsDelay;
 @end
 
 /*
@@ -25,8 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString*)name;
 /// Type of the RiveEvent
 - (NSInteger)type;
-/// Delay in seconds since the Event was actually fired (applicable in cases of Events fired off from timeline animations)
-- (float) delay;
+/// Delay in seconds since the Event was actually fired (applicable in cases of Events fired off
+/// from timeline animations)
+- (float)delay;
 /// Dictionary of custom properties set on any event
 - (NSDictionary<NSString*, id>*)properties;
 @end
@@ -40,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveOpenUrlEvent
  */
-@interface RiveOpenUrlEvent: RiveEvent
+@interface RiveOpenUrlEvent : RiveEvent
 /// URL of a link to open
 - (NSString*)url;
 /// Target value for a link to open with

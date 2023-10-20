@@ -75,8 +75,7 @@
  * RiveEvent interface
  */
 @interface RiveEvent ()
-- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent
-                  delay:(float)delay;
+- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent delay:(float)delay;
 @end
 
 /*

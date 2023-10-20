@@ -461,4 +461,4 @@ void RiveRenderer::transform(const Mat2D& transform)
 namespace rive
 {
 RenderPath* makeRenderPath() { return new RiveRenderPath(); }
-}
+} // namespace rive

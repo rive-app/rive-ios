@@ -262,7 +262,6 @@ static int smInstanceCount = 0;
     return instance->reportedEventCount();
 }
 
-
 - (RiveEvent*)_convertEvent:(const rive::Event*)event delay:(float)delay
 {
     if (event->is<rive::OpenUrlEvent>())
@@ -307,7 +306,9 @@ static int smInstanceCount = 0;
     if (event == nullptr)
     {
         return nil;
-    } else {
+    }
+    else
+    {
         return [self _convertEvent:event delay:report.secondsDelay()];
     }
 }
