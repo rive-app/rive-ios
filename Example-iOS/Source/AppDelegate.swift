@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        RenderContextManager.shared().defaultRenderer = RendererType.skiaRenderer
+        RenderContextManager.shared().defaultRenderer = RendererType.riveRenderer
         return true
     }
 

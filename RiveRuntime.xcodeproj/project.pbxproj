@@ -51,7 +51,6 @@
 		83DE4CA02AAA072B00B88B72 /* PlatformCGImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */; };
 		83DE4CA22AAA077200B88B72 /* PlatformCGImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4CA12AAA077200B88B72 /* PlatformCGImage.h */; };
 		83DE4CA72AAAE72100B88B72 /* RenderContext.hh in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4CA62AAAE72000B88B72 /* RenderContext.hh */; };
-		83DE4CBA2AB4B26D00B88B72 /* AutoCF.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4CB92AB4B26D00B88B72 /* AutoCF.h */; };
 		C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */; };
 		C3468E5827EB9887008652FD /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5727EB9887008652FD /* RiveView.swift */; };
 		C3468E5A27ECC7C6008652FD /* RiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5927ECC7C6008652FD /* RiveViewModel.swift */; };
@@ -131,7 +130,6 @@
 		83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PlatformCGImage.mm; sourceTree = "<group>"; };
 		83DE4CA12AAA077200B88B72 /* PlatformCGImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformCGImage.h; sourceTree = "<group>"; };
 		83DE4CA62AAAE72000B88B72 /* RenderContext.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RenderContext.hh; sourceTree = "<group>"; };
-		83DE4CB92AB4B26D00B88B72 /* AutoCF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoCF.h; sourceTree = "<group>"; };
 		C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveFile+Extensions.swift"; sourceTree = "<group>"; };
 		C3468E5727EB9887008652FD /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C3468E5927ECC7C6008652FD /* RiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveViewModel.swift; sourceTree = "<group>"; };
@@ -180,7 +178,6 @@
 		046FB801264EB632000129B1 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				83DE4CB92AB4B26D00B88B72 /* AutoCF.h */,
 				83DE4CA12AAA077200B88B72 /* PlatformCGImage.h */,
 				C9C741F224FC510200EF9516 /* Rive.h */,
 				046FB7E7264EAA5F000129B1 /* RiveFile.h */,
@@ -323,7 +320,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83DE4CBA2AB4B26D00B88B72 /* AutoCF.h in Headers */,
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
 				2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */,

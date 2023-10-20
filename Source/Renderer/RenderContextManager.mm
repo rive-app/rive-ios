@@ -438,7 +438,13 @@ constexpr static int kBufferRingSize = 3;
         case RendererType::skiaRenderer:
             return [self getSkiaContext];
         case RendererType::riveRenderer:
+#if TARGET_OS_SIMULATOR
+            NSLog(@"warning: Rive Renderer is not supported by the simulator. Falling back on Skia "
+                  @"within the simulator.");
+            return [self getSkiaContext];
+#else
             return [self getRiveRendererContext];
+#endif
         case RendererType::cgRenderer:
             return [self getCGRendererContext];
     }
