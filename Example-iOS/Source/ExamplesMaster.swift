@@ -38,7 +38,8 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("State Machine",       typeErased(dismissableView: SwiftStateMachine())),
         ("Mesh Animation",      typeErased(dismissableView: SwiftMeshAnimation())),
         ("Playing with Text",   typeErased(dismissableView: TextInputView())),
-        ("Rive Events",         typeErased(dismissableView: SwiftEvents()))
+        ("Rive Events",         typeErased(dismissableView: SwiftEvents())),
+        ("Variable FPS",        typeErased(dismissableView: SwiftVariableFPS()))
     ]
     
     

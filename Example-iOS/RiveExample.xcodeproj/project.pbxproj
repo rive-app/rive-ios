@@ -144,6 +144,8 @@
 		E5A7874A27E115170056F24B /* energy_bar_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874727E115170056F24B /* energy_bar_example.riv */; };
 		E5A7874C27E1158E0056F24B /* prop_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874B27E1158E0056F24B /* prop_example.riv */; };
 		E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */; };
+		E5E87A012AE5A83800E7295F /* SwiftVariableFPS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */; };
+		E5E87A022AE5A85E00E7295F /* SwiftVariableFPS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */; };
 		F8772A872AD946D500AB5920 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C73E9724FC471E00EF9516 /* AppDelegate.swift */; };
 		F8772A882AD946FD00AB5920 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 042C88822643D6B900E7DBB2 /* Main.storyboard */; };
 		F8772A892AD9470000AB5920 /* ExamplesMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */; };
@@ -419,6 +421,7 @@
 		E5A7874727E115170056F24B /* energy_bar_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = energy_bar_example.riv; sourceTree = "<group>"; };
 		E5A7874B27E1158E0056F24B /* prop_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = prop_example.riv; sourceTree = "<group>"; };
 		E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMeshAnimation.swift; sourceTree = "<group>"; };
+		E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftVariableFPS.swift; sourceTree = "<group>"; };
 		F8772A712AD945FC00AB5920 /* Preview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Preview.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8772A812AD945FE00AB5920 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F8772ADF2AD94A0500AB5920 /* Preview (macOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Preview (macOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -596,6 +599,7 @@
 		C9A84F342644931E0014D8E0 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */,
 				04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */,
 				C9CB2F12264C92D200E7FF0D /* SwiftWidgets.swift */,
 				04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */,
@@ -1110,6 +1114,7 @@
 				C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */,
 				C3C074EE28414F4600E8EB33 /* SwiftTestParityAnimSM.swift in Sources */,
 				83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */,
+				E5E87A012AE5A83800E7295F /* SwiftVariableFPS.swift in Sources */,
 				C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */,
 				C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */,
 				C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */,
@@ -1133,6 +1138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5E87A022AE5A85E00E7295F /* SwiftVariableFPS.swift in Sources */,
 				F8772ACD2AD9471E00AB5920 /* SwiftMeshAnimation.swift in Sources */,
 				F8772AC22AD9471B00AB5920 /* BlendModes.swift in Sources */,
 				F8772AD72AD9472F00AB5920 /* SceneDelegate.swift in Sources */,

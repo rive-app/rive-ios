@@ -101,7 +101,8 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         fit: RiveFit = .contain,
         alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
-        artboardName: String? = nil
+        artboardName: String? = nil,
+        preferredFramesPerSecond: Int? = nil
     ) {
         self.fit = fit
         self.alignment = alignment
@@ -176,6 +177,25 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     open var alignment: RiveAlignment = .center {
         didSet { riveView?.alignment = alignment }
     }
+    
+    #if os(iOS)
+    /// Hints to underlying CADisplayLink in RiveView (if created) the preferred FPS to run at
+    /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/1648421-preferredframespersecond
+    /// - Parameters:
+    ///   - preferredFramesPerSecond: Integer number of seconds to set preferred FPS at
+    public func setPreferredFramesPerSecond(preferredFramesPerSecond: Int) {
+        riveView?.setPreferredFramesPerSecond(preferredFramesPerSecond: preferredFramesPerSecond)
+    }
+    
+    /// Hints to underlying CADisplayLink in RiveView (if created) the preferred frame rate range
+    /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/3875343-preferredframeraterange
+    /// - Parameters:
+    ///   - preferredFrameRateRange: Frame rate range to set
+    @available(iOSApplicationExtension 15.0, *)
+    public func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
+        riveView?.setPreferredFrameRateRange(preferredFrameRateRange: preferredFrameRateRange)
+    }
+    #endif
     
     /// Starts the active Animation or StateMachine from it's last position. It will start
     /// from the beginning if the active Animation has ended or a new one is provided.

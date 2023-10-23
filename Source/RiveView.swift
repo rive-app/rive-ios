@@ -75,6 +75,27 @@ open class RiveView: RiveRendererView {
         setFPSCounterVisibility()
     }
     
+    #if os(iOS)
+    /// Hints to underlying CADisplayLink the preferred FPS to run at
+    /// - Parameters:
+    ///   - preferredFramesPerSecond: Integer number of seconds to set preferred FPS at
+    open func setPreferredFramesPerSecond(preferredFramesPerSecond: Int) {
+        if let displayLink = displayLinkProxy?.displayLink {
+            displayLink.preferredFramesPerSecond = preferredFramesPerSecond
+        }
+    }
+    
+    /// Hints to underlying CADisplayLink the preferred frame rate range
+    /// - Parameters:
+    ///   - preferredFrameRateRange: Frame rate range to set
+    @available(iOSApplicationExtension 15.0, *)
+    open func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
+        if let displayLink = displayLinkProxy?.displayLink {
+            displayLink.preferredFrameRateRange = preferredFrameRateRange
+        }
+    }
+    #endif
+    
     // MARK: - Controls
     
     /// Starts the render loop
@@ -140,8 +161,12 @@ open class RiveView: RiveRendererView {
         fpsCounter?.stopped()
     }
     
-    private func timestamp() -> Double {
+    private func timestamp() -> CFTimeInterval {
+        #if os(iOS)
+        return displayLinkProxy?.displayLink?.targetTimestamp ?? Date().timeIntervalSince1970
+        #else
         return Date().timeIntervalSince1970
+        #endif
     }
         
     
