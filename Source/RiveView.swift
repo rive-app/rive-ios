@@ -88,7 +88,7 @@ open class RiveView: RiveRendererView {
     /// Hints to underlying CADisplayLink the preferred frame rate range
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
-    @available(iOSApplicationExtension 15.0, *)
+    @available(iOS 15.0, *)
     open func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
         if let displayLink = displayLinkProxy?.displayLink {
             displayLink.preferredFrameRateRange = preferredFrameRateRange

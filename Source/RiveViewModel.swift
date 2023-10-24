@@ -191,7 +191,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/3875343-preferredframeraterange
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
-    @available(iOSApplicationExtension 15.0, *)
+    @available(iOS 15.0, *)
     public func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
         riveView?.setPreferredFrameRateRange(preferredFrameRateRange: preferredFrameRateRange)
     }
