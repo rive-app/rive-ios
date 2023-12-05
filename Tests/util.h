@@ -9,8 +9,20 @@
 #ifndef util_h
 #define util_h
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface Util : NSObject
-+ (RiveFile* __nullable)loadTestFile:(NSString*)filename error:(NSError**)error;
++ (RiveFile*)loadTestFile:(NSString*)name error:(NSError**)error;
++ (NSData*)loadTestData:(NSString*)name;
 @end
+
+@interface TestSessionDownloadTask : NSURLSessionDownloadTask
+@end
+
+@interface TestSession : NSURLSession
+- (NSMutableArray*)getUrls;
+@end
+
+NS_ASSUME_NONNULL_END
 
 #endif /* util_h */

@@ -7,23 +7,25 @@
 //
 
 import Foundation
+import Combine
 
 open class RiveModel: ObservableObject {
-    internal private(set) var riveFile: RiveFile
-    public private(set) var artboard: RiveArtboard!
+    // NOTE: the order here determines the order in which memory garbage collected
     public internal(set) var stateMachine: RiveStateMachineInstance?
     public internal(set) var animation: RiveLinearAnimationInstance?
+    public private(set) var artboard: RiveArtboard!
+    internal private(set) var riveFile: RiveFile
     
     public init(riveFile: RiveFile) {
         self.riveFile = riveFile
     }
     
-    public init(fileName: String, extension: String = ".riv", in bundle: Bundle = .main) throws {
-        riveFile = try RiveFile(name: fileName, extension: `extension`, in: bundle)
+    public init(fileName: String, extension: String = ".riv", in bundle: Bundle = .main, loadCdn: Bool = true, customLoader: LoadAsset? = nil) throws {
+        riveFile = try RiveFile(name: fileName, extension: `extension`, in: bundle, loadCdn: loadCdn, customLoader: customLoader)
     }
     
-    public init(webURL: String, delegate: RiveFileDelegate) {
-        riveFile = RiveFile(httpUrl: webURL, with: delegate)!
+    public init(webURL: String, delegate: RiveFileDelegate, loadCdn: Bool) {
+        riveFile = RiveFile(httpUrl: webURL, loadCdn:loadCdn, with: delegate)!
     }
     
     // MARK: - Setters

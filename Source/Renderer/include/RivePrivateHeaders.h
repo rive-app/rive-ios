@@ -28,6 +28,11 @@
 #import "rive/animation/animation_state.hpp"
 #import "rive/text/text_value_run.hpp"
 #import "rive/event.hpp"
+#import "rive/assets/image_asset.hpp"
+#import "rive/assets/font_asset.hpp"
+#import "rive/assets/file_asset.hpp"
+#import "rive/file_asset_loader.hpp"
+
 #include "rive/open_url_event.hpp"
 #include "rive/custom_property_boolean.hpp"
 #include "rive/custom_property_string.hpp"
@@ -116,3 +121,34 @@
 @end
 
 #endif /* RivePrivateHeaders_h */
+
+/*
+ * RiveImageAsset
+ */
+@interface RiveImageAsset ()
+- (instancetype)initWithFileAsset:(const rive::ImageAsset*)fileAsset;
+@end
+
+/*
+ * SMIBool
+ */
+@interface RiveFontAsset ()
+- (instancetype)initWithFileAsset:(const rive::FontAsset*)fileAsset;
+@end
+
+/*
+ * RiveFileAsset
+ */
+@interface RiveFactory ()
+- (instancetype)initWithFactory:(rive::Factory*)factory;
+@end
+
+@interface RiveFont ()
+- (instancetype)initWithFont:(rive::rcp<rive::Font>)font;
+- (rive::rcp<rive::Font>)instance;
+@end
+
+@interface RiveRenderImage ()
+- (instancetype)initWithImage:(rive::rcp<rive::RenderImage>)image;
+- (rive::rcp<rive::RenderImage>)instance;
+@end

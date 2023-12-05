@@ -10,6 +10,7 @@
 import SwiftUI
 import RiveRuntime
 
+
 struct SwiftSimpleAnimation: DismissableView {
     var dismiss: () -> Void = {}
     

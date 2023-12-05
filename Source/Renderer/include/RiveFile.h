@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RiveArtboard;
 @protocol RiveFileDelegate;
+@class RiveFileAsset;
+@class RiveFactory;
+typedef bool (^LoadAsset)(RiveFileAsset* asset, NSData* data, RiveFactory* factory);
 
 /*
  * RiveFile
@@ -30,15 +33,54 @@ NS_ASSUME_NONNULL_BEGIN
 /// Delegate for calling when a file has finished loading
 @property(weak) id delegate;
 
-- (nullable instancetype)initWithByteArray:(NSArray*)bytes error:(NSError**)error;
+/// Used to manage url sessions Rive, this is to enable testing.
+- (nullable instancetype)initWithByteArray:(NSArray*)bytes loadCdn:(bool)cdn error:(NSError**)error;
+- (nullable instancetype)initWithByteArray:(NSArray*)bytes
+                                   loadCdn:(bool)cdn
+                         customAssetLoader:(LoadAsset)customAssetLoader
+                                     error:(NSError**)error;
+
 - (nullable instancetype)initWithBytes:(UInt8*)bytes
                             byteLength:(UInt64)length
+                               loadCdn:(bool)cdn
                                  error:(NSError**)error;
+- (nullable instancetype)initWithBytes:(UInt8*)bytes
+                            byteLength:(UInt64)length
+                               loadCdn:(bool)cdn
+                     customAssetLoader:(LoadAsset)customAssetLoader
+                                 error:(NSError**)error;
+
+- (nullable instancetype)initWithData:(NSData*)bytes loadCdn:(bool)cdn error:(NSError**)error;
+- (nullable instancetype)initWithData:(NSData*)bytes
+                              loadCdn:(bool)cdn
+                    customAssetLoader:(LoadAsset)customAssetLoader
+                                error:(NSError**)error;
+
 - (nullable instancetype)initWithResource:(NSString*)resourceName
                             withExtension:(NSString*)extension
+                                  loadCdn:(bool)cdn
                                     error:(NSError**)error;
-- (nullable instancetype)initWithResource:(NSString*)resourceName error:(NSError**)error;
-- (nullable instancetype)initWithHttpUrl:(NSString*)url withDelegate:(id<RiveFileDelegate>)delegate;
+- (nullable instancetype)initWithResource:(NSString*)resourceName
+                            withExtension:(NSString*)extension
+                                  loadCdn:(bool)cdn
+                        customAssetLoader:(LoadAsset)customAssetLoader
+                                    error:(NSError**)error;
+
+- (nullable instancetype)initWithResource:(NSString*)resourceName
+                                  loadCdn:(bool)cdn
+                                    error:(NSError**)error;
+- (nullable instancetype)initWithResource:(NSString*)resourceName
+                                  loadCdn:(bool)cdn
+                        customAssetLoader:(LoadAsset)customAssetLoader
+                                    error:(NSError**)error;
+
+- (nullable instancetype)initWithHttpUrl:(NSString*)url
+                                 loadCdn:(bool)cdn
+                            withDelegate:(id<RiveFileDelegate>)delegate;
+- (nullable instancetype)initWithHttpUrl:(NSString*)url
+                                 loadCdn:(bool)cdn
+                       customAssetLoader:(LoadAsset)customAssetLoader
+                            withDelegate:(id<RiveFileDelegate>)delegate;
 
 /// Returns a reference to the default artboard
 - (RiveArtboard* __nullable)artboard:(NSError**)error;

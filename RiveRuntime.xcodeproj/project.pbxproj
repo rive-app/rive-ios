@@ -3,10 +3,23 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		041265262B0CB41E009400EC /* OutOfBandAssetTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */; };
+		041265282B0CC387009400EC /* hosted_assets.riv in Resources */ = {isa = PBXBuildFile; fileRef = 041265272B0CC387009400EC /* hosted_assets.riv */; };
+		0412652A2B0CCB8E009400EC /* embedded_assets.riv in Resources */ = {isa = PBXBuildFile; fileRef = 041265292B0CCB8E009400EC /* embedded_assets.riv */; };
+		043025F22AF90D4800320F2E /* RiveFileAssetLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 043025F12AF90D4800320F2E /* RiveFileAssetLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		043025F42AF90EAC00320F2E /* RiveFileAssetLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 043025F32AF90EAC00320F2E /* RiveFileAssetLoader.mm */; };
+		043025F62AF9355B00320F2E /* CDNFileAssetLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 043025F52AF9355B00320F2E /* CDNFileAssetLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		043025F82AFA46EF00320F2E /* CDNFileAssetLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 043025F72AFA46EF00320F2E /* CDNFileAssetLoader.mm */; };
+		043025FA2AFA860E00320F2E /* FileAssetLoaderAdapter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 043025F92AFA860E00320F2E /* FileAssetLoaderAdapter.hpp */; };
+		043025FC2AFA862E00320F2E /* FileAssetLoaderAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 043025FB2AFA862E00320F2E /* FileAssetLoaderAdapter.mm */; };
+		043025FE2AFA8FCF00320F2E /* RiveFileAsset.h in Headers */ = {isa = PBXBuildFile; fileRef = 043025FD2AFA8FCF00320F2E /* RiveFileAsset.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		043026002AFA915B00320F2E /* RiveFileAsset.mm in Sources */ = {isa = PBXBuildFile; fileRef = 043025FF2AFA915B00320F2E /* RiveFileAsset.mm */; };
+		043026022AFB9FCD00320F2E /* RiveFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 043026012AFB9FCD00320F2E /* RiveFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		043026042AFBA04100320F2E /* RiveFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 043026032AFBA04100320F2E /* RiveFactory.mm */; };
 		046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */; };
 		046FB7F4264EAA60000129B1 /* RiveLinearAnimationInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 046FB7E4264EAA5F000129B1 /* RiveLinearAnimationInstance.mm */; };
@@ -50,7 +63,7 @@
 		83DE4C932AA8DD9F00B88B72 /* RenderContextManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83DE4CA02AAA072B00B88B72 /* PlatformCGImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */; };
 		83DE4CA22AAA077200B88B72 /* PlatformCGImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4CA12AAA077200B88B72 /* PlatformCGImage.h */; };
-		83DE4CA72AAAE72100B88B72 /* RenderContext.hh in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4CA62AAAE72000B88B72 /* RenderContext.hh */; };
+		83DE4CA72AAAE72100B88B72 /* RenderContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4CA62AAAE72000B88B72 /* RenderContext.h */; };
 		C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */; };
 		C3468E5827EB9887008652FD /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5727EB9887008652FD /* RiveView.swift */; };
 		C3468E5A27ECC7C6008652FD /* RiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5927ECC7C6008652FD /* RiveViewModel.swift */; };
@@ -85,6 +98,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OutOfBandAssetTest.mm; sourceTree = "<group>"; };
+		041265272B0CC387009400EC /* hosted_assets.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hosted_assets.riv; sourceTree = "<group>"; };
+		041265292B0CCB8E009400EC /* embedded_assets.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = embedded_assets.riv; sourceTree = "<group>"; };
+		043025F12AF90D4800320F2E /* RiveFileAssetLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveFileAssetLoader.h; sourceTree = "<group>"; };
+		043025F32AF90EAC00320F2E /* RiveFileAssetLoader.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveFileAssetLoader.mm; sourceTree = "<group>"; };
+		043025F52AF9355B00320F2E /* CDNFileAssetLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDNFileAssetLoader.h; sourceTree = "<group>"; };
+		043025F72AFA46EF00320F2E /* CDNFileAssetLoader.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CDNFileAssetLoader.mm; sourceTree = "<group>"; };
+		043025F92AFA860E00320F2E /* FileAssetLoaderAdapter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileAssetLoaderAdapter.hpp; sourceTree = "<group>"; };
+		043025FB2AFA862E00320F2E /* FileAssetLoaderAdapter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FileAssetLoaderAdapter.mm; sourceTree = "<group>"; };
+		043025FD2AFA8FCF00320F2E /* RiveFileAsset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveFileAsset.h; sourceTree = "<group>"; };
+		043025FF2AFA915B00320F2E /* RiveFileAsset.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveFileAsset.mm; sourceTree = "<group>"; };
+		043026012AFB9FCD00320F2E /* RiveFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveFactory.h; sourceTree = "<group>"; };
+		043026032AFBA04100320F2E /* RiveFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveFactory.mm; sourceTree = "<group>"; };
 		046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiveLinearAnimationInstance.h; sourceTree = "<group>"; };
 		046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveArtboard.mm; sourceTree = "<group>"; };
 		046FB7E4264EAA5F000129B1 /* RiveLinearAnimationInstance.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveLinearAnimationInstance.mm; sourceTree = "<group>"; };
@@ -129,7 +155,7 @@
 		83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderContextManager.h; sourceTree = "<group>"; };
 		83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PlatformCGImage.mm; sourceTree = "<group>"; };
 		83DE4CA12AAA077200B88B72 /* PlatformCGImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformCGImage.h; sourceTree = "<group>"; };
-		83DE4CA62AAAE72000B88B72 /* RenderContext.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RenderContext.hh; sourceTree = "<group>"; };
+		83DE4CA62AAAE72000B88B72 /* RenderContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderContext.h; sourceTree = "<group>"; };
 		C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveFile+Extensions.swift"; sourceTree = "<group>"; };
 		C3468E5727EB9887008652FD /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
 		C3468E5927ECC7C6008652FD /* RiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveViewModel.swift; sourceTree = "<group>"; };
@@ -190,9 +216,14 @@
 				04BE542F264D1F4100427B39 /* LayerState.h */,
 				04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */,
 				E57798A12A72C81F00FF25C3 /* RiveTextValueRun.h */,
-				83DE4CA62AAAE72000B88B72 /* RenderContext.hh */,
+				83DE4CA62AAAE72000B88B72 /* RenderContext.h */,
 				83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */,
 				E5964A952A965A9300140479 /* RiveEvent.h */,
+				043025F12AF90D4800320F2E /* RiveFileAssetLoader.h */,
+				043025F52AF9355B00320F2E /* CDNFileAssetLoader.h */,
+				043025F92AFA860E00320F2E /* FileAssetLoaderAdapter.hpp */,
+				043025FD2AFA8FCF00320F2E /* RiveFileAsset.h */,
+				043026012AFB9FCD00320F2E /* RiveFactory.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -200,6 +231,8 @@
 		04BE53F726493FE600427B39 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				041265272B0CC387009400EC /* hosted_assets.riv */,
+				041265292B0CCB8E009400EC /* embedded_assets.riv */,
 				C38BB5F3287629C20039E385 /* defaultstatemachine.riv */,
 				04BE5419264A823000427B39 /* animationconfigurations.riv */,
 				04BE53FC2649403600427B39 /* flux_capacitor.riv */,
@@ -249,6 +282,11 @@
 				04BE5431264D243D00427B39 /* LayerState.mm */,
 				83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */,
 				E5964A972A9697B600140479 /* RiveEvent.mm */,
+				043025F32AF90EAC00320F2E /* RiveFileAssetLoader.mm */,
+				043025F72AFA46EF00320F2E /* CDNFileAssetLoader.mm */,
+				043025FB2AFA862E00320F2E /* FileAssetLoaderAdapter.mm */,
+				043025FF2AFA915B00320F2E /* RiveFileAsset.mm */,
+				043026032AFBA04100320F2E /* RiveFactory.mm */,
 			);
 			path = Renderer;
 			sourceTree = "<group>";
@@ -302,6 +340,7 @@
 				04BE5426264C02AA00427B39 /* StateMachineInstanceTest.mm */,
 				04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */,
 				C38BB5F528762B720039E385 /* RiveStateMachineTest.swift */,
+				041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -326,15 +365,20 @@
 				83DE4CA22AAA077200B88B72 /* PlatformCGImage.h in Headers */,
 				83DE4C932AA8DD9F00B88B72 /* RenderContextManager.h in Headers */,
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
+				043025FA2AFA860E00320F2E /* FileAssetLoaderAdapter.hpp in Headers */,
 				046FB7FB264EAA61000129B1 /* RiveSMIInput.h in Headers */,
 				E57798A72A72EEAD00FF25C3 /* RiveTextValueRun.h in Headers */,
 				046FB7F1264EAA60000129B1 /* RiveLinearAnimationInstance.h in Headers */,
+				043025F62AF9355B00320F2E /* CDNFileAssetLoader.h in Headers */,
 				04BE5430264D1F4100427B39 /* LayerState.h in Headers */,
+				043025F22AF90D4800320F2E /* RiveFileAssetLoader.h in Headers */,
+				043025FE2AFA8FCF00320F2E /* RiveFileAsset.h in Headers */,
 				E5964A962A965A9300140479 /* RiveEvent.h in Headers */,
+				043026022AFB9FCD00320F2E /* RiveFactory.h in Headers */,
 				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
 				04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */,
 				C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */,
-				83DE4CA72AAAE72100B88B72 /* RenderContext.hh in Headers */,
+				83DE4CA72AAAE72100B88B72 /* RenderContext.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,7 +479,9 @@
 				C38BB5F4287629C20039E385 /* defaultstatemachine.riv in Resources */,
 				04BE54082649403600427B39 /* flux_capacitor.riv in Resources */,
 				04BE54052649403600427B39 /* noartboard.riv in Resources */,
+				0412652A2B0CCB8E009400EC /* embedded_assets.riv in Resources */,
 				04BE540B2649403600427B39 /* multiple_animations.riv in Resources */,
+				041265282B0CC387009400EC /* hosted_assets.riv in Resources */,
 				E57798AB2A7310B700FF25C3 /* testtext.riv in Resources */,
 				04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */,
 				E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */,
@@ -461,11 +507,16 @@
 				C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */,
 				C3468E5827EB9887008652FD /* RiveView.swift in Sources */,
 				E5964A982A9697B600140479 /* RiveEvent.mm in Sources */,
+				043025F82AFA46EF00320F2E /* CDNFileAssetLoader.mm in Sources */,
+				043026042AFBA04100320F2E /* RiveFactory.mm in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
 				C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */,
+				043025F42AF90EAC00320F2E /* RiveFileAssetLoader.mm in Sources */,
+				043025FC2AFA862E00320F2E /* FileAssetLoaderAdapter.mm in Sources */,
 				83DE4C912AA8DD7B00B88B72 /* RenderContextManager.mm in Sources */,
 				C3E2B580282F242400A8651B /* RiveStateMachineInstance+Extensions.swift in Sources */,
 				046FB7F5264EAA60000129B1 /* RiveSMIInput.mm in Sources */,
+				043026002AFA915B00320F2E /* RiveFileAsset.mm in Sources */,
 				C3468E5A27ECC7C6008652FD /* RiveViewModel.swift in Sources */,
 				C3745FD3282BFAB90087F4AF /* FPSCounterView.swift in Sources */,
 				C9C741F524FC510200EF9516 /* Rive.mm in Sources */,
@@ -484,6 +535,7 @@
 			files = (
 				04BE5420264ACFC200427B39 /* RiveStateMachineLoadTest.mm in Sources */,
 				04BE541E264AC7A600427B39 /* RiveArtboardLoadTest.mm in Sources */,
+				041265262B0CB41E009400EC /* OutOfBandAssetTest.mm in Sources */,
 				04BE542D264C1A3300427B39 /* RiveDelegatesTest.swift in Sources */,
 				04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */,
 				04ED72F1299C114000E8DE53 /* RiveViewModelTest.swift in Sources */,
@@ -705,6 +757,7 @@
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lskia_macos",
+					"-lrive_macos",
 					"-lrive_harfbuzz_macos",
 					"-lrive_sheenbidi_macos",
 					"-lrive_skia_renderer_macos",

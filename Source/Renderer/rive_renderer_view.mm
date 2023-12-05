@@ -10,7 +10,7 @@
 #endif
 
 #import "RivePrivateHeaders.h"
-#import <RenderContext.hh>
+#import <RenderContext.h>
 #import <RenderContextManager.h>
 
 @implementation RiveRendererView

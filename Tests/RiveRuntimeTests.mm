@@ -111,6 +111,7 @@ UInt8 stateMachineFileBytes[] = {
     // Valid Rive file, should not be null
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     XCTAssert(file != NULL);
 }
@@ -122,6 +123,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     RiveArtboard* artboard = [file artboard:nil];
     XCTAssert(artboard != NULL);
@@ -135,6 +137,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     NSInteger count = [file artboardCount];
     XCTAssert(count == 1);
@@ -147,6 +150,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     RiveArtboard* artboard = [file artboardFromIndex:0 error:nil];
     XCTAssert(artboard != NULL);
@@ -160,6 +164,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     RiveArtboard* artboard = [file artboardFromName:@"New Artboard" error:nil];
     XCTAssert(artboard != NULL);
@@ -173,6 +178,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     RiveArtboard* artboard = [file artboard:nil];
     NSInteger count = [artboard animationCount];
@@ -186,6 +192,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     XCTAssert(file != NULL);
     RiveArtboard* artboard = [file artboard:nil];
@@ -204,6 +211,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     RiveArtboard* artboard = [file artboard:nil];
 
@@ -219,6 +227,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:pingPongRiveFileBytes
                                           byteLength:156
+                                             loadCdn:false
                                                error:nil];
     RiveArtboard* artboard = [file artboard:nil];
     NSError* error = nil;
@@ -236,6 +245,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:stateMachineFileBytes
                                           byteLength:916
+                                             loadCdn:false
                                                error:nil];
     XCTAssert(file != NULL);
     RiveArtboard* artboard = [file artboard:nil];
@@ -254,6 +264,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:stateMachineFileBytes
                                           byteLength:916
+                                             loadCdn:false
                                                error:nil];
     XCTAssert(file != NULL);
     RiveArtboard* artboard = [file artboard:nil];
@@ -286,6 +297,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:stateMachineFileBytes
                                           byteLength:916
+                                             loadCdn:false
                                                error:nil];
     XCTAssert(file != NULL);
     RiveArtboard* artboard = [file artboard:nil];
@@ -308,6 +320,7 @@ UInt8 stateMachineFileBytes[] = {
 {
     RiveFile* file = [[RiveFile alloc] initWithBytes:stateMachineFileBytes
                                           byteLength:916
+                                             loadCdn:false
                                                error:nil];
     RiveArtboard* artboard = [file artboard:nil];
 

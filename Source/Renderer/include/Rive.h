@@ -21,6 +21,11 @@
 #import <RiveRuntime/RiveEvent.h>
 #import <RiveRuntime/LayerState.h>
 #import <RiveRuntime/RenderContextManager.h>
+// TODO: fix our headers so these can become exposed here
+#import <RiveRuntime/RiveFactory.h>
+#import <RiveRuntime/RiveFileAsset.h>
+#import <RiveRuntime/RiveFileAssetLoader.h>
+#import <RiveRuntime/CDNFileAssetLoader.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -87,6 +92,8 @@ typedef NS_ENUM(NSInteger, RiveErrorCode) {
               withFit:(RiveFit)fit;
 
 @end
+
+typedef bool (^LoadAsset)(RiveFileAsset* asset, NSData* data, RiveFactory* factory);
 
 NS_ASSUME_NONNULL_END
 

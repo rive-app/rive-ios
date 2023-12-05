@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="0Wt-ue-AAA">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="0Wt-ue-AAA">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,7 +12,7 @@
         <!--Rive Examples-->
         <scene sceneID="XV1-T1-lAJ">
             <objects>
-                <tableViewController title="Rive Examples" id="oFD-NX-sZZ" customClass="ExamplesMasterTableViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController title="Rive Examples" id="oFD-NX-sZZ" customClass="ExamplesMasterTableViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="insetGrouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" id="WCh-4c-dF3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -56,7 +56,7 @@
         <!--Simple Slider View Controller-->
         <scene sceneID="Pvx-pO-5XB">
             <objects>
-                <viewController storyboardIdentifier="Slider Widget" id="nXP-c2-Cpg" customClass="SimpleSliderViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Slider Widget" id="nXP-c2-Cpg" customClass="SimpleSliderViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="2zm-EC-beS">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -87,8 +87,8 @@
         <!--Layout-->
         <scene sceneID="f8y-qg-uzH">
             <objects>
-                <viewController storyboardIdentifier="Layout" id="6EP-ej-U9V" customClass="LayoutViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="ogd-2a-ycI" customClass="LayoutView" customModule="RiveExample" customModuleProvider="target">
+                <viewController storyboardIdentifier="Layout" id="6EP-ej-U9V" customClass="LayoutViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ogd-2a-ycI" customClass="LayoutView" customModule="Example__iOS_" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -281,7 +281,7 @@
         <!--Blend Modes-->
         <scene sceneID="JXR-CF-wxg">
             <objects>
-                <viewController storyboardIdentifier="Blend Mode" id="6Y6-o9-aZy" customClass="BlendModeViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Blend Mode" id="6Y6-o9-aZy" customClass="BlendModeViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="nG9-ag-3SU">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -297,8 +297,8 @@
         <!--Loop Mode-->
         <scene sceneID="iqU-00-Krb">
             <objects>
-                <viewController storyboardIdentifier="Loop Mode" id="fGr-bk-Efd" customClass="LoopModeController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="PUC-Yj-uP6" customClass="LoopMode" customModule="RiveExample" customModuleProvider="target">
+                <viewController storyboardIdentifier="Loop Mode" id="fGr-bk-Efd" customClass="LoopModeController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PUC-Yj-uP6" customClass="LoopMode" customModule="Example__iOS_" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -525,8 +525,8 @@
         <!--State Machine-->
         <scene sceneID="sMa-mk-G4H">
             <objects>
-                <viewController storyboardIdentifier="State Machine" id="tat-Jb-Aap" customClass="StateMachineViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="EmG-VF-nMb" customClass="StateMachineView" customModule="RiveExample" customModuleProvider="target">
+                <viewController storyboardIdentifier="State Machine" id="tat-Jb-Aap" customClass="StateMachineViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="EmG-VF-nMb" customClass="StateMachineView" customModule="Example__iOS_" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -608,8 +608,8 @@
         <!--iOS Player-->
         <scene sceneID="8FV-8I-h1w">
             <objects>
-                <viewController storyboardIdentifier="iOS Player" id="bLr-Sd-R4P" customClass="IOSPlayerViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="atc-Qh-uPc" customClass="IOSPlayerView" customModule="RiveExample" customModuleProvider="target">
+                <viewController storyboardIdentifier="iOS Player" id="bLr-Sd-R4P" customClass="IOSPlayerViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="atc-Qh-uPc" customClass="IOSPlayerView" customModule="Example__iOS_" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -691,8 +691,8 @@
         <!--Multiple Animations-->
         <scene sceneID="RWJ-v9-IHm">
             <objects>
-                <viewController storyboardIdentifier="MultipleAnimations" id="qQy-Yc-tGr" customClass="MultipleAnimationsController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Vnx-gq-hge" customClass="MultipleAnimations" customModule="RiveExample" customModuleProvider="target">
+                <viewController storyboardIdentifier="MultipleAnimations" id="qQy-Yc-tGr" customClass="MultipleAnimationsController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Vnx-gq-hge" customClass="MultipleAnimations" customModule="Example__iOS_" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
@@ -852,7 +852,7 @@
         <!--Simple Animation Example-->
         <scene sceneID="b8F-wH-PQu">
             <objects>
-                <viewController storyboardIdentifier="Simple Animation" title="Simple Animation Example" id="l4C-BT-Wpi" customClass="SimpleAnimationViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Simple Animation" title="Simple Animation Example" id="l4C-BT-Wpi" customClass="SimpleAnimationViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dF4-O8-Npa">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -868,7 +868,7 @@
         <!--Simple Animation Example-->
         <scene sceneID="tSg-C0-hLK">
             <objects>
-                <viewController storyboardIdentifier="Simple Http Animation" title="Simple Animation Example" id="HT9-8q-8Wg" customClass="SimpleHttpAnimationViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Simple Http Animation" title="Simple Animation Example" id="HT9-8q-8Wg" customClass="SimpleHttpAnimationViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="uQJ-eq-uHM">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -884,7 +884,7 @@
         <!--Stress Test Example-->
         <scene sceneID="BJl-SY-XuL">
             <objects>
-                <viewController storyboardIdentifier="Stress Test" title="Stress Test Example" id="z8m-Vh-cMa" customClass="StressTestViewController" customModule="RiveExample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Stress Test" title="Stress Test Example" id="z8m-Vh-cMa" customClass="StressTestViewController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="DfU-QA-wiO">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -896,6 +896,38 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LZR-GS-Huz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2377" y="-358"/>
+        </scene>
+        <!--Cached assets-->
+        <scene sceneID="7fT-Qc-hZc">
+            <objects>
+                <viewController storyboardIdentifier="Cached assets" title="Cached assets" id="UdV-cw-Cjf" customClass="OutOfBandAssetsController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dBR-Pg-mqy">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="r98-qH-17d"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Out of band assets" id="FXG-7Q-GwZ"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lfy-7H-VVG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5997" y="353"/>
+        </scene>
+        <!--Simple Assets-->
+        <scene sceneID="KqE-fe-7te">
+            <objects>
+                <viewController storyboardIdentifier="Simple assets" title="Simple Assets" id="FcT-yV-UCr" customClass="SimpleOutOfBandController" customModule="Example__iOS_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Pws-Ro-Yr0">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="wa2-jX-NxB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Out of band assets" id="G2T-ot-OmF"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ITF-JM-jGj" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5303" y="353"/>
         </scene>
     </scenes>
     <resources>

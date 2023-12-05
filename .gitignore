@@ -49,6 +49,9 @@ playground.xcworkspace
 # hence it is not needed unless you have added a package configuration file to your project
 # .swiftpm
 
+# our previews will install packages from swiftpm, which will result in references here.
+Rive.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
 .build/
 
 # CocoaPods

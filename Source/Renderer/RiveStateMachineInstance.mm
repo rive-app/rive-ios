@@ -355,7 +355,6 @@ static int smInstanceCount = 0;
 - (void)touchBeganAtLocation:(CGPoint)touchLocation
 {
     instance->pointerDown(rive::Vec2D(touchLocation.x, touchLocation.y));
-    NSLog(@"SMI: pointerDown at x:%f, y:%f", touchLocation.x, touchLocation.y);
 }
 
 - (void)touchMovedAtLocation:(CGPoint)touchLocation

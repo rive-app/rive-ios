@@ -83,13 +83,15 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         fit: RiveFit = .contain,
         alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
-        artboardName: String? = nil
+        artboardName: String? = nil,
+        loadCdn: Bool = true,
+        customLoader: LoadAsset? = nil
     ) {
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
         super.init()
-        riveModel = try! RiveModel(fileName: fileName, extension: `extension`, in: bundle)
+        riveModel = try! RiveModel(fileName: fileName, extension: `extension`, in: bundle, loadCdn: loadCdn, customLoader:customLoader)
         sharedInit(artboardName: artboardName, stateMachineName: stateMachineName, animationName: nil)
     }
     
@@ -102,13 +104,15 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
         artboardName: String? = nil,
-        preferredFramesPerSecond: Int? = nil
+        preferredFramesPerSecond: Int? = nil,
+        loadCdn: Bool = true,
+        customLoader: LoadAsset? = nil
     ) {
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
         super.init()
-        riveModel = try! RiveModel(fileName: fileName, extension: `extension`, in: bundle)
+        riveModel = try! RiveModel(fileName: fileName, extension: `extension`, in: bundle, loadCdn: loadCdn, customLoader:customLoader)
         sharedInit(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
     }
     
@@ -118,13 +122,14 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         fit: RiveFit = .contain,
         alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
+        loadCdn: Bool = true,
         artboardName: String? = nil
     ) {
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
         super.init()
-        riveModel = RiveModel(webURL: webURL, delegate: self)
+        riveModel = RiveModel(webURL: webURL, delegate: self, loadCdn: loadCdn)
         defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: nil)
     }
     
@@ -134,13 +139,14 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         fit: RiveFit = .contain,
         alignment: RiveAlignment = .center,
         autoPlay: Bool = true,
+        loadCdn: Bool = true,
         artboardName: String? = nil
     ) {
         self.fit = fit
         self.alignment = alignment
         self.autoPlay = autoPlay
         super.init()
-        riveModel = RiveModel(webURL: webURL, delegate: self)
+        riveModel = RiveModel(webURL: webURL, delegate: self, loadCdn: loadCdn)
         defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
     }
     

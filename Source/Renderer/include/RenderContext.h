@@ -4,6 +4,9 @@
 
 #pragma once
 
+#ifndef render_context_h
+#define render_context_h
+
 #import <MetalKit/MetalKit.h>
 #import <Metal/Metal.h>
 
@@ -11,7 +14,9 @@ namespace rive
 {
 class Factory;
 class Renderer;
-};
+}; // namespace rive
+
+@class MTKView;
 
 /// RenderContext knows how to set up a backend-specific render context (e.g., Skia, CG, Rive, ...),
 /// and provides a rive::Factory and rive::Renderer for it.
@@ -24,3 +29,5 @@ class Renderer;
 - (rive::Renderer*)beginFrame:(MTKView*)view;
 - (void)endFrame;
 @end
+
+#endif

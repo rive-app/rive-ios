@@ -14,7 +14,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /*
- * SMITrigger
+ * SMIInput
  */
 @interface RiveSMIInput : NSObject
 - (NSString*)name;

@@ -9,9 +9,13 @@
 import Foundation
 
 public extension RiveFile {
-    convenience init(name fileName: String, extension ext: String = ".riv", in bundle: Bundle = .main) throws {
+    convenience init(name fileName: String, extension ext: String = ".riv", in bundle: Bundle = .main, loadCdn: Bool=true, customLoader: LoadAsset? = nil) throws {
         let byteArray = RiveFile.getBytes(fileName: fileName, extension: ext, in: bundle)
-        try self.init(byteArray: byteArray)
+        if (customLoader == nil){
+            try self.init(byteArray: byteArray, loadCdn: loadCdn)
+        }else {
+            try self.init(byteArray: byteArray, loadCdn: loadCdn, customAssetLoader: customLoader!)
+        }
     }
     
     static func getBytes(fileName: String, extension ext: String = ".riv", in bundle: Bundle = .main) -> [UInt8] {

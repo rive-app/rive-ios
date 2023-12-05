@@ -23,9 +23,9 @@ func getBytes(resourceName: String, resourceExt: String=".riv") -> [UInt8] {
 }
 
 @available(*, deprecated, message: "Use convenience init in RiveFile+Extensions instead")
-func getRiveFile(resourceName: String, resourceExt: String=".riv") throws -> RiveFile{
+func getRiveFile(resourceName: String, resourceExt: String=".riv", loadCdn: Bool=true) throws -> RiveFile{
     let byteArray = getBytes(resourceName: resourceName, resourceExt: resourceExt)
-    return try RiveFile(byteArray: byteArray)
+    return try RiveFile(byteArray: byteArray, loadCdn:loadCdn)
 }
 
 struct SwiftVMPlayer: View {

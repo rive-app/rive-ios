@@ -3,7 +3,7 @@
  */
 
 #import <RenderContextManager.h>
-#import <RenderContext.hh>
+#import <RenderContext.h>
 
 #import <PlatformCGImage.h>
 
@@ -26,6 +26,10 @@
 
 @end
 
+// skia throws out a bunch of documentation warnings for us
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+
 #include "include/core/SkCanvas.h"
 #include "include/core/SkSurface.h"
 #include "include/core/SkSurfaceProps.h"
@@ -34,8 +38,13 @@
 #include "include/gpu/mtl/GrMtlBackendContext.h"
 #include "skia_renderer.hpp"
 #include "skia_factory.hpp"
+#pragma clang diagnostic pop
+
 #include "cg_factory.hpp"
 #include "cg_renderer.hpp"
+
+#include "Rive.h"
+#include "RivePrivateHeaders.h"
 
 @interface SkiaContext : RenderContext
 - (rive::Factory*)factory;
@@ -414,6 +423,8 @@ constexpr static int kBufferRingSize = 3;
     __weak CGRendererContext* _cgContextWeakPtr;
 }
 
+bool _riveRendererSupportWarningDisplayed = false;
+
 // The context manager is a singleton.
 + (RenderContextManager*)shared
 {
@@ -439,8 +450,13 @@ constexpr static int kBufferRingSize = 3;
             return [self getSkiaContext];
         case RendererType::riveRenderer:
 #if TARGET_OS_SIMULATOR
-            NSLog(@"warning: Rive Renderer is not supported by the simulator. Falling back on Skia "
-                  @"within the simulator.");
+            if (_riveRendererSupportWarningDisplayed == false)
+            {
+                NSLog(@"warning: Rive Renderer is not supported by the simulator. Falling back on "
+                      @"Skia "
+                      @"within the simulator.");
+                _riveRendererSupportWarningDisplayed = true;
+            }
             return [self getSkiaContext];
 #else
             return [self getRiveRendererContext];
@@ -498,6 +514,26 @@ constexpr static int kBufferRingSize = 3;
         _cgContextWeakPtr = strongPtr;
     }
     return strongPtr;
+}
+
+- (RiveFactory*)getDefaultFactory
+{
+    return [[RiveFactory alloc] initWithFactory:[[self getDefaultContext] factory]];
+}
+
+- (RiveFactory*)getRiveRendererFactory
+{
+    return [[RiveFactory alloc] initWithFactory:[[self getRiveRendererContext] factory]];
+}
+
+- (RiveFactory*)getSkiaFactory
+{
+    return [[RiveFactory alloc] initWithFactory:[[self getSkiaContext] factory]];
+}
+
+- (RiveFactory*)getCGFactory
+{
+    return [[RiveFactory alloc] initWithFactory:[[self getCGRendererContext] factory]];
 }
 
 @end

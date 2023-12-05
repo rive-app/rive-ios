@@ -8,8 +8,12 @@
 
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
-#import <RenderContext.hh>
+#import <RenderContext.h>
 #import <RenderContextManager.h>
+#import <RiveFileAssetLoader.h>
+#import <CDNFileAssetLoader.h>
+
+#import <FileAssetLoaderAdapter.hpp>
 
 /*
  * RiveFile
@@ -17,6 +21,7 @@
 @implementation RiveFile
 {
     std::unique_ptr<rive::File> riveFile;
+    rive::FileAssetLoader* fileAssetLoader;
 }
 
 + (uint)majorVersion
@@ -28,7 +33,7 @@
     return UInt8(rive::File::minorVersion);
 }
 
-- (nullable instancetype)initWithByteArray:(NSArray*)array error:(NSError**)error
+- (nullable instancetype)initWithByteArray:(NSArray*)array loadCdn:(bool)cdn error:(NSError**)error
 {
     if (self = [super init])
     {
@@ -40,7 +45,7 @@
             [array enumerateObjectsUsingBlock:^(NSNumber* number, NSUInteger index, BOOL* stop) {
               bytes[index] = number.unsignedIntValue;
             }];
-            BOOL ok = [self import:bytes byteLength:array.count error:error];
+            BOOL ok = [self import:bytes byteLength:array.count loadCdn:cdn error:error];
             if (!ok)
             {
                 return nil;
@@ -57,13 +62,73 @@
     return nil;
 }
 
+- (nullable instancetype)initWithByteArray:(NSArray*)array
+                                   loadCdn:(bool)cdn
+                         customAssetLoader:(LoadAsset)customAssetLoader
+                                     error:(NSError**)error
+{
+    if (self = [super init])
+    {
+        UInt8* bytes;
+        @try
+        {
+            bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
+
+            [array enumerateObjectsUsingBlock:^(NSNumber* number, NSUInteger index, BOOL* stop) {
+              bytes[index] = number.unsignedIntValue;
+            }];
+            BOOL ok = [self import:bytes
+                        byteLength:array.count
+                           loadCdn:cdn
+                 customAssetLoader:customAssetLoader
+                             error:error];
+            if (!ok)
+            {
+                return nil;
+            }
+            self.isLoaded = true;
+        }
+        @finally
+        {
+            free(bytes);
+        }
+
+        return self;
+    }
+    return nil;
+}
+
+// QUESTION: deprecate? init with NSData feels like its all we need?
 - (nullable instancetype)initWithBytes:(UInt8*)bytes
                             byteLength:(UInt64)length
+                               loadCdn:(bool)cdn
                                  error:(NSError**)error
 {
     if (self = [super init])
     {
-        BOOL ok = [self import:bytes byteLength:length error:error];
+        BOOL ok = [self import:bytes byteLength:length loadCdn:cdn error:error];
+        if (!ok)
+        {
+            return nil;
+        }
+        self.isLoaded = true;
+        return self;
+    }
+    return nil;
+}
+- (nullable instancetype)initWithBytes:(UInt8*)bytes
+                            byteLength:(UInt64)length
+                               loadCdn:(bool)cdn
+                     customAssetLoader:(LoadAsset)customAssetLoader
+                                 error:(NSError**)error
+{
+    if (self = [super init])
+    {
+        BOOL ok = [self import:bytes
+                    byteLength:length
+                       loadCdn:cdn
+             customAssetLoader:customAssetLoader
+                         error:error];
         if (!ok)
         {
             return nil;
@@ -74,32 +139,95 @@
     return nil;
 }
 
+- (nullable instancetype)initWithData:(NSData*)data loadCdn:(bool)cdn error:(NSError**)error
+{
+    UInt8* bytes = (UInt8*)[data bytes];
+    return [self initWithBytes:bytes byteLength:data.length loadCdn:cdn error:error];
+}
+- (nullable instancetype)initWithData:(NSData*)data
+                              loadCdn:(bool)cdn
+                    customAssetLoader:(LoadAsset)customAssetLoader
+                                error:(NSError**)error
+{
+    UInt8* bytes = (UInt8*)[data bytes];
+    return [self initWithBytes:bytes
+                    byteLength:data.length
+                       loadCdn:cdn
+             customAssetLoader:customAssetLoader
+                         error:error];
+}
+
 /*
  * Creates a RiveFile from a binary resource
  */
 - (nullable instancetype)initWithResource:(NSString*)resourceName
                             withExtension:(NSString*)extension
+                                  loadCdn:(bool)cdn
                                     error:(NSError**)error
 {
+    // QUESTION: good ideas on how we can combine a few of these into following the same path
+    // better?
+    //    there's a lot of copy pasta here.
     NSString* filepath = [[NSBundle mainBundle] pathForResource:resourceName ofType:extension];
     NSURL* fileUrl = [NSURL fileURLWithPath:filepath];
     NSData* fileData = [NSData dataWithContentsOfURL:fileUrl];
-    UInt8* bytePtr = (UInt8*)[fileData bytes];
-    return [self initWithBytes:bytePtr byteLength:fileData.length error:error];
+
+    return [self initWithData:fileData loadCdn:cdn error:error];
 }
 
 /*
  * Creates a RiveFile from a binary resource, and assumes the resource extension is '.riv'
  */
-- (nullable instancetype)initWithResource:(NSString*)resourceName error:(NSError**)error
+- (nullable instancetype)initWithResource:(NSString*)resourceName
+                                  loadCdn:(bool)cdn
+                                    error:(NSError**)error
 {
-    return [self initWithResource:resourceName withExtension:@"riv" error:error];
+    return [self initWithResource:resourceName withExtension:@"riv" loadCdn:cdn error:error];
+}
+
+- (nullable instancetype)initWithResource:(nonnull NSString*)resourceName
+                                  loadCdn:(bool)cdn
+                        customAssetLoader:(nonnull LoadAsset)customAssetLoader
+                                    error:(NSError* __autoreleasing _Nullable* _Nullable)error
+{
+    return [self initWithResource:resourceName
+                    withExtension:@"riv"
+                          loadCdn:cdn
+                customAssetLoader:customAssetLoader
+                            error:error];
+}
+
+- (nullable instancetype)initWithResource:(nonnull NSString*)resourceName
+                            withExtension:(nonnull NSString*)extension
+                                  loadCdn:(bool)cdn
+                        customAssetLoader:(nonnull LoadAsset)customAssetLoader
+                                    error:(NSError* __autoreleasing _Nullable* _Nullable)error
+{
+    NSString* filepath = [[NSBundle mainBundle] pathForResource:resourceName ofType:extension];
+    NSURL* fileUrl = [NSURL fileURLWithPath:filepath];
+    NSData* fileData = [NSData dataWithContentsOfURL:fileUrl];
+    return [self initWithData:fileData loadCdn:cdn customAssetLoader:customAssetLoader error:error];
 }
 
 /*
  * Creates a RiveFile from an HTTP url
  */
-- (nullable instancetype)initWithHttpUrl:(NSString*)url withDelegate:(id<RiveFileDelegate>)delegate
+- (nullable instancetype)initWithHttpUrl:(NSString*)url
+                                 loadCdn:(bool)loadCdn
+                            withDelegate:(id<RiveFileDelegate>)delegate
+{
+    return [self initWithHttpUrl:url
+                         loadCdn:loadCdn
+               customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+                 return false;
+               }
+                    withDelegate:delegate];
+}
+
+- (nullable instancetype)initWithHttpUrl:(nonnull NSString*)url
+                                 loadCdn:(bool)cdn
+                       customAssetLoader:(nonnull LoadAsset)customAssetLoader
+                            withDelegate:(nonnull id<RiveFileDelegate>)delegate
 {
     self.isLoaded = false;
     if (self = [super init])
@@ -107,11 +235,9 @@
         self.delegate = delegate;
         // Set up the http download task
         NSURL* URL = [NSURL URLWithString:url];
+
         // TODO: we are still adding 8MB of memory when we load our first http url.
-        // note: Could use shared session.
-        NSURLSession* session = [NSURLSession
-            sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-        NSURLSessionTask* task = [session
+        NSURLSessionTask* task = [[NSURLSession sharedSession]
             downloadTaskWithURL:URL
               completionHandler:^(NSURL* location, NSURLResponse* response, NSError* error) {
                 if (!error)
@@ -121,7 +247,11 @@
                     UInt8* bytes = (UInt8*)[data bytes];
                     // TODO: Do something with this error the proper way with delegates.
                     NSError* error = nil;
-                    [self import:bytes byteLength:[data length] error:&error];
+                    [self import:bytes
+                               byteLength:[data length]
+                                  loadCdn:true
+                        customAssetLoader:customAssetLoader
+                                    error:&error];
                     self.isLoaded = true;
                     dispatch_async(dispatch_get_main_queue(), ^{
                       if ([[NSThread currentThread] isMainThread])
@@ -138,22 +268,48 @@
 
         // Kick off the http download
         [task resume];
-        [session finishTasksAndInvalidate];
-
-        // Return the as yet uninitialized RiveFile
         return self;
     }
 
     return nil;
 }
 
-- (BOOL)import:(UInt8*)bytes byteLength:(UInt64)length error:(NSError**)error
+- (BOOL)import:(UInt8*)bytes byteLength:(UInt64)length loadCdn:(bool)loadCdn error:(NSError**)error
+{
+    return [self import:bytes
+               byteLength:length
+                  loadCdn:loadCdn
+        customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+          return false;
+        }
+                    error:error];
+}
+- (BOOL)import:(UInt8*)bytes
+           byteLength:(UInt64)length
+              loadCdn:(bool)loadCdn
+    customAssetLoader:(LoadAsset)custom
+                error:(NSError**)error
 {
     rive::ImportResult result;
     RenderContext* renderContext = [[RenderContextManager shared] getDefaultContext];
     assert(renderContext);
     rive::Factory* factory = [renderContext factory];
-    auto file = rive::File::import(rive::Span(bytes, length), factory, &result);
+
+    FallbackFileAssetLoader* fallbackLoader = [[FallbackFileAssetLoader alloc] init];
+
+    CustomFileAssetLoader* customAssetLoader =
+        [[CustomFileAssetLoader alloc] initWithLoader:custom];
+    [fallbackLoader addLoader:customAssetLoader];
+
+    if (loadCdn)
+    {
+        CDNFileAssetLoader* cdnLoader = [[CDNFileAssetLoader alloc] init];
+        [fallbackLoader addLoader:cdnLoader];
+    }
+
+    fileAssetLoader = new rive::FileAssetLoaderAdapter(fallbackLoader);
+
+    auto file = rive::File::import(rive::Span(bytes, length), factory, &result, fileAssetLoader);
     if (result == rive::ImportResult::success)
     {
         riveFile = std::move(file);
@@ -269,6 +425,7 @@
 - (void)dealloc
 {
     riveFile.reset(nullptr);
+    delete fileAssetLoader;
 }
 
 @end

@@ -21,7 +21,9 @@ class ExamplesMasterTableViewController: UITableViewController {
         "State Machine",
         "Blend Mode",
         "Slider Widget",
-        "Stress Test"
+        "Stress Test",
+        "Simple assets",
+        "Cached assets",
     ]
     
     
@@ -39,7 +41,8 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("Mesh Animation",      typeErased(dismissableView: SwiftMeshAnimation())),
         ("Playing with Text",   typeErased(dismissableView: TextInputView())),
         ("Rive Events",         typeErased(dismissableView: SwiftEvents())),
-        ("Variable FPS",        typeErased(dismissableView: SwiftVariableFPS()))
+        ("Variable FPS",        typeErased(dismissableView: SwiftVariableFPS())),
+        ("Simple Assets",       typeErased(dismissableView: SwiftSimpleAssets()))
     ]
     
     
@@ -149,9 +152,4 @@ extension ExamplesMasterTableViewController {
         
         return AnyView(view)
     }
-}
-
-public protocol DismissableView: View {
-    init()
-    var dismiss: () -> Void { get set }
 }

@@ -12,7 +12,7 @@ import RiveRuntime
 extension RiveFile {
     convenience init(testfileName: String, extension ext: String = ".riv") throws {
         let byteArray = RiveFile.getBytes(fileName: testfileName, extension: ext)
-        try self.init(byteArray: byteArray)
+        try self.init(byteArray: byteArray, loadCdn: false)
     }
     
     static func getBytes(fileName: String, extension ext: String = ".riv") -> [UInt8] {

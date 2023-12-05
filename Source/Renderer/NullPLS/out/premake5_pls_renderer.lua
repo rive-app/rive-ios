@@ -48,7 +48,7 @@ do
             }
         end
 
-        filter {'system:ios', 'options:variant=simulator'}
+        filter {'system:ios', 'options:variant=emulator'}
         do
             targetdir 'iphonesimulator_%{cfg.buildcfg}'
             objdir 'obj/iphonesimulator_%{cfg.buildcfg}'
@@ -69,7 +69,7 @@ newoption {
     description = 'Choose a particular variant to build',
     allowed = {
         {'system', 'Builds the static library for the provided system'},
-        {'simulator', 'Builds for an emulator/simulator for the provided system'}
+        {'emulator', 'Builds for an emulator/simulator for the provided system'}
     },
     default = 'system'
 }

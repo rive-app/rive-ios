@@ -50,7 +50,6 @@ build_runtime() {
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
-
     # Build rive_cg_renderer.
     pushd $RIVE_RUNTIME_DIR/cg_renderer/build
     premake5 --scripts=$RIVE_RUNTIME_DIR/build --os=ios gmake2
@@ -59,7 +58,6 @@ build_runtime() {
     popd
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/build/ios/bin/$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer.a
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/cg_renderer
-
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR/out
@@ -85,7 +83,6 @@ build_runtime_sim() {
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
-
     # Build rive_cg_renderer.
     pushd $RIVE_RUNTIME_DIR/cg_renderer/build
     premake5 --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=emulator gmake2
@@ -95,10 +92,9 @@ build_runtime_sim() {
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/build/ios_sim/bin/$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer_sim.a
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/cg_renderer
 
-
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR/out
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=ios --variant=simulator gmake2
+    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=ios --variant=emulator gmake2
     make config=$1 clean
     make config=$1 -j12 rive_pls_renderer
     popd
@@ -120,7 +116,6 @@ build_runtime_macosx() {
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
-
     # Build rive_cg_renderer.
     pushd $RIVE_RUNTIME_DIR/cg_renderer/build
     premake5 --scripts=$RIVE_RUNTIME_DIR/build --os=macosx --variant=runtime gmake2
@@ -129,7 +124,6 @@ build_runtime_macosx() {
     popd
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/build/macosx/bin/$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer_macos.a
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/cg_renderer
-
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR/out
@@ -220,6 +214,12 @@ ios_sim)
         make_dependency_directories
         finalize_skia
         build_runtime_sim $2
+        # TODO:
+        # to build for the example you need debug, but to profile you need release.
+        # each time you build, both version are removed. to imnprove this only remove
+        # the version being built, or add a "both" option.
+        # build_runtime_sim debug
+        # build_runtime_sim release
         ;;
     *)
         usage
