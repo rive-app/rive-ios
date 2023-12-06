@@ -221,7 +221,11 @@ static int artInstanceCount = 0;
 {
     const std::string stdName = std::string([name UTF8String]);
     auto riveTextRun = _artboardInstance->find<rive::TextValueRun>(stdName);
-    return [[RiveTextValueRun alloc] initWithTextValueRun:std::move(riveTextRun)];
+    if (riveTextRun != nullptr)
+    {
+        return [[RiveTextValueRun alloc] initWithTextValueRun:std::move(riveTextRun)];
+    }
+    return nullptr;
 }
 
 @end

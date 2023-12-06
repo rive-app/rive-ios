@@ -24,7 +24,11 @@ struct TextInputView: DismissableView {
                 .padding()
                 .onChange(of: userInput, perform: { newValue in
                     if (!newValue.isEmpty) {
-                        try! rvm.setTextRunValue("MyRun", textValue: userInput)
+                        do {
+                           try rvm.setTextRunValue("MyRun", textValue: userInput)
+                        } catch {
+                            debugPrint(error)
+                        }
                     }
                 })
             rvm.view()

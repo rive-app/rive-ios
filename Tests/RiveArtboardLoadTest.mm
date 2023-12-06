@@ -141,4 +141,13 @@
     XCTAssertTrue([[textRun text] isEqualToString:@"Hello text"]);
 }
 
+- (void)testCatchingErrorOnBadTextRun
+{
+    RiveFile* file = [Util loadTestFile:@"testtext" error:nil];
+    NSError* error = nil;
+    RiveArtboard* artboard = [file artboardFromName:@"New Artboard" error:&error];
+    RiveTextValueRun* textRun = [artboard textRun:@"BADRUN"];
+    XCTAssertNil(textRun);
+}
+
 @end
