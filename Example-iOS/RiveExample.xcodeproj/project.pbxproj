@@ -35,8 +35,6 @@
 		042C88EA2644447500E7DBB2 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D82644447500E7DBB2 /* skills.riv */; };
 		042C88EB2644447500E7DBB2 /* clipping.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D92644447500E7DBB2 /* clipping.riv */; };
 		042C88EC2644447500E7DBB2 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
-		043025EA2AF9046700320F2E /* asset_load_check.riv in Resources */ = {isa = PBXBuildFile; fileRef = 043025E92AF9046700320F2E /* asset_load_check.riv */; };
-		043025EB2AF9046700320F2E /* asset_load_check.riv in Resources */ = {isa = PBXBuildFile; fileRef = 043025E92AF9046700320F2E /* asset_load_check.riv */; };
 		043025EF2AF905B100320F2E /* CachedAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043025EE2AF905B100320F2E /* CachedAssets.swift */; };
 		043026062B012C5000320F2E /* simple_assets.riv in Resources */ = {isa = PBXBuildFile; fileRef = 043026052B012C5000320F2E /* simple_assets.riv */; };
 		043026072B012C5000320F2E /* simple_assets.riv in Resources */ = {isa = PBXBuildFile; fileRef = 043026052B012C5000320F2E /* simple_assets.riv */; };
@@ -154,6 +152,8 @@
 		E5964AB22A9CDB2100140479 /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5964AB02A9CDB2100140479 /* rating_animation.riv */; };
 		E5A7874A27E115170056F24B /* energy_bar_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874727E115170056F24B /* energy_bar_example.riv */; };
 		E5A7874C27E1158E0056F24B /* prop_example.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5A7874B27E1158E0056F24B /* prop_example.riv */; };
+		E5B5C2182B238829006E57C8 /* asset_load_check.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5B5C2172B238829006E57C8 /* asset_load_check.riv */; };
+		E5B5C2192B238829006E57C8 /* asset_load_check.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5B5C2172B238829006E57C8 /* asset_load_check.riv */; };
 		E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */; };
 		E5E87A012AE5A83800E7295F /* SwiftVariableFPS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */; };
 		F8772AF02AD94A4400AB5920 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
@@ -234,7 +234,6 @@
 		042C88D82644447500E7DBB2 /* skills.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = skills.riv; sourceTree = "<group>"; };
 		042C88D92644447500E7DBB2 /* clipping.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = clipping.riv; sourceTree = "<group>"; };
 		042C88DA2644447500E7DBB2 /* vader.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = vader.riv; sourceTree = "<group>"; };
-		043025E92AF9046700320F2E /* asset_load_check.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = asset_load_check.riv; path = ../../../runtime_wasm/wasm/examples/out_of_band_example/asset_load_check.riv; sourceTree = "<group>"; };
 		043025EE2AF905B100320F2E /* CachedAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAssets.swift; sourceTree = "<group>"; };
 		043026052B012C5000320F2E /* simple_assets.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = simple_assets.riv; sourceTree = "<group>"; };
 		0448838C29F82DD000D7523E /* SimpleHttpAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleHttpAnimation.swift; sourceTree = "<group>"; };
@@ -302,6 +301,7 @@
 		E5964AB02A9CDB2100140479 /* rating_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rating_animation.riv; sourceTree = "<group>"; };
 		E5A7874727E115170056F24B /* energy_bar_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = energy_bar_example.riv; sourceTree = "<group>"; };
 		E5A7874B27E1158E0056F24B /* prop_example.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = prop_example.riv; sourceTree = "<group>"; };
+		E5B5C2172B238829006E57C8 /* asset_load_check.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = asset_load_check.riv; sourceTree = "<group>"; };
 		E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMeshAnimation.swift; sourceTree = "<group>"; };
 		E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftVariableFPS.swift; sourceTree = "<group>"; };
 		F8DA7B442AF523A800FF3CBF /* DismissableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissableView.swift; sourceTree = "<group>"; };
@@ -406,9 +406,9 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				E5B5C2172B238829006E57C8 /* asset_load_check.riv */,
 				043026052B012C5000320F2E /* simple_assets.riv */,
 				0453FCB02B012D17001185C8 /* picture-47982.jpeg */,
-				043025E92AF9046700320F2E /* asset_load_check.riv */,
 				83DE4CB42AB3974300B88B72 /* Bear.riv */,
 				83C89AD0298870A700044C17 /* paper.riv */,
 				83C89ACE2988709400044C17 /* marty.riv */,
@@ -657,6 +657,7 @@
 				043026072B012C5000320F2E /* simple_assets.riv in Resources */,
 				04E51C4F2A151C230075E473 /* light_switch.riv in Resources */,
 				04E51C502A151C230075E473 /* riveslider.riv in Resources */,
+				E5B5C2192B238829006E57C8 /* asset_load_check.riv in Resources */,
 				04E51C512A151C230075E473 /* rbutton.riv in Resources */,
 				04E51C522A151C230075E473 /* constrained.riv in Resources */,
 				04E51C532A151C230075E473 /* nothing.riv in Resources */,
@@ -668,7 +669,6 @@
 				04E51C582A151C230075E473 /* explorer.riv in Resources */,
 				04E51C592A151C230075E473 /* f22.riv in Resources */,
 				04E51C5A2A151C230075E473 /* flux_capacitor.riv in Resources */,
-				043025EB2AF9046700320F2E /* asset_load_check.riv in Resources */,
 				04E51C5B2A151C230075E473 /* juice_v7.riv in Resources */,
 				04E51C5C2A151C230075E473 /* life_bar.riv in Resources */,
 				E5964AB22A9CDB2100140479 /* rating_animation.riv in Resources */,
@@ -713,7 +713,6 @@
 				C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */,
 				042C88DC2644447500E7DBB2 /* pull.riv in Resources */,
 				042C88E32644447500E7DBB2 /* flux_capacitor.riv in Resources */,
-				043025EA2AF9046700320F2E /* asset_load_check.riv in Resources */,
 				E57798A02A72C77900FF25C3 /* testtext.riv in Resources */,
 				C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */,
 				C3ECAC2B281837B300A81123 /* play_button_event_example.riv in Resources */,
@@ -759,6 +758,7 @@
 				83DE4CB52AB397A800B88B72 /* Bear.riv in Resources */,
 				C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */,
 				042C88DB2644447500E7DBB2 /* wacky.riv in Resources */,
+				E5B5C2182B238829006E57C8 /* asset_load_check.riv in Resources */,
 				E5A7874A27E115170056F24B /* energy_bar_example.riv in Resources */,
 				042C88EB2644447500E7DBB2 /* clipping.riv in Resources */,
 				C3E383482837E6B00029D65E /* watch_v1.riv in Resources */,
