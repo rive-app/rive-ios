@@ -13,7 +13,7 @@ struct TextInputView: DismissableView {
     var dismiss: () -> Void = {}
     
     @State private var userInput: String = ""
-    @State private var rvm = RiveViewModel(fileName: "text_test_2")
+    @StateObject private var rvm = RiveViewModel(fileName: "text_test_2")
 
     var body: some View {
         VStack(spacing: 20) {

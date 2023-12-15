@@ -12,7 +12,7 @@ import RiveRuntime
 struct SwiftVariableFPS: DismissableView {
     var dismiss: () -> Void = {}
     
-    private var stateChanger = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
+    @StateObject private var stateChanger = RiveViewModel(fileName: "skills", stateMachineName: "Designer's Test")
     
     var body: some View {
         ScrollView{

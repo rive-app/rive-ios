@@ -13,9 +13,9 @@ import RiveRuntime
 /// different animations within those artboards
 struct SwiftMultipleAnimations: DismissableView {
     var dismiss: () -> Void = {}
+    let file = try! RiveFile(name: "artboard_animations")
 
     var body: some View {
-        let file = try! RiveFile(name: "artboard_animations")
         ScrollView{
             VStack {
                 Text("Square - go around")

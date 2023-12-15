@@ -18,13 +18,11 @@ struct SwiftWidgets: DismissableView {
     /// Tracks the health value coming from the slide for the progress bar
     @State var health: Double = 0
     
+    @StateObject private var rslider = RiveSlider()
+    @StateObject private var rprogress = RiveProgressBar();
+    @StateObject private var rbutton = RiveButton();
     
     var body: some View {
-        
-        let rslider = RiveSlider()
-        let rprogress = RiveProgressBar()
-        let rswitch = RiveSwitch()
-        
         ZStack {
             Color.gray
                 .ignoresSafeArea()
@@ -33,16 +31,8 @@ struct SwiftWidgets: DismissableView {
                 VStack {
                     HStack {
                         Text("RiveButton:")
-                        RiveButton().view {
+                        rbutton.view {
                             print("Button tapped")
-                        }
-                    }
-                    Spacer().padding()
-                    
-                    HStack {
-                        Text("RSwitch:")
-                        rswitch.view { on in
-                            print("The switch is " + (on ? "on" : "off"))
                         }
                     }
                     Spacer().padding()

@@ -9,15 +9,24 @@
 import SwiftUI
 import RiveRuntime
 
+
+
 struct SwiftLayout: DismissableView {
     var dismiss: () -> Void = {}
     
     @State private var fit: RiveFit = .contain
     @State private var alignment: RiveAlignment = .center
+    @StateObject private var riveViewModel = RiveViewModel(fileName: "truck_v7", fit: .contain, alignment: .center)
     
     var body: some View {
         VStack {
-            RiveViewModel(fileName: "truck_v7", fit: fit, alignment: alignment).view()
+            riveViewModel.view()
+                .onChange(of: fit) { value in
+                    riveViewModel.fit = value
+                }
+                .onChange(of: alignment) { value in
+                    riveViewModel.alignment = value
+                }
         }
         HStack {
             Text("Fit")

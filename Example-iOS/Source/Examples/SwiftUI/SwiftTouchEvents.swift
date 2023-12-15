@@ -17,19 +17,15 @@ struct SwiftTouchEvents: DismissableView {
     // - State Machine
     // - Listeners
     
-    // TODO: 
-    // Review viewmodel set-up here to avoid recreation & also loading files on launch.
+    @StateObject private var clock = ClockViewModel()
+    @StateObject private var jelly = RiveViewModel(fileName: "hero_editor")
+    @StateObject private var playButton = RiveViewModel(fileName: "play_button_event_example")
+    @StateObject private var lighthouse = RiveViewModel(fileName: "switch_event_example")
+    @StateObject private var eightball = RiveViewModel(fileName: "magic_8-ball_v2")
+    @StateObject private var bearGuy = RiveViewModel(fileName: "leg_day_events_example")
+    @StateObject private var toggle = RiveViewModel(fileName: "light_switch")
     
-    var body: some View {
-        
-        let clock = ClockViewModel()
-        let jelly = RiveViewModel(fileName: "hero_editor")
-        let playButton = RiveViewModel(fileName: "play_button_event_example")
-        let lighthouse = RiveViewModel(fileName: "switch_event_example")
-        let eightball = RiveViewModel(fileName: "magic_8-ball_v2")
-        let bearGuy = RiveViewModel(fileName: "leg_day_events_example")
-        let toggle = RiveViewModel(fileName: "light_switch")
-        
+    var body: some View {  
         ScrollView {
             VStack {
                 jelly.view()

@@ -26,7 +26,6 @@ class AssetLoader{
     var cachedImage: RiveImageAsset?;
     var factory: RiveFactory?;
 
-    // pretty naive way to clean up any outstanding requests.
     var tasks: [URLSessionDataTask] = [];
     
     func fillFontCache(){
@@ -193,7 +192,6 @@ class AssetLoader{
 
 
 class OutOfBandAssetsController: UIViewController, UIGestureRecognizerDelegate {
-    //    TODO: talk to people to see if we can make this nice...
     var loader: AssetLoader = AssetLoader();
     var viewModel: RiveViewModel?;
     

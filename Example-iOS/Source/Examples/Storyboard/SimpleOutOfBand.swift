@@ -32,11 +32,8 @@ func loadAndSetRenderFont(named resourceName: String, asset: RiveFontAsset, fact
 }
 
 class SimpleOutOfBandController: UIViewController, UIGestureRecognizerDelegate {
-    //    TODO: talk to people to see if we can make this nice...
     var loader: AssetLoader = AssetLoader();
     var viewModel: RiveViewModel?;
-    
-    
     
     required init?(coder: NSCoder) {
         

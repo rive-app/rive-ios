@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -94,7 +94,6 @@
 		04E51C662A151C230075E473 /* pull.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CA2644447400E7DBB2 /* pull.riv */; };
 		04E51C672A151C230075E473 /* rope.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CC2644447400E7DBB2 /* rope.riv */; };
 		04E51C682A151C230075E473 /* skills.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D82644447500E7DBB2 /* skills.riv */; };
-		04E51C692A151C230075E473 /* switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9E040A8264DFCFD009ABC7C /* switch.riv */; };
 		04E51C6A2A151C230075E473 /* trailblaze.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88D52644447500E7DBB2 /* trailblaze.riv */; };
 		04E51C6B2A151C230075E473 /* ui_swipe_left_to_delete.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88CB2644447400E7DBB2 /* ui_swipe_left_to_delete.riv */; };
 		04E51C6C2A151C230075E473 /* vader.riv in Resources */ = {isa = PBXBuildFile; fileRef = 042C88DA2644447500E7DBB2 /* vader.riv */; };
@@ -108,7 +107,6 @@
 		83C89ACF2988709400044C17 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		83C89AD1298870A700044C17 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
 		83DE4CB52AB397A800B88B72 /* Bear.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83DE4CB42AB3974300B88B72 /* Bear.riv */; };
-		C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5528071EB80060589F /* RiveSwitch.swift */; };
 		C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5A2807216B0060589F /* RiveSlider.swift */; };
 		C324DB5D280728690060589F /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5C280728690060589F /* RiveButton.swift */; };
 		C324DB5F280740FB0060589F /* rbutton.riv in Resources */ = {isa = PBXBuildFile; fileRef = C324DB5E280740FB0060589F /* rbutton.riv */; };
@@ -117,7 +115,6 @@
 		C3745FCE282AE2320087F4AF /* hero_editor.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3745FCB282AE2320087F4AF /* hero_editor.riv */; };
 		C3C074AB283FC75900E8EB33 /* testanimation.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074A7283FC75800E8EB33 /* testanimation.riv */; };
 		C3C074AC283FC75900E8EB33 /* teststatemachine.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074AA283FC75900E8EB33 /* teststatemachine.riv */; };
-		C3C074EE28414F4600E8EB33 /* SwiftTestParityAnimSM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C074ED28414F4600E8EB33 /* SwiftTestParityAnimSM.swift */; };
 		C3C074F2284161E400E8EB33 /* halloween.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074F1284161E400E8EB33 /* halloween.riv */; };
 		C3D187F3280751A8008B739A /* RiveProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D187F2280751A8008B739A /* RiveProgressBar.swift */; };
 		C3D187F728075B6C008B739A /* riveslider.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3D187F628075B6C008B739A /* riveslider.riv */; };
@@ -140,7 +137,6 @@
 		C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9CE8265263B90E000F98DDB /* juice_v7.riv */; };
 		C9D3DE5B264F3B51001BA265 /* liquid.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9D3DE5A264F3B51001BA265 /* liquid.riv */; };
 		C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9D3DE67264F49F4001BA265 /* life_bar.riv */; };
-		C9E040A9264DFCFD009ABC7C /* switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = C9E040A8264DFCFD009ABC7C /* switch.riv */; };
 		E57798A02A72C77900FF25C3 /* testtext.riv in Resources */ = {isa = PBXBuildFile; fileRef = E577989D2A72C77900FF25C3 /* testtext.riv */; };
 		E57798A92A730A9B00FF25C3 /* SwiftTestText.swift in Sources */ = {isa = PBXBuildFile; fileRef = E57798A82A730A9B00FF25C3 /* SwiftTestText.swift */; };
 		E57798AC2A731C5800FF25C3 /* testtext.riv in Resources */ = {isa = PBXBuildFile; fileRef = E577989D2A72C77900FF25C3 /* testtext.riv */; };
@@ -259,7 +255,6 @@
 		83C89ACE2988709400044C17 /* marty.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = marty.riv; sourceTree = "<group>"; };
 		83C89AD0298870A700044C17 /* paper.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = paper.riv; sourceTree = "<group>"; };
 		83DE4CB42AB3974300B88B72 /* Bear.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bear.riv; sourceTree = "<group>"; };
-		C324DB5528071EB80060589F /* RiveSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSwitch.swift; sourceTree = "<group>"; };
 		C324DB5A2807216B0060589F /* RiveSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSlider.swift; sourceTree = "<group>"; };
 		C324DB5C280728690060589F /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
 		C324DB5E280740FB0060589F /* rbutton.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rbutton.riv; sourceTree = "<group>"; };
@@ -268,7 +263,6 @@
 		C3745FCB282AE2320087F4AF /* hero_editor.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hero_editor.riv; sourceTree = "<group>"; };
 		C3C074A7283FC75800E8EB33 /* testanimation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = testanimation.riv; sourceTree = "<group>"; };
 		C3C074AA283FC75900E8EB33 /* teststatemachine.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = teststatemachine.riv; sourceTree = "<group>"; };
-		C3C074ED28414F4600E8EB33 /* SwiftTestParityAnimSM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTestParityAnimSM.swift; sourceTree = "<group>"; };
 		C3C074F1284161E400E8EB33 /* halloween.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = halloween.riv; sourceTree = "<group>"; };
 		C3D187F2280751A8008B739A /* RiveProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveProgressBar.swift; sourceTree = "<group>"; };
 		C3D187F628075B6C008B739A /* riveslider.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = riveslider.riv; sourceTree = "<group>"; };
@@ -293,7 +287,6 @@
 		C9CE8265263B90E000F98DDB /* juice_v7.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = juice_v7.riv; sourceTree = "<group>"; };
 		C9D3DE5A264F3B51001BA265 /* liquid.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = liquid.riv; sourceTree = "<group>"; };
 		C9D3DE67264F49F4001BA265 /* life_bar.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = life_bar.riv; sourceTree = "<group>"; };
-		C9E040A8264DFCFD009ABC7C /* switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = switch.riv; sourceTree = "<group>"; };
 		E577989D2A72C77900FF25C3 /* testtext.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = testtext.riv; sourceTree = "<group>"; };
 		E57798A82A730A9B00FF25C3 /* SwiftTestText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTestText.swift; sourceTree = "<group>"; };
 		E57798AD2A73264100FF25C3 /* text_test_2.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = text_test_2.riv; sourceTree = "<group>"; };
@@ -395,7 +388,6 @@
 			isa = PBXGroup;
 			children = (
 				C324DB5C280728690060589F /* RiveButton.swift */,
-				C324DB5528071EB80060589F /* RiveSwitch.swift */,
 				C324DB5A2807216B0060589F /* RiveSlider.swift */,
 				C3D187F2280751A8008B739A /* RiveProgressBar.swift */,
 				C3ECAC2E281840A300A81123 /* ClockViewModel.swift */,
@@ -452,7 +444,6 @@
 				042C88CA2644447400E7DBB2 /* pull.riv */,
 				042C88CC2644447400E7DBB2 /* rope.riv */,
 				042C88D82644447500E7DBB2 /* skills.riv */,
-				C9E040A8264DFCFD009ABC7C /* switch.riv */,
 				042C88D52644447500E7DBB2 /* trailblaze.riv */,
 				042C88CB2644447400E7DBB2 /* ui_swipe_left_to_delete.riv */,
 				042C88DA2644447500E7DBB2 /* vader.riv */,
@@ -476,7 +467,6 @@
 				E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */,
 				C3ECAC262817BE4600A81123 /* SwiftTouchEvents.swift */,
 				C3E2B58B2833ECFE00A8651B /* SwiftCannonGame.swift */,
-				C3C074ED28414F4600E8EB33 /* SwiftTestParityAnimSM.swift */,
 				E57798A82A730A9B00FF25C3 /* SwiftTestText.swift */,
 				E5964AAA2A9CD49200140479 /* SwiftEvents.swift */,
 				041265212B0BC5A5009400EC /* SwiftSimpleAssets.swift */,
@@ -686,7 +676,6 @@
 				E57798AF2A73264100FF25C3 /* text_test_2.riv in Resources */,
 				04E51C672A151C230075E473 /* rope.riv in Resources */,
 				04E51C682A151C230075E473 /* skills.riv in Resources */,
-				04E51C692A151C230075E473 /* switch.riv in Resources */,
 				04E51C6A2A151C230075E473 /* trailblaze.riv in Resources */,
 				0453FCB52B012D17001185C8 /* picture-47982.jpeg in Resources */,
 				04E51C6B2A151C230075E473 /* ui_swipe_left_to_delete.riv in Resources */,
@@ -725,7 +714,6 @@
 				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
 				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
-				C9E040A9264DFCFD009ABC7C /* switch.riv in Resources */,
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
 				C3D187F728075B6C008B739A /* riveslider.riv in Resources */,
@@ -797,11 +785,9 @@
 				042C88902644250D00E7DBB2 /* MultipleAnimations.swift in Sources */,
 				C3468E6227FDCBC6008652FD /* SimpleSlider.swift in Sources */,
 				041265222B0BC5A5009400EC /* SwiftSimpleAssets.swift in Sources */,
-				C3C074EE28414F4600E8EB33 /* SwiftTestParityAnimSM.swift in Sources */,
 				83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */,
 				E5E87A012AE5A83800E7295F /* SwiftVariableFPS.swift in Sources */,
 				C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */,
-				C324DB5628071EB80060589F /* RiveSwitch.swift in Sources */,
 				C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */,
 				C3ECAC2F281840A300A81123 /* ClockViewModel.swift in Sources */,
 				04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */,

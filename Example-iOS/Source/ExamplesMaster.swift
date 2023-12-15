@@ -30,7 +30,6 @@ class ExamplesMasterTableViewController: UITableViewController {
     // MARK: SwiftUI View Examples
     /// Made from custom `Views`
     private lazy var swiftViews: [(String, AnyView)] = [
-        //("Test Anim/SM Parity", typeErased(dismissableView: SwiftTestParityAnimSM())),
         ("Touch Events!",       typeErased(dismissableView: SwiftTouchEvents())),
         ("Widget Collection",   typeErased(dismissableView: SwiftWidgets())),
         ("Animation Player",    typeErased(dismissableView: SwiftSimpleAnimation())),
