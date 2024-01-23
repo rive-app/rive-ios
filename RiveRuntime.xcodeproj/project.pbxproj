@@ -59,6 +59,12 @@
 		04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04ED72F2299C115100E8DE53 /* empty_animation_state.riv */; };
 		2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */ = {isa = PBXBuildFile; fileRef = 2A7079342726277C00C035A1 /* rive_renderer_view.hh */; settings = {ATTRIBUTES = (Public, ); }; };
 		2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2A707936272628AD00C035A1 /* rive_renderer_view.mm */; };
+		2AD589B02B5705D800CD1D24 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589AF2B5705D800CD1D24 /* AVFoundation.framework */; };
+		2AD589B22B573C9F00CD1D24 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589B12B573C9F00CD1D24 /* CoreAudio.framework */; };
+		2AD589B32B574BF700CD1D24 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589AF2B5705D800CD1D24 /* AVFoundation.framework */; };
+		2AD589B62B574C0A00CD1D24 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589B12B573C9F00CD1D24 /* CoreAudio.framework */; };
+		2AD589BA2B57589400CD1D24 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589B92B57589400CD1D24 /* AudioToolbox.framework */; };
+		2AD589BB2B57589B00CD1D24 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589B92B57589400CD1D24 /* AudioToolbox.framework */; };
 		83DE4C912AA8DD7B00B88B72 /* RenderContextManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */; };
 		83DE4C932AA8DD9F00B88B72 /* RenderContextManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83DE4CA02AAA072B00B88B72 /* PlatformCGImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */; };
@@ -151,6 +157,10 @@
 		04ED72F2299C115100E8DE53 /* empty_animation_state.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty_animation_state.riv; sourceTree = "<group>"; };
 		2A7079342726277C00C035A1 /* rive_renderer_view.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rive_renderer_view.hh; sourceTree = "<group>"; };
 		2A707936272628AD00C035A1 /* rive_renderer_view.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = rive_renderer_view.mm; sourceTree = "<group>"; };
+		2AD589AF2B5705D800CD1D24 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		2AD589B12B573C9F00CD1D24 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		2AD589B42B574C0000CD1D24 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		2AD589B92B57589400CD1D24 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RenderContextManager.mm; path = Source/Renderer/RenderContextManager.mm; sourceTree = SOURCE_ROOT; };
 		83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderContextManager.h; sourceTree = "<group>"; };
 		83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PlatformCGImage.mm; sourceTree = "<group>"; };
@@ -187,6 +197,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AD589BB2B57589B00CD1D24 /* AudioToolbox.framework in Frameworks */,
+				2AD589B62B574C0A00CD1D24 /* CoreAudio.framework in Frameworks */,
+				2AD589B32B574BF700CD1D24 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,6 +207,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AD589BA2B57589400CD1D24 /* AudioToolbox.framework in Frameworks */,
+				2AD589B22B573C9F00CD1D24 /* CoreAudio.framework in Frameworks */,
+				2AD589B02B5705D800CD1D24 /* AVFoundation.framework in Frameworks */,
 				C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -254,6 +270,17 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
+		2AD589AE2B5705D800CD1D24 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2AD589B92B57589400CD1D24 /* AudioToolbox.framework */,
+				2AD589B42B574C0000CD1D24 /* AudioUnit.framework */,
+				2AD589B12B573C9F00CD1D24 /* CoreAudio.framework */,
+				2AD589AF2B5705D800CD1D24 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C3468E5627EB9858008652FD /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -297,6 +324,7 @@
 				C9C73ED324FC478800EF9516 /* Source */,
 				C9C73EDE24FC478900EF9516 /* Tests */,
 				C9C73ED224FC478800EF9516 /* Products */,
+				2AD589AE2B5705D800CD1D24 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
