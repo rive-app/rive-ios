@@ -51,19 +51,19 @@ build_runtime() {
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
-    pushd $RIVE_RUNTIME_DIR/cg_renderer/build
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --os=ios gmake2
-    make config=$1 clean
-    make config=$1 -j12 rive_cg_renderer
+    pushd $RIVE_RUNTIME_DIR/cg_renderer
+    premake5 --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios gmake2
+    make -C out/iphoneos_$1 clean
+    make -C out/iphoneos_$1 -j12 rive_cg_renderer
     popd
-    cp -r $RIVE_RUNTIME_DIR/cg_renderer/build/ios/bin/$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer.a
+    cp -r $RIVE_RUNTIME_DIR/cg_renderer/out/iphoneos_$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer.a
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/cg_renderer
 
     # Build rive_pls_renderer.
-    pushd $RIVE_PLS_DIR/out
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=ios gmake2
-    make config=$1 clean
-    make config=$1 -j12 rive_pls_renderer
+    pushd $RIVE_PLS_DIR
+    premake5 --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua  --no-rive-decoders --os=ios gmake2
+    make -C out/iphoneos_$1 clean
+    make -C out/iphoneos_$1 -j12 rive_pls_renderer
     popd
     cp -r $RIVE_PLS_DIR/out/iphoneos_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
     $DEV_SCRIPT_DIR/strip_static_lib.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
@@ -84,19 +84,19 @@ build_runtime_sim() {
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
-    pushd $RIVE_RUNTIME_DIR/cg_renderer/build
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=emulator gmake2
-    make config=$1 clean
-    make config=$1 -j12 rive_cg_renderer
+    pushd $RIVE_RUNTIME_DIR/cg_renderer
+    premake5 --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=emulator gmake2
+    make -C out/iphonesimulator_$1 clean
+    make -C out/iphonesimulator_$1 -j12 rive_cg_renderer
     popd
-    cp -r $RIVE_RUNTIME_DIR/cg_renderer/build/ios_sim/bin/$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer_sim.a
+    cp -r $RIVE_RUNTIME_DIR/cg_renderer/out/iphonesimulator_$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer_sim.a
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/cg_renderer
 
     # Build rive_pls_renderer.
-    pushd $RIVE_PLS_DIR/out
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=ios --variant=emulator gmake2
-    make config=$1 clean
-    make config=$1 -j12 rive_pls_renderer
+    pushd $RIVE_PLS_DIR
+    premake5 --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=ios --variant=emulator gmake2
+    make -C out/iphonesimulator_$1 clean
+    make -C out/iphonesimulator_$1 -j12 rive_pls_renderer
     popd
     cp -r $RIVE_PLS_DIR/out/iphonesimulator_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a
     $DEV_SCRIPT_DIR/strip_static_lib_fat.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a arm64 x86_64
@@ -117,19 +117,19 @@ build_runtime_macosx() {
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
-    pushd $RIVE_RUNTIME_DIR/cg_renderer/build
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --os=macosx --variant=runtime gmake2
-    make config=$1 clean
-    make config=$1 -j12 rive_cg_renderer
+    pushd $RIVE_RUNTIME_DIR/cg_renderer
+    premake5 --config=$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=macosx gmake2
+    make -C out/$1 clean
+    make -C out/$1 -j12 rive_cg_renderer
     popd
-    cp -r $RIVE_RUNTIME_DIR/cg_renderer/build/macosx/bin/$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer_macos.a
+    cp -r $RIVE_RUNTIME_DIR/cg_renderer/out/$1/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_cg_renderer_macos.a
     cp -r $RIVE_RUNTIME_DIR/cg_renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/cg_renderer
 
     # Build rive_pls_renderer.
-    pushd $RIVE_PLS_DIR/out
-    premake5 --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --universal-release --no-rive-decoders --os=macosx gmake2
-    make config=$1 clean
-    make config=$1 -j12 rive_pls_renderer
+    pushd $RIVE_PLS_DIR
+    premake5 --config=$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=macosx gmake2
+    make -C out/$1 clean
+    make -C out/$1 -j12 rive_pls_renderer
     popd
     cp -r $RIVE_PLS_DIR/out/$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_macos.a
     $DEV_SCRIPT_DIR/strip_static_lib_fat.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_macos.a arm64 x86_64
