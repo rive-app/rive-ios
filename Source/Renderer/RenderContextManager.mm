@@ -246,7 +246,7 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
 {
     // Once nobody is referencing a RiveContext anymore, release the global PLSRenderContext's GPU
     // resource.
-    _plsContext->resetGPUResources();
+    _plsContext->releaseResources();
 }
 
 - (rive::Factory*)factory
