@@ -192,7 +192,7 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
     {
     public:
         PLSRenderContextNativeImpl(id<MTLDevice> gpu, id<MTLCommandQueue> queue) :
-            PLSRenderContextMetalImpl(gpu, queue)
+            PLSRenderContextMetalImpl(gpu, queue, ContextOptions())
         {}
 
     protected:
@@ -423,8 +423,6 @@ constexpr static int kBufferRingSize = 3;
     __weak CGRendererContext* _cgContextWeakPtr;
 }
 
-bool _riveRendererSupportWarningDisplayed = false;
-
 // The context manager is a singleton.
 + (RenderContextManager*)shared
 {
@@ -449,18 +447,7 @@ bool _riveRendererSupportWarningDisplayed = false;
         case RendererType::skiaRenderer:
             return [self getSkiaContext];
         case RendererType::riveRenderer:
-#if TARGET_OS_SIMULATOR
-            if (_riveRendererSupportWarningDisplayed == false)
-            {
-                NSLog(@"warning: Rive Renderer is not supported by the simulator. Falling back on "
-                      @"Skia "
-                      @"within the simulator.");
-                _riveRendererSupportWarningDisplayed = true;
-            }
-            return [self getSkiaContext];
-#else
             return [self getRiveRendererContext];
-#endif
         case RendererType::cgRenderer:
             return [self getCGRendererContext];
     }
@@ -484,9 +471,6 @@ bool _riveRendererSupportWarningDisplayed = false;
 {
 #if defined(RIVE_NO_PLS)
     NSLog(@"error: build does not include Rive Renderer");
-    return nil;
-#elif TARGET_OS_SIMULATOR
-    NSLog(@"error: Rive Renderer is not supported on the simulator");
     return nil;
 #else
     // Convert our weak reference to strong before trying to work with it. A weak pointer is liable

@@ -59,12 +59,6 @@ class CustomRiveView: RiveView {
         let newFrame = CGRect(origin: rect.origin, size: size)
         align(with: newFrame, contentRect: artboard.bounds(), alignment: .center, fit: .contain)
         
-        // Find a delta by which to advance our animation each repeated draw, that will loop back
-        // around to the original starting point once we're done drawing.
-        var delta = 0.0
-        if let animation = rModel?.animation {
-            delta = Double(animation.effectiveDurationInSeconds()) / Double(drawRepeat)
-        }
         let pad:Float = 100.0
         let r = min(drawRepeat, 8)
         let x0:Float = Float(r - 1) * 0.5 * -pad
@@ -79,7 +73,6 @@ class CustomRiveView: RiveView {
             transform(1, xy:0, yx:0, yy:1, tx:x, ty:y);
             draw(with: artboard)
             restore()
-            rModel?.animation?.advance(by: delta)
             x += pad
         }
     }
