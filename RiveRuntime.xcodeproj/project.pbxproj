@@ -757,7 +757,7 @@
 					"@loader_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"${PROJECT_DIR}/dependencies/debug",
+					"${PROJECT_DIR}/dependencies/release",
 					"${PROJECT_DIR}/dependencies",
 				);
 				MARKETING_VERSION = 0.6.5;
