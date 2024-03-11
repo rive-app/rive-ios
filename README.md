@@ -20,7 +20,7 @@ The library is distributed both through Swift Package Manager and Cocoapods.
 - 👨‍💻 [Contributing](#contributing)
 - :question: [Issues](#issues)
 
-## Rive Overview
+## Rive overview
 
 [Rive](https://rive.app) is a real-time interactive design and animation tool that helps teams create and run interactive animations anywhere. Designers and developers use our collaborative editor to create motion graphics that respond to different states and user inputs. Our lightweight open-source runtime libraries allow them to load their animations into apps, games, and websites.
 
@@ -30,13 +30,13 @@ The library is distributed both through Swift Package Manager and Cocoapods.
 
 🛠 [Learning Rive](https://rive.app/learn-rive/)
 
-## Getting Started
+## Getting started
 
 Follow along with the link below for a quick start in getting Rive iOS/macOS integrated into your multi-platform applications.
 
 [Getting Started with Rive in iOS](https://help.rive.app/runtimes/overview/ios)
 
-## Supported Devices
+## Supported devices
 
 Currently, this runtime library supports a minimum iOS version of **14.0+**. Devices supported include iPhone, iPad, and Mac catalyst. macOS support supports a targeted version of **13.1**.
 
@@ -58,7 +58,7 @@ The example showcases a number of ways to use the high-level `RiveViewModel` API
 
 For even more examples and resources on using Rive at runtime or in other tools, checkout the [awesome-rive](https://github.com/rive-app/awesome-rive) repo.
 
-## Migration Guides
+## Migration guides
 
 Using an older version of the runtime and need to learn how to upgrade to the latest version? Check out the migration guides below in our help center that help guide you through version bumps; breaking changes and all!
 
