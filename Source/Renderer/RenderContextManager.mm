@@ -180,8 +180,7 @@ static sk_sp<SkSurface> mtk_view_to_sk_surface(MTKView* mtkView, GrDirectContext
     rive::rcp<rive::pls::PLSRenderTargetMetal> _renderTarget;
 }
 
-static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
-    id<MTLDevice> gpu, id<MTLCommandQueue> queue)
+static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<MTLDevice> gpu)
 {
     if (![gpu supportsFamily:MTLGPUFamilyApple1])
     {
@@ -191,8 +190,8 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
     class PLSRenderContextNativeImpl : public rive::pls::PLSRenderContextMetalImpl
     {
     public:
-        PLSRenderContextNativeImpl(id<MTLDevice> gpu, id<MTLCommandQueue> queue) :
-            PLSRenderContextMetalImpl(gpu, queue, ContextOptions())
+        PLSRenderContextNativeImpl(id<MTLDevice> gpu) :
+            PLSRenderContextMetalImpl(gpu, ContextOptions())
         {}
 
     protected:
@@ -219,7 +218,7 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
         }
     };
     auto plsContextImpl =
-        std::unique_ptr<PLSRenderContextNativeImpl>(new PLSRenderContextNativeImpl(gpu, queue));
+        std::unique_ptr<PLSRenderContextNativeImpl>(new PLSRenderContextNativeImpl(gpu));
     return std::make_unique<rive::pls::PLSRenderContext>(std::move(plsContextImpl));
 }
 
@@ -228,13 +227,12 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
     // Make a single static PLSRenderContext, since it is also the factory and any objects it
     // creates may outlive this 'RiveContext' instance.
     static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
-    static id<MTLCommandQueue> s_plsQueue = [s_plsGPU newCommandQueue];
     static std::unique_ptr<rive::pls::PLSRenderContext> s_plsContext =
-        make_pls_context_native(s_plsGPU, s_plsQueue);
+        make_pls_context_native(s_plsGPU);
 
     self = [super init];
     self.metalDevice = s_plsGPU;
-    self.metalQueue = s_plsQueue;
+    self.metalQueue = [s_plsGPU newCommandQueue];
     self.depthStencilPixelFormat = MTLPixelFormatInvalid;
     self.framebufferOnly = YES;
     _plsContext = s_plsContext.get();
@@ -282,15 +280,23 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(
     }
     _renderTarget->setTargetTexture(surface.texture);
 
-    rive::pls::PLSRenderContext::FrameDescriptor frameDescriptor;
-    frameDescriptor.renderTarget = _renderTarget;
-    _plsContext->beginFrame(std::move(frameDescriptor));
+    _plsContext->beginFrame({
+        .renderTargetWidth = _renderTarget->width(),
+        .renderTargetHeight = _renderTarget->height(),
+        .loadAction = rive::pls::LoadAction::clear,
+        .clearColor = 0,
+    });
     return _renderer.get();
 }
 
 - (void)endFrame
 {
-    _plsContext->flush();
+    id<MTLCommandBuffer> flushCommandBuffer = [self.metalQueue commandBuffer];
+    _plsContext->flush({
+        .renderTarget = _renderTarget.get(),
+        .externalCommandBuffer = (__bridge void*)flushCommandBuffer,
+    });
+    [flushCommandBuffer commit];
 }
 
 @end
