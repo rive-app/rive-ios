@@ -75,7 +75,7 @@ jobs:
           pip3 install ply
 
       - name: Build everything WITHOUT Rive Renderer
-        run: ./scripts/build.sh ios_sim debug
+        run: ./scripts/build.sh ios_sim release
 
       - name: Testing iOS app WITHOUT Rive Renderer
         run: ./scripts/test.sh
@@ -94,7 +94,7 @@ jobs:
           ref: ${{ steps.renderer-ref.outputs.REF_VALUE }}
 
       - name: Build everything (using the cache, we should make an archive of course)
-        run: ./scripts/build.sh ios_sim debug
+        run: ./scripts/build.sh ios_sim release
 
       - name: Testing iOS app
         run: ./scripts/test.sh
