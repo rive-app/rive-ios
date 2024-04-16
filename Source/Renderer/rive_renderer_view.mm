@@ -12,6 +12,9 @@
 #import "RivePrivateHeaders.h"
 #import <RenderContext.h>
 #import <RenderContextManager.h>
+// We manually need to provide this as our build-time config isn't shared with xcode.
+#define WITH_RIVE_AUDIO
+#include "rive/audio/audio_engine.hpp"
 
 @implementation RiveRendererView
 {
@@ -19,8 +22,26 @@
     rive::Renderer* _renderer;
 }
 
+- (void)didEnterBackground:(NSNotification*)notification
+{
+    rive::AudioEngine::RuntimeEngine()->stop();
+}
+
+- (void)didEnterForeground:(NSNotification*)notification
+{
+    rive::AudioEngine::RuntimeEngine()->start();
+}
+
 - (instancetype)initWithCoder:(NSCoder*)decoder
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
     self = [super initWithCoder:decoder];
 
     _renderContext = [[RenderContextManager shared] getDefaultContext];
@@ -36,6 +57,14 @@
 
 - (instancetype)initWithFrame:(CGRect)frameRect
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
     _renderContext = [[RenderContextManager shared] getDefaultContext];
     assert(_renderContext);
 
