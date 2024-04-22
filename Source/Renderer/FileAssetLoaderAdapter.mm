@@ -36,6 +36,12 @@ bool rive::FileAssetLoaderAdapter::loadContents(rive::FileAsset& asset,
             [[RiveImageAsset alloc] initWithFileAsset:asset.as<rive::ImageAsset>()];
         return [loader loadContentsWithAsset:imageAsset andData:data andFactory:myFactory];
     }
+    else if (asset.is<rive::AudioAsset>())
+    {
+        RiveAudioAsset* audioAsset =
+            [[RiveAudioAsset alloc] initWithFileAsset:asset.as<rive::AudioAsset>()];
+        return [loader loadContentsWithAsset:audioAsset andData:data andFactory:myFactory];
+    }
     return false;
 }
 

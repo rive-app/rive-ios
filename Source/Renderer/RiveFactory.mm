@@ -56,6 +56,29 @@
 
 @end
 
+@implementation RiveAudio
+{
+    rive::rcp<rive::AudioSource> instance; // note: we do NOT own this, so don't delete it
+}
+- (instancetype)initWithAudio:(rive::rcp<rive::AudioSource>)audio
+{
+    if (self = [super init])
+    {
+        instance = audio;
+        return self;
+    }
+    else
+    {
+        return nil;
+    }
+}
+- (rive::rcp<rive::AudioSource>)instance
+{
+    return instance;
+}
+
+@end
+
 /*
  * RiveFactory
  */
@@ -90,6 +113,13 @@
     UInt8* bytes = (UInt8*)[data bytes];
     return [[RiveFont alloc]
         initWithFont:instance->decodeFont(rive::Span<const uint8_t>(bytes, [data length]))];
+}
+
+- (RiveAudio*)decodeAudio:(nonnull NSData*)data
+{
+    UInt8* bytes = (UInt8*)[data bytes];
+    return [[RiveAudio alloc]
+        initWithAudio:instance->decodeAudio(rive::Span<const uint8_t>(bytes, [data length]))];
 }
 
 @end

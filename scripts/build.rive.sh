@@ -61,7 +61,7 @@ build_runtime() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua  --no-rive-decoders --os=ios gmake2
+    premake5 --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --no-rive-decoders --os=ios gmake2
     make -C out/iphoneos_$1 clean
     make -C out/iphoneos_$1 -j12 rive_pls_renderer
     popd
@@ -86,6 +86,7 @@ build_runtime_sim() {
     # Build rive_cg_renderer.
     pushd $RIVE_RUNTIME_DIR/cg_renderer
     premake5 --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=emulator gmake2
+
     make -C out/iphonesimulator_$1 clean
     make -C out/iphonesimulator_$1 -j12 rive_cg_renderer
     popd

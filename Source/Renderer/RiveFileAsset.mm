@@ -62,6 +62,12 @@
     return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
 }
 
+- (nonnull NSString*)uniqueName
+{
+    std::string str = instance->uniqueName();
+    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+}
+
 @end
 
 @implementation RiveImageAsset
@@ -87,5 +93,17 @@
 - (void)font:(RiveFont*)font
 {
     ((rive::FontAsset*)[self getInstance])->font([font instance]);
+}
+@end
+
+@implementation RiveAudioAsset
+- (instancetype)initWithFileAsset:(const rive::AudioAsset*)fileAsset
+{
+    return [super initWithFileAsset:fileAsset];
+}
+
+- (void)audio:(RiveAudio*)audio
+{
+    ((rive::AudioAsset*)[self getInstance])->audioSource([audio instance]);
 }
 @end

@@ -194,6 +194,20 @@
 		046AFA712673AF04004ED497 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		046AFA732673B00B004ED497 /* BlendModes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046AFA722673B00B004ED497 /* BlendModes.swift */; };
 		0480028B2729AA4400F7132B /* clean_icon_set.riv in Resources */ = {isa = PBXBuildFile; fileRef = 048002882729AA4400F7132B /* clean_icon_set.riv */; };
+		0490914C2BC8326E00F2C12B /* SwiftAudioAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0490914B2BC8326E00F2C12B /* SwiftAudioAssets.swift */; };
+		0490914D2BC8326E00F2C12B /* SwiftAudioAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0490914B2BC8326E00F2C12B /* SwiftAudioAssets.swift */; };
+		049091542BC832B000F2C12B /* racket1-59343.wav in Resources */ = {isa = PBXBuildFile; fileRef = 049091502BC832AE00F2C12B /* racket1-59343.wav */; };
+		049091552BC832B000F2C12B /* racket1-59343.wav in Resources */ = {isa = PBXBuildFile; fileRef = 049091502BC832AE00F2C12B /* racket1-59343.wav */; };
+		049091562BC832B000F2C12B /* racket2-59344.wav in Resources */ = {isa = PBXBuildFile; fileRef = 049091512BC832AF00F2C12B /* racket2-59344.wav */; };
+		049091572BC832B000F2C12B /* racket2-59344.wav in Resources */ = {isa = PBXBuildFile; fileRef = 049091512BC832AF00F2C12B /* racket2-59344.wav */; };
+		049091582BC832B000F2C12B /* ping_pong_audio_demo.riv in Resources */ = {isa = PBXBuildFile; fileRef = 049091522BC832AF00F2C12B /* ping_pong_audio_demo.riv */; };
+		049091592BC832B000F2C12B /* ping_pong_audio_demo.riv in Resources */ = {isa = PBXBuildFile; fileRef = 049091522BC832AF00F2C12B /* ping_pong_audio_demo.riv */; };
+		0490915A2BC832B000F2C12B /* table-59328.wav in Resources */ = {isa = PBXBuildFile; fileRef = 049091532BC832B000F2C12B /* table-59328.wav */; };
+		0490915B2BC832B000F2C12B /* table-59328.wav in Resources */ = {isa = PBXBuildFile; fileRef = 049091532BC832B000F2C12B /* table-59328.wav */; };
+		0490915D2BC832D100F2C12B /* lip-sync_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 0490915C2BC832D100F2C12B /* lip-sync_test.riv */; };
+		0490915E2BC832D100F2C12B /* lip-sync_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 0490915C2BC832D100F2C12B /* lip-sync_test.riv */; };
+		049091632BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049091622BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift */; };
+		049091642BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049091622BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift */; };
 		04C4C83E2646FE410047E614 /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C4C83D2646FE410047E614 /* StateMachine.swift */; };
 		04D5B06C266A460C004ACA5B /* nothing.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04D5B069266A460C004ACA5B /* nothing.riv */; };
 		04DB5937266A348C0020A7E8 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
@@ -388,6 +402,13 @@
 		046AFA6E2673AF04004ED497 /* blendmodes.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = blendmodes.riv; sourceTree = "<group>"; };
 		046AFA722673B00B004ED497 /* BlendModes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlendModes.swift; sourceTree = "<group>"; };
 		048002882729AA4400F7132B /* clean_icon_set.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = clean_icon_set.riv; sourceTree = "<group>"; };
+		0490914B2BC8326E00F2C12B /* SwiftAudioAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAudioAssets.swift; sourceTree = "<group>"; };
+		049091502BC832AE00F2C12B /* racket1-59343.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "racket1-59343.wav"; sourceTree = "<group>"; };
+		049091512BC832AF00F2C12B /* racket2-59344.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "racket2-59344.wav"; sourceTree = "<group>"; };
+		049091522BC832AF00F2C12B /* ping_pong_audio_demo.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = ping_pong_audio_demo.riv; sourceTree = "<group>"; };
+		049091532BC832B000F2C12B /* table-59328.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "table-59328.wav"; sourceTree = "<group>"; };
+		0490915C2BC832D100F2C12B /* lip-sync_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "lip-sync_test.riv"; sourceTree = "<group>"; };
+		049091622BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOutOfBandAudioAssets.swift; sourceTree = "<group>"; };
 		04A8F6AB26452A91002C909A /* RiveRuntime.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RiveRuntime.xcodeproj; path = ../RiveRuntime.xcodeproj; sourceTree = "<group>"; };
 		04C4C83D2646FE410047E614 /* StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		04D5B069266A460C004ACA5B /* nothing.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nothing.riv; sourceTree = "<group>"; };
@@ -562,6 +583,11 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				0490915C2BC832D100F2C12B /* lip-sync_test.riv */,
+				049091522BC832AF00F2C12B /* ping_pong_audio_demo.riv */,
+				049091502BC832AE00F2C12B /* racket1-59343.wav */,
+				049091512BC832AF00F2C12B /* racket2-59344.wav */,
+				049091532BC832B000F2C12B /* table-59328.wav */,
 				E5B5C2172B238829006E57C8 /* asset_load_check.riv */,
 				043026052B012C5000320F2E /* simple_assets.riv */,
 				0453FCB02B012D17001185C8 /* picture-47982.jpeg */,
@@ -634,6 +660,8 @@
 				E57798A82A730A9B00FF25C3 /* SwiftTestText.swift */,
 				E5964AAA2A9CD49200140479 /* SwiftEvents.swift */,
 				041265212B0BC5A5009400EC /* SwiftSimpleAssets.swift */,
+				0490914B2BC8326E00F2C12B /* SwiftAudioAssets.swift */,
+				049091622BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -910,7 +938,9 @@
 				040553F72B7A2858008F076A /* truck_v7.riv in Resources */,
 				040553F82B7A2858008F076A /* pull.riv in Resources */,
 				040553F92B7A2858008F076A /* flux_capacitor.riv in Resources */,
+				049091542BC832B000F2C12B /* racket1-59343.wav in Resources */,
 				040553FA2B7A2858008F076A /* testtext.riv in Resources */,
+				0490915D2BC832D100F2C12B /* lip-sync_test.riv in Resources */,
 				040553FB2B7A2858008F076A /* juice_v7.riv in Resources */,
 				040553FC2B7A2858008F076A /* play_button_event_example.riv in Resources */,
 				040553FD2B7A2858008F076A /* neostream.riv in Resources */,
@@ -924,6 +954,7 @@
 				040554052B7A2858008F076A /* skills.riv in Resources */,
 				040554062B7A2858008F076A /* artboard_animations.riv in Resources */,
 				040554072B7A2858008F076A /* trailblaze.riv in Resources */,
+				049091582BC832B000F2C12B /* ping_pong_audio_demo.riv in Resources */,
 				040554082B7A2858008F076A /* riveslider.riv in Resources */,
 				040554092B7A2858008F076A /* marty.riv in Resources */,
 				0405540A2B7A2858008F076A /* leg_day_events_example.riv in Resources */,
@@ -931,6 +962,7 @@
 				0405540C2B7A2858008F076A /* rope.riv in Resources */,
 				0405540D2B7A2858008F076A /* teststatemachine.riv in Resources */,
 				0405540E2B7A2858008F076A /* switch_event_example.riv in Resources */,
+				049091562BC832B000F2C12B /* racket2-59344.wav in Resources */,
 				0405540F2B7A2858008F076A /* clean_icon_set.riv in Resources */,
 				040554102B7A2858008F076A /* text_test_2.riv in Resources */,
 				040554112B7A2858008F076A /* two_bone_ik.riv in Resources */,
@@ -955,6 +987,7 @@
 				040554242B7A2858008F076A /* life_bar.riv in Resources */,
 				040554252B7A2858008F076A /* wacky.riv in Resources */,
 				040554262B7A2858008F076A /* asset_load_check.riv in Resources */,
+				0490915A2BC832B000F2C12B /* table-59328.wav in Resources */,
 				040554272B7A2858008F076A /* energy_bar_example.riv in Resources */,
 				040554282B7A2858008F076A /* clipping.riv in Resources */,
 				040554292B7A2858008F076A /* watch_v1.riv in Resources */,
@@ -1034,7 +1067,9 @@
 				C9BD3926263B5FC700696C37 /* truck_v7.riv in Resources */,
 				042C88DC2644447500E7DBB2 /* pull.riv in Resources */,
 				042C88E32644447500E7DBB2 /* flux_capacitor.riv in Resources */,
+				049091552BC832B000F2C12B /* racket1-59343.wav in Resources */,
 				E57798A02A72C77900FF25C3 /* testtext.riv in Resources */,
+				0490915E2BC832D100F2C12B /* lip-sync_test.riv in Resources */,
 				C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */,
 				C3ECAC2B281837B300A81123 /* play_button_event_example.riv in Resources */,
 				042C88E42644447500E7DBB2 /* neostream.riv in Resources */,
@@ -1048,6 +1083,7 @@
 				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
+				049091592BC832B000F2C12B /* ping_pong_audio_demo.riv in Resources */,
 				C3D187F728075B6C008B739A /* riveslider.riv in Resources */,
 				83C89ACF2988709400044C17 /* marty.riv in Resources */,
 				C3ECAC2C281837B300A81123 /* leg_day_events_example.riv in Resources */,
@@ -1055,6 +1091,7 @@
 				042C88DE2644447500E7DBB2 /* rope.riv in Resources */,
 				C3C074AC283FC75900E8EB33 /* teststatemachine.riv in Resources */,
 				C3ECAC2D281837B300A81123 /* switch_event_example.riv in Resources */,
+				049091572BC832B000F2C12B /* racket2-59344.wav in Resources */,
 				0480028B2729AA4400F7132B /* clean_icon_set.riv in Resources */,
 				E57798AE2A73264100FF25C3 /* text_test_2.riv in Resources */,
 				04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */,
@@ -1079,6 +1116,7 @@
 				C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */,
 				042C88DB2644447500E7DBB2 /* wacky.riv in Resources */,
 				E5B5C2182B238829006E57C8 /* asset_load_check.riv in Resources */,
+				0490915B2BC832B000F2C12B /* table-59328.wav in Resources */,
 				E5A7874A27E115170056F24B /* energy_bar_example.riv in Resources */,
 				042C88EB2644447500E7DBB2 /* clipping.riv in Resources */,
 				C3E383482837E6B00029D65E /* watch_v1.riv in Resources */,
@@ -1107,6 +1145,7 @@
 				040553D32B7A2858008F076A /* SimpleHttpAnimation.swift in Sources */,
 				040553D42B7A2858008F076A /* RiveButton.swift in Sources */,
 				040553D52B7A2858008F076A /* AppDelegate.swift in Sources */,
+				0490914C2BC8326E00F2C12B /* SwiftAudioAssets.swift in Sources */,
 				040553D62B7A2858008F076A /* SwiftCannonGame.swift in Sources */,
 				040553D72B7A2858008F076A /* SwiftWidgets.swift in Sources */,
 				040553D82B7A2858008F076A /* utility.swift in Sources */,
@@ -1128,6 +1167,7 @@
 				040553E82B7A2858008F076A /* RiveSlider.swift in Sources */,
 				040553E92B7A2858008F076A /* Layout.swift in Sources */,
 				040553EA2B7A2858008F076A /* BlendModes.swift in Sources */,
+				049091632BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift in Sources */,
 				040553EB2B7A2858008F076A /* SwiftMultipleAnimations.swift in Sources */,
 				040553EC2B7A2858008F076A /* SimpleAnimation.swift in Sources */,
 				040553ED2B7A2858008F076A /* SwiftSimpleAnimation.swift in Sources */,
@@ -1156,6 +1196,7 @@
 				0448838F29F82DD000D7523E /* SimpleHttpAnimation.swift in Sources */,
 				C324DB5D280728690060589F /* RiveButton.swift in Sources */,
 				C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */,
+				0490914D2BC8326E00F2C12B /* SwiftAudioAssets.swift in Sources */,
 				C3E2B58C2833ECFE00A8651B /* SwiftCannonGame.swift in Sources */,
 				C9CB2F13264C92D200E7FF0D /* SwiftWidgets.swift in Sources */,
 				042C888E2644230700E7DBB2 /* utility.swift in Sources */,
@@ -1177,6 +1218,7 @@
 				C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */,
 				042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */,
 				046AFA732673B00B004ED497 /* BlendModes.swift in Sources */,
+				049091642BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift in Sources */,
 				04026DCA27CE3EF6002B3DBF /* SwiftMultipleAnimations.swift in Sources */,
 				042C88882643DB7100E7DBB2 /* SimpleAnimation.swift in Sources */,
 				04026DC427CE3ED6002B3DBF /* SwiftSimpleAnimation.swift in Sources */,

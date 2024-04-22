@@ -15,8 +15,8 @@ struct SwiftSimpleAssets: DismissableView {
         
         if (asset is RiveImageAsset){
             
-            guard let url = (.main as Bundle).url(forResource: "picture-47982", withExtension: "jpeg") else {
-                fatalError("Failed to locate 'picture-47982' in bundle.")
+            guard let url = (.main as Bundle).url(forResource: asset.uniqueName(), withExtension: "jpeg") else {
+                fatalError("Failed to locate '\(asset.uniqueName())' in bundle.")
             }
             guard let data = try? Data(contentsOf: url) else {
                 fatalError("Failed to load \(url) from bundle.")
@@ -26,8 +26,8 @@ struct SwiftSimpleAssets: DismissableView {
             )
             return true;
         }else if (asset is RiveFontAsset) {
-            guard let url = (.main as Bundle).url(forResource: "Inter-45562", withExtension: "ttf") else {
-                fatalError("Failed to locate 'Inter-45562' in bundle.")
+            guard let url = (.main as Bundle).url(forResource: asset.uniqueName(), withExtension: asset.fileExtension()) else {
+                fatalError("Failed to locate '\(asset.uniqueName())' in bundle.")
             }
             guard let data = try? Data(contentsOf: url) else {
                 fatalError("Failed to load \(url) from bundle.")

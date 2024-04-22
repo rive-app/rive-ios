@@ -24,6 +24,7 @@ class ExamplesMasterTableViewController: UITableViewController {
         "Stress Test",
         "Simple assets",
         "Cached assets",
+        
     ]
     
     
@@ -41,7 +42,9 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("Playing with Text",   typeErased(dismissableView: TextInputView())),
         ("Rive Events",         typeErased(dismissableView: SwiftEvents())),
         ("Variable FPS",        typeErased(dismissableView: SwiftVariableFPS())),
-        ("Simple Assets",       typeErased(dismissableView: SwiftSimpleAssets()))
+        ("Simple Assets",       typeErased(dismissableView: SwiftSimpleAssets())),
+        ("Audio Assets",       typeErased(dismissableView: SwiftAudioAssets())),
+        ("External Audio Assets",       typeErased(dismissableView: SwiftOutOfBandAudioAssets()))
     ]
     
     

@@ -30,6 +30,7 @@
 #import "rive/event.hpp"
 #import "rive/assets/image_asset.hpp"
 #import "rive/assets/font_asset.hpp"
+#import "rive/assets/audio_asset.hpp"
 #import "rive/assets/file_asset.hpp"
 #import "rive/file_asset_loader.hpp"
 
@@ -130,10 +131,17 @@
 @end
 
 /*
- * SMIBool
+ * RiveFontAsset
  */
 @interface RiveFontAsset ()
 - (instancetype)initWithFileAsset:(const rive::FontAsset*)fileAsset;
+@end
+
+/*
+ * RiveAudioAsset
+ */
+@interface RiveAudioAsset ()
+- (instancetype)initWithFileAsset:(const rive::AudioAsset*)fileAsset;
 @end
 
 /*
@@ -151,4 +159,9 @@
 @interface RiveRenderImage ()
 - (instancetype)initWithImage:(rive::rcp<rive::RenderImage>)image;
 - (rive::rcp<rive::RenderImage>)instance;
+@end
+
+@interface RiveAudio ()
+- (instancetype)initWithAudio:(rive::rcp<rive::AudioSource>)audio;
+- (rive::rcp<rive::AudioSource>)instance;
 @end

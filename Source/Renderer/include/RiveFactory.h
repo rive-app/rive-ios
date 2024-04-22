@@ -19,12 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RiveRenderImage : NSObject
 @end
 
+@interface RiveAudio : NSObject
+@end
+
 /*
  * RiveFactory
  */
 @interface RiveFactory : NSObject
 - (RiveFont*)decodeFont:(NSData*)data;
 - (RiveRenderImage*)decodeImage:(NSData*)data;
+- (RiveAudio*)decodeAudio:(NSData*)data;
 @end
 
 NS_ASSUME_NONNULL_END

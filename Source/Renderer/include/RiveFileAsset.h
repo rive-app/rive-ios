@@ -13,6 +13,7 @@
 
 @class RiveRenderImage;
 @class RiveFont;
+@class RiveAudio;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RiveFileAsset : NSObject
 // TODO: add an asset type?
 - (NSString*)name;
+- (NSString*)uniqueName;
 - (NSString*)uniqueFilename;
 - (NSString*)fileExtension;
 - (NSString*)cdnBaseUrl;
@@ -36,10 +38,17 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /*
- * SMIBool
+ * RiveFontAsset
  */
 @interface RiveFontAsset : RiveFileAsset
 - (void)font:(RiveFont*)font;
+@end
+
+/*
+ * RiveAudioAsset
+ */
+@interface RiveAudioAsset : RiveFileAsset
+- (void)audio:(RiveAudio*)audio;
 @end
 
 NS_ASSUME_NONNULL_END
