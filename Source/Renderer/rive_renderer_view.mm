@@ -46,7 +46,7 @@
 #else
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didEnterBackground:)
-                                                 name:NSApplicationDidFinishLaunchingNotification
+                                                 name:NSApplicationDidResignActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didEnterForeground:)
@@ -80,7 +80,7 @@
 #else
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didEnterBackground:)
-                                                 name:NSApplicationDidFinishLaunchingNotification
+                                                 name:NSApplicationDidResignActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didEnterForeground:)
