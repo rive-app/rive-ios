@@ -3,7 +3,7 @@
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 
-#if __has_include(<UIKit/UIKit.h>)
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #else
 #import <AppKit/AppKit.h>
@@ -34,6 +34,7 @@
 
 - (instancetype)initWithCoder:(NSCoder*)decoder
 {
+#if TARGET_OS_IPHONE
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didEnterBackground:)
                                                  name:UIApplicationDidEnterBackgroundNotification
@@ -42,6 +43,16 @@
                                              selector:@selector(didEnterForeground:)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
+#else
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterBackground:)
+                                                 name:NSApplicationDidFinishLaunchingNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterForeground:)
+                                                 name:NSApplicationWillBecomeActiveNotification
+                                               object:nil];
+#endif
     self = [super initWithCoder:decoder];
 
     _renderContext = [[RenderContextManager shared] getDefaultContext];
@@ -57,6 +68,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frameRect
 {
+#if TARGET_OS_IPHONE
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didEnterBackground:)
                                                  name:UIApplicationDidEnterBackgroundNotification
@@ -65,6 +77,16 @@
                                              selector:@selector(didEnterForeground:)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
+#else
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterBackground:)
+                                                 name:NSApplicationDidFinishLaunchingNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterForeground:)
+                                                 name:NSApplicationWillBecomeActiveNotification
+                                               object:nil];
+#endif
     _renderContext = [[RenderContextManager shared] getDefaultContext];
     assert(_renderContext);
 
