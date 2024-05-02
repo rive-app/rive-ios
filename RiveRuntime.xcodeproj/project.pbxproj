@@ -57,6 +57,7 @@
 		04BE5430264D1F4100427B39 /* LayerState.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE542F264D1F4100427B39 /* LayerState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04BE5434264D267900427B39 /* LayerState.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04BE5431264D243D00427B39 /* LayerState.mm */; };
 		04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */; };
+		04E222402BE3C85100D82668 /* ball_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04E2223F2BE3C85100D82668 /* ball_test.riv */; };
 		04ED72F1299C114000E8DE53 /* RiveViewModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04ED72F0299C114000E8DE53 /* RiveViewModelTest.swift */; };
 		04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04ED72F2299C115100E8DE53 /* empty_animation_state.riv */; };
 		2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */ = {isa = PBXBuildFile; fileRef = 2A7079342726277C00C035A1 /* rive_renderer_view.hh */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -157,6 +158,7 @@
 		04BE542F264D1F4100427B39 /* LayerState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayerState.h; sourceTree = "<group>"; };
 		04BE5431264D243D00427B39 /* LayerState.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LayerState.mm; sourceTree = "<group>"; };
 		04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RivePrivateHeaders.h; sourceTree = "<group>"; };
+		04E2223F2BE3C85100D82668 /* ball_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = ball_test.riv; sourceTree = "<group>"; };
 		04ED72F0299C114000E8DE53 /* RiveViewModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RiveViewModelTest.swift; sourceTree = "<group>"; };
 		04ED72F2299C115100E8DE53 /* empty_animation_state.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty_animation_state.riv; sourceTree = "<group>"; };
 		2A7079342726277C00C035A1 /* rive_renderer_view.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rive_renderer_view.hh; sourceTree = "<group>"; };
@@ -252,6 +254,7 @@
 			isa = PBXGroup;
 			children = (
 				0424A8752BD59435000A9A1C /* img_test.riv */,
+				04E2223F2BE3C85100D82668 /* ball_test.riv */,
 				0424A8732BD592F2000A9A1C /* audio_test.riv */,
 				041265272B0CC387009400EC /* hosted_assets.riv */,
 				041265292B0CCB8E009400EC /* embedded_assets.riv */,
@@ -525,6 +528,7 @@
 				04BE540D2649403600427B39 /* junk.riv in Resources */,
 				04BE54092649403600427B39 /* state_machine_configurations.riv in Resources */,
 				04BE54072649403600427B39 /* what_a_state.riv in Resources */,
+				04E222402BE3C85100D82668 /* ball_test.riv in Resources */,
 				0424A8762BD59435000A9A1C /* img_test.riv in Resources */,
 				04BE541A264A823000427B39 /* animationconfigurations.riv in Resources */,
 				04BE540E2649403600427B39 /* multiple_state_machines.riv in Resources */,

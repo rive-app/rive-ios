@@ -271,6 +271,50 @@ class DelegatesTest: XCTestCase {
         XCTAssertTrue((delegate.events.last as? RiveOpenUrlEvent)?.url != nil)
     }
     
+    func testNestedStateMachineLooping() throws {
+        // this test tests advancing a state machine with a one shot animation that ends after 1 second
+        // but the artboard has a nested artboard that is playing a looping animation via its state machine.
+        let delegate = DrDelegate()
+        let file = try RiveFile(testfileName: "ball_test")
+        let model = RiveModel(riveFile: file)
+        let viewModel = RiveViewModel(model, stateMachineName: "State Machine 1", autoPlay: true)
+        let view = viewModel.createRiveView()
+        
+        view.playerDelegate = delegate
+        view.stateMachineDelegate = delegate
+        XCTAssertEqual(true, viewModel.isPlaying)
+        view.advance(delta:0.1)
+        XCTAssertEqual(true, viewModel.isPlaying)
+        view.advance(delta:1.0)
+        XCTAssertEqual(true, viewModel.isPlaying)
+        view.advance(delta:0.1)
+        XCTAssertEqual(true, viewModel.isPlaying)
+    }
+    
+    func testNestedStateMachineOneShot() throws {
+        // this test tests advancing a state machine with a one shot animation that ends after 1 second
+        // but the artboard has a nested artboard that is playing a one shot animation via its state machine.
+        let delegate = DrDelegate()
+        let file = try RiveFile(testfileName: "ball_test")
+        let model = RiveModel(riveFile: file)
+        let viewModel = RiveViewModel(
+            model,
+            stateMachineName: "State Machine 1",
+            autoPlay: true,
+            artboardName: "Artboard 2"
+        )
+        let view = viewModel.createRiveView()
+        
+        view.playerDelegate = delegate
+        view.stateMachineDelegate = delegate
+        XCTAssertEqual(true, viewModel.isPlaying)
+        view.advance(delta:0.1)
+        XCTAssertEqual(true, viewModel.isPlaying)
+        view.advance(delta:1.0)
+        XCTAssertEqual(false, viewModel.isPlaying)
+    }
+    
+    
     func testStateMachineLayerStates() throws {
         let delegate = DrDelegate()
         let file = try RiveFile(testfileName: "what_a_state")
@@ -326,8 +370,12 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(0, delegate.stateMachineStates.count)
         XCTAssertEqual(true, viewModel.isPlaying)
 
-        // animation came to an end inside this time period, this still means no state change
+        // state machine advance ends, but
+        // artboard advanced in this period, so we "keepGoing"
         view.advance(delta:0.4)
+        XCTAssertEqual(true, viewModel.isPlaying)
+        // animation is done
+        view.advance(delta:0.1)
         XCTAssertEqual(false, viewModel.isPlaying)
         XCTAssertEqual(0, delegate.stateMachineStates.count)
 
