@@ -68,6 +68,7 @@
 		2AD589B62B574C0A00CD1D24 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589B12B573C9F00CD1D24 /* CoreAudio.framework */; };
 		2AD589BA2B57589400CD1D24 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589B92B57589400CD1D24 /* AudioToolbox.framework */; };
 		2AD589BB2B57589B00CD1D24 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AD589B92B57589400CD1D24 /* AudioToolbox.framework */; };
+		2E54F23A2BE428990013016C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2E54F2392BE428990013016C /* PrivacyInfo.xcprivacy */; };
 		83DE4C912AA8DD7B00B88B72 /* RenderContextManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */; };
 		83DE4C932AA8DD9F00B88B72 /* RenderContextManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83DE4CA02AAA072B00B88B72 /* PlatformCGImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */; };
@@ -167,6 +168,7 @@
 		2AD589B12B573C9F00CD1D24 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		2AD589B42B574C0000CD1D24 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		2AD589B92B57589400CD1D24 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		2E54F2392BE428990013016C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RenderContextManager.mm; path = Source/Renderer/RenderContextManager.mm; sourceTree = SOURCE_ROOT; };
 		83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderContextManager.h; sourceTree = "<group>"; };
 		83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PlatformCGImage.mm; sourceTree = "<group>"; };
@@ -290,6 +292,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		2E54F2382BE428750013016C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2E54F2392BE428990013016C /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		C3468E5627EB9858008652FD /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -331,6 +341,7 @@
 			isa = PBXGroup;
 			children = (
 				C9C73ED324FC478800EF9516 /* Source */,
+				2E54F2382BE428750013016C /* Resources */,
 				C9C73EDE24FC478900EF9516 /* Tests */,
 				C9C73ED224FC478800EF9516 /* Products */,
 				2AD589AE2B5705D800CD1D24 /* Frameworks */,
@@ -502,6 +513,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E54F23A2BE428990013016C /* PrivacyInfo.xcprivacy in Resources */,
 				E599DCF92AAFA06100D1E49A /* rating_animation.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
