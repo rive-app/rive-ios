@@ -208,6 +208,11 @@ jobs:
         with:
           name: RiveRuntime.podspec
           path: RiveRuntime.podspec
+      - name: Upload PrivacyInfo file
+        uses: actions/upload-artifact@v2
+        with:
+          name: PrivacyInfo.xcprivacy
+          path: Resources/
 
       - name: Git config
         run: |
@@ -256,6 +261,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: RiveRuntime.podspec
+      - name: Download PrivacyInfo file
+        uses: actions/download-artifact@v3
+        with:
+          name: PrivacyInfo.xcprivacy
+          path: Resources/
       - name: Extract archive to pass cocoapods validation
         run: unzip RiveRuntime.xcframework.zip
       - name: Publish pod to the CocoaPods
