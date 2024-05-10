@@ -14,5 +14,10 @@ let package = Package(
             url: "https://github.com/rive-app/rive-ios/releases/download/$RELEASE_VERSION/RiveRuntime.xcframework.zip",
             checksum: "$CHECKSUM"
         ),
+        .target(
+            name: "RiveRuntime",
+            path: "Resources",
+            resources: [.copy("PrivacyInfo.xcprivacy")]
+        )
     ]
 )
