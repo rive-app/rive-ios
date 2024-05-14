@@ -15,7 +15,7 @@ let package = Package(
             checksum: "864b515a9f1588dd790f0ba22dabf5db4e4e68344923b5716bdb270d7913936f"
         ),
         .target(
-            name: "RiveRuntime",
+            name: "RiveRuntime-Resources",
             path: "Resources",
             resources: [.copy("PrivacyInfo.xcprivacy")]
         )
