@@ -214,39 +214,39 @@ jobs:
           name: PrivacyInfo.xcprivacy
           path: Resources/
 
-      - name: Git config
-        run: |
-          git config --local user.email 'hello@rive.app'
-          git config --local user.name ${{ github.actor }}
-      - name: Download versionFiles
-        uses: actions/download-artifact@v3
-        with:
-          name: version-files
-      - name: Add & commit version files (might want to look into doing this in release-it)
-        run: git add RiveRuntime.podspec Package.swift Source/Info.plist Tests/Info.plist && git commit -m "Updating version files"
-      - name: Download framework artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: RiveRuntime.xcframework.zip
-          path: archive/
-      - if: ${{ inputs.major == true }}
-        name: Major Release - Bump version number, update changelog, push and tag
-        run: npm run release -- major --ci
-        working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-      - if: ${{inputs.major == false && inputs.minor == true}}
-        name: Minor release - Bump version number, update changelog, push and tag
-        run: npm run release -- minor --ci
-        working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-      - if: ${{inputs.major == false && inputs.minor == false}}
-        name: Build release - Bump version number, update changelog, push and tag
-        run: npm run release -- --ci
-        working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+      # - name: Git config
+      #   run: |
+      #     git config --local user.email 'hello@rive.app'
+      #     git config --local user.name ${{ github.actor }}
+      # - name: Download versionFiles
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: version-files
+      # - name: Add & commit version files (might want to look into doing this in release-it)
+      #   run: git add RiveRuntime.podspec Package.swift Source/Info.plist Tests/Info.plist && git commit -m "Updating version files"
+      # - name: Download framework artifact
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: RiveRuntime.xcframework.zip
+      #     path: archive/
+      # - if: ${{ inputs.major == true }}
+      #   name: Major Release - Bump version number, update changelog, push and tag
+      #   run: npm run release -- major --ci
+      #   working-directory: ./.github/release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+      # - if: ${{inputs.major == false && inputs.minor == true}}
+      #   name: Minor release - Bump version number, update changelog, push and tag
+      #   run: npm run release -- minor --ci
+      #   working-directory: ./.github/release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+      # - if: ${{inputs.major == false && inputs.minor == false}}
+      #   name: Build release - Bump version number, update changelog, push and tag
+      #   run: npm run release -- --ci
+      #   working-directory: ./.github/release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
 
   publish_cocoapods:
     name: Publish framework to cocoapods
