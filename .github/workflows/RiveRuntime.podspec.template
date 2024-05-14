@@ -35,5 +35,5 @@ Pod::Spec.new do |spec|
   }
   spec.ios.vendored_frameworks = 'RiveRuntime.xcframework'
   spec.osx.vendored_frameworks = 'RiveRuntime.xcframework'
-  spec.resource_bundles = {'runtime_ios_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
+  spec.resource_bundles = {'runtime_ios_privacy' => ['RiveRuntime.xcframework/ios-arm64/RiveRuntime.framework/PrivacyInfo.xcprivacy']}
 end
