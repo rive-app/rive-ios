@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-open class RiveModel: ObservableObject {
+@objc open class RiveModel: NSObject, ObservableObject {
     // NOTE: the order here determines the order in which memory garbage collected
     public internal(set) var stateMachine: RiveStateMachineInstance?
     public internal(set) var animation: RiveLinearAnimationInstance?
@@ -96,7 +96,7 @@ open class RiveModel: ObservableObject {
     
     // MARK: -
     
-    public var description: String {
+    public override var description: String {
         let art = "RiveModel - [Artboard: " + artboard.name()
         
         if let stateMachine = stateMachine {
