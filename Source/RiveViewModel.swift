@@ -446,7 +446,7 @@ import Combine
     }
     
     /// Called by RiveFile when it finishes downloading an asset asynchronously
-    public func riveFileDidLoad(_ riveFile: RiveFile) throws {
+    @objc public func riveFileDidLoad(_ riveFile: RiveFile) throws {
         riveModel = RiveModel(riveFile: riveFile)
         
         sharedInit(
@@ -458,11 +458,11 @@ import Combine
     
     // MARK: - RivePlayer Delegate
     
-    open func player(playedWithModel riveModel: RiveModel?) { }
-    open func player(pausedWithModel riveModel: RiveModel?) { }
-    open func player(loopedWithModel riveModel: RiveModel?, type: Int) { }
-    open func player(stoppedWithModel riveModel: RiveModel?) { }
-    open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
+    @objc open func player(playedWithModel riveModel: RiveModel?) { }
+    @objc open func player(pausedWithModel riveModel: RiveModel?) { }
+    @objc open func player(loopedWithModel riveModel: RiveModel?, type: Int) { }
+    @objc open func player(stoppedWithModel riveModel: RiveModel?) { }
+    @objc open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
     
     enum RiveError: Error {
         case textValueRunError(_ message: String)
