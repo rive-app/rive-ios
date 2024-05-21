@@ -22,7 +22,7 @@ open class RiveView: RiveRendererView {
     private var eventQueue = EventQueue()
     
     // MARK: Delegates
-    public weak var playerDelegate: RivePlayerDelegate?
+    @objc public weak var playerDelegate: RivePlayerDelegate?
     public weak var stateMachineDelegate: RiveStateMachineDelegate?
     
     // MARK: Debug
@@ -422,7 +422,7 @@ open class RiveView: RiveRendererView {
     @objc optional func onRiveEventReceived(onRiveEvent riveEvent: RiveEvent)
 }
 
-public protocol RivePlayerDelegate: AnyObject {
+@objc public protocol RivePlayerDelegate: AnyObject {
     func player(playedWithModel riveModel: RiveModel?)
     func player(pausedWithModel riveModel: RiveModel?)
     func player(loopedWithModel riveModel: RiveModel?, type: Int)
