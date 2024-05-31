@@ -263,6 +263,10 @@
 		04E51C702A151C230075E473 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
 		27108F2F282C96E700A99D81 /* light_switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = 27108F2C282C96E700A99D81 /* light_switch.riv */; };
+		2E83910A2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */; };
+		2E83910B2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */; };
+		2E83910D2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
+		2E83910E2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
 		83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C89ACA29886ECB00044C17 /* StressTest.swift */; };
 		83C89ACF2988709400044C17 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		83C89AD1298870A700044C17 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
@@ -420,6 +424,8 @@
 		04E51C3E2A151A1F0075E473 /* Example__macOS_.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example__macOS_.entitlements; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
 		27108F2C282C96E700A99D81 /* light_switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = light_switch.riv; sourceTree = "<group>"; };
+		2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftNestedInputs.swift; sourceTree = "<group>"; };
+		2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = runtime_nested_inputs.riv; sourceTree = "<group>"; };
 		83C89ACA29886ECB00044C17 /* StressTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressTest.swift; sourceTree = "<group>"; };
 		83C89ACE2988709400044C17 /* marty.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = marty.riv; sourceTree = "<group>"; };
 		83C89AD0298870A700044C17 /* paper.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = paper.riv; sourceTree = "<group>"; };
@@ -583,6 +589,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */,
 				0490915C2BC832D100F2C12B /* lip-sync_test.riv */,
 				049091522BC832AF00F2C12B /* ping_pong_audio_demo.riv */,
 				049091502BC832AE00F2C12B /* racket1-59343.wav */,
@@ -648,6 +655,7 @@
 		C9A84F342644931E0014D8E0 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */,
 				E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */,
 				04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */,
 				C9CB2F12264C92D200E7FF0D /* SwiftWidgets.swift */,
@@ -945,6 +953,7 @@
 				040553FC2B7A2858008F076A /* play_button_event_example.riv in Resources */,
 				040553FD2B7A2858008F076A /* neostream.riv in Resources */,
 				040553FE2B7A2858008F076A /* loopy.riv in Resources */,
+				2E83910D2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */,
 				040553FF2B7A2858008F076A /* progress.riv in Resources */,
 				040554002B7A2858008F076A /* magic_8-ball_v2.riv in Resources */,
 				040554012B7A2858008F076A /* nothing.riv in Resources */,
@@ -1074,6 +1083,7 @@
 				C3ECAC2B281837B300A81123 /* play_button_event_example.riv in Resources */,
 				042C88E42644447500E7DBB2 /* neostream.riv in Resources */,
 				042C88E82644447500E7DBB2 /* loopy.riv in Resources */,
+				2E83910E2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */,
 				042C88E02644447500E7DBB2 /* progress.riv in Resources */,
 				C3ECAC252817BE1100A81123 /* magic_8-ball_v2.riv in Resources */,
 				04D5B06C266A460C004ACA5B /* nothing.riv in Resources */,
@@ -1175,6 +1185,7 @@
 				040553EF2B7A2858008F076A /* SwiftTestText.swift in Sources */,
 				040553F02B7A2858008F076A /* SwiftStateMachine.swift in Sources */,
 				040553F12B7A2858008F076A /* DismissableView.swift in Sources */,
+				2E83910A2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1226,6 +1237,7 @@
 				E57798A92A730A9B00FF25C3 /* SwiftTestText.swift in Sources */,
 				04026DCE27CE3F0F002B3DBF /* SwiftStateMachine.swift in Sources */,
 				F8DA7B452AF523A800FF3CBF /* DismissableView.swift in Sources */,
+				2E83910B2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -342,6 +342,44 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         setInput(inputName, value: Float(value))
     }
     
+    /// Provide the specified nested Artboard with a `Trigger` input
+    /// - Parameters:
+    ///   - inputName: The name of a `Trigger` input on the active StateMachine
+    ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    open func triggerInput(_ inputName: String, path: String) {
+        riveModel?.artboard?.getTrigger(inputName, path: path).fire()
+        play()
+    }
+    
+    /// Provide the specified nested Artboard with a `Boolean` input
+    /// - Parameters:
+    ///   - inputName: The name of a `Boolean` input on the active StateMachine
+    ///   - value: A Bool value for the input
+    ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    open func setInput(_ inputName: String, value: Bool, path: String) {
+        riveModel?.artboard?.getBool(inputName, path: path).setValue(value)
+        play()
+    }
+    
+    /// Provide the specified nested Artboard with a `Number` input
+    /// - Parameters:
+    ///   - inputName: The name of a `Number` input on the active StateMachine
+    ///   - value: A Float value for the input
+    ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    open func setInput(_ inputName: String, value: Float, path: String) {
+        riveModel?.artboard?.getNumber(inputName, path: path).setValue(value);
+        play()
+    }
+    
+    /// Provide the specified nested Artboard with a `Number` input
+    /// - Parameters:
+    ///   - inputName: The name of a `Number` input on the active StateMachine
+    ///   - value: A Double value for the input
+    ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    open func setInput(_ inputName: String, value: Double, path: String) {
+        setInput(inputName, value: Float(value), path: path)
+    }
+    
     /// Get a text value from a specified text run
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard

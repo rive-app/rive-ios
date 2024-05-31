@@ -14,6 +14,12 @@
 static int artInstanceCount = 0;
 
 // MARK: - RiveArtboard
+@interface RiveArtboard ()
+
+/// Holds references to SMIInputs
+@property NSMutableDictionary* inputs;
+
+@end
 
 @implementation RiveArtboard
 {
@@ -36,6 +42,7 @@ static int artInstanceCount = 0;
         [RiveArtboard raiseInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
 
+        _inputs = [[NSMutableDictionary alloc] init];
         _artboardInstance = std::move(riveArtboard);
         return self;
     }
@@ -226,6 +233,82 @@ static int artInstanceCount = 0;
         return [[RiveTextValueRun alloc] initWithTextValueRun:std::move(riveTextRun)];
     }
     return nullptr;
+}
+
+- (RiveSMIBool*)getBool:(NSString*)name path:(NSString*)path
+{
+    // Create a unique dictionary name for numbers;
+    // this lets us use one dictionary for the three different types
+    NSString* dictName = [NSString stringWithFormat:@"%@%s", name, "_boo"];
+    // Check if the input is already instanced
+    if ([_inputs objectForKey:dictName] != nil)
+    {
+        return _inputs[dictName];
+    }
+    // Otherwise, try to retrieve from runtime
+    std::string stdName = std::string([name UTF8String]);
+    std::string stdPath = std::string([path UTF8String]);
+    rive::SMIBool* smi = _artboardInstance->getBool(stdName, stdPath);
+    if (smi == nullptr)
+    {
+        return NULL;
+    }
+    else
+    {
+        _inputs[dictName] = [[RiveSMIBool alloc] initWithSMIInput:smi];
+        return _inputs[dictName];
+    }
+}
+
+- (RiveSMITrigger*)getTrigger:(NSString*)name path:(NSString*)path
+{
+    // Create a unique dictionary name for numbers;
+    // this lets us use one dictionary for the three different types
+    NSString* dictName = [NSString stringWithFormat:@"%@%s", name, "_trg"];
+    // Check if the input is already instanced
+    if ([_inputs objectForKey:dictName] != nil)
+    {
+        return _inputs[dictName];
+    }
+    // Otherwise, try to retrieve from runtime
+    std::string stdName = std::string([name UTF8String]);
+    std::string stdPath = std::string([path UTF8String]);
+    rive::SMITrigger* smi = _artboardInstance->getTrigger(stdName, stdPath);
+    if (smi == nullptr)
+    {
+        return NULL;
+    }
+    else
+    {
+        _inputs[dictName] = [[RiveSMITrigger alloc] initWithSMIInput:smi];
+        return _inputs[dictName];
+    }
+}
+
+- (RiveSMINumber*)getNumber:(NSString*)name path:(NSString*)path
+{
+    // Create a unique dictionary name for numbers;
+    // this lets us use one dictionary for the three different types
+    NSString* dictName = [NSString stringWithFormat:@"%@%s", name, "_num"];
+    // Check if the input is already instanced
+    if ([_inputs objectForKey:dictName] != nil)
+    {
+        return _inputs[dictName];
+    }
+    // Otherwise, try to retrieve from runtime
+    std::string stdName = std::string([name UTF8String]);
+    std::string stdPath = std::string([path UTF8String]);
+    rive::SMINumber* smi = _artboardInstance->getNumber(stdName, stdPath);
+    if (smi == nullptr)
+    {
+        return NULL;
+    }
+    else
+    {
+        _inputs[dictName] = [[RiveSMINumber alloc] initWithSMIInput:smi];
+        ;
+        return _inputs[dictName];
+    }
 }
 
 @end
