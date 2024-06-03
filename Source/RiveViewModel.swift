@@ -38,12 +38,12 @@ import Combine
 ///    }
 /// }
 /// ```
-open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
-    // TODO: could be a weak ref, need to look at this in more detail. 
+@objc open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
+    // TODO: could be a weak ref, need to look at this in more detail.
     open private(set) var riveView: RiveView?
     private var defaultModel: RiveModelBuffer!
     
-    public init(
+    @objc public init(
         _ model: RiveModel,
         stateMachineName: String?,
         fit: RiveFit = .contain,
@@ -59,7 +59,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         sharedInit(artboardName: artboardName, stateMachineName: stateMachineName, animationName: nil)
     }
     
-    public init(
+    @objc public init(
         _ model: RiveModel,
         animationName: String? = nil,
         fit: RiveFit = .contain,
@@ -75,7 +75,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         sharedInit(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
     }
     
-    public init(
+    @objc public init(
         fileName: String,
         extension: String = ".riv",
         in bundle: Bundle = .main,
@@ -116,7 +116,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         sharedInit(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
     }
     
-    public init(
+    @objc public init(
         webURL: String,
         stateMachineName: String?,
         fit: RiveFit = .contain,
@@ -133,7 +133,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: stateMachineName, animationName: nil)
     }
     
-    public init(
+    @objc public init(
         webURL: String,
         animationName: String? = nil,
         fit: RiveFit = .contain,
@@ -148,6 +148,10 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
         super.init()
         riveModel = RiveModel(webURL: webURL, delegate: self, loadCdn: loadCdn)
         defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
+    }
+    
+    @objc public convenience init(fileName: String) {
+        self.init(fileName: fileName, autoPlay: true)
     }
     
     private func sharedInit(artboardName: String?, stateMachineName: String?, animationName: String?) {
@@ -208,7 +212,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// - Parameters:
     ///   - animationName: The name of a new Animation to play on the current Artboard
     ///   - loop: The loop mode for the active Animation
-    open func play(animationName: String? = nil, loop: RiveLoop = .autoLoop, direction: RiveDirection = .autoDirection) {
+    @objc open func play(animationName: String? = nil, loop: RiveLoop = .autoLoop, direction: RiveDirection = .autoDirection) {
         if let name = animationName {
             try! riveModel?.setAnimation(name)
         }
@@ -237,18 +241,18 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     /// Halts the active Animation or StateMachine and will resume from it's current position when next played
-    open func pause() {
+    @objc open func pause() {
         riveView?.pause()
     }
     
     /// Halts the active Animation or StateMachine and sets it at its starting position
-    open func stop() {
+    @objc open func stop() {
         resetCurrentModel()
         riveView?.stop()
     }
     
     /// Sets the active Animation or StateMachine back to their starting position
-    open func reset() {
+    @objc open func reset() {
         resetCurrentModel()
         riveView?.reset()
     }
@@ -256,7 +260,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     // MARK: - RiveModel
     
     /// Instantiates elements in the model needed to play in a `RiveView`
-    open func configureModel(artboardName: String? = nil, stateMachineName: String? = nil, animationName: String? = nil) throws {
+    @objc open func configureModel(artboardName: String? = nil, stateMachineName: String? = nil, animationName: String? = nil) throws {
         guard let model = riveModel else { fatalError("Cannot configure nil RiveModel") }
         
         model.animation = nil
@@ -300,7 +304,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     /// Sets the Artboard, StateMachine or Animation back to the first one given to the RiveViewModel
-    open func resetToDefaultModel() {
+    @objc open func resetToDefaultModel() {
         try! configureModel(
             artboardName: defaultModel.artboardName,
             stateMachineName: defaultModel.stateMachineName,
@@ -311,7 +315,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     
     /// Provide the active StateMachine a `Trigger` input
     /// - Parameter inputName: The name of a `Trigger` input on the active StateMachine
-    open func triggerInput(_ inputName: String) {
+    @objc open func triggerInput(_ inputName: String) {
         riveModel?.stateMachine?.getTrigger(inputName).fire()
         play()
     }
@@ -320,7 +324,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// - Parameters:
     ///   - inputName: The name of a `Boolean` input on the active StateMachine
     ///   - value: A Bool value for the input
-    open func setInput(_ inputName: String, value: Bool) {
+    @objc(setBooleanInput::) open func setInput(_ inputName: String, value: Bool) {
         riveModel?.stateMachine?.getBool(inputName).setValue(value)
         play()
     }
@@ -329,7 +333,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// - Parameters:
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Float value for the input
-    open func setInput(_ inputName: String, value: Float) {
+    @objc(setFloatInput::) open func setInput(_ inputName: String, value: Float) {
         riveModel?.stateMachine?.getNumber(inputName).setValue(value)
         play()
     }
@@ -338,7 +342,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// - Parameters:
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Double value for the input
-    open func setInput(_ inputName: String, value: Double) {
+    @objc(setDoubleInput::) open func setInput(_ inputName: String, value: Double) {
         setInput(inputName, value: Float(value))
     }
     
@@ -384,7 +388,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
     /// - Returns: String text value of the specified text run if applicable
-    open func getTextRunValue(_ textRunName: String) -> String? {
+    @objc open func getTextRunValue(_ textRunName: String) -> String? {
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
             return textRun.text()
         }
@@ -395,7 +399,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
     ///   - value: A String value for the text run
-    open func setTextRunValue(_ textRunName: String, textValue: String) throws {
+    @objc open func setTextRunValue(_ textRunName: String, textValue: String) throws {
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
             textRun.setText(textValue)
         } else {
@@ -404,7 +408,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     // TODO: Replace this with a more robust structure of the file's contents
-    open func artboardNames() -> [String] {
+    @objc open func artboardNames() -> [String] {
         return riveModel?.riveFile.artboardNames() ?? []
     }
     
@@ -413,7 +417,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     /// Makes a new `RiveView` for the instance property with data from model which will
     /// replace any previous `RiveView`. This is called when first drawing a `RiveViewRepresentable`.
     /// - Returns: Reference to the new view that the `RiveViewModel` will be maintaining
-    open func createRiveView() -> RiveView {
+    @objc open func createRiveView() -> RiveView {
         let view: RiveView
         
         if let model = riveModel {
@@ -480,7 +484,7 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     }
     
     /// Called by RiveFile when it finishes downloading an asset asynchronously
-    public func riveFileDidLoad(_ riveFile: RiveFile) throws {
+    @objc public func riveFileDidLoad(_ riveFile: RiveFile) throws {
         riveModel = RiveModel(riveFile: riveFile)
         
         sharedInit(
@@ -492,11 +496,11 @@ open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStat
     
     // MARK: - RivePlayer Delegate
     
-    open func player(playedWithModel riveModel: RiveModel?) { }
-    open func player(pausedWithModel riveModel: RiveModel?) { }
-    open func player(loopedWithModel riveModel: RiveModel?, type: Int) { }
-    open func player(stoppedWithModel riveModel: RiveModel?) { }
-    open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
+    @objc open func player(playedWithModel riveModel: RiveModel?) { }
+    @objc open func player(pausedWithModel riveModel: RiveModel?) { }
+    @objc open func player(loopedWithModel riveModel: RiveModel?, type: Int) { }
+    @objc open func player(stoppedWithModel riveModel: RiveModel?) { }
+    @objc open func player(didAdvanceby seconds: Double, riveModel: RiveModel?) { }
     
     enum RiveError: Error {
         case textValueRunError(_ message: String)
