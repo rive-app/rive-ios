@@ -24,12 +24,20 @@
 
 - (void)didEnterBackground:(NSNotification*)notification
 {
-    rive::AudioEngine::RuntimeEngine()->stop();
+    auto engine = rive::AudioEngine::RuntimeEngine(false);
+    if (engine != nil)
+    {
+        engine->stop();
+    }
 }
 
 - (void)didEnterForeground:(NSNotification*)notification
 {
-    rive::AudioEngine::RuntimeEngine()->start();
+    auto engine = rive::AudioEngine::RuntimeEngine(false);
+    if (engine != nil)
+    {
+        engine->start();
+    }
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder
