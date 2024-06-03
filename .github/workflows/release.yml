@@ -93,7 +93,8 @@ jobs:
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    runs-on: [self-hosted, macOS, ARM64]
+    # mini-b was causing issues missing ply
+    runs-on: [self-hosted, mini-d]
     needs: [determine_version]
     outputs:
       checksum: ${{steps.get_checksum.outputs.checksum}}

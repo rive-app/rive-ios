@@ -11,8 +11,8 @@ jobs:
     strategy:
       matrix:
         arch: ["x86", "x64", "arm", "arm64", "iossim_arm64"]
-
-    runs-on: [self-hosted, macOS, ARM64]
+    # mini-b was causing issues missing ply
+    runs-on: [self-hosted, mini-d]
     permissions:
       id-token: write
       contents: read
@@ -52,7 +52,8 @@ jobs:
   run_tests:
     name: Run Rive tests
     needs: build-skia
-    runs-on: [self-hosted, macOS, ARM64]
+    # mini-b was causing issues missing ply
+    runs-on: [self-hosted, mini-d]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
