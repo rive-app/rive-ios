@@ -11,8 +11,7 @@ jobs:
     strategy:
       matrix:
         arch: ["x86", "x64", "arm", "arm64", "iossim_arm64"]
-    # mini-b was causing issues missing ply
-    runs-on: [self-hosted, mini-d]
+    runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
     permissions:
       id-token: write
       contents: read
@@ -22,6 +21,7 @@ jobs:
         with:
           aws-region: us-west-2
           role-to-assume: ${{ secrets.ACTIONS_ROLE }}
+
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
@@ -46,14 +46,14 @@ jobs:
           cp premake5 bin/premake5
           sudo chmod a+x premake5
           sudo mv premake5 /usr/local/bin
+
       - name: Build skia files
         run: ./scripts/build.skia.sh -a ${{ matrix.arch }}
 
   run_tests:
     name: Run Rive tests
     needs: build-skia
-    # mini-b was causing issues missing ply
-    runs-on: [self-hosted, mini-d]
+    runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -61,6 +61,11 @@ jobs:
           token: ${{ secrets.PAT_GITHUB }}
           submodules: true
 
+      - name: Configure venv
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          echo PATH=$PATH >> $GITHUB_ENV
       - name: Installing pre-requisites
         run: |
           set -x
@@ -76,7 +81,8 @@ jobs:
           pip3 install ply
 
       - name: Build everything WITHOUT Rive Renderer
-        run: ./scripts/build.sh ios_sim release
+        run: |
+          ./scripts/build.sh ios_sim release
 
       - name: Testing iOS app WITHOUT Rive Renderer
         run: ./scripts/test.sh
@@ -95,7 +101,8 @@ jobs:
           ref: ${{ steps.renderer-ref.outputs.REF_VALUE }}
 
       - name: Build everything (using the cache, we should make an archive of course)
-        run: ./scripts/build.sh ios_sim release
+        run: |
+          ./scripts/build.sh ios_sim release
 
       - name: Testing iOS app
         run: ./scripts/test.sh
