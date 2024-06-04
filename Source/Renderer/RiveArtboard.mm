@@ -237,9 +237,9 @@ static int artInstanceCount = 0;
 
 - (RiveSMIBool*)getBool:(NSString*)name path:(NSString*)path
 {
-    // Create a unique dictionary name for numbers;
+    // Create a unique dictionary name for nested artboards + booleans;
     // this lets us use one dictionary for the three different types
-    NSString* dictName = [NSString stringWithFormat:@"%@%s", name, "_boo"];
+    NSString* dictName = [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_boo"];
     // Check if the input is already instanced
     if ([_inputs objectForKey:dictName] != nil)
     {
@@ -262,9 +262,9 @@ static int artInstanceCount = 0;
 
 - (RiveSMITrigger*)getTrigger:(NSString*)name path:(NSString*)path
 {
-    // Create a unique dictionary name for numbers;
+    // Create a unique dictionary name for nested artboards + triggers;
     // this lets us use one dictionary for the three different types
-    NSString* dictName = [NSString stringWithFormat:@"%@%s", name, "_trg"];
+    NSString* dictName = [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_trg"];
     // Check if the input is already instanced
     if ([_inputs objectForKey:dictName] != nil)
     {
@@ -287,9 +287,9 @@ static int artInstanceCount = 0;
 
 - (RiveSMINumber*)getNumber:(NSString*)name path:(NSString*)path
 {
-    // Create a unique dictionary name for numbers;
+    // Create a unique dictionary name for nested artboards + numbers;
     // this lets us use one dictionary for the three different types
-    NSString* dictName = [NSString stringWithFormat:@"%@%s", name, "_num"];
+    NSString* dictName = [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_num"];
     // Check if the input is already instanced
     if ([_inputs objectForKey:dictName] != nil)
     {
