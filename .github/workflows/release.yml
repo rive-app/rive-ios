@@ -28,6 +28,7 @@ jobs:
         with:
           aws-region: us-west-2
           role-to-assume: ${{ secrets.ACTIONS_ROLE }}
+
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
@@ -52,6 +53,7 @@ jobs:
           mkdir bin
           cp premake5 bin/premake5
           sudo mv premake5 /usr/local/bin
+
       - name: Build skia files
         run: ./scripts/build.skia.sh -a ${{ matrix.arch }}
 
@@ -64,9 +66,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Install dependencies
         run: npm ci
         working-directory: ./.github/release
+
       - if: ${{ inputs.major == true }}
         id: determine_version_major
         name: Get Version - MAJOR
@@ -74,6 +78,7 @@ jobs:
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+
       - if: ${{inputs.major == false && inputs.minor == true}}
         id: determine_version_minor
         name: Get Version - MINOR
@@ -81,6 +86,7 @@ jobs:
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+
       - if: ${{ inputs.major == false && inputs.minor == false }}
         id: determine_version_patch
         name: Get Version - PATCH
@@ -88,13 +94,13 @@ jobs:
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+
       - id: echo_version
         run: echo "::set-output name=version::$(cat ./.github/release/RELEASE_VERSION)"
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    # mini-b was causing issues missing ply
-    runs-on: [self-hosted, mini-d]
+    runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
     needs: [determine_version]
     outputs:
       checksum: ${{steps.get_checksum.outputs.checksum}}
@@ -104,6 +110,12 @@ jobs:
         with:
           submodules: true
           token: ${{ secrets.PAT_GITHUB }}
+
+      - name: Configure venv
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          echo PATH=$PATH >> $GITHUB_ENV
 
       - name: Get Renderer ref
         id: renderer-ref
@@ -131,10 +143,13 @@ jobs:
           cp premake5 bin/premake5
           sudo mv premake5 /usr/local/bin
           pip3 install ply
+
       - name: Build everything (using the cache, we should make an archive of course)
         run: ./scripts/build.sh all
+
       - name: Update Marketing versions
         run: agvtool new-marketing-version ${{ needs.determine_version.outputs.version }}
+
       - name: Upload versionFiles
         uses: actions/upload-artifact@v3
         with:
@@ -143,22 +158,27 @@ jobs:
             RiveRuntime.xcodeproj/project.pbxproj
             Source/Info.plist
             Tests/Info.plist
+
       - id: build_frameworks
         name: Build frameworks
         run: sh ./scripts/build_framework.sh -c Release
+
       - id: zip
         name: Zip the framework
         # --symlinks is critical here to retain the structure of a macos framework.
         run: zip --symlinks -r RiveRuntime.xcframework.zip RiveRuntime.xcframework
         working-directory: ./archive
+
       - id: get_checksum
         name: Add the checksum of the zip file into our environment
         run: echo "::set-output name=checksum::$(swift package compute-checksum archive/RiveRuntime.xcframework.zip)"
+
       - name: Upload xcFramework
         uses: actions/upload-artifact@v3
         with:
           name: RiveRuntime.xcframework.zip
           path: archive/RiveRuntime.xcframework.zip
+
       - name: Upload versionFiles
         uses: actions/upload-artifact@v3
         with:
@@ -176,6 +196,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - name: Install dependencies
         run: npm ci
         working-directory: ./.github/release
@@ -184,6 +205,7 @@ jobs:
         uses: pCYSl5EDgo/cat@master
         with:
           path: .github/workflows/Package.swift.template
+
       - name: Create Package.swift
         run: |
           cat > Package.swift <<-EOF
@@ -197,6 +219,7 @@ jobs:
         uses: pCYSl5EDgo/cat@master
         with:
           path: .github/workflows/RiveRuntime.podspec.template
+
       - name: Create RiveRuntime.podspec
         run: |
           cat > RiveRuntime.podspec <<-EOF
@@ -204,6 +227,7 @@ jobs:
           EOF
         env:
           RELEASE_VERSION: ${{ needs.determine_version.outputs.version }}
+
       - name: Upload podspec file
         uses: actions/upload-artifact@v2
         with:
@@ -219,29 +243,35 @@ jobs:
         run: |
           git config --local user.email 'hello@rive.app'
           git config --local user.name ${{ github.actor }}
+
       - name: Download versionFiles
         uses: actions/download-artifact@v3
         with:
           name: version-files
+
       - name: Add & commit version files (might want to look into doing this in release-it)
         run: git add RiveRuntime.podspec Package.swift Source/Info.plist Tests/Info.plist && git commit -m "Updating version files"
+
       - name: Download framework artifact
         uses: actions/download-artifact@v2
         with:
           name: RiveRuntime.xcframework.zip
           path: archive/
+
       - if: ${{ inputs.major == true }}
         name: Major Release - Bump version number, update changelog, push and tag
         run: npm run release -- major --ci
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+
       - if: ${{inputs.major == false && inputs.minor == true}}
         name: Minor release - Bump version number, update changelog, push and tag
         run: npm run release -- minor --ci
         working-directory: ./.github/release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+
       - if: ${{inputs.major == false && inputs.minor == false}}
         name: Build release - Bump version number, update changelog, push and tag
         run: npm run release -- --ci
@@ -258,17 +288,21 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: RiveRuntime.xcframework.zip
+
       - name: Download podspec file
         uses: actions/download-artifact@v3
         with:
           name: RiveRuntime.podspec
+
       - name: Download PrivacyInfo file
         uses: actions/download-artifact@v3
         with:
           name: PrivacyInfo.xcprivacy
           path: Resources/
+
       - name: Extract archive to pass cocoapods validation
         run: unzip RiveRuntime.xcframework.zip
+
       - name: Publish pod to the CocoaPods
         uses: michaelhenry/deploy-to-cocoapods-github-action@1.0.10
         env:

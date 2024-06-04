@@ -44,7 +44,7 @@ In addition to tests in the project, you may want to visually test out any chang
 ### Linting and tests
 
 - We currently do not have any automatic linting set up.
-- Tests are run on pull request, and you should be able to run tests via xcode in the `RiveRuntime` project
+- Tests are run on pull request, and you should be able to run tests via xcode in the `RiveRuntime` project.
 
 ## Scripts
 
