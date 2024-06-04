@@ -150,10 +150,6 @@ import Combine
         defaultModel = RiveModelBuffer(artboardName: artboardName, stateMachineName: nil, animationName: animationName)
     }
     
-    @objc public convenience init(fileName: String) {
-        self.init(fileName: fileName, autoPlay: true)
-    }
-    
     private func sharedInit(artboardName: String?, stateMachineName: String?, animationName: String?) {
         try! configureModel(artboardName: artboardName, stateMachineName: stateMachineName, animationName: animationName)
         
