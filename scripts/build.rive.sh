@@ -46,6 +46,7 @@ build_runtime() {
     cp -r $RIVE_RUNTIME_DIR/build/ios/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive.a
     cp -r $RIVE_RUNTIME_DIR/dependencies/ios/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz.a
     cp -r $RIVE_RUNTIME_DIR/dependencies/ios/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi.a
+    cp -r $RIVE_RUNTIME_DIR/dependencies/ios/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga.a
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/build/ios/bin/$1/librive_skia_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_skia_renderer.a
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
@@ -79,6 +80,7 @@ build_runtime_sim() {
     cp -r $RIVE_RUNTIME_DIR/build/ios_sim/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sim.a
     cp -r $RIVE_RUNTIME_DIR/dependencies/ios_sim/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_sim.a
     cp -r $RIVE_RUNTIME_DIR/dependencies/ios_sim/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_sim.a
+    cp -r $RIVE_RUNTIME_DIR/dependencies/ios_sim/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_sim.a
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/build/ios_sim/bin/$1/librive_skia_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_skia_renderer_sim.a
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
@@ -113,6 +115,7 @@ build_runtime_macosx() {
     cp -r $RIVE_RUNTIME_DIR/build/macosx/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_macos.a
     cp -r $RIVE_RUNTIME_DIR/dependencies/macosx/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_macos.a
     cp -r $RIVE_RUNTIME_DIR/dependencies/macosx/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_macos.a
+    cp -r $RIVE_RUNTIME_DIR/dependencies/macosx/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_macos.a
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/build/macosx/bin/$1/librive_skia_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_skia_renderer_macos.a
     cp -r $RIVE_RUNTIME_DIR/skia/renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive

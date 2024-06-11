@@ -790,11 +790,16 @@
 					"-fembed-bitcode",
 					"-DSK_METAL",
 				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DYOGA_EXPORT=",
+				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lskia_ios",
 					"-lrive",
 					"-lrive_harfbuzz",
 					"-lrive_sheenbidi",
+					"-lrive_yoga",
 					"-lrive_skia_renderer",
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
@@ -804,6 +809,7 @@
 					"-lrive_sim",
 					"-lrive_harfbuzz_sim",
 					"-lrive_sheenbidi_sim",
+					"-lrive_yoga_sim",
 					"-lrive_skia_renderer_sim",
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
@@ -813,6 +819,7 @@
 					"-lrive_macos",
 					"-lrive_harfbuzz_macos",
 					"-lrive_sheenbidi_macos",
+					"-lrive_yoga_macos",
 					"-lrive_skia_renderer_macos",
 					"-lrive_pls_renderer_macos",
 					"-lrive_cg_renderer_macos",
@@ -879,11 +886,16 @@
 					"-fembed-bitcode",
 					"-DSK_METAL",
 				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DYOGA_EXPORT=",
+				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lskia_ios",
 					"-lrive",
 					"-lrive_harfbuzz",
 					"-lrive_sheenbidi",
+					"-lrive_yoga",
 					"-lrive_skia_renderer",
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
@@ -893,6 +905,7 @@
 					"-lrive_sim",
 					"-lrive_harfbuzz_sim",
 					"-lrive_sheenbidi_sim",
+					"-lrive_yoga_sim",
 					"-lrive_skia_renderer_sim",
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
@@ -902,6 +915,7 @@
 					"-lrive_macos",
 					"-lrive_harfbuzz_macos",
 					"-lrive_sheenbidi_macos",
+					"-lrive_yoga_macos",
 					"-lrive_skia_renderer_macos",
 					"-lrive_pls_renderer_macos",
 					"-lrive_cg_renderer_macos",
