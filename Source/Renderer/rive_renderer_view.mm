@@ -71,6 +71,7 @@
     [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
     [self setFramebufferOnly:_renderContext.framebufferOnly];
     [self setSampleCount:1];
+
     return self;
 }
 
@@ -104,6 +105,7 @@
     [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
     [self setFramebufferOnly:_renderContext.framebufferOnly];
     [self setSampleCount:1];
+
     return value;
 }
 
@@ -161,9 +163,8 @@
     return true;
 }
 
-- (void)drawRect:(CGRect)rect
+- (void)drawInRect:(CGRect)rect withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler
 {
-    [super drawRect:rect];
     if (![[self currentDrawable] texture])
     {
         return;
@@ -176,15 +177,20 @@
         [self drawRive:rect size:self.drawableSize];
         _renderer->restore();
     }
-    [_renderContext endFrame];
+    [_renderContext endFrame:self withCompletion:completionHandler];
+
     _renderer = nil;
 
-    id<MTLCommandBuffer> commandBuffer = [_renderContext.metalQueue commandBuffer];
-    [commandBuffer presentDrawable:[self currentDrawable]];
-    [commandBuffer commit];
     bool paused = [self isPaused];
     [self setEnableSetNeedsDisplay:paused];
     [self setPaused:paused];
+}
+
+- (void)drawRect:(CGRect)rect
+{
+    [super drawRect:rect];
+
+    [self drawInRect:rect withCompletion:NULL];
 }
 
 - (rive::Fit)riveFit:(RiveFit)fit

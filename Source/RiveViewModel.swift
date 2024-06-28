@@ -38,7 +38,7 @@ import Combine
 ///    }
 /// }
 /// ```
-@objc open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate {
+@objc open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate{
     // TODO: could be a weak ref, need to look at this in more detail.
     open private(set) var riveView: RiveView?
     private var defaultModel: RiveModelBuffer!
@@ -179,6 +179,7 @@ import Combine
     open var fit: RiveFit = .contain {
         didSet { riveView?.fit = fit }
     }
+    
     
     open var alignment: RiveAlignment = .center {
         didSet { riveView?.alignment = alignment }
@@ -425,6 +426,11 @@ import Combine
         registerView(view)
         
         return view
+    }
+    
+    open func setRiveView(view:RiveView)
+    {
+        registerView(view)
     }
     
     /// Gives updated layout values to the provided `RiveView`. This is called in

@@ -16,6 +16,8 @@ class Factory;
 class Renderer;
 }; // namespace rive
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class MTKView;
 
 /// RenderContext knows how to set up a backend-specific render context (e.g., Skia, CG, Rive, ...),
@@ -27,7 +29,9 @@ class Renderer;
 @property BOOL framebufferOnly;
 - (rive::Factory*)factory;
 - (rive::Renderer*)beginFrame:(MTKView*)view;
-- (void)endFrame;
+- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif

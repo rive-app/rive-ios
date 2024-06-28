@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:golden_test_app/golden_test_app.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Example-iOS/RiveExample.xcodeproj">
    </FileRef>
    <FileRef

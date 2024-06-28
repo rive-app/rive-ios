@@ -21,7 +21,7 @@
     return nil;
 }
 
-- (void)endFrame
+- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {}
 
 @end
@@ -49,7 +49,6 @@
 @interface SkiaContext : RenderContext
 - (rive::Factory*)factory;
 - (rive::Renderer*)beginFrame:(MTKView*)view;
-- (void)endFrame;
 @end
 
 @implementation SkiaContext
@@ -148,7 +147,7 @@ static sk_sp<SkSurface> mtk_view_to_sk_surface(MTKView* mtkView, GrDirectContext
     return _renderer.get();
 }
 
-- (void)endFrame
+- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     if (_sksurface != nullptr)
     {
@@ -156,6 +155,14 @@ static sk_sp<SkSurface> mtk_view_to_sk_surface(MTKView* mtkView, GrDirectContext
     }
     _sksurface = nullptr;
     _renderer = nullptr;
+
+    id<MTLCommandBuffer> commandBuffer = [self.metalQueue commandBuffer];
+    [commandBuffer presentDrawable:view.currentDrawable];
+    if (completionHandler)
+    {
+        [commandBuffer addCompletedHandler:completionHandler];
+    }
+    [commandBuffer commit];
 }
 
 @end
@@ -170,7 +177,6 @@ static sk_sp<SkSurface> mtk_view_to_sk_surface(MTKView* mtkView, GrDirectContext
 
 @interface RiveRendererContext : RenderContext
 - (rive::Renderer*)beginFrame:(MTKView*)view;
-- (void)endFrame;
 @end
 
 @implementation RiveRendererContext
@@ -289,13 +295,19 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
     return _renderer.get();
 }
 
-- (void)endFrame
+- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     id<MTLCommandBuffer> flushCommandBuffer = [self.metalQueue commandBuffer];
     _plsContext->flush({
         .renderTarget = _renderTarget.get(),
         .externalCommandBuffer = (__bridge void*)flushCommandBuffer,
     });
+
+    [flushCommandBuffer presentDrawable:view.currentDrawable];
+    if (completionHandler)
+    {
+        [flushCommandBuffer addCompletedHandler:completionHandler];
+    }
     [flushCommandBuffer commit];
 }
 
@@ -305,7 +317,6 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
 
 @interface CGRendererContext : RenderContext
 - (rive::Renderer*)beginFrame:(MTKView*)view;
-- (void)endFrame;
 @end
 
 constexpr static int kBufferRingSize = 3;
@@ -394,7 +405,7 @@ constexpr static int kBufferRingSize = 3;
     return _renderer.get();
 }
 
-- (void)endFrame
+- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     if (_cgContext != nil)
     {
@@ -411,6 +422,12 @@ constexpr static int kBufferRingSize = 3;
                    destinationLevel:0
                   destinationOrigin:MTLOriginMake(0, 0, 0)];
         [blitEncoder endEncoding];
+
+        [commandBuffer presentDrawable:view.currentDrawable];
+        if (completionHandler)
+        {
+            [commandBuffer addCompletedHandler:completionHandler];
+        }
         [commandBuffer commit];
     }
     _renderTargetTexture = nil;
