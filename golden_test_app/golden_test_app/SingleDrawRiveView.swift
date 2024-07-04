@@ -41,7 +41,7 @@ struct GoldenTestViewRepresentable : UIViewRepresentable {
 open class SingleDrawRiveView: RiveView {
     
     var currentModelIndex = -1
-    let modelsToRun = [/*"vector","dwarf", "text"*/]
+    let modelsToRun = ["vector","dwarf", "text"]
     var viewModel: RiveViewModel?
     var canRender = 1
     var texture: MTLTexture?;

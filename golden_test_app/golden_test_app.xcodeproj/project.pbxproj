@@ -12,6 +12,9 @@
 		3E3DB3552BF5449D000EAA9E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E3DB3542BF5449D000EAA9E /* Assets.xcassets */; };
 		3E3DB3592BF5449D000EAA9E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E3DB3582BF5449D000EAA9E /* Preview Assets.xcassets */; };
 		3E409FE52BF6B481002DD778 /* RiveRendererTestViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E409FE42BF6B481002DD778 /* RiveRendererTestViews.swift */; };
+		3E82044C2C13969D00D9BEA1 /* dwarf.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3E8204482C13969D00D9BEA1 /* dwarf.riv */; };
+		3E82044D2C13969D00D9BEA1 /* text.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3E8204492C13969D00D9BEA1 /* text.riv */; };
+		3E82044E2C13969D00D9BEA1 /* vector.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3E82044A2C13969D00D9BEA1 /* vector.riv */; };
 		3E8204502C13F37400D9BEA1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E82044F2C13F37400D9BEA1 /* AppDelegate.swift */; };
 		3E8204522C13F38200D9BEA1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8204512C13F38200D9BEA1 /* SceneDelegate.swift */; };
 		3EF6A8C32BF6911300CAC54A /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EF6A8C22BF6911300CAC54A /* RiveRuntime.framework */; };
@@ -41,6 +44,9 @@
 		3E3DB3582BF5449D000EAA9E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3E409FE42BF6B481002DD778 /* RiveRendererTestViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveRendererTestViews.swift; sourceTree = "<group>"; };
 		3E7419B02C01ADA9000EA71B /* golden-test-app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "golden-test-app-Info.plist"; sourceTree = SOURCE_ROOT; };
+		3E8204482C13969D00D9BEA1 /* dwarf.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = dwarf.riv; sourceTree = "<group>"; };
+		3E8204492C13969D00D9BEA1 /* text.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = text.riv; sourceTree = "<group>"; };
+		3E82044A2C13969D00D9BEA1 /* vector.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = vector.riv; sourceTree = "<group>"; };
 		3E82044F2C13F37400D9BEA1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3E8204512C13F38200D9BEA1 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		3EF6A8C22BF6911300CAC54A /* RiveRuntime.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RiveRuntime.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,6 +109,9 @@
 		3E82044B2C13969D00D9BEA1 /* raws */ = {
 			isa = PBXGroup;
 			children = (
+				3E8204482C13969D00D9BEA1 /* dwarf.riv */,
+				3E8204492C13969D00D9BEA1 /* text.riv */,
+				3E82044A2C13969D00D9BEA1 /* vector.riv */,
 			);
 			path = raws;
 			sourceTree = "<group>";
@@ -174,8 +183,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E82044D2C13969D00D9BEA1 /* text.riv in Resources */,
 				3E3DB3592BF5449D000EAA9E /* Preview Assets.xcassets in Resources */,
+				3E82044C2C13969D00D9BEA1 /* dwarf.riv in Resources */,
 				3E3DB3552BF5449D000EAA9E /* Assets.xcassets in Resources */,
+				3E82044E2C13969D00D9BEA1 /* vector.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
