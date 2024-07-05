@@ -416,7 +416,11 @@
 
     for (NSUInteger i = 0; i < [self artboardCount]; i++)
     {
-        [artboardNames addObject:[[self artboardFromIndex:i error:nil] name]];
+        RiveArtboard* artboard = [self artboardFromIndex:i error:nil];
+        if (artboard != nil)
+        {
+            [artboardNames addObject:[artboard name]];
+        }
     }
     return artboardNames;
 }

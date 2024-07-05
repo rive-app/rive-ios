@@ -129,7 +129,11 @@ static int artInstanceCount = 0;
     NSMutableArray* animationNames = [NSMutableArray array];
     for (NSUInteger i = 0; i < [self animationCount]; i++)
     {
-        [animationNames addObject:[[self animationFromIndex:i error:nil] name]];
+        RiveLinearAnimationInstance* animation = [self animationFromIndex:i error:nil];
+        if (animation != nil)
+        {
+            [animationNames addObject:[animation name]];
+        }
     }
     return animationNames;
 }
@@ -197,7 +201,11 @@ static int artInstanceCount = 0;
     NSMutableArray* stateMachineNames = [NSMutableArray array];
     for (NSUInteger i = 0; i < [self stateMachineCount]; i++)
     {
-        [stateMachineNames addObject:[[self stateMachineFromIndex:i error:nil] name]];
+        RiveStateMachineInstance* stateMachine = [self stateMachineFromIndex:i error:nil];
+        if (stateMachine != nil)
+        {
+            [stateMachineNames addObject:[stateMachine name]];
+        }
     }
     return stateMachineNames;
 }

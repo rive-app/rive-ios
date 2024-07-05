@@ -247,7 +247,11 @@ static int smInstanceCount = 0;
 
     for (NSUInteger i = 0; i < [self inputCount]; i++)
     {
-        [inputNames addObject:[[self inputFromIndex:i error:nil] name]];
+        RiveSMIInput* input = [self inputFromIndex:i error:nil];
+        if (input != nil)
+        {
+            [inputNames addObject:[input name]];
+        }
     }
     return inputNames;
 }
@@ -339,7 +343,11 @@ static int smInstanceCount = 0;
 
     for (NSUInteger i = 0; i < [self stateChangedCount]; i++)
     {
-        [inputNames addObject:[[self stateChangedFromIndex:i error:nil] name]];
+        RiveLayerState* state = [self stateChangedFromIndex:i error:nil];
+        if (state != nil)
+        {
+            [inputNames addObject:[state name]];
+        }
     }
     return inputNames;
 }
