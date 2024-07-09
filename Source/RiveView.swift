@@ -220,7 +220,10 @@ open class RiveView: RiveRendererView {
                 }
             }    
             isPlaying = stateMachine.advance(by: delta) && wasPlaying
-            stateMachine.stateChanges().forEach { stateMachineDelegate?.stateMachine?(stateMachine, didChangeState: $0) }
+            
+            if let delegate = stateMachineDelegate {
+                stateMachine.stateChanges().forEach { delegate.stateMachine?(stateMachine, didChangeState: $0) }
+            }
         } else if let animation = riveModel?.animation {
             isPlaying = animation.advance(by: delta) && wasPlaying
             
