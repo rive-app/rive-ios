@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveLayerState;
 @class RiveEvent;
 
+/// A type mirroring rive::HitResult, but available in both ObjC and Swift.
+typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
+
 /*
  * RiveStateMachineInstance
  */
@@ -47,19 +50,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Tells this StateMachineInstance that a user began touching the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating artboard
-- (void)touchBeganAtLocation:(CGPoint)touchLocation;
+/// @return The RiveHitResult of a touch beginning at the provided location.
+- (RiveHitResult)touchBeganAtLocation:(CGPoint)touchLocation;
 
 /// Tells this StateMachineInstance that a touch moved on the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating artboard
-- (void)touchMovedAtLocation:(CGPoint)touchLocation;
+/// @return The RiveHitResult of a touch moving at the provided location.
+- (RiveHitResult)touchMovedAtLocation:(CGPoint)touchLocation;
 
 /// Tells this StateMachineInstance that a user finished touching the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating artboard
-- (void)touchEndedAtLocation:(CGPoint)touchLocation;
+/// @return The RiveHitResult of a touch ending at the provided location.
+- (RiveHitResult)touchEndedAtLocation:(CGPoint)touchLocation;
 
 /// Tells this StateMachineInstance that a user cancelled touching the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating artboard
-- (void)touchCancelledAtLocation:(CGPoint)touchLocation;
+/// @return The RiveHitResult of a touch being cancelled at the provided location.
+- (RiveHitResult)touchCancelledAtLocation:(CGPoint)touchLocation;
 
 // MARK: Debug
 

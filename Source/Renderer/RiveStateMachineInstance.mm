@@ -13,6 +13,27 @@
 
 static int smInstanceCount = 0;
 
+/// Returns a RiveHitResult value, converting from the Rive C++ type.
+RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
+{
+    if (result == rive::HitResult::none)
+    {
+        return none;
+    }
+    else if (result == rive::HitResult::hit)
+    {
+        return hit;
+    }
+    else if (result == rive::HitResult::hitOpaque)
+    {
+        return hitOpaque;
+    }
+    else
+    {
+        return none;
+    }
+}
+
 // MARK: - RiveStateMachineInstance
 
 @interface RiveStateMachineInstance ()
@@ -360,24 +381,28 @@ static int smInstanceCount = 0;
 
 // MARK: Touch
 
-- (void)touchBeganAtLocation:(CGPoint)touchLocation
+- (RiveHitResult)touchBeganAtLocation:(CGPoint)touchLocation
 {
-    instance->pointerDown(rive::Vec2D(touchLocation.x, touchLocation.y));
+    return RiveHitResultFromRuntime(
+        instance->pointerDown(rive::Vec2D(touchLocation.x, touchLocation.y)));
 }
 
-- (void)touchMovedAtLocation:(CGPoint)touchLocation
+- (RiveHitResult)touchMovedAtLocation:(CGPoint)touchLocation
 {
-    instance->pointerMove(rive::Vec2D(touchLocation.x, touchLocation.y));
+    return RiveHitResultFromRuntime(
+        instance->pointerMove(rive::Vec2D(touchLocation.x, touchLocation.y)));
 }
 
-- (void)touchEndedAtLocation:(CGPoint)touchLocation
+- (RiveHitResult)touchEndedAtLocation:(CGPoint)touchLocation
 {
-    instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y));
+    return RiveHitResultFromRuntime(
+        instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y)));
 }
 
-- (void)touchCancelledAtLocation:(CGPoint)touchLocation
+- (RiveHitResult)touchCancelledAtLocation:(CGPoint)touchLocation
 {
-    instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y));
+    return RiveHitResultFromRuntime(
+        instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y)));
 }
 
 @end

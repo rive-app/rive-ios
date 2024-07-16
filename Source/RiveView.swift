@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 open class RiveView: RiveRendererView {
     // MARK: Configuration
     internal weak var riveModel: RiveModel?
@@ -264,25 +263,37 @@ open class RiveView: RiveRendererView {
     #if os(iOS)
         open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
             handleTouch(touches.first!, delegate: stateMachineDelegate?.touchBegan) {
-                $0.touchBegan(atLocation: $1)
+                let result = $0.touchBegan(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .began)
+                }
             }
         }
         
         open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
             handleTouch(touches.first!, delegate: stateMachineDelegate?.touchMoved) {
-                $0.touchMoved(atLocation: $1)
+                let result = $0.touchMoved(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
+                }
             }
         }
         
         open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
             handleTouch(touches.first!, delegate: stateMachineDelegate?.touchEnded) {
-                $0.touchEnded(atLocation: $1)
+                let result = $0.touchEnded(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .ended)
+                }
             }
         }
         
         open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
             handleTouch(touches.first!, delegate: stateMachineDelegate?.touchCancelled) {
-                $0.touchCancelled(atLocation: $1)
+                let result = $0.touchCancelled(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .cancelled)
+                }
             }
         }
         
@@ -319,31 +330,46 @@ open class RiveView: RiveRendererView {
     #else
         open override func mouseDown(with event: NSEvent) {
             handleTouch(event, delegate: stateMachineDelegate?.touchBegan) {
-                $0.touchBegan(atLocation: $1)
+                let result = $0.touchBegan(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .began)
+                }
             }
         }
         
         open override func mouseMoved(with event: NSEvent) {
             handleTouch(event, delegate: stateMachineDelegate?.touchMoved) {
-                $0.touchMoved(atLocation: $1)
+                let result = $0.touchMoved(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
+                }
             }
         }
         
         open override func mouseDragged(with event: NSEvent) {
             handleTouch(event, delegate: stateMachineDelegate?.touchMoved) {
-                $0.touchMoved(atLocation: $1)
+                let result = $0.touchMoved(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
+                }
             }
         }
         
         open override func mouseUp(with event: NSEvent) {
             handleTouch(event, delegate: stateMachineDelegate?.touchEnded) {
-                $0.touchEnded(atLocation: $1)
+                let result = $0.touchEnded(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .ended)
+                }
             }
         }
         
         open override func mouseExited(with event: NSEvent) {
             handleTouch(event, delegate: stateMachineDelegate?.touchCancelled) {
-                $0.touchCancelled(atLocation: $1)
+                let result = $0.touchCancelled(atLocation: $1)
+                if let stateMachine = riveModel?.stateMachine {
+                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .cancelled)
+                }
             }
         }
         
@@ -414,6 +440,18 @@ open class RiveView: RiveRendererView {
     }
 }
 
+/// An enum of possible touch or mouse events when interacting with an animation.
+@objc public enum RiveTouchEvent: Int {
+    /// The touch event that occurs when a touch or mouse button click occurs.
+    case began
+    /// The touch event that occurs when a touch or mouse is dragged.
+    case moved
+    /// The touch event that occurs when a touch or mouse button is lifted.
+    case ended
+    /// The touch event that occurs when a touch or mouse click is cancelled.
+    case cancelled
+}
+
 @objc public protocol RiveStateMachineDelegate: AnyObject {
     @objc optional func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
     @objc optional func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
@@ -422,6 +460,7 @@ open class RiveView: RiveRendererView {
     
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, receivedInput input: StateMachineInput)
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, didChangeState stateName: String)
+    @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, didReceiveHitResult hitResult: RiveHitResult, from event: RiveTouchEvent)
     @objc optional func onRiveEventReceived(onRiveEvent riveEvent: RiveEvent)
 }
 
