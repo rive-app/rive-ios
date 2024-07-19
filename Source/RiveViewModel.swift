@@ -486,7 +486,7 @@ import Combine
     }
     
     /// Called by RiveFile when it finishes downloading an asset asynchronously
-    @objc public func riveFileDidLoad(_ riveFile: RiveFile) throws {
+    @objc open func riveFileDidLoad(_ riveFile: RiveFile) throws {
         riveModel = RiveModel(riveFile: riveFile)
         
         sharedInit(
