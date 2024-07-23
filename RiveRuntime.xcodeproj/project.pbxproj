@@ -95,6 +95,7 @@
 		E5964A982A9697B600140479 /* RiveEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5964A972A9697B600140479 /* RiveEvent.mm */; };
 		E599DCF92AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
 		E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
+		F28DE4532C5002D900F3C379 /* RiveModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28DE4522C5002D900F3C379 /* RiveModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -198,6 +199,7 @@
 		E5964A952A965A9300140479 /* RiveEvent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = RiveEvent.h; sourceTree = "<group>"; };
 		E5964A972A9697B600140479 /* RiveEvent.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveEvent.mm; sourceTree = "<group>"; };
 		E599DCF82AAFA06100D1E49A /* rating_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rating_animation.riv; path = "Example-iOS/Assets/rating_animation.riv"; sourceTree = SOURCE_ROOT; };
+		F28DE4522C5002D900F3C379 /* RiveModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -389,6 +391,7 @@
 				04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */,
 				C38BB5F528762B720039E385 /* RiveStateMachineTest.swift */,
 				041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */,
+				F28DE4522C5002D900F3C379 /* RiveModelTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -594,6 +597,7 @@
 				04BE541C264A90D600427B39 /* RiveAnimationLoadTest.mm in Sources */,
 				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */,
 				04BE5413264943BB00427B39 /* util.mm in Sources */,
+				F28DE4532C5002D900F3C379 /* RiveModelTests.swift in Sources */,
 				04BE54112649434900427B39 /* RiveFileLoadTest.mm in Sources */,
 				C38BB5F628762B720039E385 /* RiveStateMachineTest.swift in Sources */,
 				04BE5418264A818F00427B39 /* RiveAnimationConfigurationsTest.mm in Sources */,

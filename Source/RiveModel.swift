@@ -27,7 +27,27 @@ import Combine
     public init(webURL: String, delegate: RiveFileDelegate, loadCdn: Bool) {
         riveFile = RiveFile(httpUrl: webURL, loadCdn:loadCdn, with: delegate)!
     }
-    
+
+    // rive-cpp defaults the volume to 1.0f
+    // This value is used if there is no artboard,
+    // and will be used to set the volume once a model is configured (with an artboard)
+    private var _volume: Float = 1
+
+    /// The volume of the current artboard, if available. Defaults to 1.
+    @objc open var volume: Float {
+        get {
+            if let volume = artboard?.__volume {
+                return volume
+            }
+
+            return _volume
+        }
+        set {
+            _volume = newValue
+            artboard?.__volume = newValue
+        }
+    }
+
     // MARK: - Setters
     
     /// Sets a new Artboard and makes the current StateMachine and Animation nil
@@ -36,6 +56,7 @@ import Combine
             stateMachine = nil
             animation = nil
             artboard = try riveFile.artboard(fromName: name)
+            artboard.__volume = _volume
         }
         catch { throw RiveModelError.invalidArtboard("Name \(name) not found") }
     }
@@ -47,11 +68,15 @@ import Combine
                 stateMachine = nil
                 animation = nil
                 artboard = try riveFile.artboard(from: index)
+                artboard.__volume = _volume
             }
             catch { throw RiveModelError.invalidArtboard("Index \(index) not found") }
         } else {
             // This tries to find the 'default' Artboard
-            do { artboard = try riveFile.artboard() }
+            do {
+                artboard = try riveFile.artboard()
+                artboard.__volume = _volume
+            }
             catch { throw RiveModelError.invalidArtboard("No Default Artboard") }
         }
     }

@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 //
 @interface RiveArtboard : NSObject
 
+@property(nonatomic, assign) float volume NS_REFINED_FOR_SWIFT;
+
 - (NSString*)name;
 - (CGRect)bounds;
 

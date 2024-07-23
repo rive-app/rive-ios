@@ -319,4 +319,14 @@ static int artInstanceCount = 0;
     }
 }
 
+- (float)volume
+{
+    return _artboardInstance->volume();
+}
+
+- (void)setVolume:(float)volume
+{
+    _artboardInstance->volume(volume);
+}
+
 @end

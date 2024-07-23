@@ -20,6 +20,10 @@ struct SwiftAudioAssets: DismissableView {
     );
     
     var body: some View {
-        riveViewModel.view()
+        riveViewModel
+            .view()
+            .onAppear {
+                riveViewModel.riveModel?.volume = 0.01
+            }
     }
 }

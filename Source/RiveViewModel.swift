@@ -180,7 +180,6 @@ import Combine
         didSet { riveView?.fit = fit }
     }
     
-    
     open var alignment: RiveAlignment = .center {
         didSet { riveView?.alignment = alignment }
     }
