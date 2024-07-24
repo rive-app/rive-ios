@@ -7,52 +7,8 @@ on:
   push:
 
 jobs:
-  build-skia:
-    strategy:
-      matrix:
-        arch: ["x86", "x64", "arm", "arm64", "iossim_arm64"]
-    runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-region: us-west-2
-          role-to-assume: ${{ secrets.ACTIONS_ROLE }}
-
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-          token: ${{ secrets.PAT_GITHUB }}
-
-      - name: Update Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: "zulu"
-          java-version: "16"
-
-      - name: Installing pre-requisites
-        run: |
-          set -x
-          # Install some dependencies & premake5
-          brew install ninja
-          curl https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz -L -o premake_macosx.tar.gz
-          tar -xvf premake_macosx.tar.gz 2>/dev/null
-          rm premake_macosx.tar.gz
-          mkdir bin
-          cp premake5 bin/premake5
-          sudo chmod a+x premake5
-          sudo mv premake5 /usr/local/bin
-
-      - name: Build skia files
-        run: ./scripts/build.skia.sh -a ${{ matrix.arch }}
-
   run_tests:
     name: Run Rive tests
-    needs: build-skia
     runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
     steps:
       - name: Checkout
@@ -79,13 +35,6 @@ jobs:
           cp premake5 bin/premake5
           sudo mv premake5 /usr/local/bin
           pip3 install ply
-
-      - name: Build everything WITHOUT Rive Renderer
-        run: |
-          ./scripts/build.sh ios_sim release
-
-      - name: Testing iOS app WITHOUT Rive Renderer
-        run: ./scripts/test.sh
 
       - name: Get Renderer ref
         id: renderer-ref

@@ -4,10 +4,16 @@
 
 #import <RenderContextManager.h>
 #import <RenderContext.h>
+#import <Rive.h>
+#import <RivePrivateHeaders.h>
+#import <RiveFactory.h>
 
 #import <PlatformCGImage.h>
 
 #include "utils/auto_cf.hpp"
+#include "cg_factory.hpp"
+#include "cg_renderer.hpp"
+#include "rive/pls/pls.hpp"
 
 @implementation RenderContext
 
@@ -25,151 +31,6 @@
 {}
 
 @end
-
-// skia throws out a bunch of documentation warnings for us
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdocumentation"
-
-#include "include/core/SkCanvas.h"
-#include "include/core/SkSurface.h"
-#include "include/core/SkSurfaceProps.h"
-#include "include/gpu/GrBackendSurface.h"
-#include "include/gpu/GrDirectContext.h"
-#include "include/gpu/mtl/GrMtlBackendContext.h"
-#include "skia_renderer.hpp"
-#include "skia_factory.hpp"
-#pragma clang diagnostic pop
-
-#include "cg_factory.hpp"
-#include "cg_renderer.hpp"
-
-#include "Rive.h"
-#include "RivePrivateHeaders.h"
-
-@interface SkiaContext : RenderContext
-- (rive::Factory*)factory;
-- (rive::Renderer*)beginFrame:(MTKView*)view;
-@end
-
-@implementation SkiaContext
-{
-    sk_sp<GrDirectContext> _graphicsContext;
-    sk_sp<SkSurface> _sksurface;
-    std::unique_ptr<rive::SkiaRenderer> _renderer;
-}
-
-- (instancetype)init
-{
-    self = [super init];
-
-    self.metalDevice = MTLCreateSystemDefaultDevice();
-    if (!self.metalDevice)
-    {
-        NSLog(@"Metal is not supported on this device");
-        return nil;
-    }
-    self.metalQueue = [self.metalDevice newCommandQueue];
-    self.depthStencilPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
-    self.framebufferOnly = NO;
-
-    GrMtlBackendContext metalBackendContext;
-    metalBackendContext.fDevice = sk_ret_cfp((__bridge const void*)self.metalDevice);
-    metalBackendContext.fQueue = sk_ret_cfp((__bridge const void*)self.metalQueue);
-
-    _graphicsContext = GrDirectContext::MakeMetal(metalBackendContext, GrContextOptions());
-
-    if (!_graphicsContext)
-    {
-        NSLog(@"GrDirectContext::MakeMetal failed");
-        return nil;
-    }
-    return self;
-}
-
-- (rive::Factory*)factory
-{
-    struct CGSkiaFactory : public rive::SkiaFactory
-    {
-        std::vector<uint8_t> platformDecode(rive::Span<const uint8_t> span,
-                                            rive::SkiaFactory::ImageInfo* info) override
-        {
-            std::vector<uint8_t> pixels;
-            PlatformCGImage image;
-            if (PlatformCGImageDecode(span.data(), span.size(), &image))
-            {
-                info->alphaType = image.opaque ? AlphaType::opaque : AlphaType::premul;
-                info->colorType = ColorType::rgba;
-                info->width = image.width;
-                info->height = image.height;
-                info->rowBytes = image.width * 4;
-                pixels = std::move(image.pixels);
-            }
-            return pixels;
-        }
-    };
-    static CGSkiaFactory factory;
-    return &factory;
-}
-
-static sk_sp<SkSurface> mtk_view_to_sk_surface(MTKView* mtkView, GrDirectContext* grContext)
-{
-    if (!grContext || MTLPixelFormatDepth32Float_Stencil8 != [mtkView depthStencilPixelFormat] ||
-        MTLPixelFormatBGRA8Unorm != [mtkView colorPixelFormat])
-    {
-        return nullptr;
-    }
-    const SkColorType colorType = kBGRA_8888_SkColorType;
-    sk_sp<SkColorSpace> colorSpace = nullptr;
-    const GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin;
-    const SkSurfaceProps surfaceProps(SkSurfaceProps::kUseDeviceIndependentFonts_Flag,
-                                      SkPixelGeometry::kUnknown_SkPixelGeometry);
-    int sampleCount = (int)[mtkView sampleCount];
-    return SkSurface::MakeFromMTKView(grContext,
-                                      (__bridge GrMTLHandle)mtkView,
-                                      origin,
-                                      sampleCount,
-                                      colorType,
-                                      colorSpace,
-                                      &surfaceProps);
-}
-
-- (rive::Renderer*)beginFrame:(MTKView*)view
-{
-    _sksurface = mtk_view_to_sk_surface(view, _graphicsContext.get());
-    if (!_sksurface)
-    {
-        NSLog(@"error: failed to create SkSurface from MTKView.");
-        return nil;
-    }
-    auto canvas = _sksurface->getCanvas();
-    canvas->clear(SkColor((0x00000000)));
-    _renderer = std::make_unique<rive::SkiaRenderer>(canvas);
-    return _renderer.get();
-}
-
-- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
-{
-    if (_sksurface != nullptr)
-    {
-        _sksurface->flushAndSubmit();
-    }
-    _sksurface = nullptr;
-    _renderer = nullptr;
-
-    id<MTLCommandBuffer> commandBuffer = [self.metalQueue commandBuffer];
-    [commandBuffer presentDrawable:view.currentDrawable];
-    if (completionHandler)
-    {
-        [commandBuffer addCompletedHandler:completionHandler];
-    }
-    [commandBuffer commit];
-}
-
-@end
-
-#include "rive/pls/pls.hpp"
-
-#if !defined(RIVE_NO_PLS)
 
 #include "rive/pls/metal/pls_render_context_metal_impl.h"
 #include "rive/pls/pls_image.hpp"
@@ -313,8 +174,6 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
 
 @end
 
-#endif // !defined(RIVE_NO_PLS)
-
 @interface CGRendererContext : RenderContext
 - (rive::Renderer*)beginFrame:(MTKView*)view;
 @end
@@ -439,10 +298,7 @@ constexpr static int kBufferRingSize = 3;
 
 @implementation RenderContextManager
 {
-    __weak SkiaContext* _skiaContextWeakPtr;
-#if !defined(RIVE_NO_PLS)
     __weak RiveRendererContext* _riveRendererContextWeakPtr;
-#endif
     __weak CGRendererContext* _cgContextWeakPtr;
 }
 
@@ -459,7 +315,7 @@ constexpr static int kBufferRingSize = 3;
 
 - (instancetype)init
 {
-    self.defaultRenderer = RendererType::skiaRenderer;
+    self.defaultRenderer = RendererType::riveRenderer;
     return self;
 }
 
@@ -467,35 +323,16 @@ constexpr static int kBufferRingSize = 3;
 {
     switch (self.defaultRenderer)
     {
-        case RendererType::skiaRenderer:
-            return [self getSkiaContext];
         case RendererType::riveRenderer:
             return [self getRiveRendererContext];
         case RendererType::cgRenderer:
             return [self getCGRendererContext];
     }
-}
-
-- (RenderContext*)getSkiaContext
-{
-    // Convert our weak reference to strong before trying to work with it. A weak pointer is liable
-    // to be released out from under us at any moment.
-    // https://stackoverflow.com/questions/15674320/understanding-weak-reference
-    SkiaContext* strongPtr = _skiaContextWeakPtr;
-    if (strongPtr == nil)
-    {
-        strongPtr = [[SkiaContext alloc] init];
-        _skiaContextWeakPtr = strongPtr;
-    }
-    return strongPtr;
+    RIVE_UNREACHABLE();
 }
 
 - (RenderContext*)getRiveRendererContext
 {
-#if defined(RIVE_NO_PLS)
-    NSLog(@"error: build does not include Rive Renderer");
-    return nil;
-#else
     // Convert our weak reference to strong before trying to work with it. A weak pointer is liable
     // to be released out from under us at any moment.
     // https://stackoverflow.com/questions/15674320/understanding-weak-reference
@@ -506,7 +343,6 @@ constexpr static int kBufferRingSize = 3;
         _riveRendererContextWeakPtr = strongPtr;
     }
     return strongPtr;
-#endif
 }
 
 - (RenderContext*)getCGRendererContext
@@ -531,11 +367,6 @@ constexpr static int kBufferRingSize = 3;
 - (RiveFactory*)getRiveRendererFactory
 {
     return [[RiveFactory alloc] initWithFactory:[[self getRiveRendererContext] factory]];
-}
-
-- (RiveFactory*)getSkiaFactory
-{
-    return [[RiveFactory alloc] initWithFactory:[[self getSkiaContext] factory]];
 }
 
 - (RiveFactory*)getCGFactory

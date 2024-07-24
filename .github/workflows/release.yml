@@ -13,53 +13,8 @@ on:
         default: false
 
 jobs:
-  build-skia:
-    strategy:
-      matrix:
-        arch: ["x86", "x64", "arm", "arm64", "iossim_arm64"]
-
-    runs-on: macos-12
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-region: us-west-2
-          role-to-assume: ${{ secrets.ACTIONS_ROLE }}
-
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-          token: ${{ secrets.PAT_GITHUB }}
-
-      - name: Update Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: "zulu"
-          java-version: "16"
-
-      - name: Installing pre-requisites
-        run: |
-          set -x
-          # Install some dependencies & premake5
-          brew install ninja
-          curl https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-macosx.tar.gz -L -o premake_macosx.tar.gz
-          tar -xvf premake_macosx.tar.gz 2>/dev/null
-          rm premake_macosx.tar.gz
-          sudo chmod a+x premake5
-          mkdir bin
-          cp premake5 bin/premake5
-          sudo mv premake5 /usr/local/bin
-
-      - name: Build skia files
-        run: ./scripts/build.skia.sh -a ${{ matrix.arch }}
-
   determine_version:
     name: Determine the next build version
-    needs: build-skia
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.echo_version.outputs.version }}

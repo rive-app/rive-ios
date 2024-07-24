@@ -766,11 +766,6 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = (
-					dependencies/includes/skia,
-					dependencies/includes/skia/include/core,
-					dependencies/includes/skia/include/effects,
-					dependencies/includes/skia/include/gpu,
-					dependencies/includes/skia/include/config,
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/pls/include,
@@ -799,32 +794,26 @@
 					"-DYOGA_EXPORT=",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"-lskia_ios",
 					"-lrive",
 					"-lrive_harfbuzz",
 					"-lrive_sheenbidi",
 					"-lrive_yoga",
-					"-lrive_skia_renderer",
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"-lskia_ios_sim",
 					"-lrive_sim",
 					"-lrive_harfbuzz_sim",
 					"-lrive_sheenbidi_sim",
 					"-lrive_yoga_sim",
-					"-lrive_skia_renderer_sim",
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
-					"-lskia_macos",
 					"-lrive_macos",
 					"-lrive_harfbuzz_macos",
 					"-lrive_sheenbidi_macos",
 					"-lrive_yoga_macos",
-					"-lrive_skia_renderer_macos",
 					"-lrive_pls_renderer_macos",
 					"-lrive_cg_renderer_macos",
 				);
@@ -860,11 +849,6 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = (
-					dependencies/includes/skia,
-					dependencies/includes/skia/include/core,
-					dependencies/includes/skia/include/effects,
-					dependencies/includes/skia/include/gpu,
-					dependencies/includes/skia/include/config,
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/pls/include,
@@ -895,32 +879,26 @@
 					"-DYOGA_EXPORT=",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"-lskia_ios",
 					"-lrive",
 					"-lrive_harfbuzz",
 					"-lrive_sheenbidi",
 					"-lrive_yoga",
-					"-lrive_skia_renderer",
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"-lskia_ios_sim",
 					"-lrive_sim",
 					"-lrive_harfbuzz_sim",
 					"-lrive_sheenbidi_sim",
 					"-lrive_yoga_sim",
-					"-lrive_skia_renderer_sim",
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
-					"-lskia_macos",
 					"-lrive_macos",
 					"-lrive_harfbuzz_macos",
 					"-lrive_sheenbidi_macos",
 					"-lrive_yoga_macos",
-					"-lrive_skia_renderer_macos",
 					"-lrive_pls_renderer_macos",
 					"-lrive_cg_renderer_macos",
 				);

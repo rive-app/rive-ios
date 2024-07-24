@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTKView;
 
-/// RenderContext knows how to set up a backend-specific render context (e.g., Skia, CG, Rive, ...),
+/// RenderContext knows how to set up a backend-specific render context (e.g., CG, Rive, ...),
 /// and provides a rive::Factory and rive::Renderer for it.
 @interface RenderContext : NSObject
 @property(strong) id<MTLDevice> metalDevice;
