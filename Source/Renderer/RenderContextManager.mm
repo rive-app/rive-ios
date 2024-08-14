@@ -70,16 +70,6 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
             {
                 return nullptr;
             }
-            // CG only supports premultiplied alpha. Unmultiply now.
-            size_t imageSizeInBytes = image.height * image.width * 4;
-            for (size_t i = 0; i < imageSizeInBytes; i += 4)
-            {
-                auto rgba = rive::simd::load<uint8_t, 4>(&image.pixels[i]);
-                if (rgba.a != 0)
-                {
-                    rgba = rgba * 255 / rgba.a;
-                }
-            }
             uint32_t mipLevelCount = rive::math::msb(image.height | image.width);
             return makeImageTexture(image.width, image.height, mipLevelCount, image.pixels.data());
         }
