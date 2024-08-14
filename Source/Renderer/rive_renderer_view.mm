@@ -165,6 +165,11 @@
 
 - (void)drawInRect:(CGRect)rect withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler
 {
+    if (CGRectGetWidth(rect) == 0 || CGRectGetHeight(rect) == 0)
+    {
+        return;
+    }
+
     if (![[self currentDrawable] texture])
     {
         return;
