@@ -71,8 +71,6 @@
 		2E54F23A2BE428990013016C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2E54F2392BE428990013016C /* PrivacyInfo.xcprivacy */; };
 		83DE4C912AA8DD7B00B88B72 /* RenderContextManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */; };
 		83DE4C932AA8DD9F00B88B72 /* RenderContextManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		83DE4CA02AAA072B00B88B72 /* PlatformCGImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */; };
-		83DE4CA22AAA077200B88B72 /* PlatformCGImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4CA12AAA077200B88B72 /* PlatformCGImage.h */; };
 		83DE4CA72AAAE72100B88B72 /* RenderContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 83DE4CA62AAAE72000B88B72 /* RenderContext.h */; };
 		C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */; };
 		C3468E5827EB9887008652FD /* RiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3468E5727EB9887008652FD /* RiveView.swift */; };
@@ -172,8 +170,6 @@
 		2E54F2392BE428990013016C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RenderContextManager.mm; path = Source/Renderer/RenderContextManager.mm; sourceTree = SOURCE_ROOT; };
 		83DE4C922AA8DD9F00B88B72 /* RenderContextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderContextManager.h; sourceTree = "<group>"; };
-		83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PlatformCGImage.mm; sourceTree = "<group>"; };
-		83DE4CA12AAA077200B88B72 /* PlatformCGImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformCGImage.h; sourceTree = "<group>"; };
 		83DE4CA62AAAE72000B88B72 /* RenderContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderContext.h; sourceTree = "<group>"; };
 		C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveFile+Extensions.swift"; sourceTree = "<group>"; };
 		C3468E5727EB9887008652FD /* RiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveView.swift; sourceTree = "<group>"; };
@@ -230,7 +226,6 @@
 		046FB801264EB632000129B1 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				83DE4CA12AAA077200B88B72 /* PlatformCGImage.h */,
 				C9C741F224FC510200EF9516 /* Rive.h */,
 				046FB7E7264EAA5F000129B1 /* RiveFile.h */,
 				046FB7EC264EAA60000129B1 /* RiveArtboard.h */,
@@ -317,7 +312,6 @@
 			isa = PBXGroup;
 			children = (
 				046FB801264EB632000129B1 /* include */,
-				83DE4C9F2AAA072B00B88B72 /* PlatformCGImage.mm */,
 				C9C741F324FC510200EF9516 /* Rive.mm */,
 				046FB7EF264EAA60000129B1 /* RiveFile.mm */,
 				046FB7E2264EAA5E000129B1 /* RiveArtboard.mm */,
@@ -413,7 +407,6 @@
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
 				2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */,
-				83DE4CA22AAA077200B88B72 /* PlatformCGImage.h in Headers */,
 				83DE4C932AA8DD9F00B88B72 /* RenderContextManager.h in Headers */,
 				046FB800264EAA61000129B1 /* RiveStateMachineInstance.h in Headers */,
 				043025FA2AFA860E00320F2E /* FileAssetLoaderAdapter.hpp in Headers */,
@@ -557,7 +550,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83DE4CA02AAA072B00B88B72 /* PlatformCGImage.mm in Sources */,
 				2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */,
 				C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */,
 				C3468E5827EB9887008652FD /* RiveView.swift in Sources */,
@@ -800,6 +792,7 @@
 					"-lrive_yoga",
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
+					"-lrive_decoders",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lrive_sim",
@@ -808,6 +801,7 @@
 					"-lrive_yoga_sim",
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
+					"-lrive_decoders_sim",
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lrive_macos",
@@ -816,6 +810,7 @@
 					"-lrive_yoga_macos",
 					"-lrive_pls_renderer_macos",
 					"-lrive_cg_renderer_macos",
+					"-lrive_decoders_macos",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -885,6 +880,7 @@
 					"-lrive_yoga",
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
+					"-lrive_decoders",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lrive_sim",
@@ -893,6 +889,7 @@
 					"-lrive_yoga_sim",
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
+					"-lrive_decoders_sim",
 				);
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lrive_macos",
@@ -901,6 +898,7 @@
 					"-lrive_yoga_macos",
 					"-lrive_pls_renderer_macos",
 					"-lrive_cg_renderer_macos",
+					"-lrive_decoders_macos",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";

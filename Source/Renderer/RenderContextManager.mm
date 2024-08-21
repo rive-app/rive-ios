@@ -8,8 +8,6 @@
 #import <RivePrivateHeaders.h>
 #import <RiveFactory.h>
 
-#import <PlatformCGImage.h>
-
 #include "utils/auto_cf.hpp"
 #include "cg_factory.hpp"
 #include "cg_renderer.hpp"
@@ -54,44 +52,8 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
         NSLog(@"error: GPU is not Apple family");
         return nullptr;
     }
-    class PLSRenderContextNativeImpl : public rive::pls::PLSRenderContextMetalImpl
-    {
-    public:
-        PLSRenderContextNativeImpl(id<MTLDevice> gpu) :
-            PLSRenderContextMetalImpl(gpu, ContextOptions())
-        {}
-
-    protected:
-        rive::rcp<rive::pls::PLSTexture> decodeImageTexture(
-            rive::Span<const uint8_t> encodedBytes) override
-        {
-            PlatformCGImage image;
-            if (!PlatformCGImageDecode(encodedBytes.data(), encodedBytes.size(), &image))
-            {
-                return nullptr;
-            }
-
-            // CG only supports premultiplied alpha. Unmultiply now.
-            size_t imageSizeInBytes = image.height * image.width * 4;
-            for (size_t i = 0; i < imageSizeInBytes; i += 4)
-            {
-                auto alpha = image.pixels[i + 3];
-                if (alpha != 0.0f)
-                {
-                    auto alphaFactor = 255.0f / alpha;
-                    for (size_t j = 0; j < 3; j++)
-                    {
-                        image.pixels[i + j] *= alphaFactor;
-                    }
-                }
-            }
-            uint32_t mipLevelCount = rive::math::msb(image.height | image.width);
-            return makeImageTexture(image.width, image.height, mipLevelCount, image.pixels.data());
-        }
-    };
-    auto plsContextImpl =
-        std::unique_ptr<PLSRenderContextNativeImpl>(new PLSRenderContextNativeImpl(gpu));
-    return std::make_unique<rive::pls::PLSRenderContext>(std::move(plsContextImpl));
+    return rive::pls::PLSRenderContextMetalImpl::MakeContext(
+        gpu, rive::pls::PLSRenderContextMetalImpl::ContextOptions());
 }
 
 - (instancetype)init
