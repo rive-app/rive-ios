@@ -72,19 +72,6 @@ jobs:
           source .venv/bin/activate
           echo PATH=$PATH >> $GITHUB_ENV
 
-      - name: Get Renderer ref
-        id: renderer-ref
-        run: echo "REF_VALUE=$(cat .rive_renderer)" >> $GITHUB_OUTPUT
-
-      - name: Checkout Rive Renderer Repo
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-          repository: ${{ secrets.RIVE_RENDERER_REPO }}
-          token: ${{ secrets.PAT_GITHUB }}
-          path: ./submodules/pls
-          ref: ${{ steps.renderer-ref.outputs.REF_VALUE }}
-
       - name: Installing pre-requisites
         run: |
           set -x
