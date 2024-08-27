@@ -760,7 +760,7 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
-					dependencies/includes/pls/include,
+					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
@@ -846,7 +846,7 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
-					dependencies/includes/pls/include,
+					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;

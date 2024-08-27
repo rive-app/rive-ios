@@ -11,7 +11,7 @@ else
     export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../../runtime"
 fi
 
-export RIVE_PLS_DIR="$RIVE_RUNTIME_DIR/pls"
+export RIVE_PLS_DIR="$RIVE_RUNTIME_DIR/renderer"
 
 make_dependency_directories() {
     rm -fr $DEV_SCRIPT_DIR/../dependencies
@@ -23,7 +23,7 @@ make_dependency_directories() {
     mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/rive
     mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/cg_renderer
-    mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/pls
+    mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/renderer
 }
 
 build_runtime() {
@@ -55,7 +55,7 @@ build_runtime() {
     popd
     cp -r $RIVE_PLS_DIR/out/iphoneos_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
     $DEV_SCRIPT_DIR/strip_static_lib.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
-    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
@@ -96,7 +96,7 @@ build_runtime_sim() {
     popd
     cp -r $RIVE_PLS_DIR/out/iphonesimulator_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a
     $DEV_SCRIPT_DIR/strip_static_lib_fat.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a arm64 x86_64
-    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
@@ -136,7 +136,7 @@ build_runtime_macosx() {
     popd
     cp -r $RIVE_PLS_DIR/out/$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_macos.a
     $DEV_SCRIPT_DIR/strip_static_lib_fat.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_macos.a arm64 x86_64
-    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/pls
+    cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
     
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders

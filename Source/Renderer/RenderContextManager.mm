@@ -11,7 +11,7 @@
 #include "utils/auto_cf.hpp"
 #include "cg_factory.hpp"
 #include "cg_renderer.hpp"
-#include "rive/pls/pls.hpp"
+#include "rive/renderer/gpu.hpp"
 
 @implementation RenderContext
 
@@ -30,9 +30,9 @@
 
 @end
 
-#include "rive/pls/metal/pls_render_context_metal_impl.h"
-#include "rive/pls/pls_image.hpp"
-#include "rive/pls/pls_renderer.hpp"
+#include "rive/renderer/metal/render_context_metal_impl.h"
+#include "rive/renderer/image.hpp"
+#include "rive/renderer/rive_renderer.hpp"
 
 @interface RiveRendererContext : RenderContext
 - (rive::Renderer*)beginFrame:(MTKView*)view;
@@ -40,20 +40,20 @@
 
 @implementation RiveRendererContext
 {
-    rive::pls::PLSRenderContext* _plsContext;
-    std::unique_ptr<rive::pls::PLSRenderer> _renderer;
-    rive::rcp<rive::pls::PLSRenderTargetMetal> _renderTarget;
+    rive::gpu::PLSRenderContext* _plsContext;
+    std::unique_ptr<rive::gpu::RiveRenderer> _renderer;
+    rive::rcp<rive::gpu::PLSRenderTargetMetal> _renderTarget;
 }
 
-static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<MTLDevice> gpu)
+static std::unique_ptr<rive::gpu::PLSRenderContext> make_pls_context_native(id<MTLDevice> gpu)
 {
     if (![gpu supportsFamily:MTLGPUFamilyApple1])
     {
         NSLog(@"error: GPU is not Apple family");
         return nullptr;
     }
-    return rive::pls::PLSRenderContextMetalImpl::MakeContext(
-        gpu, rive::pls::PLSRenderContextMetalImpl::ContextOptions());
+    return rive::gpu::PLSRenderContextMetalImpl::MakeContext(
+        gpu, rive::gpu::PLSRenderContextMetalImpl::ContextOptions());
 }
 
 - (instancetype)init
@@ -61,7 +61,7 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
     // Make a single static PLSRenderContext, since it is also the factory and any objects it
     // creates may outlive this 'RiveContext' instance.
     static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
-    static std::unique_ptr<rive::pls::PLSRenderContext> s_plsContext =
+    static std::unique_ptr<rive::gpu::PLSRenderContext> s_plsContext =
         make_pls_context_native(s_plsGPU);
 
     self = [super init];
@@ -70,7 +70,7 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
     self.depthStencilPixelFormat = MTLPixelFormatInvalid;
     self.framebufferOnly = YES;
     _plsContext = s_plsContext.get();
-    _renderer = std::make_unique<rive::pls::PLSRenderer>(_plsContext);
+    _renderer = std::make_unique<rive::gpu::RiveRenderer>(_plsContext);
     return self;
 }
 
@@ -109,7 +109,7 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
         _renderTarget->height() != view.drawableSize.height)
     {
         _renderTarget =
-            _plsContext->static_impl_cast<rive::pls::PLSRenderContextMetalImpl>()->makeRenderTarget(
+            _plsContext->static_impl_cast<rive::gpu::PLSRenderContextMetalImpl>()->makeRenderTarget(
                 view.colorPixelFormat, view.drawableSize.width, view.drawableSize.height);
     }
     _renderTarget->setTargetTexture(surface.texture);
@@ -117,7 +117,7 @@ static std::unique_ptr<rive::pls::PLSRenderContext> make_pls_context_native(id<M
     _plsContext->beginFrame({
         .renderTargetWidth = _renderTarget->width(),
         .renderTargetHeight = _renderTarget->height(),
-        .loadAction = rive::pls::LoadAction::clear,
+        .loadAction = rive::gpu::LoadAction::clear,
         .clearColor = 0,
     });
     return _renderer.get();
