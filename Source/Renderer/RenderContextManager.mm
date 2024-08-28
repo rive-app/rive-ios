@@ -40,28 +40,28 @@
 
 @implementation RiveRendererContext
 {
-    rive::gpu::PLSRenderContext* _plsContext;
+    rive::gpu::RenderContext* _plsContext;
     std::unique_ptr<rive::gpu::RiveRenderer> _renderer;
-    rive::rcp<rive::gpu::PLSRenderTargetMetal> _renderTarget;
+    rive::rcp<rive::gpu::RenderTargetMetal> _renderTarget;
 }
 
-static std::unique_ptr<rive::gpu::PLSRenderContext> make_pls_context_native(id<MTLDevice> gpu)
+static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLDevice> gpu)
 {
     if (![gpu supportsFamily:MTLGPUFamilyApple1])
     {
         NSLog(@"error: GPU is not Apple family");
         return nullptr;
     }
-    return rive::gpu::PLSRenderContextMetalImpl::MakeContext(
-        gpu, rive::gpu::PLSRenderContextMetalImpl::ContextOptions());
+    return rive::gpu::RenderContextMetalImpl::MakeContext(
+        gpu, rive::gpu::RenderContextMetalImpl::ContextOptions());
 }
 
 - (instancetype)init
 {
-    // Make a single static PLSRenderContext, since it is also the factory and any objects it
+    // Make a single static RenderContext, since it is also the factory and any objects it
     // creates may outlive this 'RiveContext' instance.
     static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
-    static std::unique_ptr<rive::gpu::PLSRenderContext> s_plsContext =
+    static std::unique_ptr<rive::gpu::RenderContext> s_plsContext =
         make_pls_context_native(s_plsGPU);
 
     self = [super init];
@@ -76,7 +76,7 @@ static std::unique_ptr<rive::gpu::PLSRenderContext> make_pls_context_native(id<M
 
 - (void)dealloc
 {
-    // Once nobody is referencing a RiveContext anymore, release the global PLSRenderContext's GPU
+    // Once nobody is referencing a RiveContext anymore, release the global RenderContext's GPU
     // resource.
     _plsContext->releaseResources();
 }
@@ -109,7 +109,7 @@ static std::unique_ptr<rive::gpu::PLSRenderContext> make_pls_context_native(id<M
         _renderTarget->height() != view.drawableSize.height)
     {
         _renderTarget =
-            _plsContext->static_impl_cast<rive::gpu::PLSRenderContextMetalImpl>()->makeRenderTarget(
+            _plsContext->static_impl_cast<rive::gpu::RenderContextMetalImpl>()->makeRenderTarget(
                 view.colorPixelFormat, view.drawableSize.width, view.drawableSize.height);
     }
     _renderTarget->setTargetTexture(surface.texture);
