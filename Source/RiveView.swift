@@ -30,21 +30,65 @@ open class RiveView: RiveRendererView {
     public var showFPS: Bool = RiveView.showFPSCounters { didSet { setFPSCounterVisibility() } }
     /// Shows or hides the FPS counters on all RiveViews
     public static var showFPSCounters = false
-    
+
+    open override var bounds: CGRect {
+        didSet {
+            redrawIfNecessary()
+        }
+    }
+
+    open override var frame: CGRect {
+        didSet {
+            redrawIfNecessary()
+        }
+    }
+
+    private var orientationObserver: (any NSObjectProtocol)?
+
     /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
     public init() {
         super.init(frame: .zero)
+        commonInit()
     }
     
     public convenience init(model: RiveModel, autoPlay: Bool = true) {
         self.init()
+        commonInit()
         try! setModel(model, autoPlay: autoPlay)
     }
     
     required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        commonInit()
     }
-    
+
+    private func commonInit() {
+        #if os(iOS)
+        if #available(iOS 17, *) {
+            registerForTraitChanges([UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self]) { [weak self] (_: UITraitEnvironment, traitCollection: UITraitCollection) in
+                guard let self else { return }
+                self.redrawIfNecessary()
+            }
+        }
+
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        orientationObserver = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification, object: nil, queue: nil) { [weak self] _ in
+            guard let self else { return }
+            self.redrawIfNecessary()
+        }
+        #endif
+    }
+
+    deinit {
+        stopTimer()
+        
+        #if os(iOS)
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.removeObserver(orientationObserver as Any)
+        #endif
+        orientationObserver = nil
+    }
+
     private func needsDisplay() {
         #if os(iOS)
             setNeedsDisplay()
@@ -52,7 +96,7 @@ open class RiveView: RiveRendererView {
             needsDisplay=true
         #endif
     }
-    
+
     /// This resets the view with the new model. Useful when the `RiveView` was initialized without one.
     open func setModel(_ model: RiveModel, autoPlay: Bool = true) throws {
         stopTimer()
@@ -258,7 +302,21 @@ open class RiveView: RiveRendererView {
         draw(with: artboard)
         
     }
-    
+
+    // MARK: - UITraitCollection
+    #if os(iOS)
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if #unavailable(iOS 17) {
+            if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass
+                || traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass {
+                redrawIfNecessary()
+            }
+        }
+    }
+    #endif
+
     // MARK: - UIResponder
     #if os(iOS)
         open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -434,9 +492,11 @@ open class RiveView: RiveRendererView {
             fpsCounter = nil
         }
     }
-    
-    deinit {
-        stopTimer()
+
+    private func redrawIfNecessary() {
+        if isPlaying == false {
+            needsDisplay()
+        }
     }
 }
 
