@@ -42,7 +42,7 @@ import Combine
     // TODO: could be a weak ref, need to look at this in more detail.
     open private(set) var riveView: RiveView?
     private var defaultModel: RiveModelBuffer!
-    
+
     @objc public init(
         _ model: RiveModel,
         stateMachineName: String?,
@@ -184,6 +184,15 @@ import Combine
         didSet { riveView?.alignment = alignment }
     }
     
+    /// Sets whether or not the current Rive view should forward Rive listener touch / click events to any next responders.
+    /// When true, touch / click events will be forwarded to any next responder(s).
+    /// When false, only the Rive view will handle touch / click events, and will not forward
+    /// to any next responder(s). Defaults to `false`, as to preserve pre-existing runtime functionality.
+    /// - Note: On iOS, this is handled separately from `isExclusiveTouch`.
+    open var forwardsListenerEvents: Bool = false {
+        didSet { riveView?.forwardsListenerEvents = forwardsListenerEvents }
+    }
+
     #if os(iOS)
     /// Hints to underlying CADisplayLink in RiveView (if created) the preferred FPS to run at
     /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/1648421-preferredframespersecond
@@ -438,6 +447,7 @@ import Combine
     @objc open func update(view: RiveView) {
         view.fit = fit
         view.alignment = alignment
+        view.forwardsListenerEvents = forwardsListenerEvents
     }
     
     /// Assigns the provided `RiveView` to the riveView property. This is called when
@@ -451,6 +461,7 @@ import Combine
         riveView!.stateMachineDelegate = self
         riveView!.fit = fit
         riveView!.alignment = alignment
+        riveView!.forwardsListenerEvents = forwardsListenerEvents
     }
     
     /// Stops maintaining a connection to any `RiveView`

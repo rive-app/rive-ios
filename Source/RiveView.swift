@@ -13,7 +13,13 @@ open class RiveView: RiveRendererView {
     internal weak var riveModel: RiveModel?
     internal var fit: RiveFit = .contain { didSet { needsDisplay() } }
     internal var alignment: RiveAlignment = .center { didSet { needsDisplay() } }
-    
+    /// Sets whether or not the Rive view should forward Rive listener touch / click events to any next responders.
+    /// When true, touch / click events will be forwarded to any next responder(s).
+    /// When false, only the Rive view will handle touch / click events, and will not forward
+    /// to any next responder(s). Defaults to `false`, as to preserve pre-existing runtime functionality.
+    /// - Note: On iOS, this is handled separately from `isExclusiveTouch`.
+    internal var forwardsListenerEvents: Bool = false
+
     // MARK: Render Loop
     internal private(set) var isPlaying: Bool = false
     private var lastTime: CFTimeInterval = 0
@@ -56,7 +62,7 @@ open class RiveView: RiveRendererView {
         commonInit()
         try! setModel(model, autoPlay: autoPlay)
     }
-    
+
     required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
@@ -326,6 +332,10 @@ open class RiveView: RiveRendererView {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .began)
                 }
             }
+
+            if forwardsListenerEvents == true {
+                super.touchesBegan(touches, with: event)
+            }
         }
         
         open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -334,6 +344,10 @@ open class RiveView: RiveRendererView {
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
                 }
+            }
+
+            if forwardsListenerEvents == true {
+                super.touchesMoved(touches, with: event)
             }
         }
         
@@ -344,6 +358,10 @@ open class RiveView: RiveRendererView {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .ended)
                 }
             }
+
+            if forwardsListenerEvents == true {
+                super.touchesEnded(touches, with: event)
+            }
         }
         
         open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -352,6 +370,10 @@ open class RiveView: RiveRendererView {
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .cancelled)
                 }
+            }
+
+            if forwardsListenerEvents == true {
+                super.touchesCancelled(touches, with: event)
             }
         }
         
@@ -393,6 +415,10 @@ open class RiveView: RiveRendererView {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .began)
                 }
             }
+
+            if forwardsListenerEvents == true {
+                super.mouseDown(with: event)
+            }
         }
         
         open override func mouseMoved(with event: NSEvent) {
@@ -401,6 +427,10 @@ open class RiveView: RiveRendererView {
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
                 }
+            }
+
+            if forwardsListenerEvents == true {
+                super.mouseMoved(with: event)
             }
         }
         
@@ -411,6 +441,10 @@ open class RiveView: RiveRendererView {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
                 }
             }
+
+            if forwardsListenerEvents == true {
+                super.mouseDragged(with: event)
+            }
         }
         
         open override func mouseUp(with event: NSEvent) {
@@ -420,6 +454,10 @@ open class RiveView: RiveRendererView {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .ended)
                 }
             }
+
+            if forwardsListenerEvents == true {
+                super.mouseUp(with: event)
+            }
         }
         
         open override func mouseExited(with event: NSEvent) {
@@ -428,6 +466,10 @@ open class RiveView: RiveRendererView {
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .cancelled)
                 }
+            }
+
+            if forwardsListenerEvents == true {
+                super.mouseExited(with: event)
             }
         }
         
