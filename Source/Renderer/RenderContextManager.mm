@@ -31,7 +31,7 @@
 @end
 
 #include "rive/renderer/metal/render_context_metal_impl.h"
-#include "rive/renderer/image.hpp"
+#include "rive/renderer/rive_render_image.hpp"
 #include "rive/renderer/rive_renderer.hpp"
 
 @interface RiveRendererContext : RenderContext
@@ -40,7 +40,7 @@
 
 @implementation RiveRendererContext
 {
-    rive::gpu::RenderContext* _plsContext;
+    rive::gpu::RenderContext* _renderContext;
     std::unique_ptr<rive::gpu::RiveRenderer> _renderer;
     rive::rcp<rive::gpu::RenderTargetMetal> _renderTarget;
 }
@@ -61,7 +61,7 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
     // Make a single static RenderContext, since it is also the factory and any objects it
     // creates may outlive this 'RiveContext' instance.
     static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
-    static std::unique_ptr<rive::gpu::RenderContext> s_plsContext =
+    static std::unique_ptr<rive::gpu::RenderContext> s_renderContext =
         make_pls_context_native(s_plsGPU);
 
     self = [super init];
@@ -69,8 +69,8 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
     self.metalQueue = [s_plsGPU newCommandQueue];
     self.depthStencilPixelFormat = MTLPixelFormatInvalid;
     self.framebufferOnly = YES;
-    _plsContext = s_plsContext.get();
-    _renderer = std::make_unique<rive::gpu::RiveRenderer>(_plsContext);
+    _renderContext = s_renderContext.get();
+    _renderer = std::make_unique<rive::gpu::RiveRenderer>(_renderContext);
     return self;
 }
 
@@ -78,12 +78,12 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
 {
     // Once nobody is referencing a RiveContext anymore, release the global RenderContext's GPU
     // resource.
-    _plsContext->releaseResources();
+    _renderContext->releaseResources();
 }
 
 - (rive::Factory*)factory
 {
-    return _plsContext;
+    return _renderContext;
 }
 
 - (rive::Renderer*)beginFrame:(MTKView*)view
@@ -109,12 +109,12 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
         _renderTarget->height() != view.drawableSize.height)
     {
         _renderTarget =
-            _plsContext->static_impl_cast<rive::gpu::RenderContextMetalImpl>()->makeRenderTarget(
+            _renderContext->static_impl_cast<rive::gpu::RenderContextMetalImpl>()->makeRenderTarget(
                 view.colorPixelFormat, view.drawableSize.width, view.drawableSize.height);
     }
     _renderTarget->setTargetTexture(surface.texture);
 
-    _plsContext->beginFrame({
+    _renderContext->beginFrame({
         .renderTargetWidth = _renderTarget->width(),
         .renderTargetHeight = _renderTarget->height(),
         .loadAction = rive::gpu::LoadAction::clear,
@@ -126,7 +126,7 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
 - (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     id<MTLCommandBuffer> flushCommandBuffer = [self.metalQueue commandBuffer];
-    _plsContext->flush({
+    _renderContext->flush({
         .renderTarget = _renderTarget.get(),
         .externalCommandBuffer = (__bridge void*)flushCommandBuffer,
     });
