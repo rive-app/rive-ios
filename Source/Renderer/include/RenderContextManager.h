@@ -25,7 +25,6 @@ typedef NS_ENUM(NSInteger, RendererType) { riveRenderer, cgRenderer };
 - (RenderContext*)getCGRendererContext;
 // exposing these directly as RenderContext is not exposed
 - (RiveFactory*)getDefaultFactory;
-- (RiveFactory*)getSkiaFactory;
 - (RiveFactory*)getCGFactory;
 - (RiveFactory*)getRiveRendererFactory;
 @end
