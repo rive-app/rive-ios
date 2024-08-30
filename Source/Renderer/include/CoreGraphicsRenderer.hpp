@@ -1,6 +1,6 @@
 //
-//  RiveRenderer.hpp
-//  RiveRuntime
+//  CoreGraphicsRenderer.hpp
+//  CoreGraphicsRenderer
 //
 //  Created by Matt Sullivan on 9/11/20.
 //  Copyright © 2020 Rive. All rights reserved.
@@ -21,21 +21,21 @@ namespace rive
  * RenderPaint
  */
 
-enum class RiveGradient
+enum class CoreGraphicsGradient
 {
     None,
     Linear,
     Radial
 };
 
-enum class RivePaintStyle
+enum class CoreGraphicsPaintStyle
 {
     None,
     Stroke,
     Fill
 };
 
-enum class RiveStrokeJoin
+enum class CoreGraphicsStrokeJoin
 {
     None,
     Miter,
@@ -43,7 +43,7 @@ enum class RiveStrokeJoin
     Bevel
 };
 
-enum class RiveStrokeCap
+enum class CoreGraphicsStrokeCap
 {
     None,
     Butt,
@@ -51,7 +51,7 @@ enum class RiveStrokeCap
     Square
 };
 
-enum class RiveBlendMode : unsigned int
+enum class CoreGraphicsBlendMode : unsigned int
 {
     None = 0,
     SrcOver = static_cast<int>(BlendMode::srcOver),
@@ -72,27 +72,27 @@ enum class RiveBlendMode : unsigned int
     Luminosity = static_cast<int>(BlendMode::luminosity)
 };
 
-class RiveRenderPaint : public RenderPaint
+class CoreGraphicsRenderPaint : public RenderPaint
 {
 private:
 public:
     CGColorRef cgColor = NULL;
-    RivePaintStyle paintStyle = RivePaintStyle::None;
-    RiveStrokeJoin strokeJoin = RiveStrokeJoin::None;
-    RiveStrokeCap strokeCap = RiveStrokeCap::None;
-    RiveBlendMode currentBlendMode;
+    CoreGraphicsPaintStyle paintStyle = CoreGraphicsPaintStyle::None;
+    CoreGraphicsStrokeJoin strokeJoin = CoreGraphicsStrokeJoin::None;
+    CoreGraphicsStrokeCap strokeCap = CoreGraphicsStrokeCap::None;
+    CoreGraphicsBlendMode currentBlendMode;
     float paintThickness;
 
     // Gradient data
-    RiveGradient gradientType = RiveGradient::None;
+    CoreGraphicsGradient gradientType = CoreGraphicsGradient::None;
     CGGradientRef gradient = NULL;
     CGPoint gradientStart;
     CGPoint gradientEnd;
     std::vector<CGFloat> colorStops;
     std::vector<CGFloat> stops;
 
-    RiveRenderPaint();
-    ~RiveRenderPaint();
+    CoreGraphicsRenderPaint();
+    ~CoreGraphicsRenderPaint();
 
     void color(unsigned int value) override;
     void style(RenderPaintStyle value) override;
@@ -106,7 +106,7 @@ public:
  * RenderPath
  */
 
-enum class RivePathCommandType
+enum class CoreGraphicsPathCommandType
 {
     MoveTo,
     LineTo,
@@ -115,9 +115,9 @@ enum class RivePathCommandType
     Close
 };
 
-struct RivePathCommand
+struct CoreGraphicsPathCommand
 {
-    RivePathCommandType command;
+    CoreGraphicsPathCommandType command;
     float x;
     float y;
     float inX;
@@ -126,15 +126,15 @@ struct RivePathCommand
     float outY;
 };
 
-class RiveRenderPath : public RenderPath
+class CoreGraphicsRenderPath : public RenderPath
 {
 private:
     CGMutablePathRef path;
     FillRule m_FillRule;
 
 public:
-    RiveRenderPath();
-    ~RiveRenderPath();
+    CoreGraphicsRenderPath();
+    ~CoreGraphicsRenderPath();
 
     CGMutablePathRef getPath() { return path; }
     FillRule getFillRule() { return m_FillRule; }
@@ -152,14 +152,14 @@ public:
  * Renderer
  */
 
-class RiveRenderer : public Renderer
+class CoreGraphicsRenderer : public Renderer
 {
 private:
     CGContextRef ctx;
 
 public:
-    RiveRenderer(CGContextRef context) : ctx(context) {}
-    ~RiveRenderer();
+    CoreGraphicsRenderer(CGContextRef context) : ctx(context) {}
+    ~CoreGraphicsRenderer();
 
     void save() override;
     void restore() override;

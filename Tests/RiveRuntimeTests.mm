@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "Rive.h"
-#import "RiveRenderer.hpp"
+#import "CoreGraphicsRenderer.hpp"
 
 @interface RiveRuntimeTests : XCTestCase
 

@@ -41,7 +41,7 @@
 @implementation RiveRendererContext
 {
     rive::gpu::RenderContext* _renderContext;
-    std::unique_ptr<rive::gpu::RiveRenderer> _renderer;
+    std::unique_ptr<rive::RiveRenderer> _renderer;
     rive::rcp<rive::gpu::RenderTargetMetal> _renderTarget;
 }
 
@@ -70,7 +70,7 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
     self.depthStencilPixelFormat = MTLPixelFormatInvalid;
     self.framebufferOnly = YES;
     _renderContext = s_renderContext.get();
-    _renderer = std::make_unique<rive::gpu::RiveRenderer>(_renderContext);
+    _renderer = std::make_unique<rive::RiveRenderer>(_renderContext);
     return self;
 }
 

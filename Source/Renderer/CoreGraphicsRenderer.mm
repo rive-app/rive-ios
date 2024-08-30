@@ -1,12 +1,12 @@
 //
-//  RiveRenderer.m
-//  RiveRuntime
+//  CoreGraphicsRenderer.m
+//  CoreGraphicsRenderer
 //
 //  Created by Matt Sullivan on 9/11/20.
 //  Copyright © 2020 Rive. All rights reserved.
 //
 
-#include "RiveRenderer.hpp"
+#include "CoreGraphicsRenderer.hpp"
 #include "rive/renderer.hpp"
 
 using namespace rive;
@@ -18,33 +18,33 @@ const CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
  * Render paint
  */
 
-RiveRenderPaint::RiveRenderPaint()
+CoreGraphicsRenderPaint::CoreGraphicsRenderPaint()
 {
     // NSLog(@"INITIALIZING A NEW RENDER PAINT");
 }
 
-RiveRenderPaint::~RiveRenderPaint()
+CoreGraphicsRenderPaint::~CoreGraphicsRenderPaint()
 {
     //    NSLog(@"Releasing paint resources");
     CGColorRelease(cgColor);
     CGGradientRelease(gradient);
 }
 
-void RiveRenderPaint::style(RenderPaintStyle value)
+void CoreGraphicsRenderPaint::style(RenderPaintStyle value)
 {
     //    NSLog(@" --- RenderPaint::style");
     switch (value)
     {
         case RenderPaintStyle::fill:
-            paintStyle = RivePaintStyle::Fill;
+            paintStyle = CoreGraphicsPaintStyle::Fill;
             break;
         case RenderPaintStyle::stroke:
-            paintStyle = RivePaintStyle::Stroke;
+            paintStyle = CoreGraphicsPaintStyle::Stroke;
             break;
     }
 }
 
-void RiveRenderPaint::color(unsigned int value)
+void CoreGraphicsRenderPaint::color(unsigned int value)
 {
     //     NSLog(@" --- RenderPaint::color -> %u", value);
     CGFloat color[] = {((float)((value & 0xFF0000) >> 16)) / 0xFF,
@@ -55,104 +55,104 @@ void RiveRenderPaint::color(unsigned int value)
     cgColor = CGColorCreate(baseSpace, color);
 }
 
-void RiveRenderPaint::thickness(float value)
+void CoreGraphicsRenderPaint::thickness(float value)
 {
     //    NSLog(@" --- RenderPaint::thickness %.1f", value);
     paintThickness = value;
 }
 
-void RiveRenderPaint::join(StrokeJoin value)
+void CoreGraphicsRenderPaint::join(StrokeJoin value)
 {
     //    NSLog(@" --- RenderPaint::join");
     switch (value)
     {
         case StrokeJoin::miter:
-            strokeJoin = RiveStrokeJoin::Miter;
+            strokeJoin = CoreGraphicsStrokeJoin::Miter;
             break;
         case StrokeJoin::round:
-            strokeJoin = RiveStrokeJoin::Round;
+            strokeJoin = CoreGraphicsStrokeJoin::Round;
             break;
         case StrokeJoin::bevel:
-            strokeJoin = RiveStrokeJoin::Bevel;
+            strokeJoin = CoreGraphicsStrokeJoin::Bevel;
             break;
         default:
-            strokeJoin = RiveStrokeJoin::None;
+            strokeJoin = CoreGraphicsStrokeJoin::None;
             break;
     }
 }
 
-void RiveRenderPaint::cap(StrokeCap value)
+void CoreGraphicsRenderPaint::cap(StrokeCap value)
 {
     //    NSLog(@" --- RenderPaint::cap");
     switch (value)
     {
         case StrokeCap::butt:
-            strokeCap = RiveStrokeCap::Butt;
+            strokeCap = CoreGraphicsStrokeCap::Butt;
             break;
         case StrokeCap::round:
-            strokeCap = RiveStrokeCap::Round;
+            strokeCap = CoreGraphicsStrokeCap::Round;
             break;
         case StrokeCap::square:
-            strokeCap = RiveStrokeCap::Square;
+            strokeCap = CoreGraphicsStrokeCap::Square;
             break;
         default:
-            strokeCap = RiveStrokeCap::None;
+            strokeCap = CoreGraphicsStrokeCap::None;
             break;
     }
 }
 
-void RiveRenderPaint::blendMode(BlendMode value)
+void CoreGraphicsRenderPaint::blendMode(BlendMode value)
 {
     //    NSLog(@" --- RenderPaint::blendMode -> %d", value);
     switch (value)
     {
         case BlendMode::srcOver:
-            currentBlendMode = RiveBlendMode::SrcOver;
+            currentBlendMode = CoreGraphicsBlendMode::SrcOver;
             break;
         case BlendMode::screen:
-            currentBlendMode = RiveBlendMode::Screen;
+            currentBlendMode = CoreGraphicsBlendMode::Screen;
             break;
         case BlendMode::overlay:
-            currentBlendMode = RiveBlendMode::Overlay;
+            currentBlendMode = CoreGraphicsBlendMode::Overlay;
             break;
         case BlendMode::darken:
-            currentBlendMode = RiveBlendMode::Darken;
+            currentBlendMode = CoreGraphicsBlendMode::Darken;
             break;
         case BlendMode::lighten:
-            currentBlendMode = RiveBlendMode::Lighten;
+            currentBlendMode = CoreGraphicsBlendMode::Lighten;
             break;
         case BlendMode::colorDodge:
-            currentBlendMode = RiveBlendMode::ColorDodge;
+            currentBlendMode = CoreGraphicsBlendMode::ColorDodge;
             break;
         case BlendMode::colorBurn:
-            currentBlendMode = RiveBlendMode::ColorBurn;
+            currentBlendMode = CoreGraphicsBlendMode::ColorBurn;
             break;
         case BlendMode::hardLight:
-            currentBlendMode = RiveBlendMode::HardLight;
+            currentBlendMode = CoreGraphicsBlendMode::HardLight;
             break;
         case BlendMode::softLight:
-            currentBlendMode = RiveBlendMode::SoftLight;
+            currentBlendMode = CoreGraphicsBlendMode::SoftLight;
             break;
         case BlendMode::difference:
-            currentBlendMode = RiveBlendMode::Difference;
+            currentBlendMode = CoreGraphicsBlendMode::Difference;
             break;
         case BlendMode::exclusion:
-            currentBlendMode = RiveBlendMode::Exclusion;
+            currentBlendMode = CoreGraphicsBlendMode::Exclusion;
             break;
         case BlendMode::multiply:
-            currentBlendMode = RiveBlendMode::Multiply;
+            currentBlendMode = CoreGraphicsBlendMode::Multiply;
             break;
         case BlendMode::hue:
-            currentBlendMode = RiveBlendMode::Hue;
+            currentBlendMode = CoreGraphicsBlendMode::Hue;
             break;
         case BlendMode::saturation:
-            currentBlendMode = RiveBlendMode::Saturation;
+            currentBlendMode = CoreGraphicsBlendMode::Saturation;
             break;
         case BlendMode::color:
-            currentBlendMode = RiveBlendMode::Color;
+            currentBlendMode = CoreGraphicsBlendMode::Color;
             break;
         case BlendMode::luminosity:
-            currentBlendMode = RiveBlendMode::Luminosity;
+            currentBlendMode = CoreGraphicsBlendMode::Luminosity;
             break;
         default:
             break;
@@ -163,35 +163,35 @@ void RiveRenderPaint::blendMode(BlendMode value)
  * Render path
  */
 
-RiveRenderPath::RiveRenderPath()
+CoreGraphicsRenderPath::CoreGraphicsRenderPath()
 {
     //    NSLog(@"INITIALIZING A NEW RENDER PATH");
     path = CGPathCreateMutable();
 }
 
-RiveRenderPath::~RiveRenderPath()
+CoreGraphicsRenderPath::~CoreGraphicsRenderPath()
 {
     //    NSLog(@"Releasing path resources");
     CGPathRelease(path);
 }
 
-void RiveRenderPath::close()
+void CoreGraphicsRenderPath::close()
 {
     // NSLog(@" --- RenderPath::close");
     CGPathCloseSubpath(path);
 }
 
-void RiveRenderPath::rewind()
+void CoreGraphicsRenderPath::rewind()
 {
     //    NSLog(@" --- RenderPath::reset");
     CGPathRelease(path);
     path = CGPathCreateMutable();
 }
 
-void RiveRenderPath::addRenderPath(RenderPath* path, const Mat2D& transform)
+void CoreGraphicsRenderPath::addRenderPath(RenderPath* path, const Mat2D& transform)
 {
     //    NSLog(@" --- RenderPath::addPath");
-    CGMutablePathRef pathToAdd = reinterpret_cast<RiveRenderPath*>(path)->getPath();
+    CGMutablePathRef pathToAdd = reinterpret_cast<CoreGraphicsRenderPath*>(path)->getPath();
     CGAffineTransform affineTransform = CGAffineTransformMake(transform.xx(),
                                                               transform.xy(),
                                                               transform.yx(),
@@ -201,19 +201,19 @@ void RiveRenderPath::addRenderPath(RenderPath* path, const Mat2D& transform)
     CGPathAddPath(this->path, &affineTransform, pathToAdd);
 }
 
-void RiveRenderPath::fillRule(FillRule value)
+void CoreGraphicsRenderPath::fillRule(FillRule value)
 {
     //    NSLog(@" --- RenderPath::fillRule");
     m_FillRule = value;
 }
 
-void RiveRenderPath::moveTo(float x, float y)
+void CoreGraphicsRenderPath::moveTo(float x, float y)
 {
     //    NSLog(@" --- RenderPath::moveTo x %.1f, y %.1f", x, y);
     CGPathMoveToPoint(path, NULL, x, y);
 }
 
-void RiveRenderPath::lineTo(float x, float y)
+void CoreGraphicsRenderPath::lineTo(float x, float y)
 {
     //    NSLog(@" --- RenderPath::lineTo x %.1f, y %.1f", x, y);
     if (isnan(x) || isnan(y))
@@ -224,7 +224,7 @@ void RiveRenderPath::lineTo(float x, float y)
     CGPathAddLineToPoint(path, NULL, x, y);
 }
 
-void RiveRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, float y)
+void CoreGraphicsRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, float y)
 {
     //    NSLog(@" --- call to RenderPath::cubicTo %.1f, %.1f, %.1f, %.1f, %.1f, %.1f, ", ox, oy,
     //    ix, iy, x, y);
@@ -235,41 +235,41 @@ void RiveRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, fl
  * Renderer
  */
 
-RiveRenderer::~RiveRenderer()
+CoreGraphicsRenderer::~CoreGraphicsRenderer()
 {
     //    NSLog(@"Releasing renderer c++");
 }
 
-void RiveRenderer::save()
+void CoreGraphicsRenderer::save()
 {
     //    NSLog(@" --- Renderer::save");
     CGContextSaveGState(ctx);
 }
 
-void RiveRenderer::restore()
+void CoreGraphicsRenderer::restore()
 {
     //    NSLog(@" -- Renderer::restore");
     CGContextRestoreGState(ctx);
 }
 
-void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint)
+void CoreGraphicsRenderer::drawPath(RenderPath* path, RenderPaint* paint)
 {
     //        NSLog(@" --- Renderer::drawPath path for type %d", rivePaint->paintStyle);
-    RiveRenderPaint* rivePaint = reinterpret_cast<RiveRenderPaint*>(paint);
-    RiveRenderPath* rivePath = reinterpret_cast<RiveRenderPath*>(path);
+    CoreGraphicsRenderPaint* rivePaint = reinterpret_cast<CoreGraphicsRenderPaint*>(paint);
+    CoreGraphicsRenderPath* rivePath = reinterpret_cast<CoreGraphicsRenderPath*>(path);
 
     // Apply the stroke join
-    if (rivePaint->strokeJoin != RiveStrokeJoin::None)
+    if (rivePaint->strokeJoin != CoreGraphicsStrokeJoin::None)
     {
         switch (rivePaint->strokeJoin)
         {
-            case RiveStrokeJoin::Miter:
+            case CoreGraphicsStrokeJoin::Miter:
                 CGContextSetLineJoin(ctx, kCGLineJoinMiter);
                 break;
-            case RiveStrokeJoin::Round:
+            case CoreGraphicsStrokeJoin::Round:
                 CGContextSetLineJoin(ctx, kCGLineJoinRound);
                 break;
-            case RiveStrokeJoin::Bevel:
+            case CoreGraphicsStrokeJoin::Bevel:
                 CGContextSetLineJoin(ctx, kCGLineJoinBevel);
                 break;
             default:
@@ -278,17 +278,17 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint)
     }
 
     // Apply the strokeCap
-    if (rivePaint->strokeCap != RiveStrokeCap::None)
+    if (rivePaint->strokeCap != CoreGraphicsStrokeCap::None)
     {
         switch (rivePaint->strokeCap)
         {
-            case RiveStrokeCap::Butt:
+            case CoreGraphicsStrokeCap::Butt:
                 CGContextSetLineCap(ctx, kCGLineCapButt);
                 break;
-            case RiveStrokeCap::Round:
+            case CoreGraphicsStrokeCap::Round:
                 CGContextSetLineCap(ctx, kCGLineCapRound);
                 break;
-            case RiveStrokeCap::Square:
+            case CoreGraphicsStrokeCap::Square:
                 CGContextSetLineCap(ctx, kCGLineCapSquare);
                 break;
             default:
@@ -297,57 +297,57 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint)
     }
 
     // Apply the blend mode
-    if (rivePaint->currentBlendMode != RiveBlendMode::None)
+    if (rivePaint->currentBlendMode != CoreGraphicsBlendMode::None)
     {
         switch (rivePaint->currentBlendMode)
         {
 
-            case RiveBlendMode::SrcOver:
+            case CoreGraphicsBlendMode::SrcOver:
                 CGContextSetBlendMode(ctx, kCGBlendModeNormal);
                 break;
-            case RiveBlendMode::Screen:
+            case CoreGraphicsBlendMode::Screen:
                 CGContextSetBlendMode(ctx, kCGBlendModeScreen);
                 break;
-            case RiveBlendMode::Overlay:
+            case CoreGraphicsBlendMode::Overlay:
                 CGContextSetBlendMode(ctx, kCGBlendModeOverlay);
                 break;
-            case RiveBlendMode::Darken:
+            case CoreGraphicsBlendMode::Darken:
                 CGContextSetBlendMode(ctx, kCGBlendModeDarken);
                 break;
-            case RiveBlendMode::Lighten:
+            case CoreGraphicsBlendMode::Lighten:
                 CGContextSetBlendMode(ctx, kCGBlendModeLighten);
                 break;
-            case RiveBlendMode::ColorDodge:
+            case CoreGraphicsBlendMode::ColorDodge:
                 CGContextSetBlendMode(ctx, kCGBlendModeColorDodge);
                 break;
-            case RiveBlendMode::ColorBurn:
+            case CoreGraphicsBlendMode::ColorBurn:
                 CGContextSetBlendMode(ctx, kCGBlendModeColorBurn);
                 break;
-            case RiveBlendMode::HardLight:
+            case CoreGraphicsBlendMode::HardLight:
                 CGContextSetBlendMode(ctx, kCGBlendModeHardLight);
                 break;
-            case RiveBlendMode::SoftLight:
+            case CoreGraphicsBlendMode::SoftLight:
                 CGContextSetBlendMode(ctx, kCGBlendModeSoftLight);
                 break;
-            case RiveBlendMode::Difference:
+            case CoreGraphicsBlendMode::Difference:
                 CGContextSetBlendMode(ctx, kCGBlendModeDifference);
                 break;
-            case RiveBlendMode::Exclusion:
+            case CoreGraphicsBlendMode::Exclusion:
                 CGContextSetBlendMode(ctx, kCGBlendModeExclusion);
                 break;
-            case RiveBlendMode::Multiply:
+            case CoreGraphicsBlendMode::Multiply:
                 CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
                 break;
-            case RiveBlendMode::Hue:
+            case CoreGraphicsBlendMode::Hue:
                 CGContextSetBlendMode(ctx, kCGBlendModeHue);
                 break;
-            case RiveBlendMode::Saturation:
+            case CoreGraphicsBlendMode::Saturation:
                 CGContextSetBlendMode(ctx, kCGBlendModeSaturation);
                 break;
-            case RiveBlendMode::Color:
+            case CoreGraphicsBlendMode::Color:
                 CGContextSetBlendMode(ctx, kCGBlendModeColor);
                 break;
-            case RiveBlendMode::Luminosity:
+            case CoreGraphicsBlendMode::Luminosity:
                 CGContextSetBlendMode(ctx, kCGBlendModeLuminosity);
                 break;
             default:
@@ -364,26 +364,26 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint)
     {
         switch (rivePaint->paintStyle)
         {
-            case RivePaintStyle::Stroke:
+            case CoreGraphicsPaintStyle::Stroke:
                 CGContextSetStrokeColorWithColor(ctx, rivePaint->cgColor);
                 CGContextSetLineWidth(ctx, rivePaint->paintThickness);
                 CGContextDrawPath(ctx, kCGPathStroke);
                 break;
-            case RivePaintStyle::Fill:
+            case CoreGraphicsPaintStyle::Fill:
                 CGContextSetFillColorWithColor(ctx, rivePaint->cgColor);
                 CGContextDrawPath(ctx, kCGPathFill);
                 break;
-            case RivePaintStyle::None:
+            case CoreGraphicsPaintStyle::None:
                 break;
         }
     }
 
     // Draw gradient
-    if (rivePaint->gradientType != RiveGradient::None)
+    if (rivePaint->gradientType != CoreGraphicsGradient::None)
     {
         // If the path is a stroke, then convert the path to a stroked path to prevent the gradient
         // from filling the path
-        if (rivePaint->paintStyle == RivePaintStyle::Stroke)
+        if (rivePaint->paintStyle == CoreGraphicsPaintStyle::Stroke)
         {
             CGContextSetLineWidth(ctx, rivePaint->paintThickness);
             CGContextReplacePathWithStrokedPath(ctx);
@@ -393,12 +393,12 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint)
         if (!CGContextIsPathEmpty(ctx))
             CGContextClip(ctx);
 
-        if (rivePaint->gradientType == RiveGradient::Linear)
+        if (rivePaint->gradientType == CoreGraphicsGradient::Linear)
         {
             CGContextDrawLinearGradient(
                 ctx, rivePaint->gradient, rivePaint->gradientStart, rivePaint->gradientEnd, 0x3);
         }
-        else if (rivePaint->gradientType == RiveGradient::Radial)
+        else if (rivePaint->gradientType == CoreGraphicsGradient::Radial)
         {
             // Calculate the end radius
             float dx = rivePaint->gradientEnd.x - rivePaint->gradientStart.x;
@@ -415,27 +415,27 @@ void RiveRenderer::drawPath(RenderPath* path, RenderPaint* paint)
         }
 
         // Now draw the path, clipping the gradient
-        if (rivePaint->paintStyle == RivePaintStyle::Fill)
+        if (rivePaint->paintStyle == CoreGraphicsPaintStyle::Fill)
         {
             CGContextDrawPath(ctx, kCGPathFill);
         }
-        else if (rivePaint->paintStyle == RivePaintStyle::Stroke)
+        else if (rivePaint->paintStyle == CoreGraphicsPaintStyle::Stroke)
         {
             CGContextDrawPath(ctx, kCGPathStroke);
         }
     }
 }
 
-void RiveRenderer::clipPath(RenderPath* path)
+void CoreGraphicsRenderer::clipPath(RenderPath* path)
 {
     //        NSLog(@" --- Renderer::clipPath %@", clipPath);
-    const CGPath* clipPath = reinterpret_cast<RiveRenderPath*>(path)->getPath();
+    const CGPath* clipPath = reinterpret_cast<CoreGraphicsRenderPath*>(path)->getPath();
     CGContextAddPath(ctx, clipPath);
     if (!CGContextIsPathEmpty(ctx))
         CGContextClip(ctx);
 }
 
-void RiveRenderer::transform(const Mat2D& transform)
+void CoreGraphicsRenderer::transform(const Mat2D& transform)
 {
     //    NSLog(@" --- Renderer::transform %.1f, %.1f, %.1f, %.1f, %.1f, %.1f",
     //        transform.xx(),
@@ -460,5 +460,5 @@ void RiveRenderer::transform(const Mat2D& transform)
 
 namespace rive
 {
-RenderPath* makeRenderPath() { return new RiveRenderPath(); }
+RenderPath* makeRenderPath() { return new CoreGraphicsRenderPath(); }
 } // namespace rive

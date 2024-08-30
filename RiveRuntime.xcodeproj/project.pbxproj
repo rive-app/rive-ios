@@ -81,7 +81,7 @@
 		C38BB5F628762B720039E385 /* RiveStateMachineTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38BB5F528762B720039E385 /* RiveStateMachineTest.swift */; };
 		C3E2B580282F242400A8651B /* RiveStateMachineInstance+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E2B57F282F242400A8651B /* RiveStateMachineInstance+Extensions.swift */; };
 		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; platformFilter = ios; };
-		C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* RiveRenderer.mm */; };
+		C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* CoreGraphicsRenderer.mm */; };
 		C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.mm */; };
 		C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C73ED424FC478800EF9516 /* RiveRuntime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C9C741F424FC510200EF9516 /* Rive.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C741F224FC510200EF9516 /* Rive.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -179,8 +179,8 @@
 		C38BB5F3287629C20039E385 /* defaultstatemachine.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = defaultstatemachine.riv; sourceTree = "<group>"; };
 		C38BB5F528762B720039E385 /* RiveStateMachineTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveStateMachineTest.swift; sourceTree = "<group>"; };
 		C3E2B57F282F242400A8651B /* RiveStateMachineInstance+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveStateMachineInstance+Extensions.swift"; sourceTree = "<group>"; };
-		C9601F29250C25830032AA07 /* RiveRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RiveRenderer.hpp; sourceTree = "<group>"; };
-		C9601F2A250C25930032AA07 /* RiveRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveRenderer.mm; sourceTree = "<group>"; };
+		C9601F29250C25830032AA07 /* CoreGraphicsRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CoreGraphicsRenderer.hpp; sourceTree = "<group>"; };
+		C9601F2A250C25930032AA07 /* CoreGraphicsRenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreGraphicsRenderer.mm; sourceTree = "<group>"; };
 		C9C73ED124FC478800EF9516 /* RiveRuntime.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RiveRuntime.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C73ED424FC478800EF9516 /* RiveRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveRuntime.h; sourceTree = "<group>"; };
 		C9C73ED524FC478800EF9516 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -233,7 +233,7 @@
 				046FB7E1264EAA5E000129B1 /* RiveLinearAnimationInstance.h */,
 				046FB7EB264EAA60000129B1 /* RiveSMIInput.h */,
 				046FB7F0264EAA60000129B1 /* RiveStateMachineInstance.h */,
-				C9601F29250C25830032AA07 /* RiveRenderer.hpp */,
+				C9601F29250C25830032AA07 /* CoreGraphicsRenderer.hpp */,
 				04BE542F264D1F4100427B39 /* LayerState.h */,
 				04BE5435264D2A7500427B39 /* RivePrivateHeaders.h */,
 				E57798A12A72C81F00FF25C3 /* RiveTextValueRun.h */,
@@ -319,7 +319,7 @@
 				046FB7E4264EAA5F000129B1 /* RiveLinearAnimationInstance.mm */,
 				046FB7E8264EAA5F000129B1 /* RiveStateMachineInstance.mm */,
 				046FB7E5264EAA5F000129B1 /* RiveSMIInput.mm */,
-				C9601F2A250C25930032AA07 /* RiveRenderer.mm */,
+				C9601F2A250C25930032AA07 /* CoreGraphicsRenderer.mm */,
 				E57798A52A72C9C500FF25C3 /* RiveTextValueRun.mm */,
 				04BE5431264D243D00427B39 /* LayerState.mm */,
 				83DE4C902AA8DD7B00B88B72 /* RenderContextManager.mm */,
@@ -557,7 +557,7 @@
 				043025F82AFA46EF00320F2E /* CDNFileAssetLoader.mm in Sources */,
 				043026042AFBA04100320F2E /* RiveFactory.mm in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
-				C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */,
+				C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */,
 				043025F42AF90EAC00320F2E /* RiveFileAssetLoader.mm in Sources */,
 				043025FC2AFA862E00320F2E /* FileAssetLoaderAdapter.mm in Sources */,
 				83DE4C912AA8DD7B00B88B72 /* RenderContextManager.mm in Sources */,
