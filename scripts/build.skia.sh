@@ -37,9 +37,9 @@ export SKIA_DIR_NAME="skia"
 # we can have multiple at the same time...
 export ARCHIVE_CONTENTS_NAME="archive_contents_ios_$ARCH_NAME"
 
-if [ -d "$DEV_SCRIPT_DIR/../submodules/rive-cpp" ];
+if [ -d "$DEV_SCRIPT_DIR/../submodules/rive-runtime" ];
 then
-    export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../submodules/rive-cpp"
+    export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../submodules/rive-runtime"
 else
     export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../../runtime" 
 fi

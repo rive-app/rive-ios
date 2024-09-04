@@ -10,8 +10,8 @@ Check out this repository, making sure to include the submodules. It is importan
 
 `git clone --recurse-submodules git@github.com:rive-app/rive-ios.git`
 
-The package relies on [Skia](https://skia.org/), as well as [rive-cpp](https://github.com/rive-app/rive-cpp) in order to be built. To shorten the build cycle, we rely on compiled libraries for skia, rive & rive-skia-renderer.
-The `./scripts/build.sh all` script will download or build appropriate libraries, be sure to run configure when making changes to our rive-cpp submodule.
+The package relies on [Skia](https://skia.org/), as well as [rive-runtime](https://github.com/rive-app/rive-runtime) in order to be built. To shorten the build cycle, we rely on compiled libraries for skia, rive & rive-skia-renderer.
+The `./scripts/build.sh all` script will download or build appropriate libraries, be sure to run configure when making changes to our rive-runtime submodule.
 
 Rive is constantly making use of the latest clang features, so please ensure your Xcode and Xcode Command Line Tools are up to date with the latest versions.
 
@@ -32,10 +32,10 @@ Note: on a Mac with brew, you can simply run 'brew install awscli'
 
 Note: the 'dependencies' directory is just a cache of what the configure.sh script downloads. It can be removed if you suspect it is out of date, and then just rerun the script (./scripts/configure.sh)
 
-### Changing rive-cpp/skia
+### Changing rive-runtime/skia
 
 Changes within the rive-ios should just be reflected when you make builds.
-If you make changes within the `rive-cpp` submodule you will need to compile the prebuilt libraries, this can take a reasonably long time, but as long as you are working on rive-cpp with no uncommitted changes, it will fall back to using the cache, so you will only need to build once.
+If you make changes within the `rive-runtime` submodule you will need to compile the prebuilt libraries, this can take a reasonably long time, but as long as you are working on rive-runtime with no uncommitted changes, it will fall back to using the cache, so you will only need to build once.
 
 ### Testing changes
 

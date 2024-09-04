@@ -5,8 +5,8 @@ set -ex
 path=$(readlink -f "${BASH_SOURCE:-$0}")
 DEV_SCRIPT_DIR=$(dirname $path)
 
-if [ -d "$DEV_SCRIPT_DIR/../submodules/rive-cpp" ]; then
-    export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../submodules/rive-cpp"
+if [ -d "$DEV_SCRIPT_DIR/../submodules/rive-runtime" ]; then
+    export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../submodules/rive-runtime"
 else
     export RIVE_RUNTIME_DIR="$DEV_SCRIPT_DIR/../../runtime"
 fi

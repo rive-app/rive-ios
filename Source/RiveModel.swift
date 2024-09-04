@@ -28,7 +28,7 @@ import Combine
         riveFile = RiveFile(httpUrl: webURL, loadCdn:loadCdn, with: delegate)!
     }
 
-    // rive-cpp defaults the volume to 1.0f
+    // rive-runtime defaults the volume to 1.0f
     // This value is used if there is no artboard,
     // and will be used to set the volume once a model is configured (with an artboard)
     private var _volume: Float = 1
