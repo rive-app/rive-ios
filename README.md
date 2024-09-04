@@ -26,15 +26,24 @@ The library is distributed both through Swift Package Manager and Cocoapods.
 
 :house_with_garden: [Homepage](https://rive.app/)
 
-:blue_book: [General help docs](https://help.rive.app/)
+:blue_book: [Rive docs](https://rive.app/community/doc/)
 
-🛠 [Learning Rive](https://rive.app/learn-rive/)
+🛠 [Rive Forums](https://rive.app/community/forums/home)
 
 ## Getting started
 
-Follow along with the link below for a quick start in getting Rive iOS/macOS integrated into your multi-platform applications.
+To get started with Rive iOS, check out the following resources:
 
-[Getting Started with Rive in iOS](https://help.rive.app/runtimes/overview/ios)
+- [Getting Started with Rive iOS](https://rive.app/community/doc/iosmacos/docXbeEcWybL)
+
+For more information, see the Runtime sections of the Rive help documentation:
+
+- [Animation Playback](https://rive.app/community/doc/animation-playback/docDKKxsr7ko)
+- [Layout](https://rive.app/community/doc/layout/docBl81zd1GB)
+- [State Machines](https://rive.app/community/doc/state-machines/docxeznG7iiK)
+- [Rive Text](https://rive.app/community/doc/text/docn2E6y1lXo)
+- [Rive Events](https://rive.app/community/doc/rive-events/docbOnaeffgr)
+- [Loading Assets](https://rive.app/community/doc/loading-assets/doct4wVHGPgC)
 
 ## Supported devices
 
@@ -62,7 +71,7 @@ For even more examples and resources on using Rive at runtime or in other tools,
 
 Using an older version of the runtime and need to learn how to upgrade to the latest version? Check out the migration guides below in our help center that help guide you through version bumps; breaking changes and all!
 
-[Migration guides](https://help.rive.app/runtimes/overview/ios/migrating-from-2.x.x-to-3.x.x)
+[Migration guides](https://rive.app/community/doc/migrating-from-5xx-to-6xx/doczu7i8HFcV)
 
 ## Contributing
 
