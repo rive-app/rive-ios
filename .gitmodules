@@ -1,3 +1,4 @@
-[submodule "submodules/rive-cpp"]
-	path = submodules/rive-cpp
-	url = https://github.com/rive-app/rive-cpp.git
+[submodule "submodules/rive-runtime"]
+	branch = main
+	path = submodules/rive-runtime
+	url = https://github.com/rive-app/rive-runtime.git
