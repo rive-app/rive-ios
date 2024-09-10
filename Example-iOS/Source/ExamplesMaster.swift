@@ -44,8 +44,9 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("Rive Events",         typeErased(dismissableView: SwiftEvents())),
         ("Variable FPS",        typeErased(dismissableView: SwiftVariableFPS())),
         ("Simple Assets",       typeErased(dismissableView: SwiftSimpleAssets())),
-        ("Audio Assets",       typeErased(dismissableView: SwiftAudioAssets())),
-        ("External Audio Assets",       typeErased(dismissableView: SwiftOutOfBandAudioAssets()))
+        ("Audio Assets",        typeErased(dismissableView: SwiftAudioAssets())),
+        ("External Audio Assets",       typeErased(dismissableView: SwiftOutOfBandAudioAssets())),
+        ("Fallback Fonts",      typeErased(dismissableView: SwiftFallbackFonts())),
     ]
     
     

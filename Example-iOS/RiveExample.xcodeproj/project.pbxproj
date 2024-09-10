@@ -316,6 +316,10 @@
 		E5B5C2192B238829006E57C8 /* asset_load_check.riv in Resources */ = {isa = PBXBuildFile; fileRef = E5B5C2172B238829006E57C8 /* asset_load_check.riv */; };
 		E5CD7D7127DC331900BFE5E2 /* SwiftMeshAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */; };
 		E5E87A012AE5A83800E7295F /* SwiftVariableFPS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */; };
+		F2C623362C874E3A0006E0CA /* fallback_fonts.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C623352C874E3A0006E0CA /* fallback_fonts.riv */; };
+		F2C623372C874E3A0006E0CA /* fallback_fonts.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C623352C874E3A0006E0CA /* fallback_fonts.riv */; };
+		F2C623392C874E690006E0CA /* SwiftFallbackFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */; };
+		F2C6233A2C874E690006E0CA /* SwiftFallbackFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */; };
 		F8772AF02AD94A4400AB5920 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		F8772AF12AD94A4400AB5920 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
 		F8772AF22AD94A4400AB5920 /* Bear.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83DE4CB42AB3974300B88B72 /* Bear.riv */; };
@@ -472,6 +476,8 @@
 		E5B5C2172B238829006E57C8 /* asset_load_check.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = asset_load_check.riv; sourceTree = "<group>"; };
 		E5CD7D7027DC331900BFE5E2 /* SwiftMeshAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMeshAnimation.swift; sourceTree = "<group>"; };
 		E5E87A002AE5A83700E7295F /* SwiftVariableFPS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftVariableFPS.swift; sourceTree = "<group>"; };
+		F2C623352C874E3A0006E0CA /* fallback_fonts.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = fallback_fonts.riv; sourceTree = "<group>"; };
+		F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFallbackFonts.swift; sourceTree = "<group>"; };
 		F8DA7B442AF523A800FF3CBF /* DismissableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -589,6 +595,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				F2C623352C874E3A0006E0CA /* fallback_fonts.riv */,
 				2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */,
 				0490915C2BC832D100F2C12B /* lip-sync_test.riv */,
 				049091522BC832AF00F2C12B /* ping_pong_audio_demo.riv */,
@@ -670,6 +677,7 @@
 				041265212B0BC5A5009400EC /* SwiftSimpleAssets.swift */,
 				0490914B2BC8326E00F2C12B /* SwiftAudioAssets.swift */,
 				049091622BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift */,
+				F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -993,6 +1001,7 @@
 				040554212B7A2858008F076A /* Assets.xcassets in Resources */,
 				040554222B7A2858008F076A /* constrained.riv in Resources */,
 				040554232B7A2858008F076A /* Bear.riv in Resources */,
+				F2C623362C874E3A0006E0CA /* fallback_fonts.riv in Resources */,
 				040554242B7A2858008F076A /* life_bar.riv in Resources */,
 				040554252B7A2858008F076A /* wacky.riv in Resources */,
 				040554262B7A2858008F076A /* asset_load_check.riv in Resources */,
@@ -1123,6 +1132,7 @@
 				C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */,
 				0450446126B3F71E007B25CA /* constrained.riv in Resources */,
 				83DE4CB52AB397A800B88B72 /* Bear.riv in Resources */,
+				F2C623372C874E3A0006E0CA /* fallback_fonts.riv in Resources */,
 				C9D3DE68264F49F4001BA265 /* life_bar.riv in Resources */,
 				042C88DB2644447500E7DBB2 /* wacky.riv in Resources */,
 				E5B5C2182B238829006E57C8 /* asset_load_check.riv in Resources */,
@@ -1167,6 +1177,7 @@
 				040553DE2B7A2858008F076A /* SwiftSimpleAssets.swift in Sources */,
 				040553DF2B7A2858008F076A /* StressTest.swift in Sources */,
 				040553E02B7A2858008F076A /* SwiftVariableFPS.swift in Sources */,
+				F2C623392C874E690006E0CA /* SwiftFallbackFonts.swift in Sources */,
 				040553E12B7A2858008F076A /* ExamplesMaster.swift in Sources */,
 				040553E22B7A2858008F076A /* SwiftTouchEvents.swift in Sources */,
 				040553E32B7A2858008F076A /* ClockViewModel.swift in Sources */,
@@ -1219,6 +1230,7 @@
 				041265222B0BC5A5009400EC /* SwiftSimpleAssets.swift in Sources */,
 				83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */,
 				E5E87A012AE5A83800E7295F /* SwiftVariableFPS.swift in Sources */,
+				F2C6233A2C874E690006E0CA /* SwiftFallbackFonts.swift in Sources */,
 				C3357CA1280F42EC00F03B6F /* ExamplesMaster.swift in Sources */,
 				C3ECAC272817BE4600A81123 /* SwiftTouchEvents.swift in Sources */,
 				C3ECAC2F281840A300A81123 /* ClockViewModel.swift in Sources */,

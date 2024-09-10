@@ -9,11 +9,59 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 #import <RiveFactory.h>
+#import <rive/text/font_hb.hpp>
+#import <CoreText/CTFont.h>
+#import <RiveRuntime/RiveRuntime-Swift.h>
+
+#if TARGET_OS_IPHONE
+#import <UIKit/UIFont.h>
+#endif
+
+static NSArray<id<RiveFallbackFontProvider>>* _fallbackFonts = nil;
+
+static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> missing)
+{
+    // For each descriptor…
+    for (id<RiveFallbackFontProvider> fallback in RiveFont.fallbackFonts)
+    {
+        id fallbackFont = fallback.fallbackFont;
+
+        uint16_t weight = 400;
+        if ([fallbackFont conformsToProtocol:@protocol(RiveWeightProvider)])
+        {
+            weight = [fallbackFont riveWeightValue];
+        }
+
+        uint8_t width = 100;
+        if ([fallbackFont conformsToProtocol:@protocol(RiveFontWidthProvider)])
+        {
+            width = [fallbackFont riveFontWidthValue];
+        }
+
+        CTFontRef ctFont = (__bridge CTFontRef)fallbackFont;
+        auto font = HBFont::FromSystem((void*)ctFont, weight, width);
+        if (font->hasGlyph(missing))
+        {
+            rive::rcp<rive::Font> rcFont = rive::rcp<rive::Font>(font);
+            // because the font was released at load time, we need to give it an
+            // extra ref whenever we bump it to a reference counted pointer.
+            rcFont->ref();
+            return rcFont;
+        }
+    }
+    return nullptr;
+}
 
 @implementation RiveFont
 {
     rive::rcp<rive::Font> instance; // note: we do NOT own this, so don't delete it
 }
+
++ (void)load
+{
+    rive::Font::gFallbackProc = findFallbackFont;
+}
+
 - (instancetype)initWithFont:(rive::rcp<rive::Font>)font
 {
     if (self = [super init])
@@ -29,6 +77,24 @@
 - (rive::rcp<rive::Font>)instance
 {
     return instance;
+}
+
++ (NSArray<id<RiveFallbackFontProvider>>*)fallbackFonts
+{
+    if (_fallbackFonts.count == 0)
+    {
+        return @[ [[RiveFallbackFontDescriptor alloc]
+            initWithDesign:RiveFallbackFontDescriptorDesignDefault
+                    weight:RiveFallbackFontDescriptorWeightRegular
+                     width:RiveFallbackFontDescriptorWidthStandard] ];
+    }
+
+    return _fallbackFonts;
+}
+
++ (void)setFallbackFonts:(nonnull NSArray<id<RiveFallbackFontProvider>>*)fallbackFonts
+{
+    _fallbackFonts = [fallbackFonts copy];
 }
 
 @end
