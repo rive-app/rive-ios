@@ -121,14 +121,6 @@ jobs:
           name: RiveRuntime.xcframework.zip
           path: archive/RiveRuntime.xcframework.zip
 
-      - name: Upload versionFiles
-        uses: actions/upload-artifact@v4
-        with:
-          name: version-files
-          path: |
-            Source/Info.plist
-            Tests/Info.plist
-
   do_release:
     name: Do the actual release
     runs-on: ubuntu-latest
