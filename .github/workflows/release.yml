@@ -93,7 +93,7 @@ jobs:
         run: agvtool new-marketing-version ${{ needs.determine_version.outputs.version }}
 
       - name: Upload versionFiles
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: version-files
           path: |
@@ -116,13 +116,13 @@ jobs:
         run: echo "::set-output name=checksum::$(swift package compute-checksum archive/RiveRuntime.xcframework.zip)"
 
       - name: Upload xcFramework
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: RiveRuntime.xcframework.zip
           path: archive/RiveRuntime.xcframework.zip
 
       - name: Upload versionFiles
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: version-files
           path: |
@@ -171,12 +171,12 @@ jobs:
           RELEASE_VERSION: ${{ needs.determine_version.outputs.version }}
 
       - name: Upload podspec file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: RiveRuntime.podspec
           path: RiveRuntime.podspec
       - name: Upload PrivacyInfo file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: PrivacyInfo.xcprivacy
           path: Resources/
@@ -187,7 +187,7 @@ jobs:
           git config --local user.name ${{ github.actor }}
 
       - name: Download versionFiles
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: version-files
 
@@ -195,7 +195,7 @@ jobs:
         run: git add RiveRuntime.podspec Package.swift Source/Info.plist Tests/Info.plist && git commit -m "Updating version files"
 
       - name: Download framework artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: RiveRuntime.xcframework.zip
           path: archive/
@@ -227,17 +227,17 @@ jobs:
     needs: [determine_version, build_framework, do_release]
     steps:
       - name: Download framework artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: RiveRuntime.xcframework.zip
 
       - name: Download podspec file
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: RiveRuntime.podspec
 
       - name: Download PrivacyInfo file
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: PrivacyInfo.xcprivacy
           path: Resources/
