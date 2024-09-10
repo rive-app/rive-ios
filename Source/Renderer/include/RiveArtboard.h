@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (RiveStateMachineInstance* __nullable)defaultStateMachine;
 
 - (RiveTextValueRun* __nullable)textRun:(NSString*)name;
+- (RiveTextValueRun* __nullable)textRun:(NSString*)name path:(NSString*)path;
 
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer*)renderer;

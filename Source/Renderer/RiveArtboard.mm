@@ -243,6 +243,24 @@ static int artInstanceCount = 0;
     return nullptr;
 }
 
+- (RiveTextValueRun*)textRun:(NSString*)name path:(NSString*)path
+{
+    if (path.length == 0)
+    {
+        return [self textRun:name];
+    }
+
+    const std::string stdName = std::string([name UTF8String]);
+    const std::string stdPath = std::string([path UTF8String]);
+    // Can we update the cpp library to handle empty paths / default to parent if nullptr?
+    auto riveTextRun = _artboardInstance->getTextRun(stdName, stdPath);
+    if (riveTextRun != nullptr)
+    {
+        return [[RiveTextValueRun alloc] initWithTextValueRun:std::move(riveTextRun)];
+    }
+    return nullptr;
+}
+
 - (RiveSMIBool*)getBool:(NSString*)name path:(NSString*)path
 {
     // Create a unique dictionary name for nested artboards + booleans;

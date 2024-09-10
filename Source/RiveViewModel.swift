@@ -399,7 +399,19 @@ import Combine
         }
         return nil
     }
-    
+
+    /// Get a text value from a specified text run
+    /// - Parameters:
+    ///   - textRunName: The name of a `Text Run` on the active Artboard
+    ///   - path: The path to the nested text run.
+    /// - Returns: String text value of the specified text run if applicable
+    @objc open func getTextRunValue(_ textRunName: String, path: String) -> String? {
+        if let textRun = riveModel?.artboard?.textRun(textRunName, path: path) {
+            return textRun.text()
+        }
+        return nil
+    }
+
     /// Set a text value for a specified text run
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
@@ -407,11 +419,33 @@ import Combine
     @objc open func setTextRunValue(_ textRunName: String, textValue: String) throws {
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
             textRun.setText(textValue)
+
+            if isPlaying == false {
+                riveView?.advance(delta: 0)
+            }
         } else {
             throw RiveError.textValueRunError("Could not set text value on text run: \(textRunName) as the text run could not be found from the active artboard")
         }
     }
-    
+
+    /// Set a text value for a specified text run
+    /// - Parameters:
+    ///   - textRunName: The name of a `Text Run` on the active Artboard
+    ///   - path: The path to the nested text run.
+    ///   - value: A String value for the text run
+    ///   - Note: If the specified path is empty, the parent artboard will be used to find the text run.
+    @objc open func setTextRunValue(_ textRunName: String, path: String, textValue: String) throws {
+        if let textRun = riveModel?.artboard?.textRun(textRunName, path: path) {
+            textRun.setText(textValue)
+
+            if isPlaying == false {
+                riveView?.advance(delta: 0)
+            }
+        } else {
+            throw RiveError.textValueRunError("Could not set text value on text run: \(textRunName) as the text run could not be found from the active artboard")
+        }
+    }
+
     // TODO: Replace this with a more robust structure of the file's contents
     @objc open func artboardNames() -> [String] {
         return riveModel?.riveFile.artboardNames() ?? []

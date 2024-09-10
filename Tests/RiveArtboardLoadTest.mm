@@ -141,6 +141,27 @@
     XCTAssertTrue([[textRun text] isEqualToString:@"Hello text"]);
 }
 
+/*
+ * Test setting a nested RiveTextValueRun text value
+ */
+- (void)testSettingNestedTextRunValue
+{
+    RiveFile* file = [Util loadTestFile:@"nested_text_run" error:nil];
+    NSError* error = nil;
+    RiveArtboard* artboard = [file artboardFromName:@"Artboard" error:&error];
+
+    // If there is no path specified, check the parent artboard
+    RiveTextValueRun* textRun = [artboard textRun:@"parent" path:@""];
+    XCTAssertTrue([[textRun text] isEqualToString:@"Parent"]);
+
+    // Otherwise, test nested artboard naming
+    textRun = [artboard textRun:@"text" path:@"Nested/Two-Deep"];
+    XCTAssertTrue([[textRun text] isEqualToString:@"Text"]);
+    [textRun setText:@"Hello text"];
+
+    XCTAssertTrue([[textRun text] isEqualToString:@"Hello text"]);
+}
+
 - (void)testCatchingErrorOnBadTextRun
 {
     RiveFile* file = [Util loadTestFile:@"testtext" error:nil];
