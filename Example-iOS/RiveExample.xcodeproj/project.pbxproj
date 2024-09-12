@@ -267,6 +267,8 @@
 		2E83910B2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */; };
 		2E83910D2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
 		2E83910E2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
+		65AD0AC82C92DC8300989C11 /* Repro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AD0AC72C92DC8300989C11 /* Repro.swift */; };
+		65AD0AC92C92DC8300989C11 /* Repro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AD0AC72C92DC8300989C11 /* Repro.swift */; };
 		83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C89ACA29886ECB00044C17 /* StressTest.swift */; };
 		83C89ACF2988709400044C17 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		83C89AD1298870A700044C17 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
@@ -430,6 +432,7 @@
 		27108F2C282C96E700A99D81 /* light_switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = light_switch.riv; sourceTree = "<group>"; };
 		2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftNestedInputs.swift; sourceTree = "<group>"; };
 		2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = runtime_nested_inputs.riv; sourceTree = "<group>"; };
+		65AD0AC72C92DC8300989C11 /* Repro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repro.swift; sourceTree = "<group>"; };
 		83C89ACA29886ECB00044C17 /* StressTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressTest.swift; sourceTree = "<group>"; };
 		83C89ACE2988709400044C17 /* marty.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = marty.riv; sourceTree = "<group>"; };
 		83C89AD0298870A700044C17 /* paper.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = paper.riv; sourceTree = "<group>"; };
@@ -530,6 +533,7 @@
 				83C89ACA29886ECB00044C17 /* StressTest.swift */,
 				043025EE2AF905B100320F2E /* CachedAssets.swift */,
 				0453FCB82B012DA9001185C8 /* SimpleOutOfBand.swift */,
+				65AD0AC72C92DC8300989C11 /* Repro.swift */,
 			);
 			path = Storyboard;
 			sourceTree = "<group>";
@@ -1192,6 +1196,7 @@
 				040553EB2B7A2858008F076A /* SwiftMultipleAnimations.swift in Sources */,
 				040553EC2B7A2858008F076A /* SimpleAnimation.swift in Sources */,
 				040553ED2B7A2858008F076A /* SwiftSimpleAnimation.swift in Sources */,
+				65AD0AC82C92DC8300989C11 /* Repro.swift in Sources */,
 				040553EE2B7A2858008F076A /* SimpleOutOfBand.swift in Sources */,
 				040553EF2B7A2858008F076A /* SwiftTestText.swift in Sources */,
 				040553F02B7A2858008F076A /* SwiftStateMachine.swift in Sources */,
@@ -1245,6 +1250,7 @@
 				04026DCA27CE3EF6002B3DBF /* SwiftMultipleAnimations.swift in Sources */,
 				042C88882643DB7100E7DBB2 /* SimpleAnimation.swift in Sources */,
 				04026DC427CE3ED6002B3DBF /* SwiftSimpleAnimation.swift in Sources */,
+				65AD0AC92C92DC8300989C11 /* Repro.swift in Sources */,
 				0453FCB92B012DA9001185C8 /* SimpleOutOfBand.swift in Sources */,
 				E57798A92A730A9B00FF25C3 /* SwiftTestText.swift in Sources */,
 				04026DCE27CE3F0F002B3DBF /* SwiftStateMachine.swift in Sources */,
