@@ -12,7 +12,7 @@ import SwiftUI
 
 class ReproViewController: UIViewController {
 
-  var riveViewModel = RiveViewModel(fileName: "runtime_nested_inputs", stateMachineName: "MainStateMachine")
+  var riveViewModel = RiveViewModel(fileName: "favorite_animation", stateMachineName: "FavoriteButtonAnimStateMachine")
 
   init() {
 
@@ -34,15 +34,34 @@ class ReproViewController: UIViewController {
 
     let hostingController = UIHostingController(rootView: {
 
-      Button(action: {
+      Group {
+        
+        Button(action: {
 
-      }, label: {
+          self.setIsFavorite()
 
-        modelView
-          .aspectRatio(contentMode: .fit)
-          .frame(width: 50, height: 50)
+        }, label: {
 
-      })
+          modelView
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 50, height: 50)
+
+        })
+        .padding(.bottom, 24)
+
+        HStack(spacing: 16) {
+
+          Button(action: { self.setIsFavorite() }, label: { Text("setIsFavorite") })
+          Button(action: { self.setIsNotFavorite() }, label: { Text("setIsNotFavorite") })
+
+        }
+        .padding(.bottom, 24)
+        .padding(.horizontal, 24)
+
+        Button(action: { self.setDefaultState(isTrue: true) }, label: { Text("setDefaultState true") })
+          .padding(.bottom, 24)
+      }
+      .background(Color.black)
 
     }())
 
@@ -61,9 +80,17 @@ class ReproViewController: UIViewController {
   }
 
   private func setDefaultState(isTrue: Bool) {
+    if isTrue {
+      self.riveViewModel.triggerInput("isActive")
+    }
+  }
 
-    self.riveViewModel.setInput("CircleOuterState", value: isTrue, path: "CircleOuter")
+  private func setIsFavorite() {
+    self.riveViewModel.triggerInput("isFavorite")
+  }
 
+  private func setIsNotFavorite() {
+    self.riveViewModel.triggerInput("isNotFavorite")
   }
 }
 

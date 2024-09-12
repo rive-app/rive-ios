@@ -269,6 +269,9 @@
 		2E83910E2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
 		65AD0AC82C92DC8300989C11 /* Repro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AD0AC72C92DC8300989C11 /* Repro.swift */; };
 		65AD0AC92C92DC8300989C11 /* Repro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AD0AC72C92DC8300989C11 /* Repro.swift */; };
+		65AD0ACC2C92E3D700989C11 /* TextureSwiftSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 65AD0ACB2C92E3D700989C11 /* TextureSwiftSupport */; };
+		65AD0ACE2C92E48100989C11 /* favorite_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = 65AD0ACD2C92E48100989C11 /* favorite_animation.riv */; };
+		65AD0ACF2C92E48100989C11 /* favorite_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = 65AD0ACD2C92E48100989C11 /* favorite_animation.riv */; };
 		83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C89ACA29886ECB00044C17 /* StressTest.swift */; };
 		83C89ACF2988709400044C17 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		83C89AD1298870A700044C17 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
@@ -433,6 +436,7 @@
 		2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftNestedInputs.swift; sourceTree = "<group>"; };
 		2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = runtime_nested_inputs.riv; sourceTree = "<group>"; };
 		65AD0AC72C92DC8300989C11 /* Repro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repro.swift; sourceTree = "<group>"; };
+		65AD0ACD2C92E48100989C11 /* favorite_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = favorite_animation.riv; sourceTree = "<group>"; };
 		83C89ACA29886ECB00044C17 /* StressTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressTest.swift; sourceTree = "<group>"; };
 		83C89ACE2988709400044C17 /* marty.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = marty.riv; sourceTree = "<group>"; };
 		83C89AD0298870A700044C17 /* paper.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = paper.riv; sourceTree = "<group>"; };
@@ -497,6 +501,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65AD0ACC2C92E3D700989C11 /* TextureSwiftSupport in Frameworks */,
 				040554332B7A291A008F076A /* RiveRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -619,6 +624,7 @@
 				C3745FCB282AE2320087F4AF /* hero_editor.riv */,
 				C3E383472837E6B00029D65E /* watch_v1.riv */,
 				C3ECAC29281837B300A81123 /* leg_day_events_example.riv */,
+				65AD0ACD2C92E48100989C11 /* favorite_animation.riv */,
 				C3ECAC28281837B300A81123 /* play_button_event_example.riv */,
 				E5964AB02A9CDB2100140479 /* rating_animation.riv */,
 				C3ECAC2A281837B300A81123 /* switch_event_example.riv */,
@@ -779,6 +785,7 @@
 			name = "Preview (iOS)";
 			packageProductDependencies = (
 				040554322B7A291A008F076A /* RiveRuntime */,
+				65AD0ACB2C92E3D700989C11 /* TextureSwiftSupport */,
 			);
 			productName = RiveExample;
 			productReference = 040554302B7A2858008F076A /* Preview (iOS).app */;
@@ -849,6 +856,7 @@
 			mainGroup = C9C73E8B24FC471E00EF9516;
 			packageReferences = (
 				F8772AD82AD9483800AB5920 /* XCRemoteSwiftPackageReference "rive-ios" */,
+				65AD0ACA2C92E3D700989C11 /* XCRemoteSwiftPackageReference "TextureSwiftSupport" */,
 			);
 			productRefGroup = C9C73E9524FC471E00EF9516 /* Products */;
 			projectDirPath = "";
@@ -971,6 +979,7 @@
 				040554012B7A2858008F076A /* nothing.riv in Resources */,
 				040554022B7A2858008F076A /* Inter-45562.ttf in Resources */,
 				040554032B7A2858008F076A /* off_road_car_blog.riv in Resources */,
+				65AD0ACE2C92E48100989C11 /* favorite_animation.riv in Resources */,
 				040554042B7A2858008F076A /* Main.storyboard in Resources */,
 				040554052B7A2858008F076A /* skills.riv in Resources */,
 				040554062B7A2858008F076A /* artboard_animations.riv in Resources */,
@@ -1102,6 +1111,7 @@
 				04D5B06C266A460C004ACA5B /* nothing.riv in Resources */,
 				0453FCBF2B014E2F001185C8 /* Inter-45562.ttf in Resources */,
 				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
+				65AD0ACF2C92E48100989C11 /* favorite_animation.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
 				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
@@ -1633,6 +1643,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		65AD0ACA2C92E3D700989C11 /* XCRemoteSwiftPackageReference "TextureSwiftSupport" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/FluidGroup/TextureSwiftSupport";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.20.1;
+			};
+		};
 		F8772AD82AD9483800AB5920 /* XCRemoteSwiftPackageReference "rive-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rive-app/rive-ios/";
@@ -1653,6 +1671,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F8772AD82AD9483800AB5920 /* XCRemoteSwiftPackageReference "rive-ios" */;
 			productName = RiveRuntime;
+		};
+		65AD0ACB2C92E3D700989C11 /* TextureSwiftSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65AD0ACA2C92E3D700989C11 /* XCRemoteSwiftPackageReference "TextureSwiftSupport" */;
+			productName = TextureSwiftSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

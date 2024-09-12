@@ -1,6 +1,15 @@
 {
-  "originHash" : "eca045a7f48fc27cd7a3326f708ae8b701db332b4b482ead100abcfb7293e42c",
+  "originHash" : "0be417f319d84ba851dfee87274f90cc28c40672ea1050d771251e9604524119",
   "pins" : [
+    {
+      "identity" : "descriptors",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/FluidGroup/Descriptors",
+      "state" : {
+        "revision" : "f41ce2605a76c5d378fe8c5e8c5c98b544dfd108",
+        "version" : "0.2.3"
+      }
+    },
     {
       "identity" : "rive-ios",
       "kind" : "remoteSourceControl",
@@ -8,6 +17,24 @@
       "state" : {
         "revision" : "723a0c5dd08ffe277456b1b1d7eaa76a3c9a86a0",
         "version" : "6.1.0"
+      }
+    },
+    {
+      "identity" : "texture",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/FluidGroup/Texture.git",
+      "state" : {
+        "revision" : "68df47f0d26522da76b06f22e9a97e4d4ab58dad",
+        "version" : "3.0.2"
+      }
+    },
+    {
+      "identity" : "textureswiftsupport",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/FluidGroup/TextureSwiftSupport",
+      "state" : {
+        "revision" : "fb748d6a9d0a2dca0635227e1db0360fd26e0e24",
+        "version" : "3.20.1"
       }
     }
   ],
