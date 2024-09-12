@@ -35,7 +35,7 @@ class ReproViewController: UIViewController {
     let hostingController = UIHostingController(rootView: {
 
       Group {
-        
+
         Button(action: {
 
           self.setIsFavorite()
@@ -48,10 +48,12 @@ class ReproViewController: UIViewController {
 
         })
         .padding(.bottom, 24)
+        .padding(.top, 24)
 
         HStack(spacing: 16) {
 
           Button(action: { self.setIsFavorite() }, label: { Text("setIsFavorite") })
+
           Button(action: { self.setIsNotFavorite() }, label: { Text("setIsNotFavorite") })
 
         }
