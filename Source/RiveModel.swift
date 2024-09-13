@@ -13,7 +13,11 @@ import Combine
     // NOTE: the order here determines the order in which memory garbage collected
     public internal(set) var stateMachine: RiveStateMachineInstance?
     public internal(set) var animation: RiveLinearAnimationInstance?
-    public private(set) var artboard: RiveArtboard!
+  public private(set) var artboard: RiveArtboard! {
+    didSet {
+      print("set artboard")
+    }
+  }
     internal private(set) var riveFile: RiveFile
     
     public init(riveFile: RiveFile) {

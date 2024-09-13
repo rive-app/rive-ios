@@ -40,7 +40,12 @@ import Combine
 /// ```
 @objc open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate{
     // TODO: could be a weak ref, need to look at this in more detail.
-    open private(set) var riveView: RiveView?
+  
+  open private(set) var riveView: RiveView? {
+    didSet {
+      print(riveView)
+    }
+  }
     private var defaultModel: RiveModelBuffer!
 
     @objc public init(
@@ -321,6 +326,7 @@ import Combine
     /// Provide the active StateMachine a `Trigger` input
     /// - Parameter inputName: The name of a `Trigger` input on the active StateMachine
     @objc open func triggerInput(_ inputName: String) {
+      print("👨🏻 triggerInput \(inputName)")
         riveModel?.stateMachine?.getTrigger(inputName).fire()
         play()
     }

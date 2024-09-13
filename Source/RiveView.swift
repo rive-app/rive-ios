@@ -300,6 +300,7 @@ open class RiveView: RiveRendererView {
     /// This is called in the middle of drawRect. Override this method to implement
     /// custom draw logic
     override open func drawRive(_ rect: CGRect, size: CGSize) {
+      print("🚗 drawRive")
         // This prevents breaking when loading RiveFile async
         guard let artboard = riveModel?.artboard else { return }
         

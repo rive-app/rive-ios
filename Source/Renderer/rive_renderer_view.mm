@@ -195,6 +195,8 @@
 {
     [super drawRect:rect];
 
+  NSLog(@"✍️");
+
     [self drawInRect:rect withCompletion:NULL];
 }
 
