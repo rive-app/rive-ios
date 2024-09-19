@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * RiveImageAsset
  */
 @interface RiveImageAsset : RiveFileAsset
+@property(nonatomic, readonly) CGSize size;
 - (void)renderImage:(RiveRenderImage*)image;
 @end
 

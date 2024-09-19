@@ -213,4 +213,26 @@
     XCTAssertEqualObjects([font cdnUuid], @"");
 }
 
+- (void)testReferencedImageAssetReturnsSize
+{
+    NSError* error = nil;
+    NSData* data = [Util loadTestData:@"referenced_image_asset"];
+    __block RiveImageAsset* image;
+
+    RiveFile* file = [[RiveFile alloc]
+             initWithData:data
+                  loadCdn:false
+        customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+          if ([asset isKindOfClass:[RiveImageAsset class]])
+          {
+              image = (RiveImageAsset*)asset;
+          }
+          return false;
+        }
+                    error:&error];
+
+    XCTAssertEqual(image.size.width, 320);
+    XCTAssertEqual(image.size.height, 240);
+}
+
 @end

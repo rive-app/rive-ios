@@ -76,6 +76,12 @@
     return [super initWithFileAsset:fileAsset];
 }
 
+- (CGSize)size
+{
+    auto asset = (rive::ImageAsset*)[self getInstance];
+    return CGSizeMake(asset->width(), asset->height());
+}
+
 - (void)renderImage:(RiveRenderImage*)image
 {
 

@@ -96,6 +96,7 @@
 		F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */; };
 		F23626AA2C8F90FA00727D9A /* nested_text_run.riv in Resources */ = {isa = PBXBuildFile; fileRef = F23626A92C8F90FA00727D9A /* nested_text_run.riv */; };
 		F28DE4532C5002D900F3C379 /* RiveModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28DE4522C5002D900F3C379 /* RiveModelTests.swift */; };
+		F2CCA9792C9B2799007DC0D2 /* referenced_image_asset.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */; };
 		F2D285492C6D469900728340 /* RiveFallbackFontProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */; };
 		F2ECC2312C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECC2302C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift */; };
 		F2ECC23A2C66B949008B20E5 /* RiveFontTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */; };
@@ -203,6 +204,7 @@
 		F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontDescriptor.swift; sourceTree = "<group>"; };
 		F23626A92C8F90FA00727D9A /* nested_text_run.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nested_text_run.riv; sourceTree = "<group>"; };
 		F28DE4522C5002D900F3C379 /* RiveModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveModelTests.swift; sourceTree = "<group>"; };
+		F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = referenced_image_asset.riv; sourceTree = "<group>"; };
 		F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontProvider.swift; sourceTree = "<group>"; };
 		F2ECC2302C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveFallbackFontDescriptor+Extensions.swift"; sourceTree = "<group>"; };
 		F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFontTests.swift; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 		04BE53F726493FE600427B39 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */,
 				F23626A92C8F90FA00727D9A /* nested_text_run.riv */,
 				0424A8752BD59435000A9A1C /* img_test.riv */,
 				04E2223F2BE3C85100D82668 /* ball_test.riv */,
@@ -554,6 +557,7 @@
 				041265282B0CC387009400EC /* hosted_assets.riv in Resources */,
 				E57798AB2A7310B700FF25C3 /* testtext.riv in Resources */,
 				04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */,
+				F2CCA9792C9B2799007DC0D2 /* referenced_image_asset.riv in Resources */,
 				E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */,
 				04BE54062649403600427B39 /* off_road_car_blog.riv in Resources */,
 				04BE540C2649403600427B39 /* multipleartboards.riv in Resources */,
@@ -583,7 +587,7 @@
 				043026042AFBA04100320F2E /* RiveFactory.mm in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
 				C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */,
-				C9601F2B250C25930032AA07 /* RiveRenderer.mm in Sources */,
+				C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */,
 				043025F42AF90EAC00320F2E /* RiveFileAssetLoader.mm in Sources */,
 				F2D285492C6D469900728340 /* RiveFallbackFontProvider.swift in Sources */,
 				043025FC2AFA862E00320F2E /* FileAssetLoaderAdapter.mm in Sources */,
