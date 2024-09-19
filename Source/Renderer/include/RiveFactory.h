@@ -40,6 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RiveFactory : NSObject
 - (RiveFont*)decodeFont:(NSData*)data;
+#if TARGET_OS_IPHONE
+- (RiveFont*)decodeUIFont:(UIFont*)data NS_SWIFT_NAME(decodeFont(_:));
+#else
+- (RiveFont*)decodeNSFont:(NSFont*)data NS_SWIFT_NAME(decodeFont(_:));
+#endif
 - (RiveRenderImage*)decodeImage:(NSData*)data;
 - (RiveAudio*)decodeAudio:(NSData*)data;
 @end

@@ -19,27 +19,30 @@
 
 static NSArray<id<RiveFallbackFontProvider>>* _fallbackFonts = nil;
 
+static rive::rcp<rive::Font> riveFontFromNativeFont(id font)
+{
+    uint16_t weight = 400;
+    if ([font conformsToProtocol:@protocol(RiveWeightProvider)])
+    {
+        weight = [font riveWeightValue];
+    }
+
+    uint8_t width = 100;
+    if ([font conformsToProtocol:@protocol(RiveFontWidthProvider)])
+    {
+        width = [font riveFontWidthValue];
+    }
+
+    CTFontRef ctFont = (__bridge CTFontRef)font;
+    return HBFont::FromSystem((void*)ctFont, weight, width);
+}
+
 static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> missing)
 {
     // For each descriptor…
     for (id<RiveFallbackFontProvider> fallback in RiveFont.fallbackFonts)
     {
-        id fallbackFont = fallback.fallbackFont;
-
-        uint16_t weight = 400;
-        if ([fallbackFont conformsToProtocol:@protocol(RiveWeightProvider)])
-        {
-            weight = [fallbackFont riveWeightValue];
-        }
-
-        uint8_t width = 100;
-        if ([fallbackFont conformsToProtocol:@protocol(RiveFontWidthProvider)])
-        {
-            width = [fallbackFont riveFontWidthValue];
-        }
-
-        CTFontRef ctFont = (__bridge CTFontRef)fallbackFont;
-        auto font = HBFont::FromSystem((void*)ctFont, weight, width);
+        auto font = riveFontFromNativeFont(fallback.fallbackFont);
         if (font->hasGlyph(missing))
         {
             rive::rcp<rive::Font> rcFont = rive::rcp<rive::Font>(font);
@@ -180,6 +183,18 @@ static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> mi
     return [[RiveFont alloc]
         initWithFont:instance->decodeFont(rive::Span<const uint8_t>(bytes, [data length]))];
 }
+
+#if TARGET_OS_IPHONE
+- (RiveFont*)decodeUIFont:(UIFont*)font
+{
+    return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font)];
+}
+#else
+- (RiveFont*)decodeNSFont:(NSFont*)font
+{
+    return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font)];
+}
+#endif
 
 - (RiveAudio*)decodeAudio:(nonnull NSData*)data
 {
