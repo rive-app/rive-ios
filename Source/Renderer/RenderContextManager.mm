@@ -15,6 +15,28 @@
 
 @implementation RenderContext
 
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        _metalDevice = MTLCreateSystemDefaultDevice();
+        if (!_metalDevice)
+        {
+            NSLog(@"Metal is not supported on this device");
+            return nil;
+        }
+        _metalQueue = [_metalDevice newCommandQueue];
+        _depthStencilPixelFormat = MTLPixelFormatInvalid;
+        _framebufferOnly = NO;
+
+        return self;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
 - (rive::Factory*)factory
 {
     return nil;
@@ -58,20 +80,23 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
 
 - (instancetype)init
 {
-    // Make a single static RenderContext, since it is also the factory and any objects it
-    // creates may outlive this 'RiveContext' instance.
-    static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
-    static std::unique_ptr<rive::gpu::RenderContext> s_renderContext =
-        make_pls_context_native(s_plsGPU);
+    if (self = [super init])
+    {
+        // Make a single static RenderContext, since it is also the factory and any objects it
+        // creates may outlive this 'RiveContext' instance.
+        static std::unique_ptr<rive::gpu::RenderContext> s_renderContext =
+            make_pls_context_native(self.metalDevice);
 
-    self = [super init];
-    self.metalDevice = s_plsGPU;
-    self.metalQueue = [s_plsGPU newCommandQueue];
-    self.depthStencilPixelFormat = MTLPixelFormatInvalid;
-    self.framebufferOnly = YES;
-    _renderContext = s_renderContext.get();
-    _renderer = std::make_unique<rive::RiveRenderer>(_renderContext);
-    return self;
+        self.framebufferOnly = YES;
+        _renderContext = s_renderContext.get();
+        _renderer = std::make_unique<rive::RiveRenderer>(_renderContext);
+
+        return self;
+    }
+    else
+    {
+        return nil;
+    }
 }
 
 - (void)dealloc
@@ -158,25 +183,21 @@ constexpr static int kBufferRingSize = 3;
 
 - (instancetype)init
 {
-    self = [super init];
-
-    _renderTargetTexture = nil;
-    for (int i = 0; i < kBufferRingSize; ++i)
+    if (self = [super init])
     {
-        _buffers[i] = nil;
+        _renderTargetTexture = nil;
+        for (int i = 0; i < kBufferRingSize; ++i)
+        {
+            _buffers[i] = nil;
+        }
+        _currentBufferIdx = -1;
+
+        return self;
     }
-    _currentBufferIdx = -1;
-
-    self.metalDevice = MTLCreateSystemDefaultDevice();
-    if (!self.metalDevice)
+    else
     {
-        NSLog(@"Metal is not supported on this device");
         return nil;
     }
-    self.metalQueue = [self.metalDevice newCommandQueue];
-    self.depthStencilPixelFormat = MTLPixelFormatInvalid;
-    self.framebufferOnly = NO;
-    return self;
 }
 
 - (rive::Factory*)factory
