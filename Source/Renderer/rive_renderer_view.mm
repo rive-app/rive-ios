@@ -165,7 +165,15 @@
 
 - (void)drawInRect:(CGRect)rect withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler
 {
-    if (CGRectGetWidth(rect) == 0 || CGRectGetHeight(rect) == 0)
+    CGSize drawableSize = self.drawableSize;
+    CGFloat width = drawableSize.width;
+    CGFloat height = drawableSize.height;
+    NSInteger maxSize = _renderContext.maxTextureSize;
+
+    // If `rect` has a zero size, `drawableSize` may have a `nan` size.
+    // If a parent view has a very small scale transform, `drawableSize` may exceed the maximum texture size.
+    // If a parent view has a zero scale transform, `drawableSize` may have an infinite size.
+    if (width == 0.0 || height == 0.0 || isnan(width) || isnan(height) || width > maxSize || height > maxSize)
     {
         return;
     }
@@ -179,7 +187,7 @@
     if (_renderer != nil)
     {
         _renderer->save();
-        [self drawRive:rect size:self.drawableSize];
+        [self drawRive:rect size:drawableSize];
         _renderer->restore();
     }
     [_renderContext endFrame:self withCompletion:completionHandler];
