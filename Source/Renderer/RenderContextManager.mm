@@ -27,6 +27,14 @@
         }
         _metalQueue = [_metalDevice newCommandQueue];
         _depthStencilPixelFormat = MTLPixelFormatInvalid;
+        // See https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
+        if ([_metalDevice supportsFamily:MTLGPUFamilyApple3]) {
+            _maxTextureSize = 16384;
+        } else if ([_metalDevice supportsFamily:MTLGPUFamilyApple2]) {
+            _maxTextureSize = 8192;
+        } else {
+            _maxTextureSize = 4096; // See archive.org for older versions of the document.
+        }
         _framebufferOnly = NO;
 
         return self;
