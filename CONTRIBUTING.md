@@ -9,8 +9,6 @@ To get started with building this runtime, you must install a few prerequisites:
 - [premake5](https://premake.github.io/)
   - For premake5, you may download the binary, making sure it's available in your `$PATH`. Moving the executable to `/usr/local/bin/` will work.
   - [Homebrew](https://brew.sh) may be used to install premake5: `$ brew install premake`
-- [ply](https://pypi.org/project/ply/)
-  - Installed with Python. On macOS, this can be installed using the default Python 3 installation: `$ pip3 install ply`
 
 Check that your Xcode active developer directory is set to one that includes the iOS and macOS toolchains.
   - You can check your currect directory by running `$ xcode-select -p` in the command line.
