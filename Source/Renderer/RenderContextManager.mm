@@ -47,11 +47,6 @@
 
 static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLDevice> gpu)
 {
-    if (![gpu supportsFamily:MTLGPUFamilyApple1])
-    {
-        NSLog(@"error: GPU is not Apple family");
-        return nullptr;
-    }
     return rive::gpu::RenderContextMetalImpl::MakeContext(
         gpu, rive::gpu::RenderContextMetalImpl::ContextOptions());
 }
