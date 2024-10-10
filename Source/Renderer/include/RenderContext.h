@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong) id<MTLDevice> metalDevice;
 @property(strong) id<MTLCommandQueue> metalQueue;
 @property MTLPixelFormat depthStencilPixelFormat;
+@property NSInteger maxTextureSize;
 @property BOOL framebufferOnly;
 - (rive::Factory*)factory;
 - (rive::Renderer*)beginFrame:(MTKView*)view;
