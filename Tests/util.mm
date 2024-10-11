@@ -24,12 +24,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (RiveFile*)loadTestFile:(NSString*)name error:(NSError**)error
 {
     NSData* nsData = [self loadTestData:name];
-    RiveFile* file = [[RiveFile alloc] initWithData:nsData loadCdn:false error:error];
+    RiveFile* file = [[RiveFile alloc] initWithData:nsData
+                                            loadCdn:false
+                                              error:error];
     return file;
 }
 @end
 
-typedef void (^CompletionHandler)(NSURL* location, NSURLResponse* response, NSError* error);
+typedef void (^CompletionHandler)(NSURL* location,
+                                  NSURLResponse* response,
+                                  NSError* error);
 
 @implementation TestSessionDownloadTask
 {}
@@ -52,7 +56,8 @@ typedef void (^CompletionHandler)(NSURL* location, NSURLResponse* response, NSEr
 }
 
 - (NSURLSessionDownloadTask*)downloadTaskWithURL:(NSURL*)url
-                               completionHandler:(CompletionHandler)completionHandler
+                               completionHandler:
+                                   (CompletionHandler)completionHandler
 {
     [urls addObject:url];
     return [[TestSessionDownloadTask alloc] init];

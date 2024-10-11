@@ -33,7 +33,8 @@ static int artInstanceCount = 0;
 
 // MARK: LifeCycle
 
-- (instancetype)initWithArtboard:(std::unique_ptr<rive::ArtboardInstance>)riveArtboard
+- (instancetype)initWithArtboard:
+    (std::unique_ptr<rive::ArtboardInstance>)riveArtboard
 {
     if (self = [super init])
     {
@@ -87,7 +88,8 @@ static int artInstanceCount = 0;
     return _artboardInstance->animationCount();
 }
 
-- (RiveLinearAnimationInstance*)animationFromIndex:(NSInteger)index error:(NSError**)error
+- (RiveLinearAnimationInstance*)animationFromIndex:(NSInteger)index
+                                             error:(NSError**)error
 {
     if (index < 0 || index >= [self animationCount])
     {
@@ -96,7 +98,8 @@ static int artInstanceCount = 0;
                        code:RiveNoAnimationFound
                    userInfo:@{
                        NSLocalizedDescriptionKey : [NSString
-                           stringWithFormat:@"No Animation found at index %ld.", (long)index],
+                           stringWithFormat:@"No Animation found at index %ld.",
+                                            (long)index],
                        @"name" : @"NoAnimationFound"
                    }];
         return nil;
@@ -105,7 +108,8 @@ static int artInstanceCount = 0;
         initWithAnimation:_artboardInstance->animationAt(index)];
 }
 
-- (RiveLinearAnimationInstance*)animationFromName:(NSString*)name error:(NSError**)error
+- (RiveLinearAnimationInstance*)animationFromName:(NSString*)name
+                                            error:(NSError**)error
 {
     std::string stdName = std::string([name UTF8String]);
     auto animation = _artboardInstance->animationNamed(stdName);
@@ -115,13 +119,15 @@ static int artInstanceCount = 0;
             errorWithDomain:RiveErrorDomain
                        code:RiveNoAnimationFound
                    userInfo:@{
-                       NSLocalizedDescriptionKey :
-                           [NSString stringWithFormat:@"No Animation found with name %@.", name],
+                       NSLocalizedDescriptionKey : [NSString
+                           stringWithFormat:@"No Animation found with name %@.",
+                                            name],
                        @"name" : @"NoAnimationFound"
                    }];
         return nil;
     }
-    return [[RiveLinearAnimationInstance alloc] initWithAnimation:std::move(animation)];
+    return [[RiveLinearAnimationInstance alloc]
+        initWithAnimation:std::move(animation)];
 }
 
 - (NSArray*)animationNames
@@ -129,7 +135,8 @@ static int artInstanceCount = 0;
     NSMutableArray* animationNames = [NSMutableArray array];
     for (NSUInteger i = 0; i < [self animationCount]; i++)
     {
-        RiveLinearAnimationInstance* animation = [self animationFromIndex:i error:nil];
+        RiveLinearAnimationInstance* animation = [self animationFromIndex:i
+                                                                    error:nil];
         if (animation != nil)
         {
             [animationNames addObject:[animation name]];
@@ -145,18 +152,21 @@ static int artInstanceCount = 0;
 }
 
 /// Returns a state machine at the given index, or null if the index is invalid
-- (RiveStateMachineInstance*)stateMachineFromIndex:(NSInteger)index error:(NSError**)error
+- (RiveStateMachineInstance*)stateMachineFromIndex:(NSInteger)index
+                                             error:(NSError**)error
 {
     if (index < 0 || index >= [self stateMachineCount])
     {
-        *error = [NSError
-            errorWithDomain:RiveErrorDomain
-                       code:RiveNoStateMachineFound
-                   userInfo:@{
-                       NSLocalizedDescriptionKey : [NSString
-                           stringWithFormat:@"No State Machine found at index %ld.", (long)index],
-                       @"name" : @"NoStateMachineFound"
-                   }];
+        *error =
+            [NSError errorWithDomain:RiveErrorDomain
+                                code:RiveNoStateMachineFound
+                            userInfo:@{
+                                NSLocalizedDescriptionKey : [NSString
+                                    stringWithFormat:
+                                        @"No State Machine found at index %ld.",
+                                        (long)index],
+                                @"name" : @"NoStateMachineFound"
+                            }];
         return nil;
     }
     return [[RiveStateMachineInstance alloc]
@@ -164,23 +174,26 @@ static int artInstanceCount = 0;
 }
 
 /// Returns a state machine with the given name, or null if none exists
-- (RiveStateMachineInstance*)stateMachineFromName:(NSString*)name error:(NSError**)error
+- (RiveStateMachineInstance*)stateMachineFromName:(NSString*)name
+                                            error:(NSError**)error
 {
     std::string stdName = std::string([name UTF8String]);
     auto machine = _artboardInstance->stateMachineNamed(stdName);
     if (machine == nullptr)
     {
-        *error =
-            [NSError errorWithDomain:RiveErrorDomain
-                                code:RiveNoStateMachineFound
-                            userInfo:@{
-                                NSLocalizedDescriptionKey : [NSString
-                                    stringWithFormat:@"No State Machine found with name %@.", name],
-                                @"name" : @"NoStateMachineFound"
-                            }];
+        *error = [NSError
+            errorWithDomain:RiveErrorDomain
+                       code:RiveNoStateMachineFound
+                   userInfo:@{
+                       NSLocalizedDescriptionKey : [NSString
+                           stringWithFormat:
+                               @"No State Machine found with name %@.", name],
+                       @"name" : @"NoStateMachineFound"
+                   }];
         return nil;
     }
-    return [[RiveStateMachineInstance alloc] initWithStateMachine:std::move(machine)];
+    return [[RiveStateMachineInstance alloc]
+        initWithStateMachine:std::move(machine)];
 }
 
 - (RiveStateMachineInstance*)defaultStateMachine
@@ -188,12 +201,15 @@ static int artInstanceCount = 0;
     auto machine = _artboardInstance->defaultStateMachine();
     if (machine == nullptr)
     {
-        //        *error = [NSError errorWithDomain:RiveErrorDomain code:RiveNoStateMachineFound
-        //        userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat: @"No default
-        //        State Machine found."], @"name": @"NoStateMachineFound"}];
+        //        *error = [NSError errorWithDomain:RiveErrorDomain
+        //        code:RiveNoStateMachineFound
+        //        userInfo:@{NSLocalizedDescriptionKey: [NSString
+        //        stringWithFormat: @"No default State Machine found."],
+        //        @"name": @"NoStateMachineFound"}];
         return nil;
     }
-    return [[RiveStateMachineInstance alloc] initWithStateMachine:std::move(machine)];
+    return [[RiveStateMachineInstance alloc]
+        initWithStateMachine:std::move(machine)];
 }
 
 - (NSArray*)stateMachineNames
@@ -201,7 +217,8 @@ static int artInstanceCount = 0;
     NSMutableArray* stateMachineNames = [NSMutableArray array];
     for (NSUInteger i = 0; i < [self stateMachineCount]; i++)
     {
-        RiveStateMachineInstance* stateMachine = [self stateMachineFromIndex:i error:nil];
+        RiveStateMachineInstance* stateMachine =
+            [self stateMachineFromIndex:i error:nil];
         if (stateMachine != nil)
         {
             [stateMachineNames addObject:[stateMachine name]];
@@ -223,7 +240,8 @@ static int artInstanceCount = 0;
 - (NSString*)name
 {
     std::string str = _artboardInstance->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (CGRect)bounds
@@ -238,7 +256,8 @@ static int artInstanceCount = 0;
     auto riveTextRun = _artboardInstance->find<rive::TextValueRun>(stdName);
     if (riveTextRun != nullptr)
     {
-        return [[RiveTextValueRun alloc] initWithTextValueRun:std::move(riveTextRun)];
+        return [[RiveTextValueRun alloc]
+            initWithTextValueRun:std::move(riveTextRun)];
     }
     return nullptr;
 }
@@ -252,11 +271,13 @@ static int artInstanceCount = 0;
 
     const std::string stdName = std::string([name UTF8String]);
     const std::string stdPath = std::string([path UTF8String]);
-    // Can we update the cpp library to handle empty paths / default to parent if nullptr?
+    // Can we update the cpp library to handle empty paths / default to parent
+    // if nullptr?
     auto riveTextRun = _artboardInstance->getTextRun(stdName, stdPath);
     if (riveTextRun != nullptr)
     {
-        return [[RiveTextValueRun alloc] initWithTextValueRun:std::move(riveTextRun)];
+        return [[RiveTextValueRun alloc]
+            initWithTextValueRun:std::move(riveTextRun)];
     }
     return nullptr;
 }
@@ -265,7 +286,8 @@ static int artInstanceCount = 0;
 {
     // Create a unique dictionary name for nested artboards + booleans;
     // this lets us use one dictionary for the three different types
-    NSString* dictName = [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_boo"];
+    NSString* dictName =
+        [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_boo"];
     // Check if the input is already instanced
     if ([_inputs objectForKey:dictName] != nil)
     {
@@ -290,7 +312,8 @@ static int artInstanceCount = 0;
 {
     // Create a unique dictionary name for nested artboards + triggers;
     // this lets us use one dictionary for the three different types
-    NSString* dictName = [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_trg"];
+    NSString* dictName =
+        [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_trg"];
     // Check if the input is already instanced
     if ([_inputs objectForKey:dictName] != nil)
     {
@@ -315,7 +338,8 @@ static int artInstanceCount = 0;
 {
     // Create a unique dictionary name for nested artboards + numbers;
     // this lets us use one dictionary for the three different types
-    NSString* dictName = [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_num"];
+    NSString* dictName =
+        [NSString stringWithFormat:@"%@%s%@%s", path, "_", name, "_num"];
     // Check if the input is already instanced
     if ([_inputs objectForKey:dictName] != nil)
     {

@@ -25,8 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString*)name;
 /// Type of the RiveEvent
 - (NSInteger)type;
-/// Delay in seconds since the Event was actually fired (applicable in cases of Events fired off
-/// from timeline animations)
+/// Delay in seconds since the Event was actually fired (applicable in cases of
+/// Events fired off from timeline animations)
 - (float)delay;
 /// Dictionary of custom properties set on any event
 - (NSDictionary<NSString*, id>*)properties;

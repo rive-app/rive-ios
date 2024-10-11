@@ -49,7 +49,8 @@
  * RiveStateMachineInstance interface
  */
 @interface RiveStateMachineInstance ()
-- (instancetype)initWithStateMachine:(std::unique_ptr<rive::StateMachineInstance>)stateMachine;
+- (instancetype)initWithStateMachine:
+    (std::unique_ptr<rive::StateMachineInstance>)stateMachine;
 @end
 
 /*
@@ -81,21 +82,24 @@
  * RiveEvent interface
  */
 @interface RiveEvent ()
-- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent delay:(float)delay;
+- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent
+                            delay:(float)delay;
 @end
 
 /*
  * RiveTextValueRun interface
  */
 @interface RiveTextValueRun ()
-- (instancetype)initWithTextValueRun:(const rive::TextValueRun*)riveTextValueRun;
+- (instancetype)initWithTextValueRun:
+    (const rive::TextValueRun*)riveTextValueRun;
 @end
 
 /*
  * RiveLinearAnimationInstance interface
  */
 @interface RiveLinearAnimationInstance ()
-- (instancetype)initWithAnimation:(std::unique_ptr<rive::LinearAnimationInstance>)riveAnimation;
+- (instancetype)initWithAnimation:
+    (std::unique_ptr<rive::LinearAnimationInstance>)riveAnimation;
 @end
 
 /*
@@ -103,7 +107,8 @@
  */
 @interface RiveArtboard ()
 - (rive::ArtboardInstance*)artboardInstance;
-- (instancetype)initWithArtboard:(std::unique_ptr<rive::ArtboardInstance>)riveArtboard;
+- (instancetype)initWithArtboard:
+    (std::unique_ptr<rive::ArtboardInstance>)riveArtboard;
 @end
 
 /*

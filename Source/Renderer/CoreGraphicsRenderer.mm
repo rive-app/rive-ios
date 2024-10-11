@@ -188,10 +188,12 @@ void CoreGraphicsRenderPath::rewind()
     path = CGPathCreateMutable();
 }
 
-void CoreGraphicsRenderPath::addRenderPath(RenderPath* path, const Mat2D& transform)
+void CoreGraphicsRenderPath::addRenderPath(RenderPath* path,
+                                           const Mat2D& transform)
 {
     //    NSLog(@" --- RenderPath::addPath");
-    CGMutablePathRef pathToAdd = reinterpret_cast<CoreGraphicsRenderPath*>(path)->getPath();
+    CGMutablePathRef pathToAdd =
+        reinterpret_cast<CoreGraphicsRenderPath*>(path)->getPath();
     CGAffineTransform affineTransform = CGAffineTransformMake(transform.xx(),
                                                               transform.xy(),
                                                               transform.yx(),
@@ -224,10 +226,11 @@ void CoreGraphicsRenderPath::lineTo(float x, float y)
     CGPathAddLineToPoint(path, NULL, x, y);
 }
 
-void CoreGraphicsRenderPath::cubicTo(float ox, float oy, float ix, float iy, float x, float y)
+void CoreGraphicsRenderPath::cubicTo(
+    float ox, float oy, float ix, float iy, float x, float y)
 {
-    //    NSLog(@" --- call to RenderPath::cubicTo %.1f, %.1f, %.1f, %.1f, %.1f, %.1f, ", ox, oy,
-    //    ix, iy, x, y);
+    //    NSLog(@" --- call to RenderPath::cubicTo %.1f, %.1f, %.1f, %.1f, %.1f,
+    //    %.1f, ", ox, oy, ix, iy, x, y);
     CGPathAddCurveToPoint(path, NULL, ox, oy, ix, iy, x, y);
 }
 
@@ -254,9 +257,12 @@ void CoreGraphicsRenderer::restore()
 
 void CoreGraphicsRenderer::drawPath(RenderPath* path, RenderPaint* paint)
 {
-    //        NSLog(@" --- Renderer::drawPath path for type %d", rivePaint->paintStyle);
-    CoreGraphicsRenderPaint* rivePaint = reinterpret_cast<CoreGraphicsRenderPaint*>(paint);
-    CoreGraphicsRenderPath* rivePath = reinterpret_cast<CoreGraphicsRenderPath*>(path);
+    //        NSLog(@" --- Renderer::drawPath path for type %d",
+    //        rivePaint->paintStyle);
+    CoreGraphicsRenderPaint* rivePaint =
+        reinterpret_cast<CoreGraphicsRenderPaint*>(paint);
+    CoreGraphicsRenderPath* rivePath =
+        reinterpret_cast<CoreGraphicsRenderPath*>(path);
 
     // Apply the stroke join
     if (rivePaint->strokeJoin != CoreGraphicsStrokeJoin::None)
@@ -381,8 +387,8 @@ void CoreGraphicsRenderer::drawPath(RenderPath* path, RenderPaint* paint)
     // Draw gradient
     if (rivePaint->gradientType != CoreGraphicsGradient::None)
     {
-        // If the path is a stroke, then convert the path to a stroked path to prevent the gradient
-        // from filling the path
+        // If the path is a stroke, then convert the path to a stroked path to
+        // prevent the gradient from filling the path
         if (rivePaint->paintStyle == CoreGraphicsPaintStyle::Stroke)
         {
             CGContextSetLineWidth(ctx, rivePaint->paintThickness);
@@ -395,8 +401,11 @@ void CoreGraphicsRenderer::drawPath(RenderPath* path, RenderPaint* paint)
 
         if (rivePaint->gradientType == CoreGraphicsGradient::Linear)
         {
-            CGContextDrawLinearGradient(
-                ctx, rivePaint->gradient, rivePaint->gradientStart, rivePaint->gradientEnd, 0x3);
+            CGContextDrawLinearGradient(ctx,
+                                        rivePaint->gradient,
+                                        rivePaint->gradientStart,
+                                        rivePaint->gradientEnd,
+                                        0x3);
         }
         else if (rivePaint->gradientType == CoreGraphicsGradient::Radial)
         {
@@ -429,7 +438,8 @@ void CoreGraphicsRenderer::drawPath(RenderPath* path, RenderPaint* paint)
 void CoreGraphicsRenderer::clipPath(RenderPath* path)
 {
     //        NSLog(@" --- Renderer::clipPath %@", clipPath);
-    const CGPath* clipPath = reinterpret_cast<CoreGraphicsRenderPath*>(path)->getPath();
+    const CGPath* clipPath =
+        reinterpret_cast<CoreGraphicsRenderPath*>(path)->getPath();
     CGContextAddPath(ctx, clipPath);
     if (!CGContextIsPathEmpty(ctx))
         CGContextClip(ctx);

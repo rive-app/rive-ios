@@ -17,7 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RiveFileDelegate;
 @class RiveFileAsset;
 @class RiveFactory;
-typedef bool (^LoadAsset)(RiveFileAsset* asset, NSData* data, RiveFactory* factory);
+typedef bool (^LoadAsset)(RiveFileAsset* asset,
+                          NSData* data,
+                          RiveFactory* factory);
 
 /*
  * RiveFile
@@ -34,7 +36,9 @@ typedef bool (^LoadAsset)(RiveFileAsset* asset, NSData* data, RiveFactory* facto
 @property(weak) id delegate;
 
 /// Used to manage url sessions Rive, this is to enable testing.
-- (nullable instancetype)initWithByteArray:(NSArray*)bytes loadCdn:(bool)cdn error:(NSError**)error;
+- (nullable instancetype)initWithByteArray:(NSArray*)bytes
+                                   loadCdn:(bool)cdn
+                                     error:(NSError**)error;
 - (nullable instancetype)initWithByteArray:(NSArray*)bytes
                                    loadCdn:(bool)cdn
                          customAssetLoader:(LoadAsset)customAssetLoader
@@ -50,7 +54,9 @@ typedef bool (^LoadAsset)(RiveFileAsset* asset, NSData* data, RiveFactory* facto
                      customAssetLoader:(LoadAsset)customAssetLoader
                                  error:(NSError**)error;
 
-- (nullable instancetype)initWithData:(NSData*)bytes loadCdn:(bool)cdn error:(NSError**)error;
+- (nullable instancetype)initWithData:(NSData*)bytes
+                              loadCdn:(bool)cdn
+                                error:(NSError**)error;
 - (nullable instancetype)initWithData:(NSData*)bytes
                               loadCdn:(bool)cdn
                     customAssetLoader:(LoadAsset)customAssetLoader
@@ -89,10 +95,12 @@ typedef bool (^LoadAsset)(RiveFileAsset* asset, NSData* data, RiveFactory* facto
 - (NSInteger)artboardCount;
 
 /// Returns the artboard by its index
-- (RiveArtboard* __nullable)artboardFromIndex:(NSInteger)index error:(NSError**)error;
+- (RiveArtboard* __nullable)artboardFromIndex:(NSInteger)index
+                                        error:(NSError**)error;
 
 /// Returns the artboard by its name
-- (RiveArtboard* __nullable)artboardFromName:(NSString*)name error:(NSError**)error;
+- (RiveArtboard* __nullable)artboardFromName:(NSString*)name
+                                       error:(NSError**)error;
 
 /// Returns the names of all artboards in the file.
 - (NSArray<NSString*>*)artboardNames;

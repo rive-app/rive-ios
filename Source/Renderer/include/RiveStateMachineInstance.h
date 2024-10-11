@@ -36,10 +36,13 @@ typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
 - (NSArray<NSString*>*)inputNames;
 - (NSInteger)inputCount;
 - (NSInteger)layerCount;
-- (RiveSMIInput* __nullable)inputFromIndex:(NSInteger)index error:(NSError**)error;
-- (RiveSMIInput* __nullable)inputFromName:(NSString*)name error:(NSError**)error;
+- (RiveSMIInput* __nullable)inputFromIndex:(NSInteger)index
+                                     error:(NSError**)error;
+- (RiveSMIInput* __nullable)inputFromName:(NSString*)name
+                                    error:(NSError**)error;
 - (NSInteger)stateChangedCount;
-- (RiveLayerState* __nullable)stateChangedFromIndex:(NSInteger)index error:(NSError**)error;
+- (RiveLayerState* __nullable)stateChangedFromIndex:(NSInteger)index
+                                              error:(NSError**)error;
 - (NSArray<NSString*>*)stateChanges;
 /// Returns number of reported events on the state machine since the last frame
 - (NSInteger)reportedEventCount;
@@ -49,23 +52,28 @@ typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
 // MARK: Touch
 
 /// Tells this StateMachineInstance that a user began touching the artboard
-/// @param touchLocation A CGPoint in the coordinate space of the animating artboard
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
 /// @return The RiveHitResult of a touch beginning at the provided location.
 - (RiveHitResult)touchBeganAtLocation:(CGPoint)touchLocation;
 
 /// Tells this StateMachineInstance that a touch moved on the artboard
-/// @param touchLocation A CGPoint in the coordinate space of the animating artboard
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
 /// @return The RiveHitResult of a touch moving at the provided location.
 - (RiveHitResult)touchMovedAtLocation:(CGPoint)touchLocation;
 
 /// Tells this StateMachineInstance that a user finished touching the artboard
-/// @param touchLocation A CGPoint in the coordinate space of the animating artboard
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
 /// @return The RiveHitResult of a touch ending at the provided location.
 - (RiveHitResult)touchEndedAtLocation:(CGPoint)touchLocation;
 
 /// Tells this StateMachineInstance that a user cancelled touching the artboard
-/// @param touchLocation A CGPoint in the coordinate space of the animating artboard
-/// @return The RiveHitResult of a touch being cancelled at the provided location.
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
+/// @return The RiveHitResult of a touch being cancelled at the provided
+/// location.
 - (RiveHitResult)touchCancelledAtLocation:(CGPoint)touchLocation;
 
 // MARK: Debug

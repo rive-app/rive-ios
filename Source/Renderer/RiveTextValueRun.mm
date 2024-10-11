@@ -13,7 +13,8 @@
  */
 @implementation RiveTextValueRun
 {
-    const rive::TextValueRun* instance; // note: we do NOT own this, so don't delete it
+    const rive::TextValueRun*
+        instance; // note: we do NOT own this, so don't delete it
 }
 
 - (const rive::TextValueRun*)getInstance
@@ -44,7 +45,8 @@
 - (NSString*)text
 {
     std::string str = ((const rive::TextValueRun*)instance)->text();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 @end

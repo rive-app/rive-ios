@@ -33,7 +33,9 @@
     return UInt8(rive::File::minorVersion);
 }
 
-- (nullable instancetype)initWithByteArray:(NSArray*)array loadCdn:(bool)cdn error:(NSError**)error
+- (nullable instancetype)initWithByteArray:(NSArray*)array
+                                   loadCdn:(bool)cdn
+                                     error:(NSError**)error
 {
     if (self = [super init])
     {
@@ -42,10 +44,14 @@
         {
             bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
 
-            [array enumerateObjectsUsingBlock:^(NSNumber* number, NSUInteger index, BOOL* stop) {
+            [array enumerateObjectsUsingBlock:^(
+                       NSNumber* number, NSUInteger index, BOOL* stop) {
               bytes[index] = number.unsignedIntValue;
             }];
-            BOOL ok = [self import:bytes byteLength:array.count loadCdn:cdn error:error];
+            BOOL ok = [self import:bytes
+                        byteLength:array.count
+                           loadCdn:cdn
+                             error:error];
             if (!ok)
             {
                 return nil;
@@ -74,7 +80,8 @@
         {
             bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
 
-            [array enumerateObjectsUsingBlock:^(NSNumber* number, NSUInteger index, BOOL* stop) {
+            [array enumerateObjectsUsingBlock:^(
+                       NSNumber* number, NSUInteger index, BOOL* stop) {
               bytes[index] = number.unsignedIntValue;
             }];
             BOOL ok = [self import:bytes
@@ -139,10 +146,15 @@
     return nil;
 }
 
-- (nullable instancetype)initWithData:(NSData*)data loadCdn:(bool)cdn error:(NSError**)error
+- (nullable instancetype)initWithData:(NSData*)data
+                              loadCdn:(bool)cdn
+                                error:(NSError**)error
 {
     UInt8* bytes = (UInt8*)[data bytes];
-    return [self initWithBytes:bytes byteLength:data.length loadCdn:cdn error:error];
+    return [self initWithBytes:bytes
+                    byteLength:data.length
+                       loadCdn:cdn
+                         error:error];
 }
 - (nullable instancetype)initWithData:(NSData*)data
                               loadCdn:(bool)cdn
@@ -165,10 +177,11 @@
                                   loadCdn:(bool)cdn
                                     error:(NSError**)error
 {
-    // QUESTION: good ideas on how we can combine a few of these into following the same path
-    // better?
+    // QUESTION: good ideas on how we can combine a few of these into following
+    // the same path better?
     //    there's a lot of copy pasta here.
-    NSString* filepath = [[NSBundle mainBundle] pathForResource:resourceName ofType:extension];
+    NSString* filepath = [[NSBundle mainBundle] pathForResource:resourceName
+                                                         ofType:extension];
     NSURL* fileUrl = [NSURL fileURLWithPath:filepath];
     NSData* fileData = [NSData dataWithContentsOfURL:fileUrl];
 
@@ -176,19 +189,24 @@
 }
 
 /*
- * Creates a RiveFile from a binary resource, and assumes the resource extension is '.riv'
+ * Creates a RiveFile from a binary resource, and assumes the resource extension
+ * is '.riv'
  */
 - (nullable instancetype)initWithResource:(NSString*)resourceName
                                   loadCdn:(bool)cdn
                                     error:(NSError**)error
 {
-    return [self initWithResource:resourceName withExtension:@"riv" loadCdn:cdn error:error];
+    return [self initWithResource:resourceName
+                    withExtension:@"riv"
+                          loadCdn:cdn
+                            error:error];
 }
 
-- (nullable instancetype)initWithResource:(nonnull NSString*)resourceName
-                                  loadCdn:(bool)cdn
-                        customAssetLoader:(nonnull LoadAsset)customAssetLoader
-                                    error:(NSError* __autoreleasing _Nullable* _Nullable)error
+- (nullable instancetype)
+     initWithResource:(nonnull NSString*)resourceName
+              loadCdn:(bool)cdn
+    customAssetLoader:(nonnull LoadAsset)customAssetLoader
+                error:(NSError* __autoreleasing _Nullable* _Nullable)error
 {
     return [self initWithResource:resourceName
                     withExtension:@"riv"
@@ -197,16 +215,21 @@
                             error:error];
 }
 
-- (nullable instancetype)initWithResource:(nonnull NSString*)resourceName
-                            withExtension:(nonnull NSString*)extension
-                                  loadCdn:(bool)cdn
-                        customAssetLoader:(nonnull LoadAsset)customAssetLoader
-                                    error:(NSError* __autoreleasing _Nullable* _Nullable)error
+- (nullable instancetype)
+     initWithResource:(nonnull NSString*)resourceName
+        withExtension:(nonnull NSString*)extension
+              loadCdn:(bool)cdn
+    customAssetLoader:(nonnull LoadAsset)customAssetLoader
+                error:(NSError* __autoreleasing _Nullable* _Nullable)error
 {
-    NSString* filepath = [[NSBundle mainBundle] pathForResource:resourceName ofType:extension];
+    NSString* filepath = [[NSBundle mainBundle] pathForResource:resourceName
+                                                         ofType:extension];
     NSURL* fileUrl = [NSURL fileURLWithPath:filepath];
     NSData* fileData = [NSData dataWithContentsOfURL:fileUrl];
-    return [self initWithData:fileData loadCdn:cdn customAssetLoader:customAssetLoader error:error];
+    return [self initWithData:fileData
+                      loadCdn:cdn
+            customAssetLoader:customAssetLoader
+                        error:error];
 }
 
 /*
@@ -218,7 +241,8 @@
 {
     return [self initWithHttpUrl:url
                          loadCdn:loadCdn
-               customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+               customAssetLoader:^bool(
+                   RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
                  return false;
                }
                     withDelegate:delegate];
@@ -236,16 +260,19 @@
         // Set up the http download task
         NSURL* URL = [NSURL URLWithString:url];
 
-        // TODO: we are still adding 8MB of memory when we load our first http url.
+        // TODO: we are still adding 8MB of memory when we load our first http
+        // url.
         NSURLSessionTask* task = [[NSURLSession sharedSession]
             downloadTaskWithURL:URL
-              completionHandler:^(NSURL* location, NSURLResponse* response, NSError* error) {
+              completionHandler:^(
+                  NSURL* location, NSURLResponse* response, NSError* error) {
                 if (!error)
                 {
                     // Load the data into the reader
                     NSData* data = [NSData dataWithContentsOfURL:location];
                     UInt8* bytes = (UInt8*)[data bytes];
-                    // TODO: Do something with this error the proper way with delegates.
+                    // TODO: Do something with this error the proper way with
+                    // delegates.
                     NSError* error = nil;
                     [self import:bytes
                                byteLength:[data length]
@@ -256,7 +283,8 @@
                     dispatch_async(dispatch_get_main_queue(), ^{
                       if ([[NSThread currentThread] isMainThread])
                       {
-                          if ([self.delegate respondsToSelector:@selector(riveFileDidLoad:error:)])
+                          if ([self.delegate respondsToSelector:@selector
+                                             (riveFileDidLoad:error:)])
                           {
                               NSError* error = nil;
                               [self.delegate riveFileDidLoad:self error:&error];
@@ -274,12 +302,16 @@
     return nil;
 }
 
-- (BOOL)import:(UInt8*)bytes byteLength:(UInt64)length loadCdn:(bool)loadCdn error:(NSError**)error
+- (BOOL)import:(UInt8*)bytes
+    byteLength:(UInt64)length
+       loadCdn:(bool)loadCdn
+         error:(NSError**)error
 {
     return [self import:bytes
                byteLength:length
                   loadCdn:loadCdn
-        customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        customAssetLoader:^bool(
+            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
           return false;
         }
                     error:error];
@@ -291,11 +323,13 @@
                 error:(NSError**)error
 {
     rive::ImportResult result;
-    RenderContext* renderContext = [[RenderContextManager shared] getDefaultContext];
+    RenderContext* renderContext =
+        [[RenderContextManager shared] getDefaultContext];
     assert(renderContext);
     rive::Factory* factory = [renderContext factory];
 
-    FallbackFileAssetLoader* fallbackLoader = [[FallbackFileAssetLoader alloc] init];
+    FallbackFileAssetLoader* fallbackLoader =
+        [[FallbackFileAssetLoader alloc] init];
 
     CustomFileAssetLoader* customAssetLoader =
         [[CustomFileAssetLoader alloc] initWithLoader:custom];
@@ -309,7 +343,8 @@
 
     fileAssetLoader = new rive::FileAssetLoaderAdapter(fallbackLoader);
 
-    auto file = rive::File::import(rive::Span(bytes, length), factory, &result, fileAssetLoader);
+    auto file = rive::File::import(
+        rive::Span(bytes, length), factory, &result, fileAssetLoader);
     if (result == rive::ImportResult::success)
     {
         riveFile = std::move(file);
@@ -319,27 +354,29 @@
     switch (result)
     {
         case rive::ImportResult::unsupportedVersion:
-            *error =
-                [NSError errorWithDomain:RiveErrorDomain
-                                    code:RiveUnsupportedVersion
-                                userInfo:@{
-                                    NSLocalizedDescriptionKey : @"Unsupported Rive File Version",
-                                    @"name" : @"UnsupportedVersion"
-                                }];
+            *error = [NSError errorWithDomain:RiveErrorDomain
+                                         code:RiveUnsupportedVersion
+                                     userInfo:@{
+                                         NSLocalizedDescriptionKey :
+                                             @"Unsupported Rive File Version",
+                                         @"name" : @"UnsupportedVersion"
+                                     }];
             break;
         case rive::ImportResult::malformed:
-            *error = [NSError errorWithDomain:RiveErrorDomain
-                                         code:RiveMalformedFile
-                                     userInfo:@{
-                                         NSLocalizedDescriptionKey : @"Malformed Rive File.",
-                                         @"name" : @"Malformed"
-                                     }];
+            *error = [NSError
+                errorWithDomain:RiveErrorDomain
+                           code:RiveMalformedFile
+                       userInfo:@{
+                           NSLocalizedDescriptionKey : @"Malformed Rive File.",
+                           @"name" : @"Malformed"
+                       }];
             break;
         default:
             *error = [NSError errorWithDomain:RiveErrorDomain
                                          code:RiveUnknownError
                                      userInfo:@{
-                                         NSLocalizedDescriptionKey : @"Unknown error loading file.",
+                                         NSLocalizedDescriptionKey :
+                                             @"Unknown error loading file.",
                                          @"name" : @"Unknown"
                                      }];
             break;
@@ -352,12 +389,13 @@
     auto artboard = riveFile->artboardDefault();
     if (artboard == nullptr)
     {
-        *error = [NSError errorWithDomain:RiveErrorDomain
-                                     code:RiveNoArtboardsFound
-                                 userInfo:@{
-                                     NSLocalizedDescriptionKey : @"No Artboards Found.",
-                                     @"name" : @"NoArtboardsFound"
-                                 }];
+        *error = [NSError
+            errorWithDomain:RiveErrorDomain
+                       code:RiveNoArtboardsFound
+                   userInfo:@{
+                       NSLocalizedDescriptionKey : @"No Artboards Found.",
+                       @"name" : @"NoArtboardsFound"
+                   }];
         return nil;
     }
     else
@@ -381,7 +419,8 @@
                        code:RiveNoArtboardFound
                    userInfo:@{
                        NSLocalizedDescriptionKey : [NSString
-                           stringWithFormat:@"No Artboard Found at index %ld.", (long)index],
+                           stringWithFormat:@"No Artboard Found at index %ld.",
+                                            (long)index],
                        @"name" : @"NoArtboardFound"
                    }];
         return nil;
@@ -395,13 +434,15 @@
     auto artboard = riveFile->artboardNamed(stdName);
     if (artboard == nullptr)
     {
-        *error = [NSError errorWithDomain:RiveErrorDomain
-                                     code:RiveNoArtboardFound
-                                 userInfo:@{
-                                     NSLocalizedDescriptionKey : [NSString
-                                         stringWithFormat:@"No Artboard Found with name %@.", name],
-                                     @"name" : @"NoArtboardFound"
-                                 }];
+        *error = [NSError
+            errorWithDomain:RiveErrorDomain
+                       code:RiveNoArtboardFound
+                   userInfo:@{
+                       NSLocalizedDescriptionKey : [NSString
+                           stringWithFormat:@"No Artboard Found with name %@.",
+                                            name],
+                       @"name" : @"NoArtboardFound"
+                   }];
         return nil;
     }
     else

@@ -14,7 +14,8 @@
  */
 @implementation RiveSMIInput
 {
-    const rive::SMIInput* instance; // note: we do NOT own this, so don't delete it
+    const rive::SMIInput*
+        instance; // note: we do NOT own this, so don't delete it
 }
 
 - (const rive::SMIInput*)getInstance
@@ -54,7 +55,8 @@
 - (NSString*)name
 {
     std::string str = ((const rive::SMIInput*)instance)->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 @end

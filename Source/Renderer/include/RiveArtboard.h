@@ -36,13 +36,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString*>*)animationNames;
 - (RiveLinearAnimationInstance* __nullable)animationFromIndex:(NSInteger)index
                                                         error:(NSError**)error;
-- (RiveLinearAnimationInstance* __nullable)animationFromName:(NSString*)name error:(NSError**)error;
+- (RiveLinearAnimationInstance* __nullable)animationFromName:(NSString*)name
+                                                       error:(NSError**)error;
 
 - (NSInteger)stateMachineCount;
 - (NSArray<NSString*>*)stateMachineNames;
 - (RiveStateMachineInstance* __nullable)stateMachineFromIndex:(NSInteger)index
                                                         error:(NSError**)error;
-- (RiveStateMachineInstance* __nullable)stateMachineFromName:(NSString*)name error:(NSError**)error;
+- (RiveStateMachineInstance* __nullable)stateMachineFromName:(NSString*)name
+                                                       error:(NSError**)error;
 - (RiveStateMachineInstance* __nullable)defaultStateMachine;
 
 - (RiveTextValueRun* __nullable)textRun:(NSString*)name;

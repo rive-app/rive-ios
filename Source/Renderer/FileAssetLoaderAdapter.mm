@@ -13,7 +13,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-rive::FileAssetLoaderAdapter::FileAssetLoaderAdapter(RiveFileAssetLoader* myLoader)
+rive::FileAssetLoaderAdapter::FileAssetLoaderAdapter(
+    RiveFileAssetLoader* myLoader)
 {
     loader = myLoader;
 }
@@ -26,21 +27,27 @@ bool rive::FileAssetLoaderAdapter::loadContents(rive::FileAsset& asset,
     RiveFactory* myFactory = [[RiveFactory alloc] initWithFactory:factory];
     if (asset.is<rive::FontAsset>())
     {
-        RiveFontAsset* fontAsset =
-            [[RiveFontAsset alloc] initWithFileAsset:asset.as<rive::FontAsset>()];
-        return [loader loadContentsWithAsset:fontAsset andData:data andFactory:myFactory];
+        RiveFontAsset* fontAsset = [[RiveFontAsset alloc]
+            initWithFileAsset:asset.as<rive::FontAsset>()];
+        return [loader loadContentsWithAsset:fontAsset
+                                     andData:data
+                                  andFactory:myFactory];
     }
     else if (asset.is<rive::ImageAsset>())
     {
-        RiveImageAsset* imageAsset =
-            [[RiveImageAsset alloc] initWithFileAsset:asset.as<rive::ImageAsset>()];
-        return [loader loadContentsWithAsset:imageAsset andData:data andFactory:myFactory];
+        RiveImageAsset* imageAsset = [[RiveImageAsset alloc]
+            initWithFileAsset:asset.as<rive::ImageAsset>()];
+        return [loader loadContentsWithAsset:imageAsset
+                                     andData:data
+                                  andFactory:myFactory];
     }
     else if (asset.is<rive::AudioAsset>())
     {
-        RiveAudioAsset* audioAsset =
-            [[RiveAudioAsset alloc] initWithFileAsset:asset.as<rive::AudioAsset>()];
-        return [loader loadContentsWithAsset:audioAsset andData:data andFactory:myFactory];
+        RiveAudioAsset* audioAsset = [[RiveAudioAsset alloc]
+            initWithFileAsset:asset.as<rive::AudioAsset>()];
+        return [loader loadContentsWithAsset:audioAsset
+                                     andData:data
+                                  andFactory:myFactory];
     }
     return false;
 }

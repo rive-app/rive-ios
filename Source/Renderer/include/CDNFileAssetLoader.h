@@ -20,7 +20,9 @@
 - (void)addLoader:(RiveFileAssetLoader*)loader;
 @end
 
-typedef bool (^LoadAsset)(RiveFileAsset* asset, NSData* data, RiveFactory* factory);
+typedef bool (^LoadAsset)(RiveFileAsset* asset,
+                          NSData* data,
+                          RiveFactory* factory);
 
 @interface CustomFileAssetLoader : RiveFileAssetLoader
 @property(nonatomic, copy) LoadAsset loadAsset;

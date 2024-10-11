@@ -30,7 +30,8 @@
     XCTAssertEqual([[file artboardFromIndex:0 error:nil] name],
                    [[file artboardFromName:@"artboard2" error:nil] name]);
 
-    NSArray* target = [NSArray arrayWithObjects:@"artboard2", @"artboard1", nil];
+    NSArray* target =
+        [NSArray arrayWithObjects:@"artboard2", @"artboard1", nil];
     XCTAssertTrue([[file artboardNames] isEqualToArray:target]);
 }
 
@@ -59,7 +60,8 @@
     XCTAssertNotNil(error);
     XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
     XCTAssertEqual([error code], 100);
-    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoArtboardsFound");
+    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"],
+                          @"NoArtboardsFound");
 }
 
 /*
@@ -76,7 +78,8 @@
     XCTAssertNotNil(error);
     XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
     XCTAssertEqual([error code], 101);
-    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoArtboardFound");
+    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"],
+                          @"NoArtboardFound");
 }
 
 /*
@@ -93,7 +96,8 @@
     XCTAssertNotNil(error);
     XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
     XCTAssertEqual([error code], 101);
-    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"NoArtboardFound");
+    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"],
+                          @"NoArtboardFound");
 }
 
 /*
@@ -120,7 +124,8 @@
 {
     RiveFile* file = [Util loadTestFile:@"testtext" error:nil];
     NSError* error = nil;
-    RiveArtboard* artboard = [file artboardFromName:@"New Artboard" error:&error];
+    RiveArtboard* artboard = [file artboardFromName:@"New Artboard"
+                                              error:&error];
     RiveTextValueRun* textRun = [artboard textRun:@"MyRun"];
 
     XCTAssertTrue([[textRun text] isEqualToString:@"Hello there"]);
@@ -133,7 +138,8 @@
 {
     RiveFile* file = [Util loadTestFile:@"testtext" error:nil];
     NSError* error = nil;
-    RiveArtboard* artboard = [file artboardFromName:@"New Artboard" error:&error];
+    RiveArtboard* artboard = [file artboardFromName:@"New Artboard"
+                                              error:&error];
     RiveTextValueRun* textRun = [artboard textRun:@"MyRun"];
     XCTAssertTrue([[textRun text] isEqualToString:@"Hello there"]);
     [textRun setText:@"Hello text"];
@@ -166,7 +172,8 @@
 {
     RiveFile* file = [Util loadTestFile:@"testtext" error:nil];
     NSError* error = nil;
-    RiveArtboard* artboard = [file artboardFromName:@"New Artboard" error:&error];
+    RiveArtboard* artboard = [file artboardFromName:@"New Artboard"
+                                              error:&error];
     RiveTextValueRun* textRun = [artboard textRun:@"BADRUN"];
     XCTAssertNil(textRun);
 }

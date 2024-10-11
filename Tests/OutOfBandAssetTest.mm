@@ -28,7 +28,8 @@
     RiveFile* file = [[RiveFile alloc]
              initWithData:data
                   loadCdn:false
-        customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        customAssetLoader:^bool(
+            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
           if ([asset isKindOfClass:[RiveImageAsset class]])
           {
               image = (RiveImageAsset*)asset;
@@ -52,8 +53,10 @@
     XCTAssertEqualObjects([image uniqueName], @"image-49934");
     XCTAssertEqualObjects([image uniqueFilename], @"image-49934.png");
     XCTAssertEqualObjects([image fileExtension], @"png");
-    XCTAssertEqualObjects([image cdnBaseUrl], @"https://public.uat.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([image cdnUuid], @"eadb7ed8-6d71-4b6c-bbc2-f0f5e9c5dd92");
+    XCTAssertEqualObjects([image cdnBaseUrl],
+                          @"https://public.uat.rive.app/cdn/uuid");
+    XCTAssertEqualObjects([image cdnUuid],
+                          @"eadb7ed8-6d71-4b6c-bbc2-f0f5e9c5dd92");
 
     XCTAssertNotNil(font);
     XCTAssertEqual(fontData.length, 0);
@@ -61,8 +64,10 @@
     XCTAssertEqualObjects([font uniqueName], @"Inter-45562");
     XCTAssertEqualObjects([font uniqueFilename], @"Inter-45562.ttf");
     XCTAssertEqualObjects([font fileExtension], @"ttf");
-    XCTAssertEqualObjects([font cdnBaseUrl], @"https://public.uat.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([font cdnUuid], @"60ad5ede-993c-4e03-9a80-e56888b2cff3");
+    XCTAssertEqualObjects([font cdnBaseUrl],
+                          @"https://public.uat.rive.app/cdn/uuid");
+    XCTAssertEqualObjects([font cdnUuid],
+                          @"60ad5ede-993c-4e03-9a80-e56888b2cff3");
 }
 
 - (void)testAudioAssetCallbacks
@@ -78,7 +83,8 @@
     RiveFile* file = [[RiveFile alloc]
              initWithData:data
                   loadCdn:false
-        customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        customAssetLoader:^bool(
+            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
           if ([asset isKindOfClass:[RiveAudioAsset class]])
           {
               if (data.length > 0)
@@ -104,8 +110,10 @@
     XCTAssertEqualObjects([hosted uniqueName], @"hosted-55368");
     XCTAssertEqualObjects([hosted uniqueFilename], @"hosted-55368.wav");
     XCTAssertEqualObjects([hosted fileExtension], @"wav");
-    XCTAssertEqualObjects([hosted cdnBaseUrl], @"https://public.uat.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([hosted cdnUuid], @"79b65f1e-94ea-4191-b5ad-b3d5495b6343");
+    XCTAssertEqualObjects([hosted cdnBaseUrl],
+                          @"https://public.uat.rive.app/cdn/uuid");
+    XCTAssertEqualObjects([hosted cdnUuid],
+                          @"79b65f1e-94ea-4191-b5ad-b3d5495b6343");
 
     XCTAssertNotNil(embedded);
     XCTAssertEqual(embeddedData.length, 26095);
@@ -114,7 +122,8 @@
     XCTAssertEqualObjects([embedded uniqueName], @"embedded-0");
     XCTAssertEqualObjects([embedded uniqueFilename], @"embedded-0.wav");
     XCTAssertEqualObjects([embedded fileExtension], @"wav");
-    XCTAssertEqualObjects([embedded cdnBaseUrl], @"https://public.rive.app/cdn/uuid");
+    XCTAssertEqualObjects([embedded cdnBaseUrl],
+                          @"https://public.rive.app/cdn/uuid");
     XCTAssertEqualObjects([embedded cdnUuid], @"");
 }
 
@@ -130,7 +139,8 @@
     RiveFile* file = [[RiveFile alloc]
              initWithData:data
                   loadCdn:false
-        customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        customAssetLoader:^bool(
+            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
           if ([asset isKindOfClass:[RiveImageAsset class]])
           {
 
@@ -176,7 +186,8 @@
     RiveFile* file = [[RiveFile alloc]
              initWithData:data
                   loadCdn:false
-        customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        customAssetLoader:^bool(
+            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
           if ([asset isKindOfClass:[RiveImageAsset class]])
           {
               image = (RiveImageAsset*)asset;
@@ -200,7 +211,8 @@
     XCTAssertEqualObjects([image name], @"1x1.png");
     XCTAssertEqualObjects([image uniqueFilename], @"1x1-49935.png");
     XCTAssertEqualObjects([image fileExtension], @"png");
-    XCTAssertEqualObjects([image cdnBaseUrl], @"https://public.rive.app/cdn/uuid");
+    XCTAssertEqualObjects([image cdnBaseUrl],
+                          @"https://public.rive.app/cdn/uuid");
     XCTAssertEqualObjects([image cdnUuid], @"");
 
     XCTAssertNotNil(font);
@@ -209,7 +221,8 @@
     XCTAssertEqualObjects([font name], @"Inter");
     XCTAssertEqualObjects([font uniqueFilename], @"Inter-45562.ttf");
     XCTAssertEqualObjects([font fileExtension], @"ttf");
-    XCTAssertEqualObjects([font cdnBaseUrl], @"https://public.rive.app/cdn/uuid");
+    XCTAssertEqualObjects([font cdnBaseUrl],
+                          @"https://public.rive.app/cdn/uuid");
     XCTAssertEqualObjects([font cdnUuid], @"");
 }
 
@@ -222,7 +235,8 @@
     RiveFile* file = [[RiveFile alloc]
              initWithData:data
                   loadCdn:false
-        customAssetLoader:^bool(RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        customAssetLoader:^bool(
+            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
           if ([asset isKindOfClass:[RiveImageAsset class]])
           {
               image = (RiveImageAsset*)asset;

@@ -25,7 +25,8 @@
     return nil;
 }
 
-- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
+- (void)endFrame:(MTKView*)view
+    withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {}
 
 @end
@@ -45,7 +46,8 @@
     rive::rcp<rive::gpu::RenderTargetMetal> _renderTarget;
 }
 
-static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLDevice> gpu)
+static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
+    id<MTLDevice> gpu)
 {
     return rive::gpu::RenderContextMetalImpl::MakeContext(
         gpu, rive::gpu::RenderContextMetalImpl::ContextOptions());
@@ -53,8 +55,8 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
 
 - (instancetype)init
 {
-    // Make a single static RenderContext, since it is also the factory and any objects it
-    // creates may outlive this 'RiveContext' instance.
+    // Make a single static RenderContext, since it is also the factory and any
+    // objects it creates may outlive this 'RiveContext' instance.
     static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
     static std::unique_ptr<rive::gpu::RenderContext> s_renderContext =
         make_pls_context_native(s_plsGPU);
@@ -71,8 +73,8 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
 
 - (void)dealloc
 {
-    // Once nobody is referencing a RiveContext anymore, release the global RenderContext's GPU
-    // resource.
+    // Once nobody is referencing a RiveContext anymore, release the global
+    // RenderContext's GPU resource.
     _renderContext->releaseResources();
 }
 
@@ -100,12 +102,16 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
             return nullptr;
     }
 
-    if (_renderTarget == nullptr || _renderTarget->width() != view.drawableSize.width ||
+    if (_renderTarget == nullptr ||
+        _renderTarget->width() != view.drawableSize.width ||
         _renderTarget->height() != view.drawableSize.height)
     {
         _renderTarget =
-            _renderContext->static_impl_cast<rive::gpu::RenderContextMetalImpl>()->makeRenderTarget(
-                view.colorPixelFormat, view.drawableSize.width, view.drawableSize.height);
+            _renderContext
+                ->static_impl_cast<rive::gpu::RenderContextMetalImpl>()
+                ->makeRenderTarget(view.colorPixelFormat,
+                                   view.drawableSize.width,
+                                   view.drawableSize.height);
     }
     _renderTarget->setTargetTexture(surface.texture);
 
@@ -118,7 +124,8 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(id<MTLD
     return _renderer.get();
 }
 
-- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
+- (void)endFrame:(MTKView*)view
+    withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     id<MTLCommandBuffer> flushCommandBuffer = [self.metalQueue commandBuffer];
     _renderContext->flush({
@@ -186,10 +193,12 @@ constexpr static int kBufferRingSize = 3;
     switch (view.colorPixelFormat)
     {
         case MTLPixelFormatBGRA8Unorm:
-            cgBitmapInfo = kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst;
+            cgBitmapInfo =
+                kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst;
             break;
         case MTLPixelFormatRGBA8Unorm:
-            cgBitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast;
+            cgBitmapInfo =
+                kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast;
             break;
         default:
             NSLog(@"error: unsupported colorPixelFormat on MTKView");
@@ -205,39 +214,46 @@ constexpr static int kBufferRingSize = 3;
     }
 
     _currentBufferIdx = (_currentBufferIdx + 1) % kBufferRingSize;
-    size_t bufferSize = _renderTargetTexture.height * _renderTargetTexture.width * 4;
+    size_t bufferSize =
+        _renderTargetTexture.height * _renderTargetTexture.width * 4;
     if (_buffers[_currentBufferIdx] == nil ||
         _buffers[_currentBufferIdx].allocatedSize != bufferSize)
     {
         _buffers[_currentBufferIdx] =
-            [self.metalDevice newBufferWithLength:bufferSize options:MTLResourceStorageModeShared];
+            [self.metalDevice newBufferWithLength:bufferSize
+                                          options:MTLResourceStorageModeShared];
     }
     AutoCF<CGColorSpaceRef> colorSpace = CGColorSpaceCreateDeviceRGB();
-    _cgContext = AutoCF(CGBitmapContextCreate(_buffers[_currentBufferIdx].contents,
-                                              _renderTargetTexture.width,
-                                              _renderTargetTexture.height,
-                                              8,
-                                              _renderTargetTexture.width * 4,
-                                              colorSpace,
-                                              cgBitmapInfo));
+    _cgContext =
+        AutoCF(CGBitmapContextCreate(_buffers[_currentBufferIdx].contents,
+                                     _renderTargetTexture.width,
+                                     _renderTargetTexture.height,
+                                     8,
+                                     _renderTargetTexture.width * 4,
+                                     colorSpace,
+                                     cgBitmapInfo));
 
     _renderer = std::make_unique<rive::CGRenderer>(
         _cgContext, _renderTargetTexture.width, _renderTargetTexture.height);
     return _renderer.get();
 }
 
-- (void)endFrame:(MTKView*)view withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
+- (void)endFrame:(MTKView*)view
+    withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     if (_cgContext != nil)
     {
         id<MTLCommandBuffer> commandBuffer = [self.metalQueue commandBuffer];
-        id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+        id<MTLBlitCommandEncoder> blitEncoder =
+            [commandBuffer blitCommandEncoder];
         [blitEncoder copyFromBuffer:_buffers[_currentBufferIdx]
                        sourceOffset:0
                   sourceBytesPerRow:_renderTargetTexture.width * 4
-                sourceBytesPerImage:_renderTargetTexture.height * _renderTargetTexture.width * 4
-                         sourceSize:MTLSizeMake(
-                                        _renderTargetTexture.width, _renderTargetTexture.height, 1)
+                sourceBytesPerImage:_renderTargetTexture.height *
+                                    _renderTargetTexture.width * 4
+                         sourceSize:MTLSizeMake(_renderTargetTexture.width,
+                                                _renderTargetTexture.height,
+                                                1)
                           toTexture:_renderTargetTexture
                    destinationSlice:0
                    destinationLevel:0
@@ -295,8 +311,8 @@ constexpr static int kBufferRingSize = 3;
 
 - (RenderContext*)getRiveRendererContext
 {
-    // Convert our weak reference to strong before trying to work with it. A weak pointer is liable
-    // to be released out from under us at any moment.
+    // Convert our weak reference to strong before trying to work with it. A
+    // weak pointer is liable to be released out from under us at any moment.
     // https://stackoverflow.com/questions/15674320/understanding-weak-reference
     RiveRendererContext* strongPtr = _riveRendererContextWeakPtr;
     if (strongPtr == nil)
@@ -309,8 +325,8 @@ constexpr static int kBufferRingSize = 3;
 
 - (RenderContext*)getCGRendererContext
 {
-    // Convert our weak reference to strong before trying to work with it. A weak pointer is liable
-    // to be released out from under us at any moment.
+    // Convert our weak reference to strong before trying to work with it. A
+    // weak pointer is liable to be released out from under us at any moment.
     // https://stackoverflow.com/questions/15674320/understanding-weak-reference
     CGRendererContext* strongPtr = _cgContextWeakPtr;
     if (strongPtr == nil)
@@ -323,17 +339,20 @@ constexpr static int kBufferRingSize = 3;
 
 - (RiveFactory*)getDefaultFactory
 {
-    return [[RiveFactory alloc] initWithFactory:[[self getDefaultContext] factory]];
+    return [[RiveFactory alloc]
+        initWithFactory:[[self getDefaultContext] factory]];
 }
 
 - (RiveFactory*)getRiveRendererFactory
 {
-    return [[RiveFactory alloc] initWithFactory:[[self getRiveRendererContext] factory]];
+    return [[RiveFactory alloc]
+        initWithFactory:[[self getRiveRendererContext] factory]];
 }
 
 - (RiveFactory*)getCGFactory
 {
-    return [[RiveFactory alloc] initWithFactory:[[self getCGRendererContext] factory]];
+    return [[RiveFactory alloc]
+        initWithFactory:[[self getCGRendererContext] factory]];
 }
 
 @end

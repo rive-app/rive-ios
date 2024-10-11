@@ -12,7 +12,8 @@
 #import "RivePrivateHeaders.h"
 #import <RenderContext.h>
 #import <RenderContextManager.h>
-// We manually need to provide this as our build-time config isn't shared with xcode.
+// We manually need to provide this as our build-time config isn't shared with
+// xcode.
 #define WITH_RIVE_AUDIO
 #include "rive/audio/audio_engine.hpp"
 
@@ -43,23 +44,27 @@
 - (instancetype)initWithCoder:(NSCoder*)decoder
 {
 #if TARGET_OS_IPHONE
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterBackground:)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterForeground:)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(didEnterBackground:)
+               name:UIApplicationDidEnterBackgroundNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(didEnterForeground:)
+               name:UIApplicationWillEnterForegroundNotification
+             object:nil];
 #else
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterBackground:)
-                                                 name:NSApplicationDidResignActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterForeground:)
-                                                 name:NSApplicationWillBecomeActiveNotification
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(didEnterBackground:)
+               name:NSApplicationDidResignActiveNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(didEnterForeground:)
+               name:NSApplicationWillBecomeActiveNotification
+             object:nil];
 #endif
     self = [super initWithCoder:decoder];
 
@@ -78,28 +83,33 @@
 - (instancetype)initWithFrame:(CGRect)frameRect
 {
 #if TARGET_OS_IPHONE
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterBackground:)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterForeground:)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(didEnterBackground:)
+               name:UIApplicationDidEnterBackgroundNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(didEnterForeground:)
+               name:UIApplicationWillEnterForegroundNotification
+             object:nil];
 #else
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterBackground:)
-                                                 name:NSApplicationDidResignActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterForeground:)
-                                                 name:NSApplicationWillBecomeActiveNotification
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(didEnterBackground:)
+               name:NSApplicationDidResignActiveNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(didEnterForeground:)
+               name:NSApplicationWillBecomeActiveNotification
+             object:nil];
 #endif
     _renderContext = [[RenderContextManager shared] getDefaultContext];
     assert(_renderContext);
 
-    auto value = [super initWithFrame:frameRect device:_renderContext.metalDevice];
+    auto value = [super initWithFrame:frameRect
+                               device:_renderContext.metalDevice];
 
     [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
     [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
@@ -141,7 +151,12 @@
     _renderer->restore();
 }
 
-- (void)transform:(float)xx xy:(float)xy yx:(float)yx yy:(float)yy tx:(float)tx ty:(float)ty
+- (void)transform:(float)xx
+               xy:(float)xy
+               yx:(float)yx
+               yy:(float)yy
+               tx:(float)tx
+               ty:(float)ty
 {
     assert(_renderer != nil);
     _renderer->transform(rive::Mat2D{xx, xy, yx, yy, tx, ty});
@@ -163,7 +178,8 @@
     return true;
 }
 
-- (void)drawInRect:(CGRect)rect withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler
+- (void)drawInRect:(CGRect)rect
+    withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler
 {
     if (CGRectGetWidth(rect) == 0 || CGRectGetHeight(rect) == 0)
     {
@@ -285,7 +301,8 @@
     auto riveFit = [self riveFit:fit];
     auto riveAlignment = [self riveAlignment:alignment];
 
-    rive::Mat2D forward = rive::computeAlignment(riveFit, riveAlignment, frame, content);
+    rive::Mat2D forward =
+        rive::computeAlignment(riveFit, riveAlignment, frame, content);
     rive::Mat2D inverse = forward.invertOrIdentity();
 
     rive::Vec2D frameLocation(touchLocation.x, touchLocation.y);

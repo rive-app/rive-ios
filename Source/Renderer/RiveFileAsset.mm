@@ -35,37 +35,43 @@
 - (nonnull NSString*)cdnBaseUrl
 {
     std::string str = instance->cdnBaseUrl();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (nonnull NSString*)cdnUuid
 {
     std::string str = instance->cdnUuidStr();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (nonnull NSString*)fileExtension
 {
     std::string str = instance->fileExtension();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (nonnull NSString*)name
 {
     std::string str = instance->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (nonnull NSString*)uniqueFilename
 {
     std::string str = instance->uniqueFilename();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (nonnull NSString*)uniqueName
 {
     std::string str = instance->uniqueName();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 @end

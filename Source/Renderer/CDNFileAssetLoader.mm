@@ -18,16 +18,19 @@
                    andFactory:(RiveFactory*)factory
 {
     // TODO: Error handling
-    // TODO: Track tasks, so we can cancel them if we garbage collect the asset loader
+    // TODO: Track tasks, so we can cancel them if we garbage collect the asset
+    // loader
 
     if ([[asset cdnUuid] length] > 0)
     {
-        NSURL* URL = [NSURL
-            URLWithString:[NSString
-                              stringWithFormat:@"%@/%@", [asset cdnBaseUrl], [asset cdnUuid]]];
+        NSURL* URL =
+            [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@",
+                                                            [asset cdnBaseUrl],
+                                                            [asset cdnUuid]]];
         NSURLSessionTask* task = [[NSURLSession sharedSession]
             downloadTaskWithURL:URL
-              completionHandler:^(NSURL* location, NSURLResponse* response, NSError* error) {
+              completionHandler:^(
+                  NSURL* location, NSURLResponse* response, NSError* error) {
                 if (!error)
                 {
                     // Load the data into the reader
@@ -39,14 +42,15 @@
                     }
                     else if ([asset isKindOfClass:[RiveImageAsset class]])
                     {
-                        [(RiveImageAsset*)asset renderImage:[factory decodeImage:data]];
+                        [(RiveImageAsset*)asset
+                            renderImage:[factory decodeImage:data]];
                     }
                 }
               }];
 
         // Kick off the http download
-        // QUESTION: Do we need to tie this into the RiveFile so we can wait for these loads to be
-        // completed?
+        // QUESTION: Do we need to tie this into the RiveFile so we can wait for
+        // these loads to be completed?
         [task resume];
         return true;
     }
@@ -79,7 +83,9 @@
 {
     for (RiveFileAssetLoader* loader in loaders)
     {
-        if ([loader loadContentsWithAsset:asset andData:data andFactory:factory])
+        if ([loader loadContentsWithAsset:asset
+                                  andData:data
+                               andFactory:factory])
         {
             return true;
         }

@@ -42,7 +42,8 @@
     XCTAssertNil(file);
     XCTAssertNotNil(error);
     XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
-    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"UnsupportedVersion");
+    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"],
+                          @"UnsupportedVersion");
     XCTAssertEqual([error code], 500);
 }
 
@@ -64,7 +65,8 @@
 {
     if ([[RenderContextManager shared] getRiveRendererContext] != nil)
     {
-        [[RenderContextManager shared] setDefaultRenderer:RendererType::riveRenderer];
+        [[RenderContextManager shared]
+            setDefaultRenderer:RendererType::riveRenderer];
     }
     NSError* error = nil;
     RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];

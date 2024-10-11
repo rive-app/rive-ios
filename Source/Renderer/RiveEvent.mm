@@ -23,7 +23,8 @@
     return instance;
 }
 
-- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent delay:(float)delay
+- (instancetype)initWithRiveEvent:(const rive::Event*)riveEvent
+                            delay:(float)delay
 {
     if (self = [super init])
     {
@@ -40,7 +41,8 @@
 - (NSString*)name
 {
     std::string str = ((const rive::Event*)instance)->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (NSInteger)type
@@ -56,7 +58,8 @@
 - (NSDictionary<NSString*, id>*)properties
 {
     bool hasCustomProperties = false;
-    NSMutableDictionary<NSString*, id>* customProperties = [NSMutableDictionary dictionary];
+    NSMutableDictionary<NSString*, id>* customProperties =
+        [NSMutableDictionary dictionary];
     for (auto child : ((const rive::Event*)instance)->children())
     {
         if (child->is<rive::CustomProperty>())
@@ -64,32 +67,36 @@
             std::string eventName = child->name();
             if (!eventName.empty())
             {
-                NSString* convertedName =
-                    [NSString stringWithCString:eventName.c_str()
-                                       encoding:[NSString defaultCStringEncoding]];
+                NSString* convertedName = [NSString
+                    stringWithCString:eventName.c_str()
+                             encoding:[NSString defaultCStringEncoding]];
                 switch (child->coreType())
                 {
                     case rive::CustomPropertyBoolean::typeKey:
                     {
                         bool customBoolValue =
-                            child->as<rive::CustomPropertyBoolean>()->propertyValue();
+                            child->as<rive::CustomPropertyBoolean>()
+                                ->propertyValue();
                         customProperties[convertedName] = @(customBoolValue);
                         break;
                     }
                     case rive::CustomPropertyString::typeKey:
                     {
                         std::string customStringValue =
-                            child->as<rive::CustomPropertyString>()->propertyValue();
-                        NSString* convertedStringValue =
-                            [NSString stringWithCString:customStringValue.c_str()
-                                               encoding:[NSString defaultCStringEncoding]];
+                            child->as<rive::CustomPropertyString>()
+                                ->propertyValue();
+                        NSString* convertedStringValue = [NSString
+                            stringWithCString:customStringValue.c_str()
+                                     encoding:[NSString
+                                                  defaultCStringEncoding]];
                         customProperties[convertedName] = convertedStringValue;
                         break;
                     }
                     case rive::CustomPropertyNumber::typeKey:
                     {
                         float customNumValue =
-                            child->as<rive::CustomPropertyNumber>()->propertyValue();
+                            child->as<rive::CustomPropertyNumber>()
+                                ->propertyValue();
                         customProperties[convertedName] = @(customNumValue);
                         break;
                     }
@@ -119,12 +126,14 @@
 - (NSString*)url
 {
     std::string str = ((const rive::OpenUrlEvent*)[self getInstance])->url();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (NSString*)target
 {
-    uint32_t targetValue = ((const rive::OpenUrlEvent*)[self getInstance])->targetValue();
+    uint32_t targetValue =
+        ((const rive::OpenUrlEvent*)[self getInstance])->targetValue();
     std::string targetString;
     switch (targetValue)
     {

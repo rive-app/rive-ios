@@ -22,7 +22,8 @@ static int animInstanceCount = 0;
 
 // MARK: Lifecycle
 
-- (instancetype)initWithAnimation:(std::unique_ptr<rive::LinearAnimationInstance>)anim
+- (instancetype)initWithAnimation:
+    (std::unique_ptr<rive::LinearAnimationInstance>)anim
 {
     if (self = [super init])
     {
@@ -111,7 +112,8 @@ static int animInstanceCount = 0;
 - (NSString*)name
 {
     std::string str = instance->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (NSInteger)fps

@@ -37,7 +37,8 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font)
     return HBFont::FromSystem((void*)ctFont, weight, width);
 }
 
-static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> missing)
+static rive::rcp<rive::Font> findFallbackFont(
+    rive::Span<const rive::Unichar> missing)
 {
     // For each descriptor…
     for (id<RiveFallbackFontProvider> fallback in RiveFont.fallbackFonts)
@@ -57,7 +58,8 @@ static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> mi
 
 @implementation RiveFont
 {
-    rive::rcp<rive::Font> instance; // note: we do NOT own this, so don't delete it
+    rive::rcp<rive::Font>
+        instance; // note: we do NOT own this, so don't delete it
 }
 
 + (void)load
@@ -95,7 +97,8 @@ static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> mi
     return _fallbackFonts;
 }
 
-+ (void)setFallbackFonts:(nonnull NSArray<id<RiveFallbackFontProvider>>*)fallbackFonts
++ (void)setFallbackFonts:
+    (nonnull NSArray<id<RiveFallbackFontProvider>>*)fallbackFonts
 {
     _fallbackFonts = [fallbackFonts copy];
 }
@@ -104,7 +107,8 @@ static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> mi
 
 @implementation RiveRenderImage
 {
-    rive::rcp<rive::RenderImage> instance; // note: we do NOT own this, so don't delete it
+    rive::rcp<rive::RenderImage>
+        instance; // note: we do NOT own this, so don't delete it
 }
 - (instancetype)initWithImage:(rive::rcp<rive::RenderImage>)image
 {
@@ -127,7 +131,8 @@ static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> mi
 
 @implementation RiveAudio
 {
-    rive::rcp<rive::AudioSource> instance; // note: we do NOT own this, so don't delete it
+    rive::rcp<rive::AudioSource>
+        instance; // note: we do NOT own this, so don't delete it
 }
 - (instancetype)initWithAudio:(rive::rcp<rive::AudioSource>)audio
 {
@@ -174,14 +179,16 @@ static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> mi
 {
     UInt8* bytes = (UInt8*)[data bytes];
     return [[RiveRenderImage alloc]
-        initWithImage:instance->decodeImage(rive::Span<const uint8_t>(bytes, [data length]))];
+        initWithImage:instance->decodeImage(
+                          rive::Span<const uint8_t>(bytes, [data length]))];
 }
 
 - (RiveFont*)decodeFont:(nonnull NSData*)data
 {
     UInt8* bytes = (UInt8*)[data bytes];
     return [[RiveFont alloc]
-        initWithFont:instance->decodeFont(rive::Span<const uint8_t>(bytes, [data length]))];
+        initWithFont:instance->decodeFont(
+                         rive::Span<const uint8_t>(bytes, [data length]))];
 }
 
 #if TARGET_OS_IPHONE
@@ -200,7 +207,8 @@ static rive::rcp<rive::Font> findFallbackFont(rive::Span<const rive::Unichar> mi
 {
     UInt8* bytes = (UInt8*)[data bytes];
     return [[RiveAudio alloc]
-        initWithAudio:instance->decodeAudio(rive::Span<const uint8_t>(bytes, [data length]))];
+        initWithAudio:instance->decodeAudio(
+                          rive::Span<const uint8_t>(bytes, [data length]))];
 }
 
 @end

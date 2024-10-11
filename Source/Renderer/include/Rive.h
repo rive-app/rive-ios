@@ -46,7 +46,15 @@ typedef NS_ENUM(NSInteger, RiveDirection) {
 /*
  * Fits
  */
-typedef NS_ENUM(NSInteger, RiveFit) { fill, contain, cover, fitHeight, fitWidth, scaleDown, noFit };
+typedef NS_ENUM(NSInteger, RiveFit) {
+    fill,
+    contain,
+    cover,
+    fitHeight,
+    fitWidth,
+    scaleDown,
+    noFit
+};
 
 /*
  * Alignments
@@ -93,7 +101,9 @@ typedef NS_ENUM(NSInteger, RiveErrorCode) {
 
 @end
 
-typedef bool (^LoadAsset)(RiveFileAsset* asset, NSData* data, RiveFactory* factory);
+typedef bool (^LoadAsset)(RiveFileAsset* asset,
+                          NSData* data,
+                          RiveFactory* factory);
 
 NS_ASSUME_NONNULL_END
 

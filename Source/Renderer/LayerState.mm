@@ -92,7 +92,8 @@
 
     if (animation == nil)
     {
-        return [NSString stringWithCString:"Unknown" encoding:[NSString defaultCStringEncoding]];
+        return [NSString stringWithCString:"Unknown"
+                                  encoding:[NSString defaultCStringEncoding]];
     }
     return [NSString stringWithCString:animation->name().c_str()
                               encoding:[NSString defaultCStringEncoding]];

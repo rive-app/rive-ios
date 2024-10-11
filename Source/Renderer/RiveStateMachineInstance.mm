@@ -51,7 +51,8 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
 // MARK: Lifecycle
 
 // Creates a new RiveStateMachineInstance from a cpp StateMachine
-- (instancetype)initWithStateMachine:(std::unique_ptr<rive::StateMachineInstance>)stateMachine
+- (instancetype)initWithStateMachine:
+    (std::unique_ptr<rive::StateMachineInstance>)stateMachine
 {
     if (self = [super init])
     {
@@ -181,7 +182,8 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
 - (NSString*)name
 {
     std::string str = instance->name();
-    return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
+    return [NSString stringWithCString:str.c_str()
+                              encoding:[NSString defaultCStringEncoding]];
 }
 
 - (NSInteger)inputCount
@@ -189,7 +191,8 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
     return instance->inputCount();
 }
 
-- (RiveSMIInput*)_convertInput:(const rive::SMIInput*)input error:(NSError**)error
+- (RiveSMIInput*)_convertInput:(const rive::SMIInput*)input
+                         error:(NSError**)error
 {
     if (input->input()->is<rive::StateMachineBool>())
     {
@@ -208,7 +211,8 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
         *error = [NSError errorWithDomain:RiveErrorDomain
                                      code:RiveUnknownStateMachineInput
                                  userInfo:@{
-                                     NSLocalizedDescriptionKey : @"Unknown State Machine Input",
+                                     NSLocalizedDescriptionKey :
+                                         @"Unknown State Machine Input",
                                      @"name" : @"UnknownStateMachineInput"
                                  }];
         return nil;
@@ -224,8 +228,9 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
             errorWithDomain:RiveErrorDomain
                        code:RiveNoStateMachineInputFound
                    userInfo:@{
-                       NSLocalizedDescriptionKey :
-                           [NSString stringWithFormat:@"No Input found at index %ld.", (long)index],
+                       NSLocalizedDescriptionKey : [NSString
+                           stringWithFormat:@"No Input found at index %ld.",
+                                            (long)index],
                        @"name" : @"NoStateMachineInputFound"
                    }];
         return nil;
@@ -256,7 +261,8 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
                    code:RiveNoStateMachineInputFound
                userInfo:@{
                    NSLocalizedDescriptionKey : [NSString
-                       stringWithFormat:@"No State Machine Input found with name %@.", name],
+                       stringWithFormat:
+                           @"No State Machine Input found with name %@.", name],
                    @"name" : @"NoStateMachineInputFound"
                }];
     return nil;
@@ -343,14 +349,16 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
     const rive::LayerState* layerState = instance->stateChangedByIndex(index);
     if (layerState == nullptr)
     {
-        *error = [NSError
-            errorWithDomain:RiveErrorDomain
-                       code:RiveNoStateChangeFound
-                   userInfo:@{
-                       NSLocalizedDescriptionKey : [NSString
-                           stringWithFormat:@"No State Changed found at index %ld.", (long)index],
-                       @"name" : @"NoStateChangeFound"
-                   }];
+        *error =
+            [NSError errorWithDomain:RiveErrorDomain
+                                code:RiveNoStateChangeFound
+                            userInfo:@{
+                                NSLocalizedDescriptionKey : [NSString
+                                    stringWithFormat:
+                                        @"No State Changed found at index %ld.",
+                                        (long)index],
+                                @"name" : @"NoStateChangeFound"
+                            }];
         return nil;
     }
     else
