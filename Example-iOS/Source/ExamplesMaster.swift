@@ -24,7 +24,7 @@ class ExamplesMasterTableViewController: UITableViewController {
         "Stress Test",
         "Simple assets",
         "Cached assets",
-        
+        "ReproViewController"
     ]
     
     
@@ -85,7 +85,17 @@ extension ExamplesMasterTableViewController {
         
         // ViewControllers made from Storyboard IDs
         if indexPath.section == 0 {
+
+          if storyboardIDs[indexPath.row] == "ReproViewController" {
+
+            controller = ReproViewController()
+
+          } else {
+
             controller = storyboard!.instantiateViewController(withIdentifier: storyboardIDs[indexPath.row])
+
+          }
+
         }
         
         // Views made by custom SwiftUI Views
