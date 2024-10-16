@@ -12,6 +12,7 @@
 #import <RenderContextManager.h>
 #import <RiveFileAssetLoader.h>
 #import <CDNFileAssetLoader.h>
+#import <RiveRuntime/RiveRuntime-Swift.h>
 
 #import <FileAssetLoaderAdapter.hpp>
 
@@ -180,6 +181,10 @@
     // QUESTION: good ideas on how we can combine a few of these into following
     // the same path better?
     //    there's a lot of copy pasta here.
+
+    [RiveLogger logLoadingFromResource:[NSString stringWithFormat:@"%@.%@",
+                                                                  resourceName,
+                                                                  extension]];
     NSString* filepath = [[NSBundle mainBundle] pathForResource:resourceName
                                                          ofType:extension];
     NSURL* fileUrl = [NSURL fileURLWithPath:filepath];
@@ -222,6 +227,9 @@
     customAssetLoader:(nonnull LoadAsset)customAssetLoader
                 error:(NSError* __autoreleasing _Nullable* _Nullable)error
 {
+    [RiveLogger logLoadingFromResource:[NSString stringWithFormat:@"%@.%@",
+                                                                  resourceName,
+                                                                  extension]];
     NSString* filepath = [[NSBundle mainBundle] pathForResource:resourceName
                                                          ofType:extension];
     NSURL* fileUrl = [NSURL fileURLWithPath:filepath];
@@ -253,6 +261,7 @@
                        customAssetLoader:(nonnull LoadAsset)customAssetLoader
                             withDelegate:(nonnull id<RiveFileDelegate>)delegate
 {
+    [RiveLogger logLoadingFromResource:url];
     self.isLoaded = false;
     if (self = [super init])
     {
@@ -280,6 +289,7 @@
                         customAssetLoader:customAssetLoader
                                     error:&error];
                     self.isLoaded = true;
+                    [RiveLogger logLoadedFromURL:URL];
                     dispatch_async(dispatch_get_main_queue(), ^{
                       if ([[NSThread currentThread] isMainThread])
                       {
@@ -291,6 +301,14 @@
                           }
                       }
                     });
+                }
+                else
+                {
+                    NSString* message = [NSString
+                        stringWithFormat:@"Failed to load file from URL %@: %@",
+                                         URL.absoluteString,
+                                         error.localizedDescription];
+                    [RiveLogger logFile:nil error:message];
                 }
               }];
 
@@ -354,32 +372,41 @@
     switch (result)
     {
         case rive::ImportResult::unsupportedVersion:
+        {
+            NSString* message = @"Unsupported Rive File Version";
+            [RiveLogger logFile:nil error:message];
             *error = [NSError errorWithDomain:RiveErrorDomain
                                          code:RiveUnsupportedVersion
                                      userInfo:@{
-                                         NSLocalizedDescriptionKey :
-                                             @"Unsupported Rive File Version",
+                                         NSLocalizedDescriptionKey : message,
                                          @"name" : @"UnsupportedVersion"
                                      }];
             break;
+        }
         case rive::ImportResult::malformed:
-            *error = [NSError
-                errorWithDomain:RiveErrorDomain
-                           code:RiveMalformedFile
-                       userInfo:@{
-                           NSLocalizedDescriptionKey : @"Malformed Rive File.",
-                           @"name" : @"Malformed"
-                       }];
+        {
+            NSString* message = @"Malformed Rive File.";
+            [RiveLogger logFile:nil error:message];
+            *error = [NSError errorWithDomain:RiveErrorDomain
+                                         code:RiveMalformedFile
+                                     userInfo:@{
+                                         NSLocalizedDescriptionKey : message,
+                                         @"name" : @"Malformed"
+                                     }];
             break;
+        }
         default:
+        {
+            NSString* message = @"Unknown error loading file.";
+            [RiveLogger logFile:nil error:message];
             *error = [NSError errorWithDomain:RiveErrorDomain
                                          code:RiveUnknownError
                                      userInfo:@{
-                                         NSLocalizedDescriptionKey :
-                                             @"Unknown error loading file.",
+                                         NSLocalizedDescriptionKey : message,
                                          @"name" : @"Unknown"
                                      }];
             break;
+        }
     }
     return false;
 }
@@ -389,13 +416,14 @@
     auto artboard = riveFile->artboardDefault();
     if (artboard == nullptr)
     {
-        *error = [NSError
-            errorWithDomain:RiveErrorDomain
-                       code:RiveNoArtboardsFound
-                   userInfo:@{
-                       NSLocalizedDescriptionKey : @"No Artboards Found.",
-                       @"name" : @"NoArtboardsFound"
-                   }];
+        NSString* message = @"No Artboards Found.";
+        [RiveLogger logFile:nil error:message];
+        *error = [NSError errorWithDomain:RiveErrorDomain
+                                     code:RiveNoArtboardsFound
+                                 userInfo:@{
+                                     NSLocalizedDescriptionKey : message,
+                                     @"name" : @"NoArtboardsFound"
+                                 }];
         return nil;
     }
     else
@@ -414,15 +442,15 @@
     auto artboard = riveFile->artboardAt(index);
     if (artboard == nullptr)
     {
-        *error = [NSError
-            errorWithDomain:RiveErrorDomain
-                       code:RiveNoArtboardFound
-                   userInfo:@{
-                       NSLocalizedDescriptionKey : [NSString
-                           stringWithFormat:@"No Artboard Found at index %ld.",
-                                            (long)index],
-                       @"name" : @"NoArtboardFound"
-                   }];
+        NSString* message = [NSString
+            stringWithFormat:@"No Artboard Found at index %ld.", (long)index];
+        [RiveLogger logFile:nil error:message];
+        *error = [NSError errorWithDomain:RiveErrorDomain
+                                     code:RiveNoArtboardFound
+                                 userInfo:@{
+                                     NSLocalizedDescriptionKey : message,
+                                     @"name" : @"NoArtboardFound"
+                                 }];
         return nil;
     }
     return [[RiveArtboard alloc] initWithArtboard:std::move(artboard)];
@@ -434,15 +462,15 @@
     auto artboard = riveFile->artboardNamed(stdName);
     if (artboard == nullptr)
     {
-        *error = [NSError
-            errorWithDomain:RiveErrorDomain
-                       code:RiveNoArtboardFound
-                   userInfo:@{
-                       NSLocalizedDescriptionKey : [NSString
-                           stringWithFormat:@"No Artboard Found with name %@.",
-                                            name],
-                       @"name" : @"NoArtboardFound"
-                   }];
+        NSString* message = [NSString
+            stringWithFormat:@"No Artboard Found with name %@.", name];
+        [RiveLogger logFile:nil error:message];
+        *error = [NSError errorWithDomain:RiveErrorDomain
+                                     code:RiveNoArtboardFound
+                                 userInfo:@{
+                                     NSLocalizedDescriptionKey : message,
+                                     @"name" : @"NoArtboardFound"
+                                 }];
         return nil;
     }
     else

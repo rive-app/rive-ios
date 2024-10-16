@@ -43,6 +43,7 @@ import Combine
             return _volume
         }
         set {
+            RiveLogger.log(model: self, event: .volume(newValue))
             _volume = newValue
             artboard?.__volume = newValue
         }
@@ -53,6 +54,7 @@ import Combine
     /// Sets a new Artboard and makes the current StateMachine and Animation nil
     open func setArtboard(_ name: String) throws {
         do {
+            RiveLogger.log(model: self, event: .artboardByName(name))
             stateMachine = nil
             animation = nil
             artboard = try riveFile.artboard(fromName: name)
@@ -69,21 +71,38 @@ import Combine
                 animation = nil
                 artboard = try riveFile.artboard(from: index)
                 artboard.__volume = _volume
+                RiveLogger.log(model: self, event: .artboardByIndex(index))
             }
-            catch { throw RiveModelError.invalidArtboard("Index \(index) not found") }
+            catch {
+                let errorMessage = "Artboard at index \(index) not found"
+                RiveLogger.log(model: self, event: .error(errorMessage))
+                throw RiveModelError.invalidArtboard(errorMessage)
+            }
         } else {
             // This tries to find the 'default' Artboard
             do {
                 artboard = try riveFile.artboard()
                 artboard.__volume = _volume
+                RiveLogger.log(model: self, event: .defaultArtboard)
             }
-            catch { throw RiveModelError.invalidArtboard("No Default Artboard") }
+            catch {
+                let errorMessage = "No Default Artboard"
+                RiveLogger.log(model: self, event: .error(errorMessage))
+                throw RiveModelError.invalidArtboard(errorMessage)
+            }
         }
     }
     
     open func setStateMachine(_ name: String) throws {
-        do { stateMachine = try artboard.stateMachine(fromName: name) }
-        catch { throw RiveModelError.invalidStateMachine("Name \(name) not found") }
+        do {
+            stateMachine = try artboard.stateMachine(fromName: name)
+            RiveLogger.log(model: self, event: .stateMachineByName(name))
+        }
+        catch {
+            let errorMessage = "State machine named \(name) not found"
+            RiveLogger.log(model: self, event: .error(errorMessage))
+            throw RiveModelError.invalidStateMachine(errorMessage)
+        }
     }
     
     open func setStateMachine(_ index: Int? = nil) throws {
@@ -91,32 +110,53 @@ import Combine
             // Set by index
             if let index = index {
                 stateMachine = try artboard.stateMachine(from: index)
+                RiveLogger.log(model: self, event: .stateMachineByIndex(index))
             }
             
             // Set from Artboard's default StateMachine configured in editor
             else if let defaultStateMachine = artboard.defaultStateMachine() {
                 stateMachine = defaultStateMachine
+                RiveLogger.log(model: self, event: .defaultStateMachine)
             }
             
             // Set by index 0 as a fallback
             else {
                 stateMachine = try artboard.stateMachine(from: 0)
+                RiveLogger.log(model: self, event: .stateMachineByIndex(0))
             }
         }
-        catch { throw RiveModelError.invalidStateMachine("Index \(index ?? 0) not found") }
+        catch {
+            let errorMessage = "State machine at index \(index ?? 0) not found"
+            RiveLogger.log(model: self, event: .error(errorMessage))
+            throw RiveModelError.invalidStateMachine(errorMessage)
+        }
     }
     
     open func setAnimation(_ name: String) throws {
         guard animation?.name() != name else { return }
-        do { animation = try artboard.animation(fromName: name) }
-        catch { throw RiveModelError.invalidAnimation("Name \(name) not found") }
+        do {
+            animation = try artboard.animation(fromName: name)
+            RiveLogger.log(model: self, event: .animationByName(name))
+        }
+        catch {
+            let errorMessage = "Animation named \(name) not found"
+            RiveLogger.log(model: self, event: .error(errorMessage))
+            throw RiveModelError.invalidAnimation(errorMessage)
+        }
     }
     
     open func setAnimation(_ index: Int? = nil) throws {
         // Defaults to 0 as it's assumed to be the first element in the collection
         let index = index ?? 0
-        do { animation = try artboard.animation(from: index) }
-        catch { throw RiveModelError.invalidAnimation("Index \(index) not found") }
+        do {
+            animation = try artboard.animation(from: index)
+            RiveLogger.log(model: self, event: .animationByIndex(index))
+        }
+        catch {
+            let errorMessage = "Animation at index index \(index) not found"
+            RiveLogger.log(model: self, event: .error(errorMessage))
+            throw RiveModelError.invalidAnimation(errorMessage)
+        }
     }
     
     // MARK: -

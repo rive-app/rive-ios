@@ -8,6 +8,7 @@
 
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
+#import <RiveRuntime/RiveRuntime-Swift.h>
 
 // MARK: - Globals
 
@@ -229,6 +230,7 @@ static int artInstanceCount = 0;
 
 - (void)advanceBy:(double)elapsedSeconds
 {
+    [RiveLogger logArtboard:self advance:elapsedSeconds];
     _artboardInstance->advance(elapsedSeconds);
 }
 
@@ -299,6 +301,13 @@ static int artInstanceCount = 0;
     rive::SMIBool* smi = _artboardInstance->getBool(stdName, stdPath);
     if (smi == nullptr)
     {
+        [RiveLogger
+            logArtboard:self
+                  error:[NSString
+                            stringWithFormat:
+                                @"Could not find input named %@ at path %@",
+                                name,
+                                path]];
         return NULL;
     }
     else
@@ -325,6 +334,13 @@ static int artInstanceCount = 0;
     rive::SMITrigger* smi = _artboardInstance->getTrigger(stdName, stdPath);
     if (smi == nullptr)
     {
+        [RiveLogger
+            logArtboard:self
+                  error:[NSString
+                            stringWithFormat:
+                                @"Could not find input named %@ at path %@",
+                                name,
+                                path]];
         return NULL;
     }
     else
@@ -351,6 +367,13 @@ static int artInstanceCount = 0;
     rive::SMINumber* smi = _artboardInstance->getNumber(stdName, stdPath);
     if (smi == nullptr)
     {
+        [RiveLogger
+            logArtboard:self
+                  error:[NSString
+                            stringWithFormat:
+                                @"Could not find input named %@ at path %@",
+                                name,
+                                path]];
         return NULL;
     }
     else

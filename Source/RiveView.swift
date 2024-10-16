@@ -149,6 +149,8 @@ open class RiveView: RiveRendererView {
     
     /// Starts the render loop
     internal func play() {
+        RiveLogger.log(view: self, event: .play)
+
         eventQueue.add {
             self.playerDelegate?.player(playedWithModel: self.riveModel)
         }
@@ -159,6 +161,8 @@ open class RiveView: RiveRendererView {
     
     /// Asks the render loop to stop on the next cycle
     internal func pause() {
+        RiveLogger.log(view: self, event: .pause)
+
         if isPlaying {
             eventQueue.add {
                 self.playerDelegate?.player(pausedWithModel: self.riveModel)
@@ -169,6 +173,8 @@ open class RiveView: RiveRendererView {
     
     /// Asks the render loop to stop on the next cycle
     internal func stop() {
+        RiveLogger.log(view: self, event: .stop)
+
         playerDelegate?.player(stoppedWithModel: riveModel)
         isPlaying = false
         
@@ -176,8 +182,10 @@ open class RiveView: RiveRendererView {
     }
     
     internal func reset() {
+        RiveLogger.log(view: self, event: .reset)
+
         lastTime = 0
-        
+
         if !isPlaying {
             advance(delta: 0)
         }
@@ -265,6 +273,7 @@ open class RiveView: RiveRendererView {
             if (firedEventCount > 0) {
                 for i in 0..<firedEventCount {
                     let event = stateMachine.reportedEvent(at: i)
+                    RiveLogger.log(view: self, event: .eventReceived(event.name()))
                     stateMachineDelegate?.onRiveEventReceived?(onRiveEvent: event)
                 }
             }    
@@ -288,10 +297,12 @@ open class RiveView: RiveRendererView {
             
             // This will be true when coming to a hault automatically
             if wasPlaying {
+                RiveLogger.log(view: self, event: .pause)
                 playerDelegate?.player(pausedWithModel: riveModel)
             }
         }
         
+        RiveLogger.log(view: self, event: .advance(delta))
         playerDelegate?.player(didAdvanceby: delta, riveModel: riveModel)
         
         // Trigger a redraw
@@ -303,6 +314,7 @@ open class RiveView: RiveRendererView {
         // This prevents breaking when loading RiveFile async
         guard let artboard = riveModel?.artboard else { return }
         
+        RiveLogger.log(view: self, event: .drawing(size))
         let newFrame = CGRect(origin: rect.origin, size: size)
         align(with: newFrame, contentRect: artboard.bounds(), alignment: alignment, fit: fit)
         draw(with: artboard)
@@ -326,8 +338,12 @@ open class RiveView: RiveRendererView {
     // MARK: - UIResponder
     #if os(iOS)
         open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-            handleTouch(touches.first!, delegate: stateMachineDelegate?.touchBegan) {
-                let result = $0.touchBegan(atLocation: $1)
+            guard let touch = touches.first else { return }
+            
+            handleTouch(touch, delegate: stateMachineDelegate?.touchBegan) { stateMachine, location in
+                let result = stateMachine.touchBegan(atLocation: location)
+                RiveLogger.log(view: self, event: .touchBegan(location))
+
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .began)
                 }
@@ -339,8 +355,12 @@ open class RiveView: RiveRendererView {
         }
         
         open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-            handleTouch(touches.first!, delegate: stateMachineDelegate?.touchMoved) {
-                let result = $0.touchMoved(atLocation: $1)
+            guard let touch = touches.first else { return }
+
+            handleTouch(touch, delegate: stateMachineDelegate?.touchMoved) { stateMachine, location in
+                RiveLogger.log(view: self, event: .touchMoved(location))
+
+                let result = stateMachine.touchMoved(atLocation: location)
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
                 }
@@ -352,8 +372,12 @@ open class RiveView: RiveRendererView {
         }
         
         open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-            handleTouch(touches.first!, delegate: stateMachineDelegate?.touchEnded) {
-                let result = $0.touchEnded(atLocation: $1)
+            guard let touch = touches.first else { return }
+
+            handleTouch(touch, delegate: stateMachineDelegate?.touchEnded) { stateMachine, location in
+                RiveLogger.log(view: self, event: .touchEnded(location))
+
+                let result = stateMachine.touchEnded(atLocation: location)
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .ended)
                 }
@@ -365,8 +389,12 @@ open class RiveView: RiveRendererView {
         }
         
         open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-            handleTouch(touches.first!, delegate: stateMachineDelegate?.touchCancelled) {
-                let result = $0.touchCancelled(atLocation: $1)
+            guard let touch = touches.first else { return }
+
+            handleTouch(touch, delegate: stateMachineDelegate?.touchCancelled) { stateMachine, location in
+                RiveLogger.log(view: self, event: .touchCancelled(location))
+
+                let result = stateMachine.touchCancelled(atLocation: location)
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .cancelled)
                 }
@@ -409,8 +437,10 @@ open class RiveView: RiveRendererView {
         }
     #else
         open override func mouseDown(with event: NSEvent) {
-            handleTouch(event, delegate: stateMachineDelegate?.touchBegan) {
-                let result = $0.touchBegan(atLocation: $1)
+            handleTouch(event, delegate: stateMachineDelegate?.touchBegan) { stateMachine, location in
+                RiveLogger.log(view: self, event: .touchBegan(location))
+
+                let result = stateMachine.touchBegan(atLocation: location)
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .began)
                 }
@@ -422,8 +452,10 @@ open class RiveView: RiveRendererView {
         }
         
         open override func mouseMoved(with event: NSEvent) {
-            handleTouch(event, delegate: stateMachineDelegate?.touchMoved) {
-                let result = $0.touchMoved(atLocation: $1)
+            handleTouch(event, delegate: stateMachineDelegate?.touchMoved) { stateMachine, location in
+                RiveLogger.log(view: self, event: .touchMoved(location))
+
+                let result = stateMachine.touchMoved(atLocation: location)
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
                 }
@@ -435,8 +467,10 @@ open class RiveView: RiveRendererView {
         }
         
         open override func mouseDragged(with event: NSEvent) {
-            handleTouch(event, delegate: stateMachineDelegate?.touchMoved) {
-                let result = $0.touchMoved(atLocation: $1)
+            handleTouch(event, delegate: stateMachineDelegate?.touchMoved) { stateMachine, location in
+                RiveLogger.log(view: self, event: .touchMoved(location))
+
+                let result = stateMachine.touchMoved(atLocation: location)
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
                 }
@@ -448,8 +482,10 @@ open class RiveView: RiveRendererView {
         }
         
         open override func mouseUp(with event: NSEvent) {
-            handleTouch(event, delegate: stateMachineDelegate?.touchEnded) {
-                let result = $0.touchEnded(atLocation: $1)
+            handleTouch(event, delegate: stateMachineDelegate?.touchEnded) { stateMachine, location in
+                RiveLogger.log(view: self, event: .touchEnded(location))
+
+                let result = stateMachine.touchEnded(atLocation: location)
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .ended)
                 }
@@ -461,8 +497,10 @@ open class RiveView: RiveRendererView {
         }
         
         open override func mouseExited(with event: NSEvent) {
-            handleTouch(event, delegate: stateMachineDelegate?.touchCancelled) {
-                let result = $0.touchCancelled(atLocation: $1)
+            handleTouch(event, delegate: stateMachineDelegate?.touchCancelled) { stateMachine, location in
+                RiveLogger.log(view: self, event: .touchCancelled(location))
+
+                let result = stateMachine.touchCancelled(atLocation: location)
                 if let stateMachine = riveModel?.stateMachine {
                     stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .cancelled)
                 }

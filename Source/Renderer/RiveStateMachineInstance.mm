@@ -8,6 +8,7 @@
 
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
+#import <RiveRuntime/RiveRuntime-Swift.h>
 
 // MARK: - Globals
 
@@ -103,6 +104,7 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
 
 - (bool)advanceBy:(double)elapsedSeconds
 {
+    [RiveLogger logStateMachine:self advance:elapsedSeconds];
     return instance->advanceAndApply(elapsedSeconds);
 }
 
@@ -121,6 +123,11 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
     rive::SMIBool* smi = instance->getBool(stdName);
     if (smi == nullptr)
     {
+        [RiveLogger
+            logStateMachine:self
+                      error:[NSString
+                                stringWithFormat:
+                                    @"Could not find input named %@", name]];
         return NULL;
     }
     else
@@ -145,6 +152,11 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
     rive::SMITrigger* smi = instance->getTrigger(stdName);
     if (smi == nullptr)
     {
+        [RiveLogger
+            logStateMachine:self
+                      error:[NSString
+                                stringWithFormat:
+                                    @"Could not find trigger named %@", name]];
         return NULL;
     }
     else
@@ -169,6 +181,11 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
     rive::SMINumber* smi = instance->getNumber(stdName);
     if (smi == nullptr)
     {
+        [RiveLogger
+            logStateMachine:self
+                      error:[NSString
+                                stringWithFormat:
+                                    @"Could not find input named %@", name]];
         return NULL;
     }
     else

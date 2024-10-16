@@ -95,8 +95,15 @@
 		E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
 		F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */; };
 		F23626AA2C8F90FA00727D9A /* nested_text_run.riv in Resources */ = {isa = PBXBuildFile; fileRef = F23626A92C8F90FA00727D9A /* nested_text_run.riv */; };
+		F2610DD22CA5B4C40090D50B /* RiveLogger+StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD12CA5B4C40090D50B /* RiveLogger+StateMachine.swift */; };
+		F2610DD42CA5B5460090D50B /* RiveLogger+Artboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD32CA5B5460090D50B /* RiveLogger+Artboard.swift */; };
+		F2610DD62CA5B5DD0090D50B /* RiveLogger+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD52CA5B5DD0090D50B /* RiveLogger+ViewModel.swift */; };
+		F2610DD82CA5B6570090D50B /* RiveLogger+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */; };
+		F2610DDA2CA5B84B0090D50B /* RiveLogger+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */; };
+		F2610DE12CA5FBE30090D50B /* RiveLogger+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */; };
 		F28DE4532C5002D900F3C379 /* RiveModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28DE4522C5002D900F3C379 /* RiveModelTests.swift */; };
 		F2CCA9792C9B2799007DC0D2 /* referenced_image_asset.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */; };
+		F2CCA9C22C9E13BA007DC0D2 /* RiveLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CCA9C12C9E13BA007DC0D2 /* RiveLogger.swift */; };
 		F2D285492C6D469900728340 /* RiveFallbackFontProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */; };
 		F2ECC2312C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECC2302C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift */; };
 		F2ECC23A2C66B949008B20E5 /* RiveFontTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */; };
@@ -203,8 +210,15 @@
 		E599DCF82AAFA06100D1E49A /* rating_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rating_animation.riv; path = "Example-iOS/Assets/rating_animation.riv"; sourceTree = SOURCE_ROOT; };
 		F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontDescriptor.swift; sourceTree = "<group>"; };
 		F23626A92C8F90FA00727D9A /* nested_text_run.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nested_text_run.riv; sourceTree = "<group>"; };
+		F2610DD12CA5B4C40090D50B /* RiveLogger+StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+StateMachine.swift"; sourceTree = "<group>"; };
+		F2610DD32CA5B5460090D50B /* RiveLogger+Artboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+Artboard.swift"; sourceTree = "<group>"; };
+		F2610DD52CA5B5DD0090D50B /* RiveLogger+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+ViewModel.swift"; sourceTree = "<group>"; };
+		F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+Model.swift"; sourceTree = "<group>"; };
+		F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+File.swift"; sourceTree = "<group>"; };
+		F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+View.swift"; sourceTree = "<group>"; };
 		F28DE4522C5002D900F3C379 /* RiveModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveModelTests.swift; sourceTree = "<group>"; };
 		F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = referenced_image_asset.riv; sourceTree = "<group>"; };
+		F2CCA9C12C9E13BA007DC0D2 /* RiveLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveLogger.swift; sourceTree = "<group>"; };
 		F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontProvider.swift; sourceTree = "<group>"; };
 		F2ECC2302C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveFallbackFontDescriptor+Extensions.swift"; sourceTree = "<group>"; };
 		F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFontTests.swift; sourceTree = "<group>"; };
@@ -370,6 +384,7 @@
 		C9C73ED324FC478800EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F2CCA9C02C9E13B2007DC0D2 /* Logging */,
 				C3468E5727EB9887008652FD /* RiveView.swift */,
 				C3468E5927ECC7C6008652FD /* RiveViewModel.swift */,
 				C3468E5B27ED4C41008652FD /* RiveModel.swift */,
@@ -414,6 +429,20 @@
 				F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */,
 			);
 			path = Fonts;
+			sourceTree = "<group>";
+		};
+		F2CCA9C02C9E13B2007DC0D2 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				F2CCA9C12C9E13BA007DC0D2 /* RiveLogger.swift */,
+				F2610DD52CA5B5DD0090D50B /* RiveLogger+ViewModel.swift */,
+				F2610DD12CA5B4C40090D50B /* RiveLogger+StateMachine.swift */,
+				F2610DD32CA5B5460090D50B /* RiveLogger+Artboard.swift */,
+				F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */,
+				F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */,
+				F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */,
+			);
+			path = Logging;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -581,17 +610,22 @@
 				2A707937272628AD00C035A1 /* rive_renderer_view.mm in Sources */,
 				C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */,
 				C3468E5827EB9887008652FD /* RiveView.swift in Sources */,
+				F2610DD82CA5B6570090D50B /* RiveLogger+Model.swift in Sources */,
+				F2610DD62CA5B5DD0090D50B /* RiveLogger+ViewModel.swift in Sources */,
 				E5964A982A9697B600140479 /* RiveEvent.mm in Sources */,
 				F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */,
+				F2CCA9C22C9E13BA007DC0D2 /* RiveLogger.swift in Sources */,
 				043025F82AFA46EF00320F2E /* CDNFileAssetLoader.mm in Sources */,
 				043026042AFBA04100320F2E /* RiveFactory.mm in Sources */,
 				04BE5434264D267900427B39 /* LayerState.mm in Sources */,
+				F2610DDA2CA5B84B0090D50B /* RiveLogger+File.swift in Sources */,
 				C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */,
 				C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */,
 				043025F42AF90EAC00320F2E /* RiveFileAssetLoader.mm in Sources */,
 				F2D285492C6D469900728340 /* RiveFallbackFontProvider.swift in Sources */,
 				043025FC2AFA862E00320F2E /* FileAssetLoaderAdapter.mm in Sources */,
 				83DE4C912AA8DD7B00B88B72 /* RenderContextManager.mm in Sources */,
+				F2610DE12CA5FBE30090D50B /* RiveLogger+View.swift in Sources */,
 				C3E2B580282F242400A8651B /* RiveStateMachineInstance+Extensions.swift in Sources */,
 				046FB7F5264EAA60000129B1 /* RiveSMIInput.mm in Sources */,
 				043026002AFA915B00320F2E /* RiveFileAsset.mm in Sources */,
@@ -599,10 +633,12 @@
 				C3745FD3282BFAB90087F4AF /* FPSCounterView.swift in Sources */,
 				F2ECC2312C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift in Sources */,
 				C9C741F524FC510200EF9516 /* Rive.mm in Sources */,
+				F2610DD42CA5B5460090D50B /* RiveLogger+Artboard.swift in Sources */,
 				046FB7F8264EAA60000129B1 /* RiveStateMachineInstance.mm in Sources */,
 				C3468E5C27ED4C41008652FD /* RiveModel.swift in Sources */,
 				046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */,
 				046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */,
+				F2610DD22CA5B4C40090D50B /* RiveLogger+StateMachine.swift in Sources */,
 				046FB7F4264EAA60000129B1 /* RiveLinearAnimationInstance.mm in Sources */,
 				E57798A62A72C9C500FF25C3 /* RiveTextValueRun.mm in Sources */,
 			);

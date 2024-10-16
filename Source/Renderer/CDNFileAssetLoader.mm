@@ -9,6 +9,7 @@
 #import <RiveFileAsset.h>
 #import <RiveFactory.h>
 #import <CDNFileAssetLoader.h>
+#import <RiveRuntime/RiveRuntime-Swift.h>
 
 @implementation CDNFileAssetLoader
 {}
@@ -38,13 +39,25 @@
 
                     if ([asset isKindOfClass:[RiveFontAsset class]])
                     {
-                        [(RiveFontAsset*)asset font:[factory decodeFont:data]];
+                        RiveFontAsset* fontAsset = (RiveFontAsset*)asset;
+                        [fontAsset font:[factory decodeFont:data]];
+                        [RiveLogger logFontAssetLoad:fontAsset fromURL:URL];
                     }
                     else if ([asset isKindOfClass:[RiveImageAsset class]])
                     {
-                        [(RiveImageAsset*)asset
-                            renderImage:[factory decodeImage:data]];
+                        RiveImageAsset* imageAsset = (RiveImageAsset*)asset;
+                        [imageAsset renderImage:[factory decodeImage:data]];
+                        [RiveLogger logImageAssetLoad:imageAsset fromURL:URL];
                     }
+                }
+                else
+                {
+                    NSString* message =
+                        [NSString stringWithFormat:
+                                      @"Failed to load asset from URL %@: %@",
+                                      URL.absoluteString,
+                                      error.localizedDescription];
+                    [RiveLogger logFile:nil error:message];
                 }
               }];
 
@@ -108,7 +121,13 @@
                       andData:(NSData*)data
                    andFactory:(RiveFactory*)factory
 {
-    return _loadAsset(asset, data, factory);
+    [RiveLogger logLoadingAsset:asset];
+    bool loaded = _loadAsset(asset, data, factory);
+    if (loaded)
+    {
+        [RiveLogger logAssetLoaded:asset];
+    }
+    return loaded;
 }
 
 @end

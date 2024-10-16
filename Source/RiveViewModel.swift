@@ -241,23 +241,26 @@ import Combine
         
         // We're not checking if a StateMachine is "ended" or "ExitState"
         // But we may want to in the future to enable restarting it by playing again
-        
+        RiveLogger.log(viewModel: self, event: .play)
         riveView?.play()
     }
     
     /// Halts the active Animation or StateMachine and will resume from it's current position when next played
     @objc open func pause() {
+        RiveLogger.log(viewModel: self, event: .pause)
         riveView?.pause()
     }
     
     /// Halts the active Animation or StateMachine and sets it at its starting position
     @objc open func stop() {
+        RiveLogger.log(viewModel: self, event: .stop)
         resetCurrentModel()
         riveView?.stop()
     }
     
     /// Sets the active Animation or StateMachine back to their starting position
     @objc open func reset() {
+        RiveLogger.log(viewModel: self, event: .reset)
         resetCurrentModel()
         riveView?.reset()
     }
@@ -266,8 +269,12 @@ import Combine
     
     /// Instantiates elements in the model needed to play in a `RiveView`
     @objc open func configureModel(artboardName: String? = nil, stateMachineName: String? = nil, animationName: String? = nil) throws {
-        guard let model = riveModel else { fatalError("Cannot configure nil RiveModel") }
-        
+        guard let model = riveModel else {
+            let errorMessage = "Cannot configure nil RiveModel"
+            RiveLogger.log(viewModel: self, event: .fatalError(errorMessage))
+            fatalError(errorMessage)
+        }
+
         model.animation = nil
         model.stateMachine = nil
         
@@ -300,7 +307,11 @@ import Combine
     
     /// Puts the active Animation or StateMachine back to their starting position
     private func resetCurrentModel() {
-        guard let model = riveModel else { fatalError("Current model is nil") }
+        guard let model = riveModel else {
+            let errorMessage = "Current model is nil"
+            RiveLogger.log(viewModel: self, event: .fatalError(errorMessage))
+            fatalError(errorMessage)
+        }
         try! configureModel(
             artboardName: model.artboard.name(),
             stateMachineName: model.stateMachine?.name(),
@@ -321,6 +332,7 @@ import Combine
     /// Provide the active StateMachine a `Trigger` input
     /// - Parameter inputName: The name of a `Trigger` input on the active StateMachine
     @objc open func triggerInput(_ inputName: String) {
+        RiveLogger.log(viewModel: self, event: .triggerInput(inputName, nil))
         riveModel?.stateMachine?.getTrigger(inputName).fire()
         play()
     }
@@ -330,6 +342,7 @@ import Combine
     ///   - inputName: The name of a `Boolean` input on the active StateMachine
     ///   - value: A Bool value for the input
     @objc(setBooleanInput::) open func setInput(_ inputName: String, value: Bool) {
+        RiveLogger.log(viewModel: self, event: .booleanInput(inputName, nil, value))
         riveModel?.stateMachine?.getBool(inputName).setValue(value)
         play()
     }
@@ -339,6 +352,7 @@ import Combine
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Float value for the input
     @objc(setFloatInput::) open func setInput(_ inputName: String, value: Float) {
+        RiveLogger.log(viewModel: self, event: .floatInput(inputName, nil, value))
         riveModel?.stateMachine?.getNumber(inputName).setValue(value)
         play()
     }
@@ -348,6 +362,7 @@ import Combine
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Double value for the input
     @objc(setDoubleInput::) open func setInput(_ inputName: String, value: Double) {
+        RiveLogger.log(viewModel: self, event: .doubleInput(inputName, nil, value))
         setInput(inputName, value: Float(value))
     }
     
@@ -356,6 +371,7 @@ import Combine
     ///   - inputName: The name of a `Trigger` input on the active StateMachine
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
     open func triggerInput(_ inputName: String, path: String) {
+        RiveLogger.log(viewModel: self, event: .triggerInput(inputName, path))
         riveModel?.artboard?.getTrigger(inputName, path: path).fire()
         play()
     }
@@ -366,6 +382,7 @@ import Combine
     ///   - value: A Bool value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
     open func setInput(_ inputName: String, value: Bool, path: String) {
+        RiveLogger.log(viewModel: self, event: .booleanInput(inputName, path, value))
         riveModel?.artboard?.getBool(inputName, path: path).setValue(value)
         play()
     }
@@ -376,6 +393,7 @@ import Combine
     ///   - value: A Float value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
     open func setInput(_ inputName: String, value: Float, path: String) {
+        RiveLogger.log(viewModel: self, event: .floatInput(inputName, path, value))
         riveModel?.artboard?.getNumber(inputName, path: path).setValue(value);
         play()
     }
@@ -386,6 +404,7 @@ import Combine
     ///   - value: A Double value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
     open func setInput(_ inputName: String, value: Double, path: String) {
+        RiveLogger.log(viewModel: self, event: .doubleInput(inputName, path, value))
         setInput(inputName, value: Float(value), path: path)
     }
     
@@ -418,13 +437,16 @@ import Combine
     ///   - value: A String value for the text run
     @objc open func setTextRunValue(_ textRunName: String, textValue: String) throws {
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
+            RiveLogger.log(viewModel: self, event: .textRun(textRunName, nil, textValue))
             textRun.setText(textValue)
 
             if isPlaying == false {
                 riveView?.advance(delta: 0)
             }
         } else {
-            throw RiveError.textValueRunError("Could not set text value on text run: \(textRunName) as the text run could not be found from the active artboard")
+            let errorMessage = "Could not set text value on text run: \(textRunName) as the text run could not be found from the active artboard"
+            RiveLogger.log(viewModel: self, event: .error(errorMessage))
+            throw RiveError.textValueRunError(errorMessage)
         }
     }
 
@@ -436,13 +458,16 @@ import Combine
     ///   - Note: If the specified path is empty, the parent artboard will be used to find the text run.
     @objc open func setTextRunValue(_ textRunName: String, path: String, textValue: String) throws {
         if let textRun = riveModel?.artboard?.textRun(textRunName, path: path) {
+            RiveLogger.log(viewModel: self, event: .textRun(textRunName, path, textValue))
             textRun.setText(textValue)
 
             if isPlaying == false {
                 riveView?.advance(delta: 0)
             }
         } else {
-            throw RiveError.textValueRunError("Could not set text value on text run: \(textRunName) as the text run could not be found from the active artboard")
+            let errorMessage = "Could not set text value on text run: \(textRunName) as the text run could not be found from the active artboard"
+            RiveLogger.log(viewModel: self, event: .error(errorMessage))
+            throw RiveError.textValueRunError(errorMessage)
         }
     }
 
