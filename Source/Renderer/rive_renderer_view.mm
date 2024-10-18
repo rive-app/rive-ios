@@ -181,7 +181,15 @@
 - (void)drawInRect:(CGRect)rect
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler
 {
-    if (CGRectGetWidth(rect) == 0 || CGRectGetHeight(rect) == 0)
+    CGFloat scale = -1;
+    UIWindowScene* scene = [self.window windowScene];
+    if (scene != nil)
+    {
+        scale = scene.screen.scale;
+    }
+    if ([_renderContext canDrawInRect:rect
+                         drawableSize:self.drawableSize
+                                scale:scale] == NO)
     {
         return;
     }

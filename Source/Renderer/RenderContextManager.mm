@@ -13,6 +13,63 @@
 #include "cg_renderer.hpp"
 #include "rive/renderer/gpu.hpp"
 
+// Values taken from Page 7 of
+// https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
+// Last updated 10/2024
+static CGSize Maximum2DTextureSizeFromDevice(id<MTLDevice> device)
+{
+    CGSize size = CGSizeZero;
+    // Fall back in reverse order of the table in the above linked document.
+    // See Page 1 for additional details on GPUs in each family.
+    if ([device supportsFamily:MTLGPUFamilyMac2])
+    {
+        size = CGSizeMake(16384, 16384);
+    }
+    else if ([device supportsFamily:MTLGPUFamilyApple9])
+    {
+        size = CGSizeMake(16384, 16384);
+    }
+    else if ([device supportsFamily:MTLGPUFamilyApple8])
+    {
+        size = CGSizeMake(16384, 16384);
+    }
+    else if ([device supportsFamily:MTLGPUFamilyApple7])
+    {
+        size = CGSizeMake(16384, 16384);
+    }
+    else if ([device supportsFamily:MTLGPUFamilyApple6])
+    {
+        size = CGSizeMake(16384, 16384);
+    }
+    else if ([device supportsFamily:MTLGPUFamilyApple5])
+    {
+        size = CGSizeMake(16384, 16384);
+    }
+    else if ([device supportsFamily:MTLGPUFamilyApple4])
+    {
+        size = CGSizeMake(16384, 16384);
+    }
+    else if ([device supportsFamily:MTLGPUFamilyApple3])
+    {
+        size = CGSizeMake(16384, 16384);
+    }
+    else if ([device supportsFamily:MTLGPUFamilyApple2])
+    {
+        size = CGSizeMake(8192, 8192);
+    }
+    else
+    {
+        // Anything not noted in the linked table above, assume the lowest
+        // Wayback Machine shows that MTLGPUFamilyApple1 was 8192x8192
+        size = CGSizeMake(8192, 8192);
+    }
+    return size;
+}
+
+@interface RenderContext (Private)
+@property(nonatomic, assign) CGSize maximum2DTextureSize;
+@end
+
 @implementation RenderContext
 
 - (rive::Factory*)factory
@@ -29,6 +86,41 @@
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {}
 
+- (BOOL)canDrawInRect:(CGRect)rect
+         drawableSize:(CGSize)drawableSize
+                scale:(CGFloat)scale;
+{
+    // If for some reason the view is not within a window (screen),
+    // scale will be -1
+    if (scale == -1)
+    {
+        return NO;
+    }
+
+    BOOL (^CGSizeWithinRange)(CGSize, CGSize) =
+        ^BOOL(CGSize size, CGSize maxSize) {
+          BOOL isWidthValid = size.width > 0 && size.width <= maxSize.width;
+          BOOL isHeightValid = size.height > 0 && size.height <= maxSize.height;
+          return isWidthValid && isHeightValid;
+        };
+
+    // Convert points to pixels, as Metal works in pixels
+    CGFloat pixelWidth = CGRectGetWidth(rect) * scale;
+    CGFloat pixelHeight = CGRectGetHeight(rect) * scale;
+    CGSize pixelSize = CGSizeMake(pixelWidth, pixelHeight);
+
+    return CGSizeWithinRange(pixelSize, self.maximum2DTextureSize) &&
+           CGSizeWithinRange(drawableSize, self.maximum2DTextureSize);
+}
+
+- (void)setMaximum2DTextureSize:(CGSize)maximum2DTextureSize
+{}
+
+- (CGSize)maximum2DTextureSize
+{
+    return CGSizeZero;
+}
+
 @end
 
 #include "rive/renderer/metal/render_context_metal_impl.h"
@@ -44,6 +136,7 @@
     rive::gpu::RenderContext* _renderContext;
     std::unique_ptr<rive::RiveRenderer> _renderer;
     rive::rcp<rive::gpu::RenderTargetMetal> _renderTarget;
+    CGSize _maximum2DTextureSize;
 }
 
 static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
@@ -68,6 +161,8 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
     self.framebufferOnly = YES;
     _renderContext = s_renderContext.get();
     _renderer = std::make_unique<rive::RiveRenderer>(_renderContext);
+    self.maximum2DTextureSize =
+        Maximum2DTextureSizeFromDevice(self.metalDevice);
     return self;
 }
 
@@ -141,6 +236,16 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
     [flushCommandBuffer commit];
 }
 
+- (void)setMaximum2DTextureSize:(CGSize)maximum2DTextureSize
+{
+    _maximum2DTextureSize = maximum2DTextureSize;
+}
+
+- (CGSize)maximum2DTextureSize;
+{
+    return _maximum2DTextureSize;
+}
+
 @end
 
 @interface CGRendererContext : RenderContext
@@ -156,6 +261,7 @@ constexpr static int kBufferRingSize = 3;
     int _currentBufferIdx;
     AutoCF<CGContextRef> _cgContext;
     std::unique_ptr<rive::CGRenderer> _renderer;
+    CGSize _maximum2DTextureSize;
 }
 
 - (instancetype)init
@@ -178,6 +284,8 @@ constexpr static int kBufferRingSize = 3;
     self.metalQueue = [self.metalDevice newCommandQueue];
     self.depthStencilPixelFormat = MTLPixelFormatInvalid;
     self.framebufferOnly = NO;
+    self.maximum2DTextureSize =
+        Maximum2DTextureSizeFromDevice(self.metalDevice);
     return self;
 }
 
@@ -270,6 +378,16 @@ constexpr static int kBufferRingSize = 3;
     _renderTargetTexture = nil;
     _renderer = nullptr;
     _cgContext = nullptr;
+}
+
+- (void)setMaximum2DTextureSize:(CGSize)maximum2DTextureSize
+{
+    _maximum2DTextureSize = maximum2DTextureSize;
+}
+
+- (CGSize)maximum2DTextureSize;
+{
+    return _maximum2DTextureSize;
 }
 
 @end

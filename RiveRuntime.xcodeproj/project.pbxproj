@@ -101,6 +101,7 @@
 		F2610DD82CA5B6570090D50B /* RiveLogger+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */; };
 		F2610DDA2CA5B84B0090D50B /* RiveLogger+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */; };
 		F2610DE12CA5FBE30090D50B /* RiveLogger+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */; };
+		F23992E72CB9C1C60021EF61 /* RenderContextTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F23992E62CB9C1C60021EF61 /* RenderContextTests.m */; };
 		F28DE4532C5002D900F3C379 /* RiveModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28DE4522C5002D900F3C379 /* RiveModelTests.swift */; };
 		F2CCA9792C9B2799007DC0D2 /* referenced_image_asset.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */; };
 		F2CCA9C22C9E13BA007DC0D2 /* RiveLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CCA9C12C9E13BA007DC0D2 /* RiveLogger.swift */; };
@@ -216,6 +217,7 @@
 		F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+Model.swift"; sourceTree = "<group>"; };
 		F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+File.swift"; sourceTree = "<group>"; };
 		F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+View.swift"; sourceTree = "<group>"; };
+		F23992E62CB9C1C60021EF61 /* RenderContextTests.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RenderContextTests.m; sourceTree = "<group>"; };
 		F28DE4522C5002D900F3C379 /* RiveModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveModelTests.swift; sourceTree = "<group>"; };
 		F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = referenced_image_asset.riv; sourceTree = "<group>"; };
 		F2CCA9C12C9E13BA007DC0D2 /* RiveLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveLogger.swift; sourceTree = "<group>"; };
@@ -417,6 +419,7 @@
 				041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */,
 				F28DE4522C5002D900F3C379 /* RiveModelTests.swift */,
 				F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */,
+				F23992E62CB9C1C60021EF61 /* RenderContextTests.m */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -655,6 +658,7 @@
 				04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */,
 				04ED72F1299C114000E8DE53 /* RiveViewModelTest.swift in Sources */,
 				04BE541C264A90D600427B39 /* RiveAnimationLoadTest.mm in Sources */,
+				F23992E72CB9C1C60021EF61 /* RenderContextTests.m in Sources */,
 				C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */,
 				04BE5413264943BB00427B39 /* util.mm in Sources */,
 				F2ECC23A2C66B949008B20E5 /* RiveFontTests.swift in Sources */,

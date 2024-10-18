@@ -31,6 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (rive::Renderer*)beginFrame:(MTKView*)view;
 - (void)endFrame:(MTKView*)view
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
+- (BOOL)canDrawInRect:(CGRect)rect
+         drawableSize:(CGSize)drawableSize
+                scale:(CGFloat)scale;
 @end
 
 NS_ASSUME_NONNULL_END
