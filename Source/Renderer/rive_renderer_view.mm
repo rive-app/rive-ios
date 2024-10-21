@@ -182,11 +182,19 @@
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler
 {
     CGFloat scale = -1;
+#if TARGET_OS_IPHONE
     UIWindowScene* scene = [self.window windowScene];
     if (scene != nil)
     {
         scale = scene.screen.scale;
     }
+#else
+    NSWindow* window = self.window;
+    if (self.window != nil)
+    {
+        scale = window.backingScaleFactor;
+    }
+#endif
     if ([_renderContext canDrawInRect:rect
                          drawableSize:self.drawableSize
                                 scale:scale] == NO)
