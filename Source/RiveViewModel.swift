@@ -346,17 +346,29 @@ import Combine
         riveModel?.stateMachine?.getBool(inputName).setValue(value)
         play()
     }
-    
+
+    /// Returns the current boolean input by name. Get its value by calling `.value` on the returned object.
+    /// - Parameter input: The name of the input
+    /// - Returns: The boolean input if it exists. Returns `nil` if the input cannot be found.
+    @objc open func boolInput(named name: String) -> RiveSMIBool?
+    {
+        guard let input = riveModel?.stateMachine?.getBool(name) else {
+            RiveLogger.log(viewModel: self, event: .error("Cannot find bool input named \(name)"))
+            return nil
+        }
+        return input
+    }
+
     /// Provide the active StateMachine a `Number` input
     /// - Parameters:
     ///   - inputName: The name of a `Number` input on the active StateMachine
-    ///   - value: A Float value for the input
+    ///   - value: A Float value for the input.
     @objc(setFloatInput::) open func setInput(_ inputName: String, value: Float) {
         RiveLogger.log(viewModel: self, event: .floatInput(inputName, nil, value))
         riveModel?.stateMachine?.getNumber(inputName).setValue(value)
         play()
     }
-    
+
     /// Provide the active StateMachine a `Number` input
     /// - Parameters:
     ///   - inputName: The name of a `Number` input on the active StateMachine
@@ -365,7 +377,19 @@ import Combine
         RiveLogger.log(viewModel: self, event: .doubleInput(inputName, nil, value))
         setInput(inputName, value: Float(value))
     }
-    
+
+    /// Returns the current number input by name. Get its value by calling `.value` on the returned object.
+    /// - Parameter input: The name of the input
+    /// - Returns: The number input if it exists. Returns `nil` if the input cannot be found.
+    @objc open func numberInput(named name: String) -> RiveSMINumber?
+    {
+        guard let input = riveModel?.stateMachine?.getNumber(name) else {
+            RiveLogger.log(viewModel: self, event: .error("Cannot find number input named \(name)"))
+            return nil
+        }
+        return input
+    }
+
     /// Provide the specified nested Artboard with a `Trigger` input
     /// - Parameters:
     ///   - inputName: The name of a `Trigger` input on the active StateMachine
