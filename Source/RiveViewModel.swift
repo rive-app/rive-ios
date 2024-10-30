@@ -39,6 +39,9 @@ import Combine
 /// }
 /// ```
 @objc open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate{
+    /// The default layout scale factor that allows for the scale factor to be determined by Rive.
+    @objc public static let layoutScaleFactorAutomatic: Double = RiveView.Constants.layoutScaleFactorAutomatic
+
     // TODO: could be a weak ref, need to look at this in more detail.
     open private(set) var riveView: RiveView?
     private var defaultModel: RiveModelBuffer!
@@ -182,6 +185,13 @@ import Combine
     
     open var alignment: RiveAlignment = .center {
         didSet { riveView?.alignment = alignment }
+    }
+    
+    /// The scale factor to apply when using the `layout` fit. By default, this value is -1, where Rive will determine
+    /// the correct scale for your device.To override this default behavior, set this value to a value greater than 0.
+    /// - Note: If the scale factor <= 0, nothing will be drawn.
+    open var layoutScaleFactor: Double = layoutScaleFactorAutomatic {
+        didSet { riveView?.layoutScaleFactor = layoutScaleFactor }
     }
     
     /// Sets whether or not the current Rive view should forward Rive listener touch / click events to any next responders.
@@ -530,6 +540,7 @@ import Combine
     @objc open func update(view: RiveView) {
         view.fit = fit
         view.alignment = alignment
+        view.layoutScaleFactor = layoutScaleFactor
         view.forwardsListenerEvents = forwardsListenerEvents
     }
     
@@ -544,6 +555,7 @@ import Combine
         riveView!.stateMachineDelegate = self
         riveView!.fit = fit
         riveView!.alignment = alignment
+        riveView!.layoutScaleFactor = layoutScaleFactor
         riveView!.forwardsListenerEvents = forwardsListenerEvents
     }
     

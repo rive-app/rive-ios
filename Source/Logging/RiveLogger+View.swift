@@ -21,6 +21,7 @@ enum RiveLoggerViewEvent {
     case advance(Double)
     case eventReceived(String)
     case drawing(CGSize)
+    case error(String)
 }
 
 extension RiveLogger {
@@ -73,6 +74,10 @@ extension RiveLogger {
             guard isVerbose else { return }
             _log(event: event, level: .debug) {
                 Self.view.debug("\(self.prefix(for: view))Drawing size {\(size.width),\(size.height)}")
+            }
+        case .error(let message):
+            _log(event: event, level: .error) {
+                Self.view.error("\(self.prefix(for: view))\(message)")
             }
         }
     }

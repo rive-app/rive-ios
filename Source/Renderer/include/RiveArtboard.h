@@ -28,6 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString*)name;
 - (CGRect)bounds;
 
+- (double)width;
+- (double)height;
+- (void)setWidth:(double)value;
+- (void)setHeight:(double)value;
+- (void)resetArtboardSize;
+
 - (const RiveSMIBool*)getBool:(NSString*)name path:(NSString*)path;
 - (const RiveSMITrigger*)getTrigger:(NSString*)name path:(NSString*)path;
 - (const RiveSMINumber*)getNumber:(NSString*)name path:(NSString*)path;

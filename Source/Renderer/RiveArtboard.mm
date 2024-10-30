@@ -394,4 +394,30 @@ static int artInstanceCount = 0;
     _artboardInstance->volume(volume);
 }
 
+- (double)width
+{
+    return _artboardInstance->width();
+}
+
+- (double)height
+{
+    return _artboardInstance->height();
+}
+
+- (void)setWidth:(double)value
+{
+    _artboardInstance->width(value);
+}
+
+- (void)setHeight:(double)value
+{
+    _artboardInstance->height(value);
+}
+
+- (void)resetArtboardSize
+{
+    _artboardInstance->width(_artboardInstance->originalWidth());
+    _artboardInstance->height(_artboardInstance->originalHeight());
+}
+
 @end

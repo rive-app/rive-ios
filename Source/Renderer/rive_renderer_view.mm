@@ -124,6 +124,21 @@
             alignment:(RiveAlignment)alignment
                   fit:(RiveFit)fit
 {
+    // Uses 1 as the scale factor since that is equivalent to the c++ default
+    // parameter.
+    [self alignWithRect:rect
+            contentRect:contentRect
+              alignment:alignment
+                    fit:fit
+            scaleFactor:1];
+}
+
+- (void)alignWithRect:(CGRect)rect
+          contentRect:(CGRect)contentRect
+            alignment:(RiveAlignment)alignment
+                  fit:(RiveFit)fit
+          scaleFactor:(CGFloat)scaleFactor
+{
     rive::AABB frame(rect.origin.x,
                      rect.origin.y,
                      rect.size.width + rect.origin.x,
@@ -137,7 +152,7 @@
     auto riveFit = [self riveFit:fit];
     auto riveAlignment = [self riveAlignment:alignment];
 
-    _renderer->align(riveFit, riveAlignment, frame, content);
+    _renderer->align(riveFit, riveAlignment, frame, content, scaleFactor);
 }
 - (void)save
 {
@@ -254,6 +269,9 @@
         case scaleDown:
             riveFit = rive::Fit::scaleDown;
             break;
+        case layout:
+            riveFit = rive::Fit::layout;
+            break;
         case noFit:
             riveFit = rive::Fit::none;
             break;
@@ -316,9 +334,14 @@
 
     auto riveFit = [self riveFit:fit];
     auto riveAlignment = [self riveAlignment:alignment];
-
+    auto sf = 1.0;
+    if (riveFit == rive::Fit::layout)
+    {
+        sf = frame.width() / artboardRect.size.width;
+    }
     rive::Mat2D forward =
-        rive::computeAlignment(riveFit, riveAlignment, frame, content);
+        rive::computeAlignment(riveFit, riveAlignment, frame, content, sf);
+
     rive::Mat2D inverse = forward.invertOrIdentity();
 
     rive::Vec2D frameLocation(touchLocation.x, touchLocation.y);

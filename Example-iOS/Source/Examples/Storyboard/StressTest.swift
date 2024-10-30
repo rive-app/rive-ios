@@ -57,7 +57,7 @@ class CustomRiveView: RiveView {
         guard let artboard = rModel?.artboard else { return }
         
         let newFrame = CGRect(origin: rect.origin, size: size)
-        align(with: newFrame, contentRect: artboard.bounds(), alignment: .center, fit: .contain)
+        align(with: newFrame, contentRect: artboard.bounds(), alignment: .center, fit: .contain, scaleFactor: 1.0)
         
         let pad:Float = 100.0
         let r = min(drawRepeat, 8)

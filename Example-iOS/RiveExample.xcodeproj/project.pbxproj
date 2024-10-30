@@ -267,6 +267,10 @@
 		2E83910B2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */; };
 		2E83910D2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
 		2E83910E2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
+		2E974F952CB3509200642588 /* layout_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E974F942CB3509200642588 /* layout_test.riv */; };
+		2E974F962CB3509200642588 /* layout_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E974F942CB3509200642588 /* layout_test.riv */; };
+		2E974F972CB3509200642588 /* layout_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E974F942CB3509200642588 /* layout_test.riv */; };
+		2E974F982CB3509200642588 /* layout_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E974F942CB3509200642588 /* layout_test.riv */; };
 		83C89ACB29886ECB00044C17 /* StressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C89ACA29886ECB00044C17 /* StressTest.swift */; };
 		83C89ACF2988709400044C17 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		83C89AD1298870A700044C17 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
@@ -430,6 +434,7 @@
 		27108F2C282C96E700A99D81 /* light_switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = light_switch.riv; sourceTree = "<group>"; };
 		2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftNestedInputs.swift; sourceTree = "<group>"; };
 		2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = runtime_nested_inputs.riv; sourceTree = "<group>"; };
+		2E974F942CB3509200642588 /* layout_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = layout_test.riv; sourceTree = "<group>"; };
 		83C89ACA29886ECB00044C17 /* StressTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressTest.swift; sourceTree = "<group>"; };
 		83C89ACE2988709400044C17 /* marty.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = marty.riv; sourceTree = "<group>"; };
 		83C89AD0298870A700044C17 /* paper.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = paper.riv; sourceTree = "<group>"; };
@@ -595,6 +600,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				2E974F942CB3509200642588 /* layout_test.riv */,
 				F2C623352C874E3A0006E0CA /* fallback_fonts.riv */,
 				2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */,
 				0490915C2BC832D100F2C12B /* lip-sync_test.riv */,
@@ -917,6 +923,7 @@
 				040553A82B7A274B008F076A /* prop_example.riv in Resources */,
 				040553A92B7A274B008F076A /* two_bone_ik.riv in Resources */,
 				040553AA2B7A274B008F076A /* energy_bar_example.riv in Resources */,
+				2E974F962CB3509200642588 /* layout_test.riv in Resources */,
 				040553AB2B7A274B008F076A /* liquid.riv in Resources */,
 				040553AC2B7A274B008F076A /* loopy.riv in Resources */,
 				040553AD2B7A274B008F076A /* marty.riv in Resources */,
@@ -958,6 +965,7 @@
 				040553FA2B7A2858008F076A /* testtext.riv in Resources */,
 				0490915D2BC832D100F2C12B /* lip-sync_test.riv in Resources */,
 				040553FB2B7A2858008F076A /* juice_v7.riv in Resources */,
+				2E974F952CB3509200642588 /* layout_test.riv in Resources */,
 				040553FC2B7A2858008F076A /* play_button_event_example.riv in Resources */,
 				040553FD2B7A2858008F076A /* neostream.riv in Resources */,
 				040553FE2B7A2858008F076A /* loopy.riv in Resources */,
@@ -1048,6 +1056,7 @@
 				04E51C5D2A151C230075E473 /* prop_example.riv in Resources */,
 				04E51C5E2A151C230075E473 /* two_bone_ik.riv in Resources */,
 				04E51C5F2A151C230075E473 /* energy_bar_example.riv in Resources */,
+				2E974F982CB3509200642588 /* layout_test.riv in Resources */,
 				04E51C602A151C230075E473 /* liquid.riv in Resources */,
 				04E51C612A151C230075E473 /* loopy.riv in Resources */,
 				F8772AF02AD94A4400AB5920 /* marty.riv in Resources */,
@@ -1089,6 +1098,7 @@
 				E57798A02A72C77900FF25C3 /* testtext.riv in Resources */,
 				0490915E2BC832D100F2C12B /* lip-sync_test.riv in Resources */,
 				C9CE8266263B90E000F98DDB /* juice_v7.riv in Resources */,
+				2E974F972CB3509200642588 /* layout_test.riv in Resources */,
 				C3ECAC2B281837B300A81123 /* play_button_event_example.riv in Resources */,
 				042C88E42644447500E7DBB2 /* neostream.riv in Resources */,
 				042C88E82644447500E7DBB2 /* loopy.riv in Resources */,

@@ -9,10 +9,32 @@
 import Foundation
 
 open class RiveView: RiveRendererView {
+    struct Constants {
+        static let layoutScaleFactorAutomatic: Double = -1
+    }
+
     // MARK: Configuration
     internal weak var riveModel: RiveModel?
     internal var fit: RiveFit = .contain { didSet { needsDisplay() } }
     internal var alignment: RiveAlignment = .center { didSet { needsDisplay() } }
+    /// The scale factor to apply when using the `layout` fit. By default, this value is -1, where Rive will determine
+    /// the correct scale for your device.To override this default behavior, set this value to a value greater than 0. This value should
+    /// only be set at the view model level and passed into this view.
+    /// - Note: If the scale factor <= 0, nothing will be drawn.
+    internal var layoutScaleFactor: Double = RiveView.Constants.layoutScaleFactorAutomatic { didSet { needsDisplay() } }
+    /// The internally calculated layout scale to use if a scale is not set by the developer (i.e layoutScaleFactor == -1)
+    /// Defaults to the "legacy" methods, which will be overridden
+    /// by window handlers in this view when the window changes.
+    private lazy var _layoutScaleFactor: Double = {
+        #if os(iOS)
+        return self.traitCollection.displayScale
+        #else
+        guard let scale = NSScreen.main?.backingScaleFactor else { return 1 }
+        return scale
+        #endif
+    }() {
+        didSet { needsDisplay() }
+    }
     /// Sets whether or not the Rive view should forward Rive listener touch / click events to any next responders.
     /// When true, touch / click events will be forwarded to any next responder(s).
     /// When false, only the Rive view will handle touch / click events, and will not forward
@@ -50,6 +72,7 @@ open class RiveView: RiveRendererView {
     }
 
     private var orientationObserver: (any NSObjectProtocol)?
+    private var screenObserver: (any NSObjectProtocol)?
 
     /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
     public init() {
@@ -77,11 +100,28 @@ open class RiveView: RiveRendererView {
             }
         }
 
+        if #available(iOS 17, *) {
+            registerForTraitChanges([UITraitDisplayScale.self]) { [weak self] (_: UITraitEnvironment, traitCollection: UITraitCollection) in
+                guard let self else { return }
+                self._layoutScaleFactor = self.traitCollection.displayScale
+            }
+        }
+
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         orientationObserver = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
             self.redrawIfNecessary()
         }
+        #endif
+
+        #if os(macOS)
+        screenObserver = NotificationCenter.default.addObserver(
+            forName: NSWindow.didChangeScreenNotification,
+            object: nil,
+            queue: nil) { [weak self] _ in
+                guard let self, let scale = window?.screen?.backingScaleFactor else { return }
+                _layoutScaleFactor = scale
+            }
         #endif
     }
 
@@ -90,9 +130,19 @@ open class RiveView: RiveRendererView {
         
         #if os(iOS)
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
-        NotificationCenter.default.removeObserver(orientationObserver as Any)
+        if let observer = orientationObserver {
+            NotificationCenter.default.removeObserver(observer as Any)
+        }
         #endif
+
+        #if os(macOS)
+        if let observer = screenObserver {
+            NotificationCenter.default.removeObserver(observer as Any)
+        }
+        #endif
+        
         orientationObserver = nil
+        screenObserver = nil
     }
 
     private func needsDisplay() {
@@ -102,6 +152,20 @@ open class RiveView: RiveRendererView {
             needsDisplay=true
         #endif
     }
+
+    #if os(iOS)
+    open override func didMoveToWindow() {
+        super.didMoveToWindow()
+        guard let scale = window?.windowScene?.screen.scale else { return }
+        _layoutScaleFactor = scale
+    }
+    #else
+    open override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        guard let scale = window?.screen?.backingScaleFactor else { return }
+        _layoutScaleFactor = scale
+    }
+    #endif
 
     /// This resets the view with the new model. Useful when the `RiveView` was initialized without one.
     open func setModel(_ model: RiveModel, autoPlay: Bool = true) throws {
@@ -313,10 +377,22 @@ open class RiveView: RiveRendererView {
     override open func drawRive(_ rect: CGRect, size: CGSize) {
         // This prevents breaking when loading RiveFile async
         guard let artboard = riveModel?.artboard else { return }
-        
+
+        let scale = layoutScaleFactor == RiveView.Constants.layoutScaleFactorAutomatic ? _layoutScaleFactor : layoutScaleFactor
+
         RiveLogger.log(view: self, event: .drawing(size))
         let newFrame = CGRect(origin: rect.origin, size: size)
-        align(with: newFrame, contentRect: artboard.bounds(), alignment: alignment, fit: fit)
+        if (fit == RiveFit.layout) {
+            if scale <= 0 {
+                RiveLogger.log(view: self, event: .error("Cannot draw with a scale factor of \(scale)"))
+                return
+            }
+            artboard.setWidth(Double(newFrame.width) / scale);
+            artboard.setHeight(Double(newFrame.height) / scale);
+        } else {
+            artboard.resetArtboardSize();
+        }
+        align(with: newFrame, contentRect: artboard.bounds(), alignment: alignment, fit: fit, scaleFactor: scale)
         draw(with: artboard)
         
     }
@@ -330,6 +406,10 @@ open class RiveView: RiveRendererView {
             if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass
                 || traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass {
                 redrawIfNecessary()
+            }
+
+            if traitCollection.displayScale != previousTraitCollection?.displayScale {
+                _layoutScaleFactor = traitCollection.displayScale
             }
         }
     }

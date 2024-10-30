@@ -53,7 +53,8 @@ typedef NS_ENUM(NSInteger, RiveFit) {
     fitHeight,
     fitWidth,
     scaleDown,
-    noFit
+    noFit,
+    layout
 };
 
 /*
