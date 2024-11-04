@@ -198,10 +198,10 @@
 {
     CGFloat scale = -1;
 #if TARGET_OS_IPHONE
-    UIWindowScene* scene = [self.window windowScene];
-    if (scene != nil)
+    CGFloat displayScale = self.traitCollection.displayScale;
+    if (displayScale > 0)
     {
-        scale = scene.screen.scale;
+        scale = displayScale;
     }
 #else
     NSWindow* window = self.window;
