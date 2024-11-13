@@ -311,6 +311,9 @@ class DelegatesTest: XCTestCase {
         view.advance(delta:0.1)
         XCTAssertEqual(true, viewModel.isPlaying)
         view.advance(delta:1.0)
+        // One more advance to consume the last event.
+        view.advance(delta:0.1)
+        XCTAssertEqual(true, viewModel.isPlaying)
         // One more advance to settle.
         view.advance(delta:0.1)
         XCTAssertEqual(false, viewModel.isPlaying)
