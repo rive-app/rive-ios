@@ -407,7 +407,8 @@ class DelegatesTest: XCTestCase {
 
         // as before lets advance beyond the end of the animaiton, in this case change to exit!
         view.advance(delta:0.4)
-        XCTAssertEqual(false, viewModel.isPlaying)
+        // Is playing will be true one last time because there was a change of state
+        XCTAssertEqual(true, viewModel.isPlaying)
         XCTAssertEqual(1, delegate.stateMachineStates.count)
         XCTAssertEqual("ExitState", delegate.stateMachineStates[0])
         delegate.stateMachineStates.removeAll()
