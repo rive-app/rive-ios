@@ -19,7 +19,8 @@
 
 static NSArray<id<RiveFallbackFontProvider>>* _fallbackFonts = nil;
 
-static rive::rcp<rive::Font> riveFontFromNativeFont(id font)
+static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
+                                                    bool useSystemShaper)
 {
     uint16_t weight = 400;
     if ([font conformsToProtocol:@protocol(RiveWeightProvider)])
@@ -34,24 +35,25 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font)
     }
 
     CTFontRef ctFont = (__bridge CTFontRef)font;
-    return HBFont::FromSystem((void*)ctFont, weight, width);
+    return HBFont::FromSystem((void*)ctFont, useSystemShaper, weight, width);
 }
 
-static rive::rcp<rive::Font> findFallbackFont(
-    rive::Span<const rive::Unichar> missing)
+static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
+                                              const uint32_t fallbackIndex)
 {
-    // For each descriptor…
-    for (id<RiveFallbackFontProvider> fallback in RiveFont.fallbackFonts)
+    // Try all the fallback fonts twice, first pass with harfbuzz and the second
+    // loop uses the system shaper.
+    if (fallbackIndex / 2 < RiveFont.fallbackFonts.count)
     {
-        auto font = riveFontFromNativeFont(fallback.fallbackFont);
-        if (font->hasGlyph(missing))
-        {
-            rive::rcp<rive::Font> rcFont = rive::rcp<rive::Font>(font);
-            // because the font was released at load time, we need to give it an
-            // extra ref whenever we bump it to a reference counted pointer.
-            rcFont->ref();
-            return rcFont;
-        }
+        auto f =
+            [RiveFont
+                    .fallbackFonts[fallbackIndex % RiveFont.fallbackFonts.count]
+                fallbackFont];
+        auto font = riveFontFromNativeFont(
+            f, fallbackIndex >= RiveFont.fallbackFonts.count);
+        rive::rcp<rive::Font> rcFont = rive::rcp<rive::Font>(font);
+        rcFont->ref();
+        return rcFont;
     }
     return nullptr;
 }
@@ -194,12 +196,12 @@ static rive::rcp<rive::Font> findFallbackFont(
 #if TARGET_OS_IPHONE
 - (RiveFont*)decodeUIFont:(UIFont*)font
 {
-    return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font)];
+    return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font, true)];
 }
 #else
 - (RiveFont*)decodeNSFont:(NSFont*)font
 {
-    return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font)];
+    return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font, true)];
 }
 #endif
 
