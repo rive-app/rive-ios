@@ -26,6 +26,7 @@
 #import <RiveRuntime/RiveFileAsset.h>
 #import <RiveRuntime/RiveFileAssetLoader.h>
 #import <RiveRuntime/CDNFileAssetLoader.h>
+#import <RiveRuntime/RiveFont.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

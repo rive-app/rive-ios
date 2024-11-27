@@ -9,15 +9,13 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 #import <RiveFactory.h>
-#import <rive/text/font_hb.hpp>
-#import <CoreText/CTFont.h>
 #import <RiveRuntime/RiveRuntime-Swift.h>
+#import <CoreText/CTFont.h>
+#import <rive/text/font_hb.hpp>
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIFont.h>
 #endif
-
-static NSArray<id<RiveFallbackFontProvider>>* _fallbackFonts = nil;
 
 static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
                                                     bool useSystemShaper)
@@ -37,75 +35,6 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
     CTFontRef ctFont = (__bridge CTFontRef)font;
     return HBFont::FromSystem((void*)ctFont, useSystemShaper, weight, width);
 }
-
-static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
-                                              const uint32_t fallbackIndex)
-{
-    // Try all the fallback fonts twice, first pass with harfbuzz and the second
-    // loop uses the system shaper.
-    if (fallbackIndex / 2 < RiveFont.fallbackFonts.count)
-    {
-        auto f =
-            [RiveFont
-                    .fallbackFonts[fallbackIndex % RiveFont.fallbackFonts.count]
-                fallbackFont];
-        auto font = riveFontFromNativeFont(
-            f, fallbackIndex >= RiveFont.fallbackFonts.count);
-        rive::rcp<rive::Font> rcFont = rive::rcp<rive::Font>(font);
-        rcFont->ref();
-        return rcFont;
-    }
-    return nullptr;
-}
-
-@implementation RiveFont
-{
-    rive::rcp<rive::Font>
-        instance; // note: we do NOT own this, so don't delete it
-}
-
-+ (void)load
-{
-    rive::Font::gFallbackProc = findFallbackFont;
-}
-
-- (instancetype)initWithFont:(rive::rcp<rive::Font>)font
-{
-    if (self = [super init])
-    {
-        instance = font;
-        return self;
-    }
-    else
-    {
-        return nil;
-    }
-}
-- (rive::rcp<rive::Font>)instance
-{
-    return instance;
-}
-
-+ (NSArray<id<RiveFallbackFontProvider>>*)fallbackFonts
-{
-    if (_fallbackFonts.count == 0)
-    {
-        return @[ [[RiveFallbackFontDescriptor alloc]
-            initWithDesign:RiveFallbackFontDescriptorDesignDefault
-                    weight:RiveFallbackFontDescriptorWeightRegular
-                     width:RiveFallbackFontDescriptorWidthStandard] ];
-    }
-
-    return _fallbackFonts;
-}
-
-+ (void)setFallbackFonts:
-    (nonnull NSArray<id<RiveFallbackFontProvider>>*)fallbackFonts
-{
-    _fallbackFonts = [fallbackFonts copy];
-}
-
-@end
 
 @implementation RiveRenderImage
 {

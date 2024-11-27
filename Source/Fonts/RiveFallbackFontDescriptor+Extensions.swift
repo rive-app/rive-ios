@@ -185,8 +185,8 @@ extension RiveNativeFont: RiveWeightProvider {
         // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight#common_weight_name_mapping
         // - David
         switch weight {
-        case RiveNativeFontWeight.ultraLight: return 100
-        case RiveNativeFontWeight.thin: return 200
+        case RiveNativeFontWeight.thin: return 100
+        case RiveNativeFontWeight.ultraLight: return 200
         case RiveNativeFontWeight.light: return 300
         case RiveNativeFontWeight.regular: return 400
         case RiveNativeFontWeight.medium: return 500

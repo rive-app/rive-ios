@@ -10,6 +10,10 @@ import XCTest
 @testable import RiveRuntime
 
 class RiveFontTests: XCTestCase {
+    override func setUp() {
+        RiveFont.fallbackFonts = []
+    }
+
     func testSystemFallbackDefaults() {
         var defaults = RiveFont.fallbackFonts.compactMap { $0 as? RiveFallbackFontDescriptor }
         XCTAssertEqual(defaults.first?.design, .default)
@@ -26,7 +30,52 @@ class RiveFontTests: XCTestCase {
         XCTAssertEqual(defaults.first?.design, .default)
         XCTAssertEqual(defaults.first?.weight, .regular)
     }
-    
+
+    func testSystemFallbackCallbackDefaults() {
+        let style = RiveFontStyle(weight: .regular)
+        let defaults = RiveFont.fallbackFontsCallback(style).compactMap { $0 as? RiveFallbackFontDescriptor }
+        XCTAssertEqual(defaults.first?.design, .default)
+        XCTAssertEqual(defaults.first?.weight, .regular)
+    }
+
+    func testSystemFallbackCallbackUsesFallbackFontsByDefault() {
+        RiveFont.fallbackFonts = [RiveFallbackFontDescriptor(weight: .heavy)]
+        let style = RiveFontStyle(weight: .regular)
+        let defaults = RiveFont.fallbackFontsCallback(style).compactMap { $0 as? RiveFallbackFontDescriptor }
+        XCTAssertEqual(defaults.first?.weight, .heavy)
+    }
+
+    func testSystemFallbackCallbackOverridesFallbackFonts() {
+        RiveFont.fallbackFonts = [
+            RiveFallbackFontDescriptor(weight: .heavy)
+        ]
+
+        let style = RiveFontStyle(weight: .regular)
+        var fonts = RiveFont.fallbackFontsCallback(style).compactMap { $0 as? RiveFallbackFontDescriptor }
+        XCTAssertEqual(fonts.first?.weight, .heavy)
+
+        RiveFont.fallbackFontsCallback = { _ in
+            return [RiveFallbackFontDescriptor(weight: .thin)]
+        }
+
+        fonts = RiveFont.fallbackFontsCallback(style).compactMap { $0 as? RiveFallbackFontDescriptor }
+        XCTAssertEqual(fonts.first?.weight, .thin)
+    }
+
+    func testSystemFallbackFontsOverridesFallbackCallback() {
+        RiveFont.fallbackFontsCallback = { _ in
+            return [RiveFallbackFontDescriptor(weight: .thin)]
+        }
+
+        RiveFont.fallbackFonts = [
+            RiveFallbackFontDescriptor(weight: .regular)
+        ]
+
+        let style = RiveFontStyle(weight: .regular)
+        var fonts = RiveFont.fallbackFontsCallback(style).compactMap { $0 as? RiveFallbackFontDescriptor }
+        XCTAssertEqual(fonts.first?.weight, .regular)
+    }
+
     func testSystemDesignsReturnFonts() {
         let defaultDescriptor = RiveFallbackFontDescriptor(design: .default, weight: .regular)
         let defaultFont = defaultDescriptor.fallbackFont
@@ -142,5 +191,52 @@ class RiveFontTests: XCTestCase {
         let expandedWidth = width(from: expandedFont)
         XCTAssertNotNil(expandedWidth)
         XCTAssertLessThan(expandedWidth!, 0)
+    }
+
+    func testRiveFontStyleWeightFromRawWeight() {
+        // "Normal" weights
+        var style = RiveFontStyle(rawWeight: 100)
+        XCTAssertEqual(style.weight, .thin)
+
+        style = RiveFontStyle(rawWeight: 200)
+        XCTAssertEqual(style.weight, .ultraLight)
+
+        style = RiveFontStyle(rawWeight: 300)
+        XCTAssertEqual(style.weight, .light)
+
+        style = RiveFontStyle(rawWeight: 400)
+        XCTAssertEqual(style.weight, .regular)
+
+        style = RiveFontStyle(rawWeight: 500)
+        XCTAssertEqual(style.weight, .medium)
+
+        style = RiveFontStyle(rawWeight: 600)
+        XCTAssertEqual(style.weight, .semibold)
+
+        style = RiveFontStyle(rawWeight: 700)
+        XCTAssertEqual(style.weight, .bold)
+
+        style = RiveFontStyle(rawWeight: 800)
+        XCTAssertEqual(style.weight, .heavy)
+
+        style = RiveFontStyle(rawWeight: 900)
+        XCTAssertEqual(style.weight, .black)
+
+        style = RiveFontStyle(rawWeight: -100)
+        XCTAssertEqual(style.weight, .thin)
+
+        // Outliers
+        style = RiveFontStyle(rawWeight: 0)
+        XCTAssertEqual(style.weight, .thin)
+
+        style = RiveFontStyle(rawWeight: 1000)
+        XCTAssertEqual(style.weight, .black)
+
+        // Rounding
+        style = RiveFontStyle(rawWeight: 149)
+        XCTAssertEqual(style.weight, .thin)
+
+        style = RiveFontStyle(rawWeight: 151)
+        XCTAssertEqual(style.weight, .ultraLight)
     }
 }

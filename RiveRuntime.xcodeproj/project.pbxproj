@@ -108,6 +108,10 @@
 		F2D285492C6D469900728340 /* RiveFallbackFontProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */; };
 		F2ECC2312C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECC2302C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift */; };
 		F2ECC23A2C66B949008B20E5 /* RiveFontTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */; };
+		F2FD94042CC9492B00C1FC85 /* RiveFont.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FD94032CC9492B00C1FC85 /* RiveFont.m */; };
+		F2FD94052CC9492B00C1FC85 /* RiveFont.h in Headers */ = {isa = PBXBuildFile; fileRef = F2FD94022CC9492B00C1FC85 /* RiveFont.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F2FD94082CC94B1A00C1FC85 /* RiveFallbackFontCache.m in Sources */ = {isa = PBXBuildFile; fileRef = F2FD94072CC94B1A00C1FC85 /* RiveFallbackFontCache.m */; };
+		F2FD94092CC94B1A00C1FC85 /* RiveFallbackFontCache.h in Headers */ = {isa = PBXBuildFile; fileRef = F2FD94062CC94B1A00C1FC85 /* RiveFallbackFontCache.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -224,6 +228,10 @@
 		F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontProvider.swift; sourceTree = "<group>"; };
 		F2ECC2302C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveFallbackFontDescriptor+Extensions.swift"; sourceTree = "<group>"; };
 		F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFontTests.swift; sourceTree = "<group>"; };
+		F2FD94022CC9492B00C1FC85 /* RiveFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveFont.h; sourceTree = "<group>"; };
+		F2FD94032CC9492B00C1FC85 /* RiveFont.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveFont.m; sourceTree = "<group>"; };
+		F2FD94062CC94B1A00C1FC85 /* RiveFallbackFontCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveFallbackFontCache.h; sourceTree = "<group>"; };
+		F2FD94072CC94B1A00C1FC85 /* RiveFallbackFontCache.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveFallbackFontCache.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -430,6 +438,10 @@
 				F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */,
 				F2ECC2302C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift */,
 				F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */,
+				F2FD94022CC9492B00C1FC85 /* RiveFont.h */,
+				F2FD94032CC9492B00C1FC85 /* RiveFont.m */,
+				F2FD94062CC94B1A00C1FC85 /* RiveFallbackFontCache.h */,
+				F2FD94072CC94B1A00C1FC85 /* RiveFallbackFontCache.m */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -478,8 +490,10 @@
 				E5964A962A965A9300140479 /* RiveEvent.h in Headers */,
 				043026022AFB9FCD00320F2E /* RiveFactory.h in Headers */,
 				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
+				F2FD94052CC9492B00C1FC85 /* RiveFont.h in Headers */,
 				04BE5436264D2A7500427B39 /* RivePrivateHeaders.h in Headers */,
 				C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */,
+				F2FD94092CC94B1A00C1FC85 /* RiveFallbackFontCache.h in Headers */,
 				83DE4CA72AAAE72100B88B72 /* RenderContext.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -632,6 +646,7 @@
 				C3E2B580282F242400A8651B /* RiveStateMachineInstance+Extensions.swift in Sources */,
 				046FB7F5264EAA60000129B1 /* RiveSMIInput.mm in Sources */,
 				043026002AFA915B00320F2E /* RiveFileAsset.mm in Sources */,
+				F2FD94042CC9492B00C1FC85 /* RiveFont.m in Sources */,
 				C3468E5A27ECC7C6008652FD /* RiveViewModel.swift in Sources */,
 				C3745FD3282BFAB90087F4AF /* FPSCounterView.swift in Sources */,
 				F2ECC2312C666824008B20E5 /* RiveFallbackFontDescriptor+Extensions.swift in Sources */,
@@ -640,6 +655,7 @@
 				046FB7F8264EAA60000129B1 /* RiveStateMachineInstance.mm in Sources */,
 				C3468E5C27ED4C41008652FD /* RiveModel.swift in Sources */,
 				046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */,
+				F2FD94082CC94B1A00C1FC85 /* RiveFallbackFontCache.m in Sources */,
 				046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */,
 				F2610DD22CA5B4C40090D50B /* RiveLogger+StateMachine.swift in Sources */,
 				046FB7F4264EAA60000129B1 /* RiveLinearAnimationInstance.mm in Sources */,
