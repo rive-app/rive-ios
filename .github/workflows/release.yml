@@ -218,7 +218,7 @@ jobs:
 
   publish_cocoapods:
     name: Publish framework to cocoapods
-    runs-on: macos-12
+    runs-on: macos-14
     needs: [determine_version, build_framework, do_release]
     steps:
       - name: Download framework artifact
