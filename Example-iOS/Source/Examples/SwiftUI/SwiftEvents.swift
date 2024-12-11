@@ -45,7 +45,7 @@ class RiveEventsVMExample: RiveViewModel {
         if let openUrlEvent = riveEvent as? RiveOpenUrlEvent {
             debugPrint("Open URL Event Properties: \(openUrlEvent.properties())")
             if let url = URL(string: openUrlEvent.url()) {
-                #if os(iOS)
+                #if os(iOS) || os(visionOS) || os(tvOS)
                 UIApplication.shared.open(url)
                 #else
                 NSWorkspace.shared.open(url)

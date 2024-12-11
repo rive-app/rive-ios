@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -80,7 +80,7 @@
 		C38BB5F4287629C20039E385 /* defaultstatemachine.riv in Resources */ = {isa = PBXBuildFile; fileRef = C38BB5F3287629C20039E385 /* defaultstatemachine.riv */; };
 		C38BB5F628762B720039E385 /* RiveStateMachineTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38BB5F528762B720039E385 /* RiveStateMachineTest.swift */; };
 		C3E2B580282F242400A8651B /* RiveStateMachineInstance+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E2B57F282F242400A8651B /* RiveStateMachineInstance+Extensions.swift */; };
-		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; platformFilter = ios; };
+		C9161A81263CBCBC007749A1 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */; };
 		C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9601F2A250C25930032AA07 /* CoreGraphicsRenderer.mm */; };
 		C9C73EE024FC478900EF9516 /* RiveRuntimeTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.mm */; };
 		C9C73EE224FC478900EF9516 /* RiveRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C73ED424FC478800EF9516 /* RiveRuntime.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -95,14 +95,15 @@
 		E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
 		F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */; };
 		F23626AA2C8F90FA00727D9A /* nested_text_run.riv in Resources */ = {isa = PBXBuildFile; fileRef = F23626A92C8F90FA00727D9A /* nested_text_run.riv */; };
+		F23992E72CB9C1C60021EF61 /* RenderContextTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F23992E62CB9C1C60021EF61 /* RenderContextTests.m */; };
 		F2610DD22CA5B4C40090D50B /* RiveLogger+StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD12CA5B4C40090D50B /* RiveLogger+StateMachine.swift */; };
 		F2610DD42CA5B5460090D50B /* RiveLogger+Artboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD32CA5B5460090D50B /* RiveLogger+Artboard.swift */; };
 		F2610DD62CA5B5DD0090D50B /* RiveLogger+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD52CA5B5DD0090D50B /* RiveLogger+ViewModel.swift */; };
 		F2610DD82CA5B6570090D50B /* RiveLogger+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */; };
 		F2610DDA2CA5B84B0090D50B /* RiveLogger+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */; };
 		F2610DE12CA5FBE30090D50B /* RiveLogger+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */; };
-		F23992E72CB9C1C60021EF61 /* RenderContextTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F23992E62CB9C1C60021EF61 /* RenderContextTests.m */; };
 		F28DE4532C5002D900F3C379 /* RiveModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28DE4522C5002D900F3C379 /* RiveModelTests.swift */; };
+		F2C003E82C933D2300339E67 /* RiveMetalDrawableView.h in Headers */ = {isa = PBXBuildFile; fileRef = F2C003E72C933D2300339E67 /* RiveMetalDrawableView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F2CCA9792C9B2799007DC0D2 /* referenced_image_asset.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */; };
 		F2CCA9C22C9E13BA007DC0D2 /* RiveLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CCA9C12C9E13BA007DC0D2 /* RiveLogger.swift */; };
 		F2D285492C6D469900728340 /* RiveFallbackFontProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */; };
@@ -215,14 +216,15 @@
 		E599DCF82AAFA06100D1E49A /* rating_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rating_animation.riv; path = "Example-iOS/Assets/rating_animation.riv"; sourceTree = SOURCE_ROOT; };
 		F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontDescriptor.swift; sourceTree = "<group>"; };
 		F23626A92C8F90FA00727D9A /* nested_text_run.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nested_text_run.riv; sourceTree = "<group>"; };
+		F23992E62CB9C1C60021EF61 /* RenderContextTests.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RenderContextTests.m; sourceTree = "<group>"; };
 		F2610DD12CA5B4C40090D50B /* RiveLogger+StateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+StateMachine.swift"; sourceTree = "<group>"; };
 		F2610DD32CA5B5460090D50B /* RiveLogger+Artboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+Artboard.swift"; sourceTree = "<group>"; };
 		F2610DD52CA5B5DD0090D50B /* RiveLogger+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+ViewModel.swift"; sourceTree = "<group>"; };
 		F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+Model.swift"; sourceTree = "<group>"; };
 		F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+File.swift"; sourceTree = "<group>"; };
 		F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+View.swift"; sourceTree = "<group>"; };
-		F23992E62CB9C1C60021EF61 /* RenderContextTests.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RenderContextTests.m; sourceTree = "<group>"; };
 		F28DE4522C5002D900F3C379 /* RiveModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveModelTests.swift; sourceTree = "<group>"; };
+		F2C003E72C933D2300339E67 /* RiveMetalDrawableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveMetalDrawableView.h; sourceTree = "<group>"; };
 		F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = referenced_image_asset.riv; sourceTree = "<group>"; };
 		F2CCA9C12C9E13BA007DC0D2 /* RiveLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveLogger.swift; sourceTree = "<group>"; };
 		F2D285482C6D469900728340 /* RiveFallbackFontProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontProvider.swift; sourceTree = "<group>"; };
@@ -281,6 +283,7 @@
 				043025F92AFA860E00320F2E /* FileAssetLoaderAdapter.hpp */,
 				043025FD2AFA8FCF00320F2E /* RiveFileAsset.h */,
 				043026012AFB9FCD00320F2E /* RiveFactory.h */,
+				F2C003E72C933D2300339E67 /* RiveMetalDrawableView.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -474,6 +477,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
 				046FB7F7264EAA60000129B1 /* RiveFile.h in Headers */,
 				046FB7FC264EAA61000129B1 /* RiveArtboard.h in Headers */,
 				2A7079352726277C00C035A1 /* rive_renderer_view.hh in Headers */,
@@ -488,6 +492,7 @@
 				043025F22AF90D4800320F2E /* RiveFileAssetLoader.h in Headers */,
 				043025FE2AFA8FCF00320F2E /* RiveFileAsset.h in Headers */,
 				E5964A962A965A9300140479 /* RiveEvent.h in Headers */,
+				F2C003E82C933D2300339E67 /* RiveMetalDrawableView.h in Headers */,
 				043026022AFB9FCD00320F2E /* RiveFactory.h in Headers */,
 				C9C741F424FC510200EF9516 /* Rive.h in Headers */,
 				F2FD94052CC9492B00C1FC85 /* RiveFont.h in Headers */,
@@ -638,6 +643,7 @@
 				F2610DDA2CA5B84B0090D50B /* RiveLogger+File.swift in Sources */,
 				C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */,
 				C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */,
+				C9601F2B250C25930032AA07 /* CoreGraphicsRenderer.mm in Sources */,
 				043025F42AF90EAC00320F2E /* RiveFileAssetLoader.mm in Sources */,
 				F2D285492C6D469900728340 /* RiveFallbackFontProvider.swift in Sources */,
 				043025FC2AFA862E00320F2E /* FileAssetLoaderAdapter.mm in Sources */,
@@ -691,7 +697,6 @@
 /* Begin PBXTargetDependency section */
 		C9C73EDD24FC478900EF9516 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilter = ios;
 			target = C9C73ED024FC478800EF9516 /* RiveRuntime */;
 			targetProxy = C9C73EDC24FC478900EF9516 /* PBXContainerItemProxy */;
 		};
@@ -849,7 +854,6 @@
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
-					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
@@ -873,6 +877,32 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DYOGA_EXPORT=",
+				);
+				"OTHER_LDFLAGS[sdk=appletvos*]" = (
+					"-lrive_appletvos",
+					"-lrive_harfbuzz_appletvos",
+					"-lrive_sheenbidi_appletvos",
+					"-lrive_yoga_appletvos",
+					"-lrive_pls_renderer_appletvos",
+					"-lrive_cg_renderer_appletvos",
+					"-lrive_decoders_appletvos",
+					"-lrive_png_appletvos",
+					"-lrive_zlib_appletvos",
+					"-lrive_jpeg_appletvos",
+					"-lrive_webp_appletvos",
+				);
+				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
+					"-lrive_appletvsimulator",
+					"-lrive_harfbuzz_appletvsimulator",
+					"-lrive_sheenbidi_appletvsimulator",
+					"-lrive_yoga_appletvsimulator",
+					"-lrive_pls_renderer_appletvsimulator",
+					"-lrive_cg_renderer_appletvsimulator",
+					"-lrive_decoders_appletvsimulator",
+					"-lrive_png_appletvsimulator",
+					"-lrive_zlib_appletvsimulator",
+					"-lrive_jpeg_appletvsimulator",
+					"-lrive_webp_appletvsimulator",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lrive",
@@ -901,16 +931,37 @@
 					"-lrive_cg_renderer_macos",
 					"-lrive_decoders_macos",
 				);
+				"OTHER_LDFLAGS[sdk=xros*]" = (
+					"-lrive_xros",
+					"-lrive_harfbuzz_xros",
+					"-lrive_sheenbidi_xros",
+					"-lrive_yoga_xros",
+					"-lrive_pls_renderer_xros",
+					"-lrive_cg_renderer_xros",
+					"-lrive_decoders_xros",
+				);
+				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
+					"-lrive_xrsimulator",
+					"-lrive_harfbuzz_xrsimulator",
+					"-lrive_sheenbidi_xrsimulator",
+					"-lrive_yoga_xrsimulator",
+					"-lrive_pls_renderer_xrsimulator",
+					"-lrive_cg_renderer_xrsimulator",
+					"-lrive_decoders_xrsimulator",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Debug;
 		};
@@ -934,7 +985,6 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					dependencies/includes/rive/include,
-					dependencies/includes/renderer/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
 				);
@@ -962,6 +1012,32 @@
 					"$(OTHER_CFLAGS)",
 					"-DYOGA_EXPORT=",
 				);
+				"OTHER_LDFLAGS[sdk=appletvos*]" = (
+					"-lrive_appletvos",
+					"-lrive_harfbuzz_appletvos",
+					"-lrive_sheenbidi_appletvos",
+					"-lrive_yoga_appletvos",
+					"-lrive_pls_renderer_appletvos",
+					"-lrive_cg_renderer_appletvos",
+					"-lrive_decoders_appletvos",
+					"-lrive_png_appletvos",
+					"-lrive_zlib_appletvos",
+					"-lrive_jpeg_appletvos",
+					"-lrive_webp_appletvos",
+				);
+				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
+					"-lrive_appletvsimulator",
+					"-lrive_harfbuzz_appletvsimulator",
+					"-lrive_sheenbidi_appletvsimulator",
+					"-lrive_yoga_appletvsimulator",
+					"-lrive_pls_renderer_appletvsimulator",
+					"-lrive_cg_renderer_appletvsimulator",
+					"-lrive_decoders_appletvsimulator",
+					"-lrive_png_appletvsimulator",
+					"-lrive_zlib_appletvsimulator",
+					"-lrive_jpeg_appletvsimulator",
+					"-lrive_webp_appletvsimulator",
+				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lrive",
 					"-lrive_harfbuzz",
@@ -989,16 +1065,37 @@
 					"-lrive_cg_renderer_macos",
 					"-lrive_decoders_macos",
 				);
+				"OTHER_LDFLAGS[sdk=xros*]" = (
+					"-lrive_xros",
+					"-lrive_harfbuzz_xros",
+					"-lrive_sheenbidi_xros",
+					"-lrive_yoga_xros",
+					"-lrive_pls_renderer_xros",
+					"-lrive_cg_renderer_xros",
+					"-lrive_decoders_xros",
+				);
+				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
+					"-lrive_xrsimulator",
+					"-lrive_harfbuzz_xrsimulator",
+					"-lrive_sheenbidi_xrsimulator",
+					"-lrive_yoga_xrsimulator",
+					"-lrive_pls_renderer_xrsimulator",
+					"-lrive_cg_renderer_xrsimulator",
+					"-lrive_decoders_xrsimulator",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Release;
 		};
@@ -1017,12 +1114,12 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,3,7";
 			};
 			name = Debug;
 		};
@@ -1041,11 +1138,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,3,7";
 			};
 			name = Release;
 		};

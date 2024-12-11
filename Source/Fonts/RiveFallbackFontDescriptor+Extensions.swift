@@ -7,7 +7,7 @@
 //
 
 import Foundation
-#if os(iOS)
+#if os(iOS) || os(visionOS) || os(tvOS)
 import UIKit
 public typealias RiveNativeFont = UIFont
 private typealias RiveNativeFontDescriptor = UIFontDescriptor
@@ -120,7 +120,7 @@ extension RiveFallbackFontDescriptor: RiveFallbackFontProvider {
     /// - Returns: The font generated from all values of a `RiveFallbackFontDescriptor`.
     @objc public var fallbackFont: RiveNativeFont {
         let font: RiveNativeFont?
-        #if os(iOS)
+        #if os(iOS) || os(visionOS) || os(tvOS)
             font = RiveNativeFont(descriptor: toFontDescriptor(), size: Self.defaultFontSize)
         #elseif os(macOS)
             font = RiveNativeFont(descriptor: toFontDescriptor(), size: Self.defaultFontSize)

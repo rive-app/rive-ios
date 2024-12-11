@@ -1,12 +1,22 @@
 #import <MetalKit/MetalKit.h>
 #import <RiveRuntime/RiveArtboard.h>
 #import <RiveRuntime/Rive.h>
+#import <RiveRuntime/RiveMetalDrawableView.h>
 
 #import <Metal/Metal.h>
 
+#if TARGET_OS_VISION
+@interface RiveMTKView : UIView <RiveMetalDrawableView>
+- (nonnull instancetype)initWithFrame:(CGRect) frameRect device:(nullable id<MTLDevice>) device;
+@end
+#else
+@interface RiveMTKView : MTKView <RiveMetalDrawableView>
+@end
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RiveRendererView : MTKView
+@interface RiveRendererView : RiveMTKView
 
 - (instancetype)initWithFrame:(CGRect)frameRect;
 /// Deprecated. Use `alignWithRect:contentRect:alignment:fit:scaleFactor:` instead.

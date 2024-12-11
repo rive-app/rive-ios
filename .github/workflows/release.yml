@@ -88,6 +88,9 @@ jobs:
 
       - name: Select Xcode 15.4
         run: sudo xcodes select 15.4
+      
+      - name: Install all Xcode platforms
+        run: xcodebuild -downloadAllPlatforms
 
       - name: Build everything (using the cache, we should make an archive of course)
         run: ./scripts/build.sh all

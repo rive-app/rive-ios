@@ -203,7 +203,7 @@ import Combine
         didSet { riveView?.forwardsListenerEvents = forwardsListenerEvents }
     }
 
-    #if os(iOS)
+    #if os(iOS) || os(visionOS) || os(tvOS)
     /// Hints to underlying CADisplayLink in RiveView (if created) the preferred FPS to run at
     /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/1648421-preferredframespersecond
     /// - Parameters:
@@ -614,7 +614,7 @@ import Combine
     }
 }
 
-#if os(iOS)  
+#if os(iOS) || os(visionOS) || os(tvOS)
     /// This makes a SwiftUI digestable view from an `RiveViewModel` and its `RiveView`
     public struct RiveViewRepresentable: UIViewRepresentable {
         let viewModel: RiveViewModel

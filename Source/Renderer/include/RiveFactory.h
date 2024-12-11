@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RiveFactory : NSObject
 - (RiveFont*)decodeFont:(NSData*)data;
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE || TARGET_OS_VISION || TARGET_OS_TV
 - (RiveFont*)decodeUIFont:(UIFont*)data NS_SWIFT_NAME(decodeFont(_:));
 #else
 - (RiveFont*)decodeNSFont:(NSFont*)data NS_SWIFT_NAME(decodeFont(_:));

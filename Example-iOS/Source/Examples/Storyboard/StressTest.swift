@@ -30,7 +30,11 @@ class StressTestViewController: UIViewController {
         viewModel!.setView(rView!)
         view.addSubview(rView!)
         let f = view.frame
+        #if os(visionOS)
+        let h: CGFloat = 0
+        #else
         let h = UIApplication.shared.statusBarFrame.height + 40
+        #endif
         rView!.frame = CGRect(x:f.minX, y:f.minY + h, width:f.width, height:f.height - h)
 
         let gesture = UITapGestureRecognizer(target: self, action:  #selector (self.onTap (_:)))
@@ -48,10 +52,17 @@ class CustomRiveView: RiveView {
         super.init()
         rModel = model
     }
-    
+
+    #if os(visionOS)
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    #else
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+    #endif
+
     override func drawRive(_ rect: CGRect, size: CGSize) {
         // This prevents breaking when loading RiveFile async
         guard let artboard = rModel?.artboard else { return }

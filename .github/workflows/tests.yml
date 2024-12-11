@@ -40,9 +40,23 @@ jobs:
       - name: Select Xcode 15.4
         run: sudo xcodes select 15.4
 
-      - name: Build everything (using the cache, we should make an archive of course)
+      - name: Build for iOS Simulator (using the cache, we should make an archive of course)
         run: |
           ./scripts/build.sh ios_sim release
 
-      - name: Testing iOS app
-        run: ./scripts/test.sh
+      - name: Test iOS runtime
+        run: ./scripts/test.sh ios_sim
+
+      - name: Build for visionOS Simulator (using the cache, we should make an archive of course)
+        run: |
+          ./scripts/build.sh xrsimulator release
+
+      - name: Test visionOS runtime
+        run: ./scripts/test.sh xrsimulator
+
+      - name: Build for tvOS Simulator (using the cache, we should make an archive of course)
+        run: |
+          ./scripts/build.sh appletvsimulator release
+
+      - name: Test tvOS runtime
+        run: ./scripts/test.sh appletvsimulator

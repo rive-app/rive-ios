@@ -18,7 +18,7 @@ class Renderer;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTKView;
+@protocol RiveMetalDrawableView;
 
 /// RenderContext knows how to set up a backend-specific render context (e.g.,
 /// CG, Rive, ...), and provides a rive::Factory and rive::Renderer for it.
@@ -28,11 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property MTLPixelFormat depthStencilPixelFormat;
 @property BOOL framebufferOnly;
 - (rive::Factory*)factory;
-- (rive::Renderer*)beginFrame:(MTKView*)view;
-- (void)endFrame:(MTKView*)view
+- (rive::Renderer*)beginFrame:(id<RiveMetalDrawableView>)view;
+- (void)endFrame:(id<RiveMetalDrawableView>)view
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 - (BOOL)canDrawInRect:(CGRect)rect
-         drawableSize:(CGSize)drawableSize
+         drawableSize:(CGSize)size
                 scale:(CGFloat)scale;
 @end
 

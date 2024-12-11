@@ -26,7 +26,7 @@ open class RiveView: RiveRendererView {
     /// Defaults to the "legacy" methods, which will be overridden
     /// by window handlers in this view when the window changes.
     private lazy var _layoutScaleFactor: Double = {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS) || os(tvOS)
         return self.traitCollection.displayScale
         #else
         guard let scale = NSScreen.main?.backingScaleFactor else { return 1 }
@@ -86,27 +86,36 @@ open class RiveView: RiveRendererView {
         try! setModel(model, autoPlay: autoPlay)
     }
 
+    
+    #if os(visionOS)
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    #else
     required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
+    #endif
 
     private func commonInit() {
-        #if os(iOS)
-        if #available(iOS 17, *) {
+        #if os(iOS) || os(visionOS) || os(tvOS)
+        if #available(iOS 17, tvOS 17, visionOS 1, *) {
             registerForTraitChanges([UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self]) { [weak self] (_: UITraitEnvironment, traitCollection: UITraitCollection) in
                 guard let self else { return }
                 self.redrawIfNecessary()
             }
         }
 
-        if #available(iOS 17, *) {
+        if #available(iOS 17, tvOS 17, visionOS 1, *) {
             registerForTraitChanges([UITraitDisplayScale.self]) { [weak self] (_: UITraitEnvironment, traitCollection: UITraitCollection) in
                 guard let self else { return }
                 self._layoutScaleFactor = self.traitCollection.displayScale
             }
         }
+        #endif
 
+        #if os(iOS)
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         orientationObserver = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
@@ -146,17 +155,23 @@ open class RiveView: RiveRendererView {
     }
 
     private func needsDisplay() {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS) || os(tvOS)
             setNeedsDisplay()
         #else
             needsDisplay=true
         #endif
     }
 
-    #if os(iOS)
+    #if os(iOS) || os(tvOS)
     open override func didMoveToWindow() {
         super.didMoveToWindow()
         guard let scale = window?.windowScene?.screen.scale else { return }
+        _layoutScaleFactor = scale
+    }
+    #elseif os(visionOS)
+    open override func didMoveToWindow() {
+        super.didMoveToWindow()
+        let scale = traitCollection.displayScale
         _layoutScaleFactor = scale
     }
     #else
@@ -172,7 +187,7 @@ open class RiveView: RiveRendererView {
         stopTimer()
         isPlaying = false
         riveModel = model
-        #if os(iOS)
+        #if os(iOS) || os(visionOS) || os(tvOS)
             isOpaque = false
         #else
             layer?.isOpaque=false
@@ -188,7 +203,7 @@ open class RiveView: RiveRendererView {
         setFPSCounterVisibility()
     }
     
-    #if os(iOS)
+    #if os(iOS) || os(visionOS) || os(tvOS)
     /// Hints to underlying CADisplayLink the preferred FPS to run at
     /// - Parameters:
     ///   - preferredFramesPerSecond: Integer number of seconds to set preferred FPS at
@@ -268,7 +283,7 @@ open class RiveView: RiveRendererView {
                 forMode: .common
             )
         }
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
             if displayLinkProxy?.displayLink?.isPaused == true {
                 displayLinkProxy?.displayLink?.isPaused = false
             }
@@ -283,7 +298,7 @@ open class RiveView: RiveRendererView {
     }
     
     private func timestamp() -> CFTimeInterval {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS) || os(tvOS)
         return displayLinkProxy?.displayLink?.targetTimestamp ?? Date().timeIntervalSince1970
         #else
         return Date().timeIntervalSince1970
@@ -310,7 +325,7 @@ open class RiveView: RiveRendererView {
         // Calculate the time elapsed between ticks
         let elapsedTime = timestamp - lastTime
         
-        #if os(iOS)
+        #if os(iOS) || os(visionOS) || os(tvOS)
             fpsCounter?.didDrawFrame(timestamp: timestamp)
         #else
             fpsCounter?.elapsed(time: elapsedTime)
@@ -394,7 +409,7 @@ open class RiveView: RiveRendererView {
         }
         align(with: newFrame, contentRect: artboard.bounds(), alignment: alignment, fit: fit, scaleFactor: scale)
         draw(with: artboard)
-        
+
     }
 
     // MARK: - UITraitCollection
@@ -416,7 +431,7 @@ open class RiveView: RiveRendererView {
     #endif
 
     // MARK: - UIResponder
-    #if os(iOS)
+    #if os(iOS) || os(visionOS) || os(tvOS)
         open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
             guard let touch = touches.first else { return }
             
@@ -692,7 +707,7 @@ open class RiveView: RiveRendererView {
     func player(didAdvanceby seconds: Double, riveModel: RiveModel?)
 }
 
-#if os(iOS)
+#if os(iOS) || os(visionOS) || os(tvOS)
     fileprivate class DisplayLinkProxy {
         var displayLink: CADisplayLink?
         var handle: (() -> Void)?

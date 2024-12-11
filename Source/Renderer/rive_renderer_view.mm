@@ -3,7 +3,7 @@
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE || TARGET_VISION_OS || TARGET_OS_TV
 #import <UIKit/UIKit.h>
 #else
 #import <AppKit/AppKit.h>
@@ -16,6 +16,138 @@
 // xcode.
 #define WITH_RIVE_AUDIO
 #include "rive/audio/audio_engine.hpp"
+
+#if TARGET_OS_VISION
+@implementation RiveMTKView
+{
+    id<CAMetalDrawable> _currentDrawable;
+}
+
+@synthesize enableSetNeedsDisplay;
+
+@synthesize paused;
+
+@synthesize sampleCount;
+
+@synthesize depthStencilPixelFormat;
+
+- (instancetype)initWithFrame:(CGRect)frameRect device:(id<MTLDevice>)device
+{
+    self = [super initWithFrame:frameRect];
+    self.device = device;
+    return self;
+}
+
++ (Class)layerClass
+{
+    return [CAMetalLayer class];
+}
+
+- (nullable id<MTLDevice>)device
+{
+    return [self metalLayer].device;
+}
+
+- (void)setDevice:(nullable id<MTLDevice>)device
+{
+    [self metalLayer].device = device;
+}
+
+- (CAMetalLayer*)metalLayer
+{
+    return (CAMetalLayer*)self.layer;
+}
+
+- (void)setFramebufferOnly:(BOOL)framebufferOnly
+{
+    [self metalLayer].framebufferOnly = framebufferOnly;
+}
+
+- (BOOL)framebufferOnly
+{
+    return [self metalLayer].framebufferOnly;
+}
+
+- (void)setCurrentDrawable:(id<CAMetalDrawable> _Nullable)currentDrawable
+{
+    return;
+}
+
+- (nullable id<CAMetalDrawable>)currentDrawable
+{
+    if (_currentDrawable == nil)
+    {
+        _currentDrawable = [self metalLayer].nextDrawable;
+    }
+    return _currentDrawable;
+}
+
+- (void)setColorPixelFormat:(MTLPixelFormat)colorPixelFormat
+{
+    [self metalLayer].pixelFormat = colorPixelFormat;
+}
+
+- (MTLPixelFormat)colorPixelFormat
+{
+    return [self metalLayer].pixelFormat;
+}
+
+- (void)setDrawableSize:(CGSize)drawableSize
+{
+    [self metalLayer].drawableSize = drawableSize;
+}
+
+- (CGSize)drawableSize
+{
+    return [self metalLayer].drawableSize;
+}
+
+- (void)_updateDrawableSizeFromBounds
+{
+    CGSize newSize = self.bounds.size;
+    newSize.width *= self.traitCollection.displayScale;
+    newSize.height *= self.traitCollection.displayScale;
+    self.drawableSize = newSize;
+}
+
+- (void)setContentScaleFactor:(CGFloat)contentScaleFactor
+{
+    [super setContentScaleFactor:contentScaleFactor];
+    [self _updateDrawableSizeFromBounds];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    [self _updateDrawableSizeFromBounds];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+    [self _updateDrawableSizeFromBounds];
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    [super setBounds:bounds];
+    [self _updateDrawableSizeFromBounds];
+}
+
+// For some reason, when setNeedsDisplay is called, drawRect is not called
+// But, we get a delegate callback when the layer should be displayed,
+// so we'll just piggyback off of that and draw for now.
+- (void)displayLayer:(CALayer*)layer
+{
+    _currentDrawable = [self metalLayer].nextDrawable;
+    [self drawRect:self.bounds];
+}
+
+@end
+#else
+@implementation RiveMTKView
+@end
+#endif
 
 @implementation RiveRendererView
 {
@@ -43,7 +175,7 @@
 
 - (instancetype)initWithCoder:(NSCoder*)decoder
 {
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE || TARGET_OS_VISION || TARGET_OS_TV
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(didEnterBackground:)

@@ -4,9 +4,11 @@
 
 #import <RenderContextManager.h>
 #import <RenderContext.h>
+#import <RiveMetalDrawableView.h>
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 #import <RiveFactory.h>
+#import <rive_renderer_view.hh>
 
 #include "utils/auto_cf.hpp"
 #include "cg_factory.hpp"
@@ -25,10 +27,12 @@ static CGSize Maximum2DTextureSizeFromDevice(id<MTLDevice> device)
     {
         size = CGSizeMake(16384, 16384);
     }
+#if !TARGET_OS_VISION && !TARGET_OS_TV
     else if ([device supportsFamily:MTLGPUFamilyApple9])
     {
         size = CGSizeMake(16384, 16384);
     }
+#endif
     else if ([device supportsFamily:MTLGPUFamilyApple8])
     {
         size = CGSizeMake(16384, 16384);
@@ -77,12 +81,12 @@ static CGSize Maximum2DTextureSizeFromDevice(id<MTLDevice> device)
     return nil;
 }
 
-- (rive::Renderer*)beginFrame:(MTKView*)view
+- (rive::Renderer*)beginFrame:(id<RiveMetalDrawableView>)view
 {
     return nil;
 }
 
-- (void)endFrame:(MTKView*)view
+- (void)endFrame:(id<RiveMetalDrawableView>)view
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {}
 
@@ -128,7 +132,6 @@ static CGSize Maximum2DTextureSizeFromDevice(id<MTLDevice> device)
 #include "rive/renderer/rive_renderer.hpp"
 
 @interface RiveRendererContext : RenderContext
-- (rive::Renderer*)beginFrame:(MTKView*)view;
 @end
 
 @implementation RiveRendererContext
@@ -178,7 +181,7 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
     return _renderContext;
 }
 
-- (rive::Renderer*)beginFrame:(MTKView*)view
+- (rive::Renderer*)beginFrame:(id<RiveMetalDrawableView>)view
 {
     id<CAMetalDrawable> surface = view.currentDrawable;
     if (!surface.texture)
@@ -219,7 +222,7 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
     return _renderer.get();
 }
 
-- (void)endFrame:(MTKView*)view
+- (void)endFrame:(id<RiveMetalDrawableView>)view
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     id<MTLCommandBuffer> flushCommandBuffer = [self.metalQueue commandBuffer];
@@ -249,7 +252,7 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
 @end
 
 @interface CGRendererContext : RenderContext
-- (rive::Renderer*)beginFrame:(MTKView*)view;
+- (rive::Renderer*)beginFrame:(id<RiveMetalDrawableView>)view;
 @end
 
 constexpr static int kBufferRingSize = 3;
@@ -295,7 +298,7 @@ constexpr static int kBufferRingSize = 3;
     return &factory;
 }
 
-- (rive::Renderer*)beginFrame:(MTKView*)view
+- (rive::Renderer*)beginFrame:(id<RiveMetalDrawableView>)view
 {
     uint32_t cgBitmapInfo;
     switch (view.colorPixelFormat)
@@ -346,7 +349,7 @@ constexpr static int kBufferRingSize = 3;
     return _renderer.get();
 }
 
-- (void)endFrame:(MTKView*)view
+- (void)endFrame:(id<RiveMetalDrawableView>)view
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     if (_cgContext != nil)

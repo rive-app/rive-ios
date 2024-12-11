@@ -53,9 +53,53 @@ xcodebuild archive \
   SKIP_INSTALL=NO \
   BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
+xcodebuild archive \
+  -configuration ${CONFIGURATION} \
+  -project RiveRuntime.xcodeproj \
+  -scheme RiveRuntime \
+  -sdk xros \
+  -destination generic/platform=visionOS \
+  -archivePath ".build/archives/RiveRuntime_visionOS" \
+  SKIP_INSTALL=NO \
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES 
+
+xcodebuild archive \
+  -configuration ${CONFIGURATION} \
+  -project RiveRuntime.xcodeproj \
+  -scheme RiveRuntime \
+  -sdk xrsimulator \
+  -destination "generic/platform=visionOS Simulator" \
+  -archivePath ".build/archives/RiveRuntime_visionOS_Simulator" \
+  SKIP_INSTALL=NO \
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+xcodebuild archive \
+  -configuration ${CONFIGURATION} \
+  -project RiveRuntime.xcodeproj \
+  -scheme RiveRuntime \
+  -sdk appletvos \
+  -destination generic/platform=tvOS \
+  -archivePath ".build/archives/RiveRuntime_tvOS" \
+  SKIP_INSTALL=NO \
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+xcodebuild archive \
+  -configuration ${CONFIGURATION} \
+  -project RiveRuntime.xcodeproj \
+  -scheme RiveRuntime \
+  -sdk appletvsimulator \
+  -destination "generic/platform=tvOS Simulator" \
+  -archivePath ".build/archives/RiveRuntime_tvOS_Simulator" \
+  SKIP_INSTALL=NO \
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
 xcodebuild \
     -create-xcframework \
     -framework .build/archives/RiveRuntime_iOS.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
     -framework .build/archives/RiveRuntime_iOS_Simulator.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
     -framework .build/archives/RiveRuntime_macOS.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
+    -framework .build/archives/RiveRuntime_visionOS.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
+    -framework .build/archives/RiveRuntime_visionOS_Simulator.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
+    -framework .build/archives/RiveRuntime_tvOS.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
+    -framework .build/archives/RiveRuntime_tvOS_Simulator.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
     -output archive/RiveRuntime.xcframework
