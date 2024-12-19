@@ -342,7 +342,7 @@ class DelegatesTest: XCTestCase {
         XCTAssertEqual(delegate.stateMachineStates[1], "ExitState")
         
         // takes an extra advance to trigger
-        view.advance(delta:0)
+        view.advance(delta:0.1)
         XCTAssertEqual(delegate.stateMachinePauses.count, 1)
     }
     

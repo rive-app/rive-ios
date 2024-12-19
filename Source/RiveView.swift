@@ -355,15 +355,19 @@ open class RiveView: RiveRendererView {
                     RiveLogger.log(view: self, event: .eventReceived(event.name()))
                     stateMachineDelegate?.onRiveEventReceived?(onRiveEvent: event)
                 }
-            }    
-            isPlaying = stateMachine.advance(by: delta) && wasPlaying
-            
+            }
+            var shouldAdvance = stateMachine.advance(by: delta)
+            if delta == 0 {
+                shouldAdvance = true
+            }
+            isPlaying = shouldAdvance && wasPlaying
+
             if let delegate = stateMachineDelegate {
                 stateMachine.stateChanges().forEach { delegate.stateMachine?(stateMachine, didChangeState: $0) }
             }
         } else if let animation = riveModel?.animation {
             isPlaying = animation.advance(by: delta) && wasPlaying
-            
+
             if isPlaying {
                 if animation.didLoop() {
                     playerDelegate?.player(loopedWithModel: riveModel, type: Int(animation.loop()))
