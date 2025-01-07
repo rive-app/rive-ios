@@ -358,7 +358,7 @@ import Combine
     }
 
     /// Returns the current boolean input by name. Get its value by calling `.value` on the returned object.
-    /// - Parameter input: The name of the input
+    /// - Parameter name: The name of the input
     /// - Returns: The boolean input if it exists. Returns `nil` if the input cannot be found.
     @objc open func boolInput(named name: String) -> RiveSMIBool?
     {
@@ -389,7 +389,7 @@ import Combine
     }
 
     /// Returns the current number input by name. Get its value by calling `.value` on the returned object.
-    /// - Parameter input: The name of the input
+    /// - Parameter name: The name of the input
     /// - Returns: The number input if it exists. Returns `nil` if the input cannot be found.
     @objc open func numberInput(named name: String) -> RiveSMINumber?
     {
@@ -468,7 +468,7 @@ import Combine
     /// Set a text value for a specified text run
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
-    ///   - value: A String value for the text run
+    ///   - textValue: A String value for the text run
     @objc open func setTextRunValue(_ textRunName: String, textValue: String) throws {
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
             RiveLogger.log(viewModel: self, event: .textRun(textRunName, nil, textValue))
@@ -488,8 +488,8 @@ import Combine
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
     ///   - path: The path to the nested text run.
-    ///   - value: A String value for the text run
-    ///   - Note: If the specified path is empty, the parent artboard will be used to find the text run.
+    ///   - textValue: A String value for the text run
+    /// - Note: If the specified path is empty, the parent artboard will be used to find the text run.
     @objc open func setTextRunValue(_ textRunName: String, path: String, textValue: String) throws {
         if let textRun = riveModel?.artboard?.textRun(textRunName, path: path) {
             RiveLogger.log(viewModel: self, event: .textRun(textRunName, path, textValue))

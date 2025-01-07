@@ -78,7 +78,7 @@ import SwiftUI
     /// - Parameters:
     ///   - design: The design of the font.
     ///   - weight: The weight of the font.
-    ///   - weight: The width of the font. This value is not guaranteed to be available for all fonts.
+    ///   - width: The width of the font. This value is not guaranteed to be available for all fonts.
     @objc public init(
         design: RiveFallbackFontDescriptorDesign = .default,
         weight: RiveFallbackFontDescriptorWeight = .regular,

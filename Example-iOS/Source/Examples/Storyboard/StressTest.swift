@@ -33,7 +33,8 @@ class StressTestViewController: UIViewController {
         #if os(visionOS)
         let h: CGFloat = 0
         #else
-        let h = UIApplication.shared.statusBarFrame.height + 40
+        let statusBarHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
+        let h = statusBarHeight + 40
         #endif
         rView!.frame = CGRect(x:f.minX, y:f.minY + h, width:f.width, height:f.height - h)
 
