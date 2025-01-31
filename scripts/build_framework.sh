@@ -95,11 +95,18 @@ xcodebuild archive \
 
 xcodebuild \
     -create-xcframework \
-    -framework .build/archives/RiveRuntime_iOS.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
-    -framework .build/archives/RiveRuntime_iOS_Simulator.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
-    -framework .build/archives/RiveRuntime_macOS.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
-    -framework .build/archives/RiveRuntime_visionOS.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
-    -framework .build/archives/RiveRuntime_visionOS_Simulator.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
-    -framework .build/archives/RiveRuntime_tvOS.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
-    -framework .build/archives/RiveRuntime_tvOS_Simulator.xcarchive/Products/Library/Frameworks/RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_iOS.xcarchive \
+    -framework RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_iOS_Simulator.xcarchive \
+    -framework RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_macOS.xcarchive \
+    -framework RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_visionOS.xcarchive \
+    -framework RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_visionOS_Simulator.xcarchive \
+    -framework RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_tvOS.xcarchive \
+    -framework RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_tvOS_Simulator.xcarchive \
+    -framework RiveRuntime.framework \
     -output archive/RiveRuntime.xcframework
