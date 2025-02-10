@@ -334,23 +334,43 @@ if (($# < 1)); then
     usage
 fi
 
+build_all() {
+    if [ "$1" != "debug" ] && [ "$1" != "release" ]; then
+        usage
+    fi
+    
+    build_runtime $1
+    build_runtime_sim $1
+    build_runtime_macosx $1
+    build_runtime_xros $1
+    build_runtime_xrsimulator $1
+    build_runtime_appletvos $1
+    build_runtime_appletvsimulator $1
+}
+
 case $1 in
 all)
-    make_dependency_directories
-    build_runtime debug
-    build_runtime release
-    build_runtime_sim debug
-    build_runtime_sim release
-    build_runtime_macosx debug
-    build_runtime_macosx release
-    build_runtime_xros debug
-    build_runtime_xros release
-    build_runtime_xrsimulator debug
-    build_runtime_xrsimulator release
-    build_runtime_appletvos debug
-    build_runtime_appletvos release
-    build_runtime_appletvsimulator debug
-    build_runtime_appletvsimulator release
+    case $2 in
+        "debug")
+            echo "Building all Apple runtimes in debug..."
+            make_dependency_directories
+            build_all debug
+            ;;
+        "release")
+            echo "Building all Apple runtimes in release..."
+            make_dependency_directories
+            build_all release
+            ;;
+        "")
+            echo "Building all Apple runtimes in debug and release..."
+            make_dependency_directories
+            build_all debug
+            build_all release
+            ;;
+        *) 
+            usage
+            ;;
+    esac
     ;;
 macosx)
     if (($# < 2)); then

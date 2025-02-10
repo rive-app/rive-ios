@@ -32,7 +32,7 @@ git submodule update --init --recursive
 Once you have cloned the repository, the prerequisites are installed, and your Xcode active developer directory is properly set, you can build this runtime by running the following from the **root** of your cloned repository:
 
 ```bash
-$ ./scripts/build.sh all
+$ ./scripts/build.sh all release
 ```
 
 If the script completes successfully, then all necessary frameworks are built, and you can continue on to running the Example apps.
