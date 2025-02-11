@@ -1,6 +1,6 @@
 {
   "name": "release",
-  "version": "6.5.8",
+  "version": "6.6.0",
   "description": "",
   "scripts": {
     "release": "release-it"
