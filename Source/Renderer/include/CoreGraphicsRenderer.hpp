@@ -140,6 +140,7 @@ public:
     FillRule getFillRule() { return m_FillRule; }
 
     void rewind() override;
+    void addRawPath(const RawPath& path) override;
     void addRenderPath(RenderPath* path, const Mat2D& transform) override;
     void fillRule(FillRule value) override;
     void moveTo(float x, float y) override;

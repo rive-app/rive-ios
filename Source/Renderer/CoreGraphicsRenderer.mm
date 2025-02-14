@@ -188,6 +188,47 @@ void CoreGraphicsRenderPath::rewind()
     path = CGPathCreateMutable();
 }
 
+void CoreGraphicsRenderPath::addRawPath(const RawPath& rawPath)
+{
+    auto pts = rawPath.points();
+    auto vbs = rawPath.verbs();
+    auto p = pts.data();
+    for (auto v : vbs)
+    {
+        switch ((PathVerb)v)
+        {
+            case PathVerb::move:
+                CGPathMoveToPoint(path, nullptr, p[0].x, p[0].y);
+                p += 1;
+                break;
+            case PathVerb::line:
+                CGPathAddLineToPoint(path, nullptr, p[0].x, p[0].y);
+                p += 1;
+                break;
+            case PathVerb::quad:
+                CGPathAddQuadCurveToPoint(
+                    path, nullptr, p[0].x, p[0].y, p[1].x, p[1].y);
+                p += 2;
+                break;
+            case PathVerb::cubic:
+                CGPathAddCurveToPoint(path,
+                                      nullptr,
+                                      p[0].x,
+                                      p[0].y,
+                                      p[1].x,
+                                      p[1].y,
+                                      p[2].x,
+                                      p[2].y);
+                p += 3;
+                break;
+            case PathVerb::close:
+                CGPathCloseSubpath(path);
+                break;
+        }
+    }
+    assert(p == pts.end());
+}
+
 void CoreGraphicsRenderPath::addRenderPath(RenderPath* path,
                                            const Mat2D& transform)
 {
