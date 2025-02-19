@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RiveRendererView : RiveMTKView
 
+@property(nullable, nonatomic, strong) id<CAMetalDrawable>currentDrawableOverride;
+
 - (instancetype)initWithFrame:(CGRect)frameRect;
 /// Deprecated. Use `alignWithRect:contentRect:alignment:fit:scaleFactor:` instead.
 /// This is equivalent to calling the new function with a scale factor of 1.

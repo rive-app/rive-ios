@@ -349,7 +349,7 @@
         return;
     }
 
-    if (![[self currentDrawable] texture])
+    if (!self.currentDrawable.texture)
     {
         return;
     }

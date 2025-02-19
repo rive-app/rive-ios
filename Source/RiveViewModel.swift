@@ -203,7 +203,25 @@ import Combine
         didSet { riveView?.forwardsListenerEvents = forwardsListenerEvents }
     }
 
-    #if os(iOS) || os(visionOS) || os(tvOS)
+    #if os(macOS)
+    /// Hints to underlying CADisplayLink in RiveView (if created) the preferred FPS to run at
+    /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/1648421-preferredframespersecond
+    /// - Parameters:
+    ///   - preferredFramesPerSecond: Integer number of seconds to set preferred FPS at
+    @available(macOS 14, *)
+    public func setPreferredFramesPerSecond(preferredFramesPerSecond: Int) {
+        riveView?.setPreferredFramesPerSecond(preferredFramesPerSecond: preferredFramesPerSecond)
+    }
+    
+    /// Hints to underlying CADisplayLink in RiveView (if created) the preferred frame rate range
+    /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/3875343-preferredframeraterange
+    /// - Parameters:
+    ///   - preferredFrameRateRange: Frame rate range to set
+    @available(macOS 14, *)
+    public func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
+        riveView?.setPreferredFrameRateRange(preferredFrameRateRange: preferredFrameRateRange)
+    }
+    #else
     /// Hints to underlying CADisplayLink in RiveView (if created) the preferred FPS to run at
     /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/1648421-preferredframespersecond
     /// - Parameters:
@@ -216,7 +234,7 @@ import Combine
     /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/3875343-preferredframeraterange
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
-    @available(iOS 15.0, *)
+    @available(iOS 15.0, tvOS 15.0, visionOS 1.0, *)
     public func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
         riveView?.setPreferredFrameRateRange(preferredFrameRateRange: preferredFrameRateRange)
     }

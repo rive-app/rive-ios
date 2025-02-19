@@ -45,9 +45,19 @@ open class RiveView: RiveRendererView {
     // MARK: Render Loop
     internal private(set) var isPlaying: Bool = false
     private var lastTime: CFTimeInterval = 0
-    private var displayLinkProxy: DisplayLinkProxy?
+    private var displaySync: RiveDisplayLink?
     private var eventQueue = EventQueue()
-    
+
+    // MARK: FPS
+    private var userFPS: Any?
+    private var userPreferredFramesPerSecond: Int? {
+        return userFPS as? Int
+    }
+    @available(iOS 15, tvOS 15, visionOS 1, *)
+    private var userPreferredFrameRateRange: CAFrameRateRange? {
+        return userFPS as? CAFrameRateRange
+    }
+
     // MARK: Delegates
     @objc public weak var playerDelegate: RivePlayerDelegate?
     public weak var stateMachineDelegate: RiveStateMachineDelegate?
@@ -202,27 +212,23 @@ open class RiveView: RiveRendererView {
         
         setFPSCounterVisibility()
     }
-    
-    #if os(iOS) || os(visionOS) || os(tvOS)
+
     /// Hints to underlying CADisplayLink the preferred FPS to run at
     /// - Parameters:
     ///   - preferredFramesPerSecond: Integer number of seconds to set preferred FPS at
     open func setPreferredFramesPerSecond(preferredFramesPerSecond: Int) {
-        if let displayLink = displayLinkProxy?.displayLink {
-            displayLink.preferredFramesPerSecond = preferredFramesPerSecond
-        }
+        userFPS = preferredFramesPerSecond
+        displaySync?.set(preferredFramesPerSecond: preferredFramesPerSecond)
     }
     
     /// Hints to underlying CADisplayLink the preferred frame rate range
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
-    @available(iOS 15.0, *)
+    @available(iOS 15, macOS 14, tvOS 15, visionOS 1, *)
     open func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
-        if let displayLink = displayLinkProxy?.displayLink {
-            displayLink.preferredFrameRateRange = preferredFrameRateRange
-        }
+        userFPS = preferredFrameRateRange
+        displaySync?.set(preferredFrameRateRange: preferredFrameRateRange)
     }
-    #endif
     
     // MARK: - Controls
     
@@ -273,36 +279,41 @@ open class RiveView: RiveRendererView {
     // MARK: - Render Loop
     
     private func startTimer() {
-        
-        if displayLinkProxy == nil {
-            displayLinkProxy = DisplayLinkProxy(
-                handle: { [weak self] in
-                    self?.tick()
-                },
-                to: .main,
-                forMode: .common
-            )
-        }
-        #if os(iOS) || os(visionOS)
-            if displayLinkProxy?.displayLink?.isPaused == true {
-                displayLinkProxy?.displayLink?.isPaused = false
+        #if os(macOS)
+        if #available(macOS 14, *) {
+            guard displaySync == nil else { return }
+            displaySync = RiveCADisplayLink(view: self) { [weak self] in
+                self?.tick()
             }
+        } else {
+            guard displaySync == nil else { return }
+            displaySync = RiveCVDisplaySync { [weak self] in
+                self?.tick()
+            }
+        }
+        #else
+        guard displaySync == nil else { return }
+        displaySync = RiveCADisplayLink { [weak self] in
+            self?.tick()
+        }
+        if let fps = userPreferredFramesPerSecond {
+            setPreferredFramesPerSecond(preferredFramesPerSecond: fps)
+        } else if #available(iOS 15, tvOS 15, visionOS 1, *), let range = userPreferredFrameRateRange {
+            setPreferredFrameRateRange(preferredFrameRateRange: range)
+        }
         #endif
+        displaySync?.start()
     }
     
     private func stopTimer() {
-        displayLinkProxy?.invalidate()
-        displayLinkProxy = nil
+        displaySync?.stop()
+        displaySync = nil
         lastTime = 0
         fpsCounter?.stopped()
     }
     
     private func timestamp() -> CFTimeInterval {
-        #if os(iOS) || os(visionOS) || os(tvOS)
-        return displayLinkProxy?.displayLink?.targetTimestamp ?? Date().timeIntervalSince1970
-        #else
-        return Date().timeIntervalSince1970
-        #endif
+        return displaySync?.targetTimestamp ?? Date().timeIntervalSince1970
     }
         
     
@@ -311,7 +322,7 @@ open class RiveView: RiveRendererView {
     /// - advance the artbaord, which will invalidate the display.
     /// - if the artboard has come to a stop, stop.
     @objc fileprivate func tick() {
-        guard displayLinkProxy?.displayLink != nil else {
+        guard displaySync != nil else {
             stopTimer()
             return
         }
@@ -710,60 +721,6 @@ open class RiveView: RiveRendererView {
     func player(stoppedWithModel riveModel: RiveModel?)
     func player(didAdvanceby seconds: Double, riveModel: RiveModel?)
 }
-
-#if os(iOS) || os(visionOS) || os(tvOS)
-    fileprivate class DisplayLinkProxy {
-        var displayLink: CADisplayLink?
-        var handle: (() -> Void)?
-        private var runloop: RunLoop
-        private var mode: RunLoop.Mode
-
-        init(handle: (() -> Void)?, to runloop: RunLoop, forMode mode: RunLoop.Mode) {
-            self.handle = handle
-            self.runloop = runloop
-            self.mode = mode
-            displayLink = CADisplayLink(target: self, selector: #selector(updateHandle))
-            displayLink?.add(to: runloop, forMode: mode)
-        }
-
-        @objc func updateHandle() {
-            handle?()
-        }
-
-        func invalidate() {
-            displayLink?.remove(from: runloop, forMode: mode)
-            displayLink?.invalidate()
-            displayLink = nil
-        }
-    }
-#else
-    fileprivate class DisplayLinkProxy {
-        var displayLink: CVDisplayLink?
-        
-        init?(handle: (() -> Void)!, to runloop: RunLoop, forMode mode: RunLoop.Mode) {
-            //ignore runloop/formode
-            let error = CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
-            if error != kCVReturnSuccess { return nil }
-            
-            CVDisplayLinkSetOutputHandler(displayLink!) { dl, ts, tsDisplay, _, _ in
-                DispatchQueue.main.async {
-                    handle()
-                }
-                return kCVReturnSuccess
-            }
-            
-            CVDisplayLinkStart(displayLink!)
-        }
-
-        func invalidate() {
-            
-            if let displayLink = displayLink {
-                CVDisplayLinkStop(displayLink)
-                self.displayLink = nil
-            }
-        }
-    }
-#endif
 
 /// Tracks a queue of events that haven't been fired yet. We do this so that we're not calling delegates and modifying state
 /// while a view is updating (e.g. being initialized, as we autoplay and fire play events during the view's init otherwise
