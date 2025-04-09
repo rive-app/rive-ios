@@ -15,9 +15,9 @@ If something isn't working like you expected, please:
 - Check out our documentation
 			https://rive.app/community/doc
 - Get help on our forums
-			https://rive.app/community/forums/home				
+			https://community.rive.app/
 - You can file a new feature request at
-			https://rive.app/community/forums/feature-requests/fsnweJpNLqIh
+			https://community.rive.app/c/feature-requests/
 
 If you think you found a bug or if you can't find what you're looking for 
 in our docs, fill out the template below.
