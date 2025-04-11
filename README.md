@@ -29,7 +29,7 @@ The library is distributed both through Swift Package Manager and Cocoapods.
 
 :blue_book: [Rive docs](https://rive.app/community/doc/)
 
-🛠 [Rive Forums](https://rive.app/community/forums/home)
+🛠 [Rive Forums](https://community.rive.app/)
 
 ## Getting started
 
