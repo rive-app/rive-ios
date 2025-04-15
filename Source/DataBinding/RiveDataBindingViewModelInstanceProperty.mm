@@ -1,0 +1,538 @@
+//
+//  RiveDataBindingViewModelInstanceProperty.m
+//  RiveRuntime
+//
+//  Created by David Skuza on 1/13/25.
+//  Copyright © 2025 Rive. All rights reserved.
+//
+
+#import <Rive.h>
+#import <RivePrivateHeaders.h>
+#import <RiveRuntime/RiveRuntime-Swift.h>
+#import <objc/runtime.h>
+#import <WeakContainer.h>
+
+@interface RiveDataBindingViewModelInstancePropertyListener<ValueType>
+    : NSObject
+@property(nonatomic, readonly) void (^listener)(ValueType);
+- (instancetype)initWithListener:(void (^)(ValueType))listener;
+@end
+
+#pragma mark - String
+
+@implementation RiveDataBindingViewModelInstanceProperty
+{
+    rive::ViewModelInstanceValueRuntime* _value;
+    NSUUID* _uuid;
+    NSMutableDictionary<NSUUID*, id>* _listeners;
+    WeakContainer<id<RiveDataBindingViewModelInstancePropertyDelegate>>*
+        _delegateContainer;
+}
+
+- (instancetype)initWithValue:(rive::ViewModelInstanceValueRuntime*)value
+{
+    if (self = [super init])
+    {
+        _value = value;
+        _uuid = [NSUUID UUID];
+        _listeners = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    _value = nullptr;
+    if (self.valueDelegate != nil)
+    {
+        [self.valueDelegate valuePropertyDidRemoveListener:self isEmpty:YES];
+    }
+}
+
+- (NSString*)name
+{
+    return [NSString stringWithCString:_value->name().c_str()
+                              encoding:NSUTF8StringEncoding];
+}
+
+- (BOOL)hasValue
+{
+    return [self respondsToSelector:@selector(value)];
+}
+
+- (BOOL)hasChanged
+{
+    return _value->hasChanged();
+}
+
+- (void)clearChanges
+{
+    _value->clearChanges();
+}
+
++ (BOOL)automaticallyNotifiesObserversForKey:(NSString*)key
+{
+    return NO;
+}
+
+- (NSDictionary<NSUUID*, id>*)listeners
+{
+    return _listeners;
+}
+
+- (NSUUID*)addListener:(id)listener
+{
+    NSUUID* uuid = [NSUUID UUID];
+    _listeners[uuid] = [listener copy];
+    if (self.valueDelegate)
+    {
+        [self.valueDelegate valuePropertyDidAddListener:self];
+    }
+    return uuid;
+}
+
+- (void)removeListener:(NSUUID*)listener
+{
+    _listeners[listener] = nil;
+    if (self.valueDelegate)
+    {
+        [self.valueDelegate
+            valuePropertyDidRemoveListener:self
+                                   isEmpty:(_listeners.count == 0)];
+    }
+}
+
+- (void)handleListeners
+{
+    NSAssert(
+        NO, @"handleListeners is not implemented by a subclass of this class.");
+}
+
+#pragma mark NSCopying
+
+- (BOOL)isEqual:(id)other
+{
+    if (other == self)
+    {
+        return YES;
+    }
+    else if ([other isKindOfClass:[self class]])
+    {
+        return ((RiveDataBindingViewModelInstanceProperty*)other).hash ==
+               self.hash;
+    }
+    else if (![super isEqual:other])
+    {
+        return NO;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+- (NSUInteger)hash
+{
+    return _uuid.hash;
+}
+
+#pragma mark Private
+
+- (nullable id<RiveDataBindingViewModelInstancePropertyDelegate>)valueDelegate
+{
+    return [_delegateContainer object];
+}
+
+- (void)setValueDelegate:
+    (id<RiveDataBindingViewModelInstancePropertyDelegate>)delegate
+{
+    WeakContainer* container = [[WeakContainer alloc] init];
+    container.object = delegate;
+    _delegateContainer = container;
+}
+
+@end
+
+@implementation RiveDataBindingViewModelInstanceStringProperty
+{
+    rive::ViewModelInstanceStringRuntime* _string;
+}
+
+- (instancetype)initWithString:(rive::ViewModelInstanceStringRuntime*)string
+{
+    if (self = [super initWithValue:string])
+    {
+        _string = string;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    _string = nullptr;
+}
+
+- (void)setValue:(NSString*)value
+{
+    _string->value(std::string([value UTF8String]));
+    [RiveLogger logPropertyUpdated:self value:value];
+}
+
+- (NSString*)value
+{
+    auto value = _string->value();
+    return [NSString stringWithCString:value.c_str()
+                              encoding:NSUTF8StringEncoding];
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceStringPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceStringPropertyListener listener in self
+             .listeners.allValues)
+    {
+        listener(self.value);
+    }
+}
+
+@end
+
+#pragma mark - Number
+
+@implementation RiveDataBindingViewModelInstanceNumberProperty
+{
+    rive::ViewModelInstanceNumberRuntime* _number;
+}
+
+- (instancetype)initWithNumber:(rive::ViewModelInstanceNumberRuntime*)number
+{
+    if (self = [super initWithValue:number])
+    {
+        _number = number;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    _number = nullptr;
+}
+
+- (void)setValue:(float)value
+{
+    _number->value(value);
+    [RiveLogger logPropertyUpdated:self
+                             value:[NSString stringWithFormat:@"%f", value]];
+}
+
+- (float)value
+{
+    return _number->value();
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceNumberPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceNumberPropertyListener listener in self
+             .listeners.allValues)
+    {
+        listener(self.value);
+    }
+}
+
+@end
+
+#pragma mark - Boolean
+
+@implementation RiveDataBindingViewModelInstanceBooleanProperty
+{
+    rive::ViewModelInstanceBooleanRuntime* _boolean;
+}
+
+- (instancetype)initWithBoolean:(rive::ViewModelInstanceBooleanRuntime*)boolean
+{
+    if (self = [super initWithValue:boolean])
+    {
+        _boolean = boolean;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    _boolean = nullptr;
+}
+
+- (void)setValue:(BOOL)value
+{
+    _boolean->value(value);
+    [RiveLogger
+        logPropertyUpdated:self
+                     value:[NSString
+                               stringWithFormat:@"%@",
+                                                value ? @"true" : @"false"]];
+}
+
+- (BOOL)value
+{
+    return _boolean->value();
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceBooleanPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceBooleanPropertyListener listener in
+             self.listeners.allValues)
+    {
+        listener(self.value);
+    }
+}
+
+@end
+
+#pragma mark - Color
+
+@implementation RiveDataBindingViewModelInstanceColorProperty
+{
+    rive::ViewModelInstanceColorRuntime* _color;
+}
+
+- (instancetype)initWithColor:(rive::ViewModelInstanceColorRuntime*)color
+{
+    if (self = [super initWithValue:color])
+    {
+        _color = color;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    _color = nullptr;
+}
+
+- (RiveDataBindingViewModelInstanceColor*)value
+{
+    int value = _color->value();
+    CGFloat a = ((CGFloat)((value >> 24) & 0xFF)) / 255;
+    CGFloat r = ((CGFloat)((value >> 16) & 0xFF)) / 255;
+    CGFloat g = ((CGFloat)((value >> 8) & 0xFF)) / 255;
+    CGFloat b = ((CGFloat)(value & 0xFF)) / 255;
+    return [RiveDataBindingViewModelInstanceColor colorWithRed:r
+                                                         green:g
+                                                          blue:b
+                                                         alpha:a];
+}
+
+- (void)setValue:(RiveDataBindingViewModelInstanceColor*)value
+{
+    CGFloat a;
+    CGFloat r;
+    CGFloat g;
+    CGFloat b;
+    [value getRed:&r green:&g blue:&b alpha:&a];
+    int intA = (int)(a * 255) << 24;
+    int intR = (int)(r * 255) << 16;
+    int intG = (int)(g * 255) << 8;
+    int intB = (int)(b * 255);
+    int color = intA | intR | intG | intB;
+    _color->value(color);
+    [RiveLogger
+        logPropertyUpdated:self
+                     value:[NSString stringWithFormat:@"(Color: %@)", value]];
+}
+
+- (void)setRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue
+{
+    CGFloat r = fmax(0, fmin(red, 1.0));
+    CGFloat g = fmax(0, fmin(green, 1.0));
+    CGFloat b = fmax(0, fmin(blue, 1.0));
+    _color->rgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
+    [RiveLogger
+        logPropertyUpdated:self
+                     value:[NSString stringWithFormat:@"(R: %f, G: %f, B: %f)",
+                                                      red,
+                                                      green,
+                                                      blue]];
+}
+
+- (void)setRed:(CGFloat)red
+         green:(CGFloat)green
+          blue:(CGFloat)blue
+         alpha:(CGFloat)alpha
+{
+    CGFloat r = fmax(0, fmin(red, 1.0));
+    CGFloat g = fmax(0, fmin(green, 1.0));
+    CGFloat b = fmax(0, fmin(blue, 1.0));
+    CGFloat a = fmax(0, fmin(alpha, 1.0));
+    _color->argb(
+        (int)(a * 255), (int)(r * 255), (int)(g * 255), (int)(b * 255));
+    [RiveLogger
+        logPropertyUpdated:self
+                     value:[NSString
+                               stringWithFormat:@"(A: %f, R: %f, G: %f, B: %f)",
+                                                alpha,
+                                                red,
+                                                green,
+                                                blue]];
+}
+
+- (void)setAlpha:(CGFloat)alpha
+{
+    CGFloat a = fmax(0, fmin(alpha, 1.0));
+    _color->alpha((int)(a * 255));
+    [RiveLogger
+        logPropertyUpdated:self
+                     value:[NSString stringWithFormat:@"(A: %lf)", alpha]];
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceColorPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceColorPropertyListener listener in self
+             .listeners.allValues)
+    {
+        listener(self.value);
+    }
+}
+
+@end
+
+#pragma mark - Enum
+
+@implementation RiveDataBindingViewModelInstanceEnumProperty
+{
+    rive::ViewModelInstanceEnumRuntime* _enum;
+}
+
+- (instancetype)initWithEnum:(rive::ViewModelInstanceEnumRuntime*)e
+{
+    if (self = [super initWithValue:e])
+    {
+        _enum = e;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    _enum = nullptr;
+}
+
+- (NSString*)value
+{
+    auto value = _enum->value();
+    return [NSString stringWithCString:value.c_str()
+                              encoding:NSUTF8StringEncoding];
+}
+
+- (void)setValue:(NSString*)value
+{
+    _enum->value(std::string([value UTF8String]));
+    [RiveLogger logPropertyUpdated:self value:value];
+}
+
+- (int)valueIndex
+{
+    return _enum->valueIndex();
+}
+
+- (void)setValueIndex:(int)valueIndex
+{
+    _enum->valueIndex(valueIndex);
+}
+
+- (NSArray<NSString*>*)values
+{
+    auto values = _enum->values();
+    NSMutableArray* mapped = [NSMutableArray arrayWithCapacity:values.size()];
+    for (auto it = values.begin(); it != values.end(); ++it)
+    {
+        auto value = *it;
+        NSString* string = [NSString stringWithCString:value.c_str()
+                                              encoding:NSUTF8StringEncoding];
+        [mapped addObject:string];
+    }
+    return mapped;
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceEnumPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceEnumPropertyListener listener in self
+             .listeners.allValues)
+    {
+        listener(self.value);
+    }
+}
+
+@end
+
+#pragma mark - Trigger
+
+@implementation RiveDataBindingViewModelInstanceTriggerProperty
+{
+    rive::ViewModelInstanceTriggerRuntime* _trigger;
+}
+
+- (instancetype)initWithTrigger:(rive::ViewModelInstanceTriggerRuntime*)trigger
+{
+    if (self = [super initWithValue:trigger])
+    {
+        _trigger = trigger;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    _trigger = nullptr;
+}
+
+- (void)trigger
+{
+    _trigger->trigger();
+    [RiveLogger logPropertyTriggered:self];
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceTriggerPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceTriggerPropertyListener listener in
+             self.listeners.allValues)
+    {
+        listener();
+    }
+}
+
+@end

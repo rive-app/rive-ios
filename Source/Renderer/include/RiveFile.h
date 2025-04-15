@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RiveFileDelegate;
 @class RiveFileAsset;
 @class RiveFactory;
+@class RiveDataBindingViewModel;
 typedef bool (^LoadAsset)(RiveFileAsset* asset,
                           NSData* data,
                           RiveFactory* factory);
@@ -34,6 +35,9 @@ typedef bool (^LoadAsset)(RiveFileAsset* asset,
 
 /// Delegate for calling when a file has finished loading
 @property(weak) id delegate;
+
+/// The number of view models in the file.
+@property(nonatomic, readonly) NSUInteger viewModelCount;
 
 /// Used to manage url sessions Rive, this is to enable testing.
 - (nullable instancetype)initWithByteArray:(NSArray*)bytes
@@ -104,6 +108,49 @@ typedef bool (^LoadAsset)(RiveFileAsset* asset,
 
 /// Returns the names of all artboards in the file.
 - (NSArray<NSString*>*)artboardNames;
+
+#pragma mark - Data Binding
+
+/// Returns a view model from the file by index.
+///
+/// The index of a view model starts at 0, where 0 is the first view model
+/// listed in the editor's "Data" panel from top-to-bottom.
+///
+/// Unlike `RiveDataBindingViewModel.Instance`, a strong reference to this model
+/// does not have to be made.
+///
+/// - Parameter index: The index of the view model.
+///
+/// - Returns: A view model if one exists by index, otherwise nil.
+- (nullable RiveDataBindingViewModel*)viewModelAtIndex:(NSUInteger)index;
+
+/// Returns a view model from the file by name.
+///
+/// The name of the view model has to match the name of a view model in the
+/// editor's "Data" panel.
+///
+/// Unlike `RiveDataBindingViewModel.Instance`, a strong reference to this model
+/// does not have to be made.
+///
+/// - Parameter name: The name of the view model.
+///
+/// - Returns: A view model if one exists by name, otherwise nil.
+- (nullable RiveDataBindingViewModel*)viewModelNamed:(nonnull NSString*)name;
+
+/// Returns the default view model for an artboard.
+///
+/// The default view model is the view model selected under the "Data Bind"
+/// panel for an artboard.
+///
+/// Unlike `RiveDataBindingViewModel.Instance`, a strong reference to this model
+/// does not have to be made.
+///
+/// - Parameter artboard: The artboard within the `RiveFile` that contains a
+/// data binding view model.
+///
+/// - Returns: A view model if one exists for the artboard, otherwise nil.
+- (nullable RiveDataBindingViewModel*)defaultViewModelForArtboard:
+    (RiveArtboard*)artboard;
 
 @end
 

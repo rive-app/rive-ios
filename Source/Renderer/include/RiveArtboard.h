@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveStateMachineInstance;
 @class RiveRenderer;
 @class RiveTextValueRun;
+@class RiveDataBindingViewModelInstance;
 
 // MARK: - RiveArtboard
 //
@@ -58,6 +59,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer*)renderer;
+
+// MARK: - Data Binding
+
+/// Binds an instance of a view model to the artboard for updates.
+///
+/// A strong reference to the instance being bound must be made if you wish to
+/// reuse instance properties, or for observability.
+///
+/// The same instance must also be bound to a state machine, if one exists.
+///
+/// - Parameter instance: The instance of a view model to bind.
+- (void)bindViewModelInstance:(RiveDataBindingViewModelInstance*)instance
+    NS_SWIFT_NAME(bind(viewModelInstance:));
 
 // MARK: Debug
 

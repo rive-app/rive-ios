@@ -494,6 +494,50 @@
     return artboardNames;
 }
 
+#pragma mark - Data Binding
+
+- (NSUInteger)viewModelCount
+{
+    return riveFile->viewModelCount();
+}
+
+- (nullable id)viewModelAtIndex:(NSUInteger)index
+{
+    auto viewModel = riveFile->viewModelByIndex(index);
+    if (viewModel == nullptr)
+    {
+        [RiveLogger logFileViewModelAtIndex:index found:NO];
+        return nil;
+    }
+    [RiveLogger logFileViewModelAtIndex:index found:YES];
+    return [[RiveDataBindingViewModel alloc] initWithViewModel:viewModel];
+}
+
+- (nullable id)viewModelNamed:(NSString*)name
+{
+    auto viewModel = riveFile->viewModelByName(std::string([name UTF8String]));
+    if (viewModel == nullptr)
+    {
+        [RiveLogger logFileViewModelWithName:name found:NO];
+        return nil;
+    }
+    [RiveLogger logFileViewModelWithName:name found:YES];
+    return [[RiveDataBindingViewModel alloc] initWithViewModel:viewModel];
+}
+
+- (RiveDataBindingViewModel*)defaultViewModelForArtboard:(RiveArtboard*)artboard
+{
+    auto viewModel =
+        riveFile->defaultArtboardViewModel(artboard.artboardInstance);
+    if (viewModel == nullptr)
+    {
+        [RiveLogger logFileDefaultViewModelForArtboard:artboard found:NO];
+        return nil;
+    }
+    [RiveLogger logFileDefaultViewModelForArtboard:artboard found:YES];
+    return [[RiveDataBindingViewModel alloc] initWithViewModel:viewModel];
+}
+
 /// Clean up rive file
 - (void)dealloc
 {

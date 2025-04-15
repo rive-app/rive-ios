@@ -13,6 +13,7 @@ enum RiveLoggerStateMachineEvent {
     case advance(Double)
     case eventReceived(RiveEvent)
     case error(String)
+    case instanceBind(String)
 }
 
 extension RiveLogger {
@@ -24,6 +25,10 @@ extension RiveLogger {
 
     @objc(logStateMachine:error:) static func log(stateMachine: RiveStateMachineInstance, error: String) {
         log(stateMachine: stateMachine, event: .error(error))
+    }
+
+    @objc(logStateMachine:instanceBind:) static func log(stateMachine: RiveStateMachineInstance, instanceBind name: String) {
+        log(stateMachine: stateMachine, event: .instanceBind(name))
     }
 
     static func log(stateMachine: RiveStateMachineInstance, event: RiveLoggerStateMachineEvent) {
@@ -40,6 +45,10 @@ extension RiveLogger {
         case .error(let error):
             _log(event: event, level: .error) {
                 Self.stateMachine.error("\(error)")
+            }
+        case .instanceBind(let name):
+            _log(event: event, level: .debug) {
+                Self.stateMachine.debug("\(self.prefix(for: stateMachine))Bound view model instance \(name)")
             }
         }
     }

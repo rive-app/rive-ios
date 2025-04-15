@@ -18,6 +18,9 @@ enum RiveLoggerFileEvent {
     case loadedAsset(RiveFileAsset)
     case loadedFromURL(URL)
     case loadingFromResource(String)
+    case viewModelWithName(String, Bool)
+    case viewModelAtIndex(Int, Bool)
+    case defaultViewModelForArtboard(String, Bool)
 }
 
 extension RiveLogger {
@@ -49,6 +52,18 @@ extension RiveLogger {
 
     @objc(logLoadingFromResource:) static func log(loadingFromResource name: String) {
         log(file: nil, event: .loadingFromResource(name))
+    }
+
+    @objc(logFileViewModelWithName:found:) static func log(fileViewModelName name: String, found: Bool) {
+        log(file: nil, event: .viewModelWithName(name, found))
+    }
+
+    @objc(logFileViewModelAtIndex:found:) static func log(fileViewModelAtIndex index: Int, found: Bool) {
+        log(file: nil, event: .viewModelAtIndex(index, found))
+    }
+
+    @objc(logFileDefaultViewModelForArtboard:found:) static func log(fileDefaultViewModelForArtboard artboard: RiveArtboard, found: Bool) {
+        log(file: nil, event: .defaultViewModelForArtboard(artboard.name(), found))
     }
 
     static func log(file: RiveFile?, event: RiveLoggerFileEvent) {
@@ -84,6 +99,21 @@ extension RiveLogger {
         case .loadingFromResource(let name):
             _log(event: event, level: .debug) {
                 Self.file.debug("Loading resource \(name)")
+            }
+        case .viewModelWithName(let name, let found):
+            _log(event: event, level: .debug) {
+                let message = found ? "Found view model named \(name)" : "Could not find view model named \(name)"
+                Self.file.debug("\(message)")
+            }
+        case .viewModelAtIndex(let index, let found):
+            _log(event: event, level: .debug) {
+                let message = found ? "Found view model at index \(index)" : "Could not find view model at index \(index)"
+                Self.file.debug("\(message)")
+            }
+        case .defaultViewModelForArtboard(let name, let found):
+            _log(event: event, level: .debug) {
+                let message = found ? "Found default view model for artboard \(name)" : "Could not find default view for artboard \(name)"
+                Self.file.debug("\(message)")
             }
         }
     }

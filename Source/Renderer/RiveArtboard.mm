@@ -420,4 +420,25 @@ static int artInstanceCount = 0;
     _artboardInstance->height(_artboardInstance->originalHeight());
 }
 
+#pragma mark - Data Binding
+
+- (void)bindViewModelInstance:(RiveDataBindingViewModelInstance*)instance
+{
+    // Let's walk through the instances of the word instance
+    //
+    // _artboardInstance is the underlying c++ type of ourself
+    // to which we bind
+    //
+    // instance is the ObjC bridging type of the underlying
+    // c++ type of a view model instance.
+    //
+    // instance.instance is the underlying c++ type of the bridging type
+    // so that we can call into the c++ runtime
+    //
+    // instance.instance->instance() is the c++ rcp of the actual
+    // type that gets bound to the artboard
+    _artboardInstance->bindViewModelInstance(instance.instance->instance());
+    [RiveLogger logArtboard:self instanceBind:instance.name];
+}
+
 @end

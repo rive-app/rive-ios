@@ -66,11 +66,13 @@ import OSLog
     @objc public static let file = RiveLogCategory(rawValue: 1 << 4)
     /// The category used when logging from a Rive view.
     @objc public static let view = RiveLogCategory(rawValue: 1 << 5)
+    /// The category used when logging Data Binding.
+    @objc public static let dataBinding = RiveLogCategory(rawValue: 1 << 6)
 
     /// An option set of no categories.
     @objc public static let none: RiveLogCategory = []
     /// An option set containing all possible categories
-    @objc public static let all: RiveLogCategory = [.stateMachine, .artboard, .viewModel, .model, .file, .view]
+    @objc public static let all: RiveLogCategory = [.stateMachine, .artboard, .viewModel, .model, .file, .view, .dataBinding]
 
     override public func isEqual(_ object: Any?) -> Bool {
         guard let other = object as? RiveLogCategory else { return false }

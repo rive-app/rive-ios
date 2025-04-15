@@ -430,4 +430,28 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
         instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y)));
 }
 
+#pragma mark - Data Binding
+
+// Argument named i to not conflict with higher-level private variable named
+// instance
+- (void)bindViewModelInstance:(RiveDataBindingViewModelInstance*)i
+{
+    // Let's walk through the instances of the word instance
+    //
+    // instance is the underlying c++ type of ourself
+    // to which we bind
+    //
+    // i is the ObjC bridging type of the underlying
+    // c++ type of a view model instance.
+    //
+    // i.instance is the underlying c++ type of the bridging type
+    // so that we can call into the c++ runtime
+    //
+    // i.instance->instance() is the c++ rcp of the actual
+    // type that gets bound to the state machine
+    instance->bindViewModelInstance(i.instance->instance());
+    _viewModelInstance = i;
+    [RiveLogger logStateMachine:self instanceBind:i.name];
+}
+
 @end

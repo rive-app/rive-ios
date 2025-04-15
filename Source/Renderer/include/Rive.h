@@ -28,6 +28,11 @@
 #import <RiveRuntime/CDNFileAssetLoader.h>
 #import <RiveRuntime/RiveFont.h>
 
+#import <RiveRuntime/RiveDataBindingViewModel.h>
+#import <RiveRuntime/RiveDataBindingViewModelInstance.h>
+#import <RiveRuntime/RiveDataBindingViewModelInstanceProperty.h>
+#import <RiveRuntime/RiveDataBindingViewModelInstancePropertyData.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 /*

@@ -325,6 +325,13 @@
 		F22138832CCBEDD500A25BA7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F22138822CCBEDD500A25BA7 /* Assets.xcassets */; };
 		F22138862CCBEDD500A25BA7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F22138852CCBEDD500A25BA7 /* Preview Assets.xcassets */; };
 		F221388B2CCBEDE100A25BA7 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
+		F22CF1AA2D36BFFF00D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
+		F22CF1AB2D380E1200D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
+		F22CF1AC2D380E1300D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
+		F22CF1AD2D380E1400D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
+		F22CF1AE2D380E1500D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
+		F22CF1AF2D380E1600D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
+		F259E5832D35B7FA00B78FEF /* DataBindingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F259E5822D35B7FA00B78FEF /* DataBindingView.swift */; };
 		F26E20AC2CF0E21000130111 /* streaming.riv in Resources */ = {isa = PBXBuildFile; fileRef = F26E20A92CF0E21000130111 /* streaming.riv */; };
 		F2AB95D12CF0EB800055376E /* streaming.riv in Resources */ = {isa = PBXBuildFile; fileRef = F26E20A92CF0E21000130111 /* streaming.riv */; };
 		F2AC7F3C2CCBEEDC00E3ED79 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
@@ -525,6 +532,8 @@
 		F22138822CCBEDD500A25BA7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F22138852CCBEDD500A25BA7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F22138872CCBEDD500A25BA7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = data_binding_test.riv; sourceTree = "<group>"; };
+		F259E5822D35B7FA00B78FEF /* DataBindingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBindingView.swift; sourceTree = "<group>"; };
 		F26E20A92CF0E21000130111 /* streaming.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = streaming.riv; sourceTree = "<group>"; };
 		F2B7F2F72C5AC09200F47FBC /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		F2C623352C874E3A0006E0CA /* fallback_fonts.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = fallback_fonts.riv; sourceTree = "<group>"; };
@@ -667,6 +676,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */,
 				F26E20A92CF0E21000130111 /* streaming.riv */,
 				2E974F942CB3509200642588 /* layout_test.riv */,
 				F2C623352C874E3A0006E0CA /* fallback_fonts.riv */,
@@ -752,6 +762,7 @@
 				0490914B2BC8326E00F2C12B /* SwiftAudioAssets.swift */,
 				049091622BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift */,
 				F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */,
+				F259E5822D35B7FA00B78FEF /* DataBindingView.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -1065,6 +1076,7 @@
 				040553902B7A274B008F076A /* hero_editor.riv in Resources */,
 				040553912B7A274B008F076A /* watch_v1.riv in Resources */,
 				040553922B7A274B008F076A /* leg_day_events_example.riv in Resources */,
+				F22CF1AC2D380E1300D35779 /* data_binding_test.riv in Resources */,
 				040553932B7A274B008F076A /* play_button_event_example.riv in Resources */,
 				040553942B7A274B008F076A /* switch_event_example.riv in Resources */,
 				040553952B7A274B008F076A /* magic_8-ball_v2.riv in Resources */,
@@ -1143,6 +1155,7 @@
 				040554032B7A2858008F076A /* off_road_car_blog.riv in Resources */,
 				040554042B7A2858008F076A /* Main.storyboard in Resources */,
 				040554052B7A2858008F076A /* skills.riv in Resources */,
+				F22CF1AB2D380E1200D35779 /* data_binding_test.riv in Resources */,
 				040554062B7A2858008F076A /* artboard_animations.riv in Resources */,
 				040554072B7A2858008F076A /* trailblaze.riv in Resources */,
 				049091582BC832B000F2C12B /* ping_pong_audio_demo.riv in Resources */,
@@ -1198,6 +1211,7 @@
 				04E51C492A151C230075E473 /* hero_editor.riv in Resources */,
 				04E51C4A2A151C230075E473 /* watch_v1.riv in Resources */,
 				04E51C4B2A151C230075E473 /* leg_day_events_example.riv in Resources */,
+				F22CF1AD2D380E1400D35779 /* data_binding_test.riv in Resources */,
 				04E51C4C2A151C230075E473 /* play_button_event_example.riv in Resources */,
 				04E51C4D2A151C230075E473 /* switch_event_example.riv in Resources */,
 				04E51C4E2A151C230075E473 /* magic_8-ball_v2.riv in Resources */,
@@ -1303,6 +1317,7 @@
 				046AFA712673AF04004ED497 /* blendmodes.riv in Resources */,
 				042C88EC2644447500E7DBB2 /* vader.riv in Resources */,
 				E5964AB12A9CDB2100140479 /* rating_animation.riv in Resources */,
+				F22CF1AA2D36BFFF00D35779 /* data_binding_test.riv in Resources */,
 				0453FCB42B012D17001185C8 /* picture-47982.jpeg in Resources */,
 				83C89AD1298870A700044C17 /* paper.riv in Resources */,
 				C9C73E9E24FC471E00EF9516 /* Assets.xcassets in Resources */,
@@ -1327,6 +1342,7 @@
 				F221388B2CCBEDE100A25BA7 /* marty.riv in Resources */,
 				F22138862CCBEDD500A25BA7 /* Preview Assets.xcassets in Resources */,
 				F26E20AC2CF0E21000130111 /* streaming.riv in Resources */,
+				F22CF1AE2D380E1500D35779 /* data_binding_test.riv in Resources */,
 				F22138832CCBEDD500A25BA7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1338,6 +1354,7 @@
 				F2C852F22CD19F6A00F0D81F /* marty.riv in Resources */,
 				F2C852DB2CD1772400F0D81F /* Preview Assets.xcassets in Resources */,
 				F2AB95D12CF0EB800055376E /* streaming.riv in Resources */,
+				F22CF1AF2D380E1600D35779 /* data_binding_test.riv in Resources */,
 				F2C852D82CD1772400F0D81F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1417,6 +1434,7 @@
 				C324DB5D280728690060589F /* RiveButton.swift in Sources */,
 				C9C73E9824FC471E00EF9516 /* AppDelegate.swift in Sources */,
 				0490914D2BC8326E00F2C12B /* SwiftAudioAssets.swift in Sources */,
+				F259E5832D35B7FA00B78FEF /* DataBindingView.swift in Sources */,
 				C3E2B58C2833ECFE00A8651B /* SwiftCannonGame.swift in Sources */,
 				C9CB2F13264C92D200E7FF0D /* SwiftWidgets.swift in Sources */,
 				042C888E2644230700E7DBB2 /* utility.swift in Sources */,
@@ -1756,7 +1774,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = NJ3JMFUNS9;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1780,7 +1798,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = NJ3JMFUNS9;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;

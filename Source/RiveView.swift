@@ -376,6 +376,8 @@ open class RiveView: RiveRendererView {
             if let delegate = stateMachineDelegate {
                 stateMachine.stateChanges().forEach { delegate.stateMachine?(stateMachine, didChangeState: $0) }
             }
+
+            stateMachine.viewModelInstance?.updateListeners()
         } else if let animation = riveModel?.animation {
             isPlaying = animation.advance(by: delta) && wasPlaying
 

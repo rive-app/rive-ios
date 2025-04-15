@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveSMINumber;
 @class RiveLayerState;
 @class RiveEvent;
+@class RiveDataBindingViewModelInstance;
 
 /// A type mirroring rive::HitResult, but available in both ObjC and Swift.
 typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
@@ -28,6 +29,10 @@ typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
  * RiveStateMachineInstance
  */
 @interface RiveStateMachineInstance : NSObject
+
+@property(nonatomic, nullable, readonly)
+    RiveDataBindingViewModelInstance* viewModelInstance;
+
 - (NSString*)name;
 - (bool)advanceBy:(double)elapsedSeconds;
 - (const RiveSMIBool*)getBool:(NSString*)name;
@@ -75,6 +80,19 @@ typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
 /// @return The RiveHitResult of a touch being cancelled at the provided
 /// location.
 - (RiveHitResult)touchCancelledAtLocation:(CGPoint)touchLocation;
+
+// MARK: - Data Binding
+
+/// Binds an instance of a view model to the state machine for updates.
+///
+/// A strong reference to the instance being bound must be made if you wish to
+/// reuse instance properties, or for observability. By default, the instance
+/// will also automatically be bound to the artboard containing the state
+/// machine.
+///
+/// - Parameter instance: The instance of a view model to bind.
+- (void)bindViewModelInstance:(RiveDataBindingViewModelInstance*)instance
+    NS_SWIFT_NAME(bind(viewModelInstance:));
 
 // MARK: Debug
 
