@@ -264,7 +264,18 @@
 - (RiveDataBindingViewModelInstance*)viewModelInstancePropertyFromPath:
     (NSString*)path
 {
-    return [self childForPath:path];
+    RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
+    return
+        [parent viewModelInstanceWithName:[[path pathComponents] lastObject]];
+}
+
+- (BOOL)setViewModelInstancePropertyFromPath:(NSString*)path
+                                  toInstance:(RiveDataBindingViewModelInstance*)
+                                                 instance
+{
+    RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
+    return [parent setViewModelInstance:instance
+                                forName:[path lastPathComponent]];
 }
 
 - (RiveDataBindingViewModelInstanceTriggerProperty*)triggerPropertyFromPath:
@@ -341,29 +352,14 @@
 - (void)cacheProperty:(RiveDataBindingViewModelInstanceProperty*)value
              withPath:(NSString*)path
 {
-    NSArray<NSString*>* components = [path pathComponents];
-    if (components.count == 1)
-    {
-        _properties[path] = value;
-    }
-    else
-    {
-        RiveDataBindingViewModelInstance* child =
-            [self childForPath:components[0]];
-        if (child)
-        {
-            NSArray* subcomponents = [components
-                subarrayWithRange:NSMakeRange(1, components.count - 1)];
-            NSString* subpath = [subcomponents componentsJoinedByString:@"/"];
-            [child cacheProperty:value withPath:subpath];
-        }
-    }
+    RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
+    [parent setProperty:value forName:[path lastPathComponent]];
 }
 
 - (nullable id)cachedPropertyFromPath:(NSString*)path asClass:(Class)aClass
 {
-    RiveDataBindingViewModelInstanceProperty* property =
-        [_properties objectForKey:path];
+    RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
+    id property = [parent cachedPropertyWithName:[path lastPathComponent]];
     if (property != nil && [property isKindOfClass:aClass])
     {
         return property;
@@ -384,47 +380,68 @@
 
 #pragma mark - Paths
 
-- (nullable RiveDataBindingViewModelInstance*)childForPath:(NSString*)path
+- (nullable RiveDataBindingViewModelInstance*)parentForPath:(NSString*)path
 {
-    NSArray* components = [path pathComponents];
-    // If we have no components, we have no child to add
-    if (components.count == 0)
+    NSArray* pathComponents = [path pathComponents];
+
+    if (pathComponents.count == 0)
     {
         return nil;
     }
 
-    // E.g from "current/path", this is "current".
-    // If a child exists with that name, return it.
-    NSString* currentPath = components[0];
-    // Use map over set
-    RiveDataBindingViewModelInstance* existing = nil;
-    if ((existing = [_children objectForKey:currentPath]))
+    if (pathComponents.count == 1)
+    {
+        return self;
+    }
+
+    NSArray* subpathComponents = [pathComponents
+        subarrayWithRange:NSMakeRange(1, pathComponents.count - 1)];
+    RiveDataBindingViewModelInstance* instance =
+        [self viewModelInstanceWithName:[pathComponents firstObject]];
+    return [instance
+        parentForPath:[subpathComponents componentsJoinedByString:@"/"]];
+}
+
+- (nullable RiveDataBindingViewModelInstance*)viewModelInstanceWithName:
+    (NSString*)name
+{
+    RiveDataBindingViewModelInstance* existing;
+    if ((existing = _children[name]))
     {
         return existing;
     }
-
-    // Otherwise, for the current path, build a tree recursively, starting with
-    // the current position.
-    auto instance =
-        _instance->propertyViewModel(std::string([currentPath UTF8String]));
-    if (instance == nullptr)
+    auto i = _instance->propertyViewModel(std::string([name UTF8String]));
+    if (i == nullptr)
     {
         return nil;
     }
+    RiveDataBindingViewModelInstance* instance =
+        [[RiveDataBindingViewModelInstance alloc] initWithInstance:i];
+    _children[name] = instance;
+    return instance;
+}
 
-    RiveDataBindingViewModelInstance* child =
-        [[RiveDataBindingViewModelInstance alloc] initWithInstance:instance];
-    _children[currentPath] = child;
-    if (components.count == 1)
+- (BOOL)setViewModelInstance:(RiveDataBindingViewModelInstance*)instance
+                     forName:(NSString*)name
+{
+    BOOL replaced = _instance->replaceViewModelByName(
+        std::string([name UTF8String]), instance.instance);
+    if (replaced)
     {
-        return child;
+        _children[name] = instance;
     }
-    else
-    {
-        NSArray* subpath =
-            [components subarrayWithRange:NSMakeRange(1, components.count - 1)];
-        return [self childForPath:[subpath componentsJoinedByString:@"/"]];
-    }
+    return replaced;
+}
+
+- (id)cachedPropertyWithName:(NSString*)name
+{
+    return [_properties objectForKey:name];
+}
+
+- (void)setProperty:(RiveDataBindingViewModelInstanceProperty*)property
+            forName:(NSString*)name
+{
+    _properties[name] = property;
 }
 
 @end

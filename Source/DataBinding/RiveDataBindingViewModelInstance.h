@@ -131,6 +131,21 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 - (nullable RiveDataBindingViewModelInstance*)viewModelInstancePropertyFromPath:
     (NSString*)path;
 
+/// Replaces a view model property of the view model instance with another
+/// instance.
+///
+/// - Parameters:
+///   - path: The path to the view model property to replace.
+///   - instance: The instance to replace the view model property at `path`
+///   with.
+///
+/// - Returns: `true` if the view model instance was replaced, otherwise
+/// `false`.
+- (BOOL)setViewModelInstancePropertyFromPath:(NSString*)path
+                                  toInstance:(RiveDataBindingViewModelInstance*)
+                                                 instance
+    NS_SWIFT_NAME(setViewModelInstanceProperty(fromPath:to:));
+
 /// Returns a trigger property in the view model instance.
 ///
 /// - Note: Unlike a `RiveViewModel.Instance`, a strong reference to this type

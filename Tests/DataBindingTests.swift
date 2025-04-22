@@ -380,6 +380,58 @@ class DataBindingTests: XCTestCase {
         XCTAssertEqual(nestedProperty!.value, newValue)
     }
 
+    func test_viewModelInstance_nested_areIdentical() {
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+
+        let fromPath = instance.viewModelInstanceProperty(fromPath: "Nested/DeeperNested")!
+        let nested = instance.viewModelInstanceProperty(fromPath: "Nested")!.viewModelInstanceProperty(fromPath: "DeeperNested")!
+        XCTAssertIdentical(fromPath, nested)
+    }
+
+    func test_viewModelInstance_replace_withCorrectInstance_setsNewInstance() throws {
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        XCTAssertEqual(instance.stringProperty(fromPath: "Nested/String")!.value, "Nested")
+
+//         Test one-level deep + caching
+        let replacement = file.viewModelNamed("Nested")!.createInstance()!
+        replacement.stringProperty(fromPath: "String")!.value = "Hello, Rive"
+        var replaced = instance.setViewModelInstanceProperty(fromPath: "Nested", to: replacement)
+        XCTAssertTrue(replaced)
+        XCTAssertEqual(instance.stringProperty(fromPath: "Nested/String")!.value, "Hello, Rive")
+        XCTAssertIdentical(
+            instance.viewModelInstanceProperty(fromPath: "Nested"),
+            replacement
+        )
+
+//         Test two-level deep traversal + caching
+        let nestedReplacement = file.viewModelNamed("Default")!.createDefaultInstance()!
+        replaced = instance.setViewModelInstanceProperty(fromPath: "Nested/DeeperNested", to: nestedReplacement)
+        XCTAssertTrue(replaced)
+        XCTAssertIdentical(
+            instance.viewModelInstanceProperty(fromPath: "Nested/DeeperNested")!,
+            nestedReplacement
+        )
+
+        XCTAssertIdentical(
+            instance.viewModelInstanceProperty(fromPath: "Nested/DeeperNested")!,
+            instance.viewModelInstanceProperty(fromPath: "Nested")!.viewModelInstanceProperty(fromPath: "DeeperNested")
+        )
+
+        XCTAssertEqual(
+            instance.stringProperty(fromPath: "Nested/DeeperNested/String")!.value,
+            instance.viewModelInstanceProperty(fromPath: "Nested")!
+                .viewModelInstanceProperty(fromPath: "DeeperNested")!
+                .stringProperty(fromPath: "String")!.value
+        )
+    }
+
+    func test_viewModelInstance_replace_withIncorrectInstance_returnsFalse() throws {
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let replacement = file.viewModelNamed("Default")!.createInstance()!
+        let replaced = instance.setViewModelInstanceProperty(fromPath: "Nested", to: replacement)
+        XCTAssertFalse(replaced)
+    }
+
     // MARK: Trigger
 
     func test_viewModelInstance_triggerProperty_returnsPropertyOrNil() {
@@ -955,16 +1007,6 @@ class DataBindingTests: XCTestCase {
         nestedInstance.updateListeners()
 
         wait(for: [expectation], timeout: 1)
-    }
-
-    func test_nestedViewModel_property_createsAndCachesChildren() throws {
-        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
-        let nested: RiveDataBindingViewModel.Instance? = instance.viewModelInstanceProperty(fromPath: "Nested")!
-        let nestedCopy = instance.viewModelInstanceProperty(fromPath: "Nested")!
-        XCTAssertTrue(nested === nestedCopy)
-
-        let fullPath = instance.viewModelInstanceProperty(fromPath: "Nested/Nested")
-        XCTAssertTrue(nestedCopy === fullPath)
     }
 
     func test_instance_property_whenBoundToTwoStateMachines_ifNoAdditionalChanges_callsListenerOnce() throws {
