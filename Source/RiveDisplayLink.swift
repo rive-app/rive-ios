@@ -26,6 +26,12 @@ class RiveCADisplayLink: RiveDisplayLink {
     typealias Tick = () -> Void
 
     private lazy var displayLink: CADisplayLink = {
+#if !os(visionOS)
+        if let displayLink = windowScene?.screen.displayLink(withTarget: self, selector: #selector(_tick)) {
+            return displayLink
+        }
+#endif
+
         return CADisplayLink(target: self, selector: #selector(_tick))
     }()
 
@@ -38,10 +44,12 @@ class RiveCADisplayLink: RiveDisplayLink {
         displayLink.targetTimestamp
     }
 
+    private let windowScene: UIWindowScene?
     private let tick: Tick
     private var isActive = false
 
-    init(tick: @escaping () -> Void) {
+    init(windowScene: UIWindowScene?, tick: @escaping () -> Void) {
+        self.windowScene = windowScene
         self.tick = tick
     }
 

@@ -293,7 +293,7 @@ open class RiveView: RiveRendererView {
         }
         #else
         guard displaySync == nil else { return }
-        displaySync = RiveCADisplayLink { [weak self] in
+        displaySync = RiveCADisplayLink(windowScene: window?.windowScene) { [weak self] in
             self?.tick()
         }
         if let fps = userPreferredFramesPerSecond {
