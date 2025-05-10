@@ -32,6 +32,10 @@ RiveDataBindingViewModelInstancePropertyDataTypeFromRuntime(rive::DataType type)
             return RiveDataBindingViewModelInstancePropertyDataTypeTrigger;
         case rive::DataType::viewModel:
             return RiveDataBindingViewModelInstancePropertyDataTypeViewModel;
+        case rive::DataType::integer:
+            return RiveDataBindingViewModelInstancePropertyDataTypeInteger;
+        case rive::DataType::symbolListIndex:
+            return RiveDataBindingViewModelInstancePropertyDataTypeSymbolListIndex;
     }
 }
 

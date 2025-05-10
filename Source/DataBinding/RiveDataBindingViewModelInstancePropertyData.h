@@ -18,6 +18,8 @@ typedef NS_ENUM(NSInteger, RiveDataBindingViewModelInstancePropertyDataType) {
     RiveDataBindingViewModelInstancePropertyDataTypeEnum,
     RiveDataBindingViewModelInstancePropertyDataTypeTrigger,
     RiveDataBindingViewModelInstancePropertyDataTypeViewModel,
+    RiveDataBindingViewModelInstancePropertyDataTypeInteger,
+    RiveDataBindingViewModelInstancePropertyDataTypeSymbolListIndex,
 } NS_SWIFT_NAME(RiveDataBindingViewModelInstancePropertyData.DataType);
 
 NS_ASSUME_NONNULL_BEGIN
