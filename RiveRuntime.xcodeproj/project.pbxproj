@@ -948,9 +948,6 @@
 					"-lrive_pls_renderer_appletvos",
 					"-lrive_cg_renderer_appletvos",
 					"-lrive_decoders_appletvos",
-					"-lrive_png_appletvos",
-					"-lrive_zlib_appletvos",
-					"-lrive_jpeg_appletvos",
 					"-lrive_webp_appletvos",
 				);
 				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
@@ -961,9 +958,6 @@
 					"-lrive_pls_renderer_appletvsimulator",
 					"-lrive_cg_renderer_appletvsimulator",
 					"-lrive_decoders_appletvsimulator",
-					"-lrive_png_appletvsimulator",
-					"-lrive_zlib_appletvsimulator",
-					"-lrive_jpeg_appletvsimulator",
 					"-lrive_webp_appletvsimulator",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
@@ -1082,9 +1076,6 @@
 					"-lrive_pls_renderer_appletvos",
 					"-lrive_cg_renderer_appletvos",
 					"-lrive_decoders_appletvos",
-					"-lrive_png_appletvos",
-					"-lrive_zlib_appletvos",
-					"-lrive_jpeg_appletvos",
 					"-lrive_webp_appletvos",
 				);
 				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
@@ -1095,9 +1086,6 @@
 					"-lrive_pls_renderer_appletvsimulator",
 					"-lrive_cg_renderer_appletvsimulator",
 					"-lrive_decoders_appletvsimulator",
-					"-lrive_png_appletvsimulator",
-					"-lrive_zlib_appletvsimulator",
-					"-lrive_jpeg_appletvsimulator",
 					"-lrive_webp_appletvsimulator",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (

@@ -59,7 +59,7 @@ build_runtime() {
     
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
-    premake5 --file=premake5_v2.lua --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios gmake2
+    premake5 --file=premake5_v2.lua --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --no_rive_jpeg --no_rive_png --no_rive_webp gmake2
     make -C out/iphoneos_$1 clean
     make -C out/iphoneos_$1 -j12 rive_decoders
     popd
@@ -100,7 +100,7 @@ build_runtime_sim() {
     
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
-    premake5 --file=premake5_v2.lua --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=emulator gmake2
+    premake5 --file=premake5_v2.lua --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=emulator --no_rive_jpeg --no_rive_png --no_rive_webp gmake2
     make -C out/iphonesimulator_$1 clean
     make -C out/iphonesimulator_$1 -j12 rive_decoders
     popd
@@ -140,7 +140,7 @@ build_runtime_macosx() {
     
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
-    premake5 --file=premake5_v2.lua --config=$1 --out=out/$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=macosx gmake2
+    premake5 --file=premake5_v2.lua --config=$1 --out=out/$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=macosx --no_rive_jpeg --no_rive_png --no_rive_webp gmake2
     make -C out/$1 clean
     make -C out/$1 -j12 rive_decoders
     popd
@@ -180,7 +180,7 @@ build_runtime_xros() {
 
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
-    premake5 --file=premake5_v2.lua --config=$1 --out=out/xros_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=xros gmake2
+    premake5 --file=premake5_v2.lua --config=$1 --out=out/xros_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=xros --no_rive_jpeg --no_rive_png --no_rive_webp gmake2
     make -C out/xros_$1 clean
     make -C out/xros_$1 -j12 rive_decoders
     popd
@@ -221,7 +221,7 @@ build_runtime_xrsimulator() {
 
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
-    premake5 --file=premake5_v2.lua --config=$1 --out=out/xrsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=xrsimulator gmake2
+    premake5 --file=premake5_v2.lua --config=$1 --out=out/xrsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=xrsimulator --no_rive_jpeg --no_rive_png --no_rive_webp gmake2
     make -C out/xrsimulator_$1 clean
     make -C out/xrsimulator_$1 -j12 rive_decoders
     popd
@@ -261,18 +261,12 @@ build_runtime_appletvos() {
 
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
-    premake5 --file=premake5_v2.lua --config=$1 --out=out/appletvos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=appletvos gmake2
+    premake5 --file=premake5_v2.lua --config=$1 --out=out/appletvos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=appletvos --no_rive_jpeg --no_rive_png gmake2
     make -C out/appletvos_$1 clean
     make -C out/appletvos_$1 -j12 rive_decoders
-    make -C out/appletvos_$1 -j12 libpng
-    make -C out/appletvos_$1 -j12 zlib
-    make -C out/appletvos_$1 -j12 libjpeg
     make -C out/appletvos_$1 -j12 libwebp
     popd
     cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvos_$1/librive_decoders.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_decoders_appletvos.a
-    cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvos_$1/liblibpng.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_png_appletvos.a
-    cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvos_$1/libzlib.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_zlib_appletvos.a
-    cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvos_$1/liblibjpeg.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_jpeg_appletvos.a
     cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvos_$1/liblibwebp.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_webp_appletvos.a
 }
 
@@ -310,18 +304,12 @@ build_runtime_appletvsimulator() {
 
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
-    premake5 --file=premake5_v2.lua --config=$1 --out=out/appletvsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=appletvsimulator gmake2
+    premake5 --file=premake5_v2.lua --config=$1 --out=out/appletvsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=appletvsimulator --no_rive_jpeg --no_rive_png gmake2
     make -C out/appletvsimulator_$1 clean
     make -C out/appletvsimulator_$1 -j12 rive_decoders
-    make -C out/appletvsimulator_$1 -j12 libpng
-    make -C out/appletvsimulator_$1 -j12 zlib
-    make -C out/appletvsimulator_$1 -j12 libjpeg
     make -C out/appletvsimulator_$1 -j12 libwebp
     popd
     cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvsimulator_$1/librive_decoders.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_decoders_appletvsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvsimulator_$1/liblibpng.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_png_appletvsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvsimulator_$1/libzlib.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_zlib_appletvsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvsimulator_$1/liblibjpeg.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_jpeg_appletvsimulator.a
     cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvsimulator_$1/liblibwebp.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_webp_appletvsimulator.a
 }
 
