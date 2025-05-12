@@ -374,7 +374,10 @@
 {
     [super drawRect:rect];
 
-    [self drawInRect:rect withCompletion:NULL];
+    @autoreleasepool
+    {
+        [self drawInRect:rect withCompletion:NULL];
+    }
 }
 
 - (rive::Fit)riveFit:(RiveFit)fit
