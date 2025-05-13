@@ -32,6 +32,7 @@ class ExamplesMasterTableViewController: UITableViewController {
     /// Made from custom `Views`
     private lazy var swiftViews: [(String, AnyView)] = [
         ("Data Binding",        typeErased(dismissableView: DataBindingView())),
+        ("Data Binding (Rewards)",        typeErased(dismissableView: RewardsView())),
         ("Touch Events!",       typeErased(dismissableView: SwiftTouchEvents())),
         ("Widget Collection",   typeErased(dismissableView: SwiftWidgets())),
         ("Animation Player",    typeErased(dismissableView: SwiftSimpleAnimation())),

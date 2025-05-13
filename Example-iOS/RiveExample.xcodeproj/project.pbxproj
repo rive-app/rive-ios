@@ -336,6 +336,18 @@
 		F2AB95D12CF0EB800055376E /* streaming.riv in Resources */ = {isa = PBXBuildFile; fileRef = F26E20A92CF0E21000130111 /* streaming.riv */; };
 		F2AC7F3C2CCBEEDC00E3ED79 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		F2AC7F3D2CCBEEDC00E3ED79 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F2C2915D2DB6D571009A2918 /* rewards.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C2915C2DB6D571009A2918 /* rewards.riv */; };
+		F2C2915E2DB6D571009A2918 /* rewards.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C2915C2DB6D571009A2918 /* rewards.riv */; };
+		F2C2915F2DB6D571009A2918 /* rewards.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C2915C2DB6D571009A2918 /* rewards.riv */; };
+		F2C291602DB6D571009A2918 /* rewards.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C2915C2DB6D571009A2918 /* rewards.riv */; };
+		F2C291612DB6D571009A2918 /* rewards.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C2915C2DB6D571009A2918 /* rewards.riv */; };
+		F2C291622DB6D571009A2918 /* rewards.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C2915C2DB6D571009A2918 /* rewards.riv */; };
+		F2C291662DB6D599009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
+		F2C291672DB6D599009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
+		F2C291682DB6D5A6009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
+		F2C291692DB6D5A6009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
+		F2C2916A2DB6D5A6009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
+		F2C2916B2DB6D5A6009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
 		F2C623362C874E3A0006E0CA /* fallback_fonts.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C623352C874E3A0006E0CA /* fallback_fonts.riv */; };
 		F2C623372C874E3A0006E0CA /* fallback_fonts.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C623352C874E3A0006E0CA /* fallback_fonts.riv */; };
 		F2C623392C874E690006E0CA /* SwiftFallbackFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */; };
@@ -536,6 +548,8 @@
 		F259E5822D35B7FA00B78FEF /* DataBindingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBindingView.swift; sourceTree = "<group>"; };
 		F26E20A92CF0E21000130111 /* streaming.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = streaming.riv; sourceTree = "<group>"; };
 		F2B7F2F72C5AC09200F47FBC /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
+		F2C2915C2DB6D571009A2918 /* rewards.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rewards.riv; sourceTree = "<group>"; };
+		F2C291652DB6D599009A2918 /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
 		F2C623352C874E3A0006E0CA /* fallback_fonts.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = fallback_fonts.riv; sourceTree = "<group>"; };
 		F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFallbackFonts.swift; sourceTree = "<group>"; };
 		F2C852D12CD1772300F0D81F /* Example (tvOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Example (tvOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -676,6 +690,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				F2C2915C2DB6D571009A2918 /* rewards.riv */,
 				F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */,
 				F26E20A92CF0E21000130111 /* streaming.riv */,
 				2E974F942CB3509200642588 /* layout_test.riv */,
@@ -763,6 +778,7 @@
 				049091622BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift */,
 				F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */,
 				F259E5822D35B7FA00B78FEF /* DataBindingView.swift */,
+				F2C291652DB6D599009A2918 /* RewardsView.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -778,6 +794,7 @@
 				F2C852D22CD1772300F0D81F /* Example (tvOS) */,
 				C9C73E9524FC471E00EF9516 /* Products */,
 				C9C741FF24FC53CF00EF9516 /* Frameworks */,
+				F24DAAFD2DD23F7F0048768D /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1079,6 +1096,7 @@
 				F22CF1AC2D380E1300D35779 /* data_binding_test.riv in Resources */,
 				040553932B7A274B008F076A /* play_button_event_example.riv in Resources */,
 				040553942B7A274B008F076A /* switch_event_example.riv in Resources */,
+				F2C2915E2DB6D571009A2918 /* rewards.riv in Resources */,
 				040553952B7A274B008F076A /* magic_8-ball_v2.riv in Resources */,
 				040553962B7A274B008F076A /* simple_assets.riv in Resources */,
 				040553972B7A274B008F076A /* light_switch.riv in Resources */,
@@ -1154,6 +1172,7 @@
 				040554022B7A2858008F076A /* Inter-45562.ttf in Resources */,
 				040554032B7A2858008F076A /* off_road_car_blog.riv in Resources */,
 				040554042B7A2858008F076A /* Main.storyboard in Resources */,
+				F2C2915D2DB6D571009A2918 /* rewards.riv in Resources */,
 				040554052B7A2858008F076A /* skills.riv in Resources */,
 				F22CF1AB2D380E1200D35779 /* data_binding_test.riv in Resources */,
 				040554062B7A2858008F076A /* artboard_animations.riv in Resources */,
@@ -1214,6 +1233,7 @@
 				F22CF1AD2D380E1400D35779 /* data_binding_test.riv in Resources */,
 				04E51C4C2A151C230075E473 /* play_button_event_example.riv in Resources */,
 				04E51C4D2A151C230075E473 /* switch_event_example.riv in Resources */,
+				F2C291602DB6D571009A2918 /* rewards.riv in Resources */,
 				04E51C4E2A151C230075E473 /* magic_8-ball_v2.riv in Resources */,
 				043026072B012C5000320F2E /* simple_assets.riv in Resources */,
 				04E51C4F2A151C230075E473 /* light_switch.riv in Resources */,
@@ -1289,6 +1309,7 @@
 				0453FCBF2B014E2F001185C8 /* Inter-45562.ttf in Resources */,
 				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
+				F2C2915F2DB6D571009A2918 /* rewards.riv in Resources */,
 				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
@@ -1343,6 +1364,7 @@
 				F22138862CCBEDD500A25BA7 /* Preview Assets.xcassets in Resources */,
 				F26E20AC2CF0E21000130111 /* streaming.riv in Resources */,
 				F22CF1AE2D380E1500D35779 /* data_binding_test.riv in Resources */,
+				F2C291612DB6D571009A2918 /* rewards.riv in Resources */,
 				F22138832CCBEDD500A25BA7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1355,6 +1377,7 @@
 				F2C852DB2CD1772400F0D81F /* Preview Assets.xcassets in Resources */,
 				F2AB95D12CF0EB800055376E /* streaming.riv in Resources */,
 				F22CF1AF2D380E1600D35779 /* data_binding_test.riv in Resources */,
+				F2C291622DB6D571009A2918 /* rewards.riv in Resources */,
 				F2C852D82CD1772400F0D81F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1369,6 +1392,7 @@
 				040553842B7A274B008F076A /* ContentView.swift in Sources */,
 				040553852B7A274B008F076A /* SwiftEvents.swift in Sources */,
 				040553862B7A274B008F076A /* Example__macOS_App.swift in Sources */,
+				F2C291682DB6D5A6009A2918 /* RewardsView.swift in Sources */,
 				040553882B7A274B008F076A /* DismissableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1400,6 +1424,7 @@
 				040553E52B7A2858008F076A /* SceneDelegate.swift in Sources */,
 				040553E62B7A2858008F076A /* SwiftEvents.swift in Sources */,
 				040553E72B7A2858008F076A /* StateMachine.swift in Sources */,
+				F2C291662DB6D599009A2918 /* RewardsView.swift in Sources */,
 				040553E82B7A2858008F076A /* RiveSlider.swift in Sources */,
 				040553E92B7A2858008F076A /* Layout.swift in Sources */,
 				040553EA2B7A2858008F076A /* BlendModes.swift in Sources */,
@@ -1422,6 +1447,7 @@
 				04E51C382A151A1E0075E473 /* ContentView.swift in Sources */,
 				E5964AAC2A9CD49200140479 /* SwiftEvents.swift in Sources */,
 				04E51C362A151A1E0075E473 /* Example__macOS_App.swift in Sources */,
+				F2C291692DB6D5A6009A2918 /* RewardsView.swift in Sources */,
 				F8DA7B462AF523A800FF3CBF /* DismissableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1457,6 +1483,7 @@
 				C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */,
 				042C888C2643EEE300E7DBB2 /* Layout.swift in Sources */,
 				046AFA732673B00B004ED497 /* BlendModes.swift in Sources */,
+				F2C291672DB6D599009A2918 /* RewardsView.swift in Sources */,
 				049091642BC948AA00F2C12B /* SwiftOutOfBandAudioAssets.swift in Sources */,
 				04026DCA27CE3EF6002B3DBF /* SwiftMultipleAnimations.swift in Sources */,
 				042C88882643DB7100E7DBB2 /* SimpleAnimation.swift in Sources */,
@@ -1475,6 +1502,7 @@
 			files = (
 				F22138812CCBEDD400A25BA7 /* ContentView.swift in Sources */,
 				F221387F2CCBEDD400A25BA7 /* Example__visionOS_App.swift in Sources */,
+				F2C2916A2DB6D5A6009A2918 /* RewardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1484,6 +1512,7 @@
 			files = (
 				F2C852D62CD1772300F0D81F /* ContentView.swift in Sources */,
 				F2C852D42CD1772300F0D81F /* Example__tvOS_App.swift in Sources */,
+				F2C2916B2DB6D5A6009A2918 /* RewardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1777,7 +1806,7 @@
 				DEVELOPMENT_TEAM = NJ3JMFUNS9;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1801,7 +1830,7 @@
 				DEVELOPMENT_TEAM = NJ3JMFUNS9;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
