@@ -943,6 +943,7 @@
 				"OTHER_LDFLAGS[sdk=appletvos*]" = (
 					"-lrive_appletvos",
 					"-lrive_harfbuzz_appletvos",
+					"-lminiaudio_appletvos",
 					"-lrive_sheenbidi_appletvos",
 					"-lrive_yoga_appletvos",
 					"-lrive_pls_renderer_appletvos",
@@ -953,6 +954,7 @@
 				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
 					"-lrive_appletvsimulator",
 					"-lrive_harfbuzz_appletvsimulator",
+					"-lminiaudio_appletvsimulator",
 					"-lrive_sheenbidi_appletvsimulator",
 					"-lrive_yoga_appletvsimulator",
 					"-lrive_pls_renderer_appletvsimulator",
@@ -963,6 +965,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lrive",
 					"-lrive_harfbuzz",
+					"-lminiaudio",
 					"-lrive_sheenbidi",
 					"-lrive_yoga",
 					"-lrive_pls_renderer",
@@ -972,6 +975,7 @@
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lrive_sim",
 					"-lrive_harfbuzz_sim",
+					"-lminiaudio_sim",
 					"-lrive_sheenbidi_sim",
 					"-lrive_yoga_sim",
 					"-lrive_pls_renderer_sim",
@@ -981,6 +985,7 @@
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lrive_macos",
 					"-lrive_harfbuzz_macos",
+					"-lminiaudio_macos",
 					"-lrive_sheenbidi_macos",
 					"-lrive_yoga_macos",
 					"-lrive_pls_renderer_macos",
@@ -990,6 +995,7 @@
 				"OTHER_LDFLAGS[sdk=xros*]" = (
 					"-lrive_xros",
 					"-lrive_harfbuzz_xros",
+					"-lminiaudio_xros",
 					"-lrive_sheenbidi_xros",
 					"-lrive_yoga_xros",
 					"-lrive_pls_renderer_xros",
@@ -999,6 +1005,7 @@
 				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
 					"-lrive_xrsimulator",
 					"-lrive_harfbuzz_xrsimulator",
+					"-lminiaudio_xrsimulator",
 					"-lrive_sheenbidi_xrsimulator",
 					"-lrive_yoga_xrsimulator",
 					"-lrive_pls_renderer_xrsimulator",
@@ -1071,6 +1078,7 @@
 				"OTHER_LDFLAGS[sdk=appletvos*]" = (
 					"-lrive_appletvos",
 					"-lrive_harfbuzz_appletvos",
+					"-lminiaudio_appletvos",
 					"-lrive_sheenbidi_appletvos",
 					"-lrive_yoga_appletvos",
 					"-lrive_pls_renderer_appletvos",
@@ -1081,6 +1089,7 @@
 				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
 					"-lrive_appletvsimulator",
 					"-lrive_harfbuzz_appletvsimulator",
+					"-lminiaudio_appletvsimulator",
 					"-lrive_sheenbidi_appletvsimulator",
 					"-lrive_yoga_appletvsimulator",
 					"-lrive_pls_renderer_appletvsimulator",
@@ -1091,6 +1100,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lrive",
 					"-lrive_harfbuzz",
+					"-lminiaudio",
 					"-lrive_sheenbidi",
 					"-lrive_yoga",
 					"-lrive_pls_renderer",
@@ -1100,6 +1110,7 @@
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lrive_sim",
 					"-lrive_harfbuzz_sim",
+					"-lminiaudio_sim",
 					"-lrive_sheenbidi_sim",
 					"-lrive_yoga_sim",
 					"-lrive_pls_renderer_sim",
@@ -1109,6 +1120,7 @@
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lrive_macos",
 					"-lrive_harfbuzz_macos",
+					"-lminiaudio_macos",
 					"-lrive_sheenbidi_macos",
 					"-lrive_yoga_macos",
 					"-lrive_pls_renderer_macos",
@@ -1118,6 +1130,7 @@
 				"OTHER_LDFLAGS[sdk=xros*]" = (
 					"-lrive_xros",
 					"-lrive_harfbuzz_xros",
+					"-lminiaudio_xros",
 					"-lrive_sheenbidi_xros",
 					"-lrive_yoga_xros",
 					"-lrive_pls_renderer_xros",
@@ -1127,6 +1140,7 @@
 				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
 					"-lrive_xrsimulator",
 					"-lrive_harfbuzz_xrsimulator",
+					"-lminiaudio_xrsimulator",
 					"-lrive_sheenbidi_xrsimulator",
 					"-lrive_yoga_xrsimulator",
 					"-lrive_pls_renderer_xrsimulator",

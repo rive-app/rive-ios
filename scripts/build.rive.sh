@@ -28,14 +28,13 @@ make_dependency_directories() {
 
 build_runtime() {
     # Build the rive runtime.
-    pushd $RIVE_RUNTIME_DIR
-    ./build.sh -p ios clean
-    ./build.sh -p ios $1
-    popd
-    cp -r $RIVE_RUNTIME_DIR/build/ios/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/ios/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/ios/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/ios/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga.a
+    build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua ios $1 --with_rive_audio=system universal clean
+
+    cp -r out/ios_universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz.a
+    cp -r out/ios_universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga.a
+    cp -r out/ios_universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi.a
+    cp -r out/ios_universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio.a
+    cp -r out/ios_universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -56,7 +55,7 @@ build_runtime() {
     cp -r $RIVE_PLS_DIR/out/iphoneos_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
     $DEV_SCRIPT_DIR/strip_static_lib.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer.a
     cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
-    
+
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
     premake5 --file=premake5_v2.lua --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --no_rive_jpeg --no_rive_png --no_rive_webp gmake2
@@ -68,14 +67,13 @@ build_runtime() {
 
 build_runtime_sim() {
     # Build the rive runtime.
-    pushd $RIVE_RUNTIME_DIR
-    ./build.sh -p ios_sim clean
-    ./build.sh -p ios_sim $1
-    popd
-    cp -r $RIVE_RUNTIME_DIR/build/ios_sim/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sim.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/ios_sim/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_sim.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/ios_sim/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_sim.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/ios_sim/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_sim.a
+    build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua iossim $1 --with_rive_audio=system clean
+
+    cp -r out/iossim_universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_sim.a
+    cp -r out/iossim_universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_sim.a
+    cp -r out/iossim_universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_sim.a
+    cp -r out/iossim_universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_sim.a
+    cp -r out/iossim_universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sim.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -97,7 +95,7 @@ build_runtime_sim() {
     cp -r $RIVE_PLS_DIR/out/iphonesimulator_$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a
     $DEV_SCRIPT_DIR/strip_static_lib_fat.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_sim.a arm64 x86_64
     cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
-    
+
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
     premake5 --file=premake5_v2.lua --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=ios --variant=emulator --no_rive_jpeg --no_rive_png --no_rive_webp gmake2
@@ -109,14 +107,13 @@ build_runtime_sim() {
 
 build_runtime_macosx() {
     # Build the rive runtime.
-    pushd $RIVE_RUNTIME_DIR
-    ./build.sh -p macosx clean
-    ./build.sh -p macosx $1
-    popd
-    cp -r $RIVE_RUNTIME_DIR/build/macosx/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_macos.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/macosx/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_macos.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/macosx/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_macos.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/macosx/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_macos.a
+    build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua $1 universal --with_rive_audio=system clean
+
+    cp -r out/universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_macos.a
+    cp -r out/universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_macos.a
+    cp -r out/universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_macos.a
+    cp -r out/universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_macos.a
+    cp -r out/universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_macos.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -137,7 +134,7 @@ build_runtime_macosx() {
     cp -r $RIVE_PLS_DIR/out/$1/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_macos.a
     $DEV_SCRIPT_DIR/strip_static_lib_fat.sh $DEV_SCRIPT_DIR/../dependencies/$1/librive_pls_renderer_macos.a arm64 x86_64
     cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
-    
+
     # Build rive_decoders.
     pushd $RIVE_RUNTIME_DIR/decoders
     premake5 --file=premake5_v2.lua --config=$1 --out=out/$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --os=macosx --no_rive_jpeg --no_rive_png --no_rive_webp gmake2
@@ -149,14 +146,13 @@ build_runtime_macosx() {
 
 build_runtime_xros() {
     # Build the rive runtime.
-    pushd $RIVE_RUNTIME_DIR
-    ./build.sh -p xros clean
-    ./build.sh -p xros $1
-    popd
-    cp -r $RIVE_RUNTIME_DIR/build/xros/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_xros.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/xros/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_xros.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/xros/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_xros.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/xros/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_xros.a
+    RIVE_OUT=out/xros_$1 build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua xros $1 --with_rive_audio=system clean
+
+    cp -r out/xros_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_xros.a
+    cp -r out/xros_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_xros.a
+    cp -r out/xros_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_xros.a
+    cp -r out/xros_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_xros.a
+    cp -r out/xros_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_xros.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -189,14 +185,13 @@ build_runtime_xros() {
 
 build_runtime_xrsimulator() {
     # Build the rive runtime.
-    pushd $RIVE_RUNTIME_DIR
-    ./build.sh -p xrsimulator clean
-    ./build.sh -p xrsimulator $1
-    popd
-    cp -r $RIVE_RUNTIME_DIR/build/xrsimulator/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_xrsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/xrsimulator/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_xrsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/xrsimulator/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_xrsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/xrsimulator/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_xrsimulator.a
+    RIVE_OUT=out/xrsimulator_universal_$1 build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua xrsimulator $1 --with_rive_audio=system clean
+
+    cp -r out/xrsimulator_universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_xrsimulator.a
+    cp -r out/xrsimulator_universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_xrsimulator.a
+    cp -r out/xrsimulator_universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_xrsimulator.a
+    cp -r out/xrsimulator_universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_xrsimulator.a
+    cp -r out/xrsimulator_universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_xrsimulator.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -229,15 +224,13 @@ build_runtime_xrsimulator() {
 }
 
 build_runtime_appletvos() {
-    # Build the rive runtime.
-    pushd $RIVE_RUNTIME_DIR
-    ./build.sh -p appletvos clean
-    ./build.sh -p appletvos $1
-    popd
-    cp -r $RIVE_RUNTIME_DIR/build/appletvos/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_appletvos.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/appletvos/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_appletvos.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/appletvos/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_appletvos.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/appletvos/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_appletvos.a
+    RIVE_OUT=out/appletvos_$1 build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua appletvos $1 --with_rive_audio=system clean
+
+    cp -r out/appletvos_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_appletvos.a
+    cp -r out/appletvos_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_appletvos.a
+    cp -r out/appletvos_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_appletvos.a
+    cp -r out/appletvos_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_appletvos.a
+    cp -r out/appletvos_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_appletvos.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -271,15 +264,13 @@ build_runtime_appletvos() {
 }
 
 build_runtime_appletvsimulator() {
-    # Build the rive runtime.
-    pushd $RIVE_RUNTIME_DIR
-    ./build.sh -p appletvsimulator clean
-    ./build.sh -p appletvsimulator $1
-    popd
-    cp -r $RIVE_RUNTIME_DIR/build/appletvsimulator/bin/$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_appletvsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/appletvsimulator/cache/bin/$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_appletvsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/appletvsimulator/cache/bin/$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_appletvsimulator.a
-    cp -r $RIVE_RUNTIME_DIR/dependencies/appletvsimulator/cache/bin/$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_appletvsimulator.a
+    RIVE_OUT=out/appletvsimulator_universal_$1 build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua appletvsimulator $1 --with_rive_audio=system clean
+
+    cp -r out/appletvsimulator_universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_appletvsimulator.a
+    cp -r out/appletvsimulator_universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_appletvsimulator.a
+    cp -r out/appletvsimulator_universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_appletvsimulator.a
+    cp -r out/appletvsimulator_universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_appletvsimulator.a
+    cp -r out/appletvsimulator_universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_appletvsimulator.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -326,7 +317,7 @@ build_all() {
     if [ "$1" != "debug" ] && [ "$1" != "release" ]; then
         usage
     fi
-    
+
     build_runtime $1
     build_runtime_sim $1
     build_runtime_macosx $1
@@ -339,25 +330,25 @@ build_all() {
 case $1 in
 all)
     case $2 in
-        "debug")
-            echo "Building all Apple runtimes in debug..."
-            make_dependency_directories
-            build_all debug
-            ;;
-        "release")
-            echo "Building all Apple runtimes in release..."
-            make_dependency_directories
-            build_all release
-            ;;
-        "")
-            echo "Building all Apple runtimes in debug and release..."
-            make_dependency_directories
-            build_all debug
-            build_all release
-            ;;
-        *) 
-            usage
-            ;;
+    "debug")
+        echo "Building all Apple runtimes in debug..."
+        make_dependency_directories
+        build_all debug
+        ;;
+    "release")
+        echo "Building all Apple runtimes in release..."
+        make_dependency_directories
+        build_all release
+        ;;
+    "")
+        echo "Building all Apple runtimes in debug and release..."
+        make_dependency_directories
+        build_all debug
+        build_all release
+        ;;
+    *)
+        usage
+        ;;
     esac
     ;;
 macosx)

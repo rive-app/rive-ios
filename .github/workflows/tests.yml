@@ -23,6 +23,10 @@ jobs:
           source .venv/bin/activate
           echo PATH=$PATH >> $GITHUB_ENV
 
+      - name: Add rive_build.sh to PATH
+        shell: bash
+        run: echo "${{github.workspace}}/packages/runtime/build" >> $GITHUB_PATH
+
       - name: Installing pre-requisites
         run: |
           set -x
