@@ -250,6 +250,8 @@
 		F28DE4522C5002D900F3C379 /* RiveModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveModelTests.swift; sourceTree = "<group>"; };
 		F2B29EA02D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveDataBindingViewModelInstancePropertyData.h; sourceTree = "<group>"; };
 		F2B29EA12D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveDataBindingViewModelInstancePropertyData.m; sourceTree = "<group>"; };
+		F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Catalyst.xcconfig; sourceTree = "<group>"; };
+		F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = macOS.xcconfig; sourceTree = "<group>"; };
 		F2C003E72C933D2300339E67 /* RiveMetalDrawableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveMetalDrawableView.h; sourceTree = "<group>"; };
 		F2C07B192DA9854F00DC8C84 /* WeakContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeakContainer.h; sourceTree = "<group>"; };
 		F2C07B1A2DA9854F00DC8C84 /* WeakContainer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeakContainer.m; sourceTree = "<group>"; };
@@ -406,6 +408,7 @@
 		C9C73EC724FC478800EF9516 = {
 			isa = PBXGroup;
 			children = (
+				F2BD96D72DDCC7A200E7F49A /* Config */,
 				C9C73ED324FC478800EF9516 /* Source */,
 				2E54F2382BE428750013016C /* Resources */,
 				C9C73EDE24FC478900EF9516 /* Tests */,
@@ -496,6 +499,15 @@
 				F2C07B1A2DA9854F00DC8C84 /* WeakContainer.m */,
 			);
 			path = DataBinding;
+			sourceTree = "<group>";
+		};
+		F2BD96D72DDCC7A200E7F49A /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */,
+				F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		F2CCA9C02C9E13B2007DC0D2 /* Logging */ = {
@@ -767,6 +779,7 @@
 /* Begin XCBuildConfiguration section */
 		C9C73EE324FC478900EF9516 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
@@ -835,6 +848,7 @@
 		};
 		C9C73EE424FC478900EF9516 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
@@ -898,6 +912,7 @@
 		};
 		C9C73EE624FC478900EF9516 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				BITCODE_GENERATION_MODE = bitcode;
@@ -982,16 +997,6 @@
 					"-lrive_cg_renderer_sim",
 					"-lrive_decoders_sim",
 				);
-				"OTHER_LDFLAGS[sdk=macosx*]" = (
-					"-lrive_macos",
-					"-lrive_harfbuzz_macos",
-					"-lminiaudio_macos",
-					"-lrive_sheenbidi_macos",
-					"-lrive_yoga_macos",
-					"-lrive_pls_renderer_macos",
-					"-lrive_cg_renderer_macos",
-					"-lrive_decoders_macos",
-				);
 				"OTHER_LDFLAGS[sdk=xros*]" = (
 					"-lrive_xros",
 					"-lrive_harfbuzz_xros",
@@ -1018,7 +1023,6 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
-				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1030,6 +1034,7 @@
 		};
 		C9C73EE724FC478900EF9516 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				APPLICATION_EXTENSION_API_ONLY = YES;
@@ -1117,15 +1122,246 @@
 					"-lrive_cg_renderer_sim",
 					"-lrive_decoders_sim",
 				);
-				"OTHER_LDFLAGS[sdk=macosx*]" = (
-					"-lrive_macos",
-					"-lrive_harfbuzz_macos",
-					"-lminiaudio_macos",
-					"-lrive_sheenbidi_macos",
-					"-lrive_yoga_macos",
-					"-lrive_pls_renderer_macos",
-					"-lrive_cg_renderer_macos",
-					"-lrive_decoders_macos",
+				"OTHER_LDFLAGS[sdk=xros*]" = (
+					"-lrive_xros",
+					"-lrive_harfbuzz_xros",
+					"-lminiaudio_xros",
+					"-lrive_sheenbidi_xros",
+					"-lrive_yoga_xros",
+					"-lrive_pls_renderer_xros",
+					"-lrive_cg_renderer_xros",
+					"-lrive_decoders_xros",
+				);
+				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
+					"-lrive_xrsimulator",
+					"-lrive_harfbuzz_xrsimulator",
+					"-lminiaudio_xrsimulator",
+					"-lrive_sheenbidi_xrsimulator",
+					"-lrive_yoga_xrsimulator",
+					"-lrive_pls_renderer_xrsimulator",
+					"-lrive_cg_renderer_xrsimulator",
+					"-lrive_decoders_xrsimulator",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				XROS_DEPLOYMENT_TARGET = 1.0;
+			};
+			name = Release;
+		};
+		C9C73EE924FC478900EF9516 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
+				INFOPLIST_FILE = Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,3,7";
+			};
+			name = Debug;
+		};
+		C9C73EEA24FC478900EF9516 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
+				INFOPLIST_FILE = Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,3,7";
+			};
+			name = Release;
+		};
+		F2BD96D82DDCC82600E7F49A /* Debug (Catalyst) */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "-Swift.h";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = "Debug (Catalyst)";
+		};
+		F2BD96D92DDCC82600E7F49A /* Debug (Catalyst) */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				BITCODE_GENERATION_MODE = bitcode;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					dependencies/includes/rive/include,
+					dependencies/includes/renderer/include,
+					dependencies/includes/cg_renderer/include,
+				);
+				INFOPLIST_FILE = Source/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"${PROJECT_DIR}/dependencies/release",
+					"${PROJECT_DIR}/dependencies",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MARKETING_VERSION = 0.6.5;
+				OTHER_CFLAGS = (
+					"-fembed-bitcode",
+					"-DSK_METAL",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DYOGA_EXPORT=",
+				);
+				"OTHER_LDFLAGS[sdk=appletvos*]" = (
+					"-lrive_appletvos",
+					"-lrive_harfbuzz_appletvos",
+					"-lminiaudio_appletvos",
+					"-lrive_sheenbidi_appletvos",
+					"-lrive_yoga_appletvos",
+					"-lrive_pls_renderer_appletvos",
+					"-lrive_cg_renderer_appletvos",
+					"-lrive_decoders_appletvos",
+					"-lrive_webp_appletvos",
+				);
+				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
+					"-lrive_appletvsimulator",
+					"-lrive_harfbuzz_appletvsimulator",
+					"-lminiaudio_appletvsimulator",
+					"-lrive_sheenbidi_appletvsimulator",
+					"-lrive_yoga_appletvsimulator",
+					"-lrive_pls_renderer_appletvsimulator",
+					"-lrive_cg_renderer_appletvsimulator",
+					"-lrive_decoders_appletvsimulator",
+					"-lrive_webp_appletvsimulator",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"-lrive",
+					"-lrive_harfbuzz",
+					"-lminiaudio",
+					"-lrive_sheenbidi",
+					"-lrive_yoga",
+					"-lrive_pls_renderer",
+					"-lrive_cg_renderer",
+					"-lrive_decoders",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"-lrive_sim",
+					"-lrive_harfbuzz_sim",
+					"-lminiaudio_sim",
+					"-lrive_sheenbidi_sim",
+					"-lrive_yoga_sim",
+					"-lrive_pls_renderer_sim",
+					"-lrive_cg_renderer_sim",
+					"-lrive_decoders_sim",
 				);
 				"OTHER_LDFLAGS[sdk=xros*]" = (
 					"-lrive_xros",
@@ -1153,18 +1389,239 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
-				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RiveRuntime-Swift.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				XROS_DEPLOYMENT_TARGET = 1.0;
+			};
+			name = "Debug (Catalyst)";
+		};
+		F2BD96DA2DDCC82600E7F49A /* Debug (Catalyst) */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
+				INFOPLIST_FILE = Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"${PROJECT_DIR}/dependencies",
+					"${PROJECT_DIR}/dependencies/release",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,3,7";
+			};
+			name = "Debug (Catalyst)";
+		};
+		F2BD96DB2DDCC82900E7F49A /* Release (Catalyst) */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "-Swift.h";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = "Release (Catalyst)";
+		};
+		F2BD96DC2DDCC82900E7F49A /* Release (Catalyst) */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				BITCODE_GENERATION_MODE = bitcode;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					dependencies/includes/rive/include,
+					dependencies/includes/renderer/include,
+					dependencies/includes/cg_renderer/include,
+				);
+				INFOPLIST_FILE = Source/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"${PROJECT_DIR}/dependencies/release",
+					"${PROJECT_DIR}/dependencies",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MARKETING_VERSION = 0.6.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = (
+					"-DNS_BLOCK_ASSERTIONS=1",
+					"-fembed-bitcode",
+					"-DSK_METAL",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DYOGA_EXPORT=",
+				);
+				"OTHER_LDFLAGS[sdk=appletvos*]" = (
+					"-lrive_appletvos",
+					"-lrive_harfbuzz_appletvos",
+					"-lminiaudio_appletvos",
+					"-lrive_sheenbidi_appletvos",
+					"-lrive_yoga_appletvos",
+					"-lrive_pls_renderer_appletvos",
+					"-lrive_cg_renderer_appletvos",
+					"-lrive_decoders_appletvos",
+					"-lrive_webp_appletvos",
+				);
+				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
+					"-lrive_appletvsimulator",
+					"-lrive_harfbuzz_appletvsimulator",
+					"-lminiaudio_appletvsimulator",
+					"-lrive_sheenbidi_appletvsimulator",
+					"-lrive_yoga_appletvsimulator",
+					"-lrive_pls_renderer_appletvsimulator",
+					"-lrive_cg_renderer_appletvsimulator",
+					"-lrive_decoders_appletvsimulator",
+					"-lrive_webp_appletvsimulator",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"-lrive",
+					"-lrive_harfbuzz",
+					"-lminiaudio",
+					"-lrive_sheenbidi",
+					"-lrive_yoga",
+					"-lrive_pls_renderer",
+					"-lrive_cg_renderer",
+					"-lrive_decoders",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"-lrive_sim",
+					"-lrive_harfbuzz_sim",
+					"-lminiaudio_sim",
+					"-lrive_sheenbidi_sim",
+					"-lrive_yoga_sim",
+					"-lrive_pls_renderer_sim",
+					"-lrive_cg_renderer_sim",
+					"-lrive_decoders_sim",
+				);
+				"OTHER_LDFLAGS[sdk=xros*]" = (
+					"-lrive_xros",
+					"-lrive_harfbuzz_xros",
+					"-lminiaudio_xros",
+					"-lrive_sheenbidi_xros",
+					"-lrive_yoga_xros",
+					"-lrive_pls_renderer_xros",
+					"-lrive_cg_renderer_xros",
+					"-lrive_decoders_xros",
+				);
+				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
+					"-lrive_xrsimulator",
+					"-lrive_harfbuzz_xrsimulator",
+					"-lminiaudio_xrsimulator",
+					"-lrive_sheenbidi_xrsimulator",
+					"-lrive_yoga_xrsimulator",
+					"-lrive_pls_renderer_xrsimulator",
+					"-lrive_cg_renderer_xrsimulator",
+					"-lrive_decoders_xrsimulator",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RiveRuntime-Swift.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
 				TVOS_DEPLOYMENT_TARGET = 16.0;
 				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
-			name = Release;
+			name = "Release (Catalyst)";
 		};
-		C9C73EE924FC478900EF9516 /* Debug */ = {
+		F2BD96DD2DDCC82900E7F49A /* Release (Catalyst) */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -1176,39 +1633,19 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-			};
-			name = Debug;
-		};
-		C9C73EEA24FC478900EF9516 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
-				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
+				LIBRARY_SEARCH_PATHS = (
+					"${PROJECT_DIR}/dependencies",
+					"${PROJECT_DIR}/dependencies/release",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";
 			};
-			name = Release;
+			name = "Release (Catalyst)";
 		};
 /* End XCBuildConfiguration section */
 
@@ -1217,7 +1654,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C9C73EE324FC478900EF9516 /* Debug */,
+				F2BD96D82DDCC82600E7F49A /* Debug (Catalyst) */,
 				C9C73EE424FC478900EF9516 /* Release */,
+				F2BD96DB2DDCC82900E7F49A /* Release (Catalyst) */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1226,7 +1665,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C9C73EE624FC478900EF9516 /* Debug */,
+				F2BD96D92DDCC82600E7F49A /* Debug (Catalyst) */,
 				C9C73EE724FC478900EF9516 /* Release */,
+				F2BD96DC2DDCC82900E7F49A /* Release (Catalyst) */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1235,7 +1676,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C9C73EE924FC478900EF9516 /* Debug */,
+				F2BD96DA2DDCC82600E7F49A /* Debug (Catalyst) */,
 				C9C73EEA24FC478900EF9516 /* Release */,
+				F2BD96DD2DDCC82900E7F49A /* Release (Catalyst) */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

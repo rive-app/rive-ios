@@ -304,8 +304,83 @@ build_runtime_appletvsimulator() {
     cp -r $RIVE_RUNTIME_DIR/decoders/out/appletvsimulator_$1/liblibwebp.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_webp_appletvsimulator.a
 }
 
+build_runtime_maccatalyst() {
+    _build_runtime_maccatalyst() {
+        local config=$1
+        local arch=$2
+        
+        # Build the rive runtime.
+        RIVE_OUT=out/maccatalyst_${arch}_${config} build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua ${config} ${arch} --with_rive_audio=system --variant=maccatalyst clean
+
+        cp -r out/maccatalyst_${arch}_${config}/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_harfbuzz_maccatalyst_${arch}.a
+        cp -r out/maccatalyst_${arch}_${config}/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_yoga_maccatalyst_${arch}.a
+        cp -r out/maccatalyst_${arch}_${config}/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_sheenbidi_maccatalyst_${arch}.a
+        cp -r out/maccatalyst_${arch}_${config}/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/${config}/libminiaudio_maccatalyst_${arch}.a
+        cp -r out/maccatalyst_${arch}_${config}/librive.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_maccatalyst_${arch}.a
+        cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
+
+        # Build rive_cg_renderer.
+        pushd $RIVE_RUNTIME_DIR/cg_renderer
+        premake5 --config=${config} --out=out/maccatalyst_${arch}_${config} --arch=${arch} --scripts=$RIVE_RUNTIME_DIR/build --os=macosx --variant=maccatalyst gmake2
+        make -C out/maccatalyst_${arch}_${config} clean
+        make -C out/maccatalyst_${arch}_${config} -j12 rive_cg_renderer
+        popd
+        cp -r $RIVE_RUNTIME_DIR/cg_renderer/out/maccatalyst_${arch}_${config}/librive_cg_renderer.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_cg_renderer_maccatalyst_${arch}.a
+        cp -r $RIVE_RUNTIME_DIR/cg_renderer/include $DEV_SCRIPT_DIR/../dependencies/includes/cg_renderer
+
+        # Build rive_pls_renderer.
+        pushd $RIVE_PLS_DIR
+        premake5 --config=${config} --out=out/maccatalyst_${arch}_${config} --arch=${arch} --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=macosx --variant=maccatalyst gmake2
+        make -C out/maccatalyst_${arch}_${config} clean
+        make -C out/maccatalyst_${arch}_${config} -j12 rive_pls_renderer
+        popd
+        cp -r $RIVE_PLS_DIR/out/maccatalyst_${arch}_${config}/librive_pls_renderer.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_pls_renderer_maccatalyst_${arch}.a
+        cp -r $RIVE_PLS_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/renderer
+
+        # Build rive_decoders.
+        pushd $RIVE_RUNTIME_DIR/decoders
+        premake5 --file=premake5_v2.lua --config=${config} --out=out/maccatalyst_${arch}_${config} --arch=${arch} --scripts=$RIVE_RUNTIME_DIR/build --os=macosx --no_rive_jpeg --no_rive_png --no_rive_webp --variant=maccatalyst gmake2
+        make -C out/maccatalyst_${arch}_${config} clean
+        make -C out/maccatalyst_${arch}_${config} -j12 rive_decoders
+        popd
+        cp -r $RIVE_RUNTIME_DIR/decoders/out/maccatalyst_${arch}_${config}/librive_decoders.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_decoders_maccatalyst_${arch}.a
+    }
+
+    _create_universal_libraries() {
+        local config=$1
+        local deps_dir="$DEV_SCRIPT_DIR/../dependencies/${config}"
+
+        # List of libraries to merge
+        local libs=(
+            "librive_harfbuzz_maccatalyst"
+            "librive_yoga_maccatalyst"
+            "librive_sheenbidi_maccatalyst"
+            "libminiaudio_maccatalyst"
+            "librive_maccatalyst"
+            "librive_cg_renderer_maccatalyst"
+            "librive_pls_renderer_maccatalyst"
+            "librive_decoders_maccatalyst"
+        )
+
+        # Create universal binaries for each library
+        for lib in "${libs[@]}"; do
+            lipo -create \
+                "${deps_dir}/${lib}_arm64.a" \
+                "${deps_dir}/${lib}_x64.a" \
+                -output "${deps_dir}/${lib}.a"
+            
+            # Clean up architecture-specific files
+            rm "${deps_dir}/${lib}_arm64.a" "${deps_dir}/${lib}_x64.a"
+        done
+    }
+    
+    _build_runtime_maccatalyst "$1" "arm64"
+    _build_runtime_maccatalyst "$1" "x64"
+    _create_universal_libraries "$1"
+}
+
 usage() {
-    echo "USAGE: $0 <all|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|macosx> <debug|release>"
+    echo "USAGE: $0 <all|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|macosx|maccatalyst> <debug|release>"
     exit 1
 }
 
@@ -325,6 +400,7 @@ build_all() {
     build_runtime_xrsimulator $1
     build_runtime_appletvos $1
     build_runtime_appletvsimulator $1
+    build_runtime_maccatalyst $1
 }
 
 case $1 in
@@ -461,6 +537,20 @@ appletvsimulator)
         # the version being built, or add a "both" option.
         # build_runtime_sim debug
         # build_runtime_sim release
+        ;;
+    *)
+        usage
+        ;;
+    esac
+    ;;
+maccatalyst)
+    if (($# < 2)); then
+        usage
+    fi
+    case $2 in
+    release | debug)
+        make_dependency_directories
+        build_runtime_maccatalyst $2
         ;;
     *)
         usage

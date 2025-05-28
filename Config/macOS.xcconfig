@@ -1,0 +1,13 @@
+//
+//  Build.xcconfig
+//  RiveRuntime
+//
+//  Created by David Skuza on 5/20/25.
+//  Copyright © 2025 Rive. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+SUPPORTS_MACCATALYST=NO
+OTHER_LDFLAGS[sdk=macosx*] = -lrive_macos -lrive_harfbuzz_macos -lrive_sheenbidi_macos -lrive_yoga_macos -lminiaudio_macos -lrive_pls_renderer_macos -lrive_cg_renderer_macos -lrive_decoders_macos

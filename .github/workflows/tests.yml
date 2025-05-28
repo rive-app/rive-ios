@@ -64,3 +64,10 @@ jobs:
 
       - name: Test tvOS runtime
         run: ./scripts/test.sh appletvsimulator
+
+      - name: Build for Mac Catalyst (using the cache, we should make an archive of course)
+        run: |
+          ./scripts/build.sh maccatalyst release
+
+      - name: Test Mac Catalyst runtime
+        run: ./scripts/test.sh maccatalyst

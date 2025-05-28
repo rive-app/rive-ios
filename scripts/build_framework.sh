@@ -48,20 +48,11 @@ xcodebuild archive \
   -configuration ${CONFIGURATION} \
   -project RiveRuntime.xcodeproj \
   -scheme RiveRuntime \
-  -destination generic/platform=macOS \
-  -archivePath ".build/archives/RiveRuntime_macOS" \
-  SKIP_INSTALL=NO \
-  BUILD_LIBRARY_FOR_DISTRIBUTION=YES
-
-xcodebuild archive \
-  -configuration ${CONFIGURATION} \
-  -project RiveRuntime.xcodeproj \
-  -scheme RiveRuntime \
   -sdk xros \
   -destination generic/platform=visionOS \
   -archivePath ".build/archives/RiveRuntime_visionOS" \
   SKIP_INSTALL=NO \
-  BUILD_LIBRARY_FOR_DISTRIBUTION=YES 
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
 xcodebuild archive \
   -configuration ${CONFIGURATION} \
@@ -93,13 +84,30 @@ xcodebuild archive \
   SKIP_INSTALL=NO \
   BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
+xcodebuild archive \
+  -configuration ${CONFIGURATION} \
+  -project RiveRuntime.xcodeproj \
+  -scheme RiveRuntime \
+  -destination "generic/platform=macOS" \
+  -archivePath ".build/archives/RiveRuntime_macOS" \
+  SKIP_INSTALL=NO \
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+  SUPPORTS_MACCATALYST=NO
+
+xcodebuild archive \
+  -configuration "${CONFIGURATION} (Catalyst)" \
+  -project RiveRuntime.xcodeproj \
+  -scheme "RiveRuntime (Catalyst)" \
+  -destination "generic/platform=macOS,variant=Mac Catalyst" \
+  -archivePath ".build/archives/RiveRuntime_macOS_Catalyst" \
+  SKIP_INSTALL=NO \
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+
 xcodebuild \
     -create-xcframework \
     -archive .build/archives/RiveRuntime_iOS.xcarchive \
     -framework RiveRuntime.framework \
     -archive .build/archives/RiveRuntime_iOS_Simulator.xcarchive \
-    -framework RiveRuntime.framework \
-    -archive .build/archives/RiveRuntime_macOS.xcarchive \
     -framework RiveRuntime.framework \
     -archive .build/archives/RiveRuntime_visionOS.xcarchive \
     -framework RiveRuntime.framework \
@@ -109,4 +117,9 @@ xcodebuild \
     -framework RiveRuntime.framework \
     -archive .build/archives/RiveRuntime_tvOS_Simulator.xcarchive \
     -framework RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_macOS.xcarchive \
+    -framework RiveRuntime.framework \
+    -archive .build/archives/RiveRuntime_macOS_Catalyst.xcarchive \
+    -framework RiveRuntime.framework \
     -output archive/RiveRuntime.xcframework
+
