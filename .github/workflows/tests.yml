@@ -25,7 +25,7 @@ jobs:
 
       - name: Add rive_build.sh to PATH
         shell: bash
-        run: echo "${{github.workspace}}/packages/runtime/build" >> $GITHUB_PATH
+        run: echo "${{github.workspace}}/submodules/rive-runtime/build" >> $GITHUB_PATH
 
       - name: Installing pre-requisites
         run: |
