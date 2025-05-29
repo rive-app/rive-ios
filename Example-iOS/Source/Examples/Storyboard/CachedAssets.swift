@@ -13,7 +13,6 @@ import SwiftUI
 
 class AssetLoader{
     init() {
-        factory = RenderContextManager.shared()!.getDefaultFactory();
         fillFontCache();
         fillImageCache();
     }
@@ -42,18 +41,19 @@ class AssetLoader{
         for option in options {
             let url = URL(string: option)!
             let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                
-                if let data = data {
-                    self.fontCache.append(self.factory!.decodeFont(data));
-                }
-                
-                if (first){
-                    first=false;
-                    if let fontAsset = self.cachedFont, let font=self.fontCache.randomElement() {
-                        fontAsset.font(font);
+                DispatchQueue.main.async { [weak self] in
+                    guard let self, let factory = self.factory else { return }
+                    if let data = data {
+                        self.fontCache.append(factory.decodeFont(data));
+                    }
+
+                    if (first){
+                        first=false;
+                        if let fontAsset = self.cachedFont, let font=self.fontCache.randomElement() {
+                            fontAsset.font(font);
+                        }
                     }
                 }
-                
             }
             task.resume()
             tasks.append(task)
@@ -67,13 +67,16 @@ class AssetLoader{
         repeat  {
             let url = URL(string: "https://picsum.photos/2048/1365")!
             let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                if let data = data {
-                    self.imageCache.append(self.factory!.decodeImage(data));
-                }
-                if (first){
-                    first=false;
-                    if let imageAsset = self.cachedImage, let image=self.imageCache.randomElement() {
-                        imageAsset.renderImage(image);
+                DispatchQueue.main.async { [weak self] in
+                    guard let self, let factory = self.factory else { return }
+                    if let data = data {
+                        self.imageCache.append(factory.decodeImage(data));
+                    }
+                    if (first){
+                        first=false;
+                        if let imageAsset = self.cachedImage, let image=self.imageCache.randomElement() {
+                            imageAsset.renderImage(image);
+                        }
                     }
                 }
             }
@@ -109,11 +112,13 @@ class AssetLoader{
         ]
         let url = URL(string: options.randomElement()!)!
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let data = data {
-                asset.font(factory.decodeFont(data));
-            } else if let error = error {
-                if (error.localizedDescription != "cancelled"){
-                    print("HTTP Request Failed \(error)")
+            DispatchQueue.main.async {
+                if let data = data {
+                    asset.font(factory.decodeFont(data));
+                } else if let error = error {
+                    if (error.localizedDescription != "cancelled"){
+                        print("HTTP Request Failed \(error)")
+                    }
                 }
             }
         }
@@ -124,13 +129,14 @@ class AssetLoader{
     func randomImageAsset(asset: RiveImageAsset, factory: RiveFactory){
         let url = URL(string: "https://picsum.photos/1000/1500")!
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let data = data {
-                
-                asset.renderImage(factory.decodeImage(data));
-            } else if let error = error {
-                // there doesnt seem to be much else to go on here
-                if (error.localizedDescription != "cancelled"){
-                    print("HTTP Request Failed \(error)")
+            DispatchQueue.main.async {
+                if let data = data {
+                    asset.renderImage(factory.decodeImage(data));
+                } else if let error = error {
+                    // there doesnt seem to be much else to go on here
+                    if (error.localizedDescription != "cancelled"){
+                        print("HTTP Request Failed \(error)")
+                    }
                 }
             }
         }
@@ -140,6 +146,7 @@ class AssetLoader{
     }
     
     func loader (asset: RiveFileAsset, data: Data, factory: RiveFactory) -> Bool{
+        self.factory = factory
         if (data.count > 0) {return false;}
         if (asset.cdnUuid().count > 0) {return false;}
         

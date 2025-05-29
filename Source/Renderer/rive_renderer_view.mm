@@ -200,7 +200,7 @@
 #endif
     self = [super initWithCoder:decoder];
 
-    _renderContext = [[RenderContextManager shared] getDefaultContext];
+    _renderContext = [[RenderContextManager shared] newDefaultContext];
     assert(_renderContext);
     self.device = [_renderContext metalDevice];
 
@@ -237,7 +237,7 @@
                name:NSApplicationWillBecomeActiveNotification
              object:nil];
 #endif
-    _renderContext = [[RenderContextManager shared] getDefaultContext];
+    _renderContext = [[RenderContextManager shared] newDefaultContext];
     assert(_renderContext);
 
     auto value = [super initWithFrame:frameRect

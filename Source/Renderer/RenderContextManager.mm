@@ -136,7 +136,7 @@ static CGSize Maximum2DTextureSizeFromDevice(id<MTLDevice> device)
 
 @implementation RiveRendererContext
 {
-    rive::gpu::RenderContext* _renderContext;
+    std::unique_ptr<rive::gpu::RenderContext> renderContext;
     std::unique_ptr<rive::RiveRenderer> _renderer;
     rive::rcp<rive::gpu::RenderTargetMetal> _renderTarget;
     CGSize _maximum2DTextureSize;
@@ -154,16 +154,14 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
     // Make a single static RenderContext, since it is also the factory and any
     // objects it creates may outlive this 'RiveContext' instance.
     static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
-    static std::unique_ptr<rive::gpu::RenderContext> s_renderContext =
-        make_pls_context_native(s_plsGPU);
+    renderContext = make_pls_context_native(s_plsGPU);
 
     self = [super init];
     self.metalDevice = s_plsGPU;
     self.metalQueue = [s_plsGPU newCommandQueue];
     self.depthStencilPixelFormat = MTLPixelFormatInvalid;
     self.framebufferOnly = YES;
-    _renderContext = s_renderContext.get();
-    _renderer = std::make_unique<rive::RiveRenderer>(_renderContext);
+    _renderer = std::make_unique<rive::RiveRenderer>(renderContext.get());
     self.maximum2DTextureSize =
         Maximum2DTextureSizeFromDevice(self.metalDevice);
     return self;
@@ -173,12 +171,12 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
 {
     // Once nobody is referencing a RiveContext anymore, release the global
     // RenderContext's GPU resource.
-    _renderContext->releaseResources();
+    renderContext->releaseResources();
 }
 
 - (rive::Factory*)factory
 {
-    return _renderContext;
+    return renderContext.get();
 }
 
 - (rive::Renderer*)beginFrame:(id<RiveMetalDrawableView>)view
@@ -205,15 +203,14 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
         _renderTarget->height() != view.drawableSize.height)
     {
         _renderTarget =
-            _renderContext
-                ->static_impl_cast<rive::gpu::RenderContextMetalImpl>()
+            renderContext->static_impl_cast<rive::gpu::RenderContextMetalImpl>()
                 ->makeRenderTarget(view.colorPixelFormat,
                                    view.drawableSize.width,
                                    view.drawableSize.height);
     }
     _renderTarget->setTargetTexture(surface.texture);
 
-    _renderContext->beginFrame({
+    renderContext->beginFrame({
         .renderTargetWidth = _renderTarget->width(),
         .renderTargetHeight = _renderTarget->height(),
         .loadAction = rive::gpu::LoadAction::clear,
@@ -226,7 +223,7 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
 {
     id<MTLCommandBuffer> flushCommandBuffer = [self.metalQueue commandBuffer];
-    _renderContext->flush({
+    renderContext->flush({
         .renderTarget = _renderTarget.get(),
         .externalCommandBuffer = (__bridge void*)flushCommandBuffer,
     });
@@ -278,7 +275,8 @@ constexpr static int kBufferRingSize = 3;
     }
     _currentBufferIdx = -1;
 
-    self.metalDevice = MTLCreateSystemDefaultDevice();
+    static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
+    self.metalDevice = s_plsGPU;
     if (!self.metalDevice)
     {
         NSLog(@"Metal is not supported on this device");
@@ -396,10 +394,6 @@ constexpr static int kBufferRingSize = 3;
 @end
 
 @implementation RenderContextManager
-{
-    __weak RiveRendererContext* _riveRendererContextWeakPtr;
-    __weak CGRendererContext* _cgContextWeakPtr;
-}
 
 // The context manager is a singleton.
 + (RenderContextManager*)shared
@@ -418,62 +412,26 @@ constexpr static int kBufferRingSize = 3;
     return self;
 }
 
-- (RenderContext*)getDefaultContext
+- (RenderContext*)newDefaultContext
 {
     switch (self.defaultRenderer)
     {
         case RendererType::riveRenderer:
-            return [self getRiveRendererContext];
+            return [self newRiveContext];
         case RendererType::cgRenderer:
-            return [self getCGRendererContext];
+            return [self newCGContext];
     }
     RIVE_UNREACHABLE();
 }
 
-- (RenderContext*)getRiveRendererContext
+- (RenderContext*)newRiveContext
 {
-    // Convert our weak reference to strong before trying to work with it. A
-    // weak pointer is liable to be released out from under us at any moment.
-    // https://stackoverflow.com/questions/15674320/understanding-weak-reference
-    RiveRendererContext* strongPtr = _riveRendererContextWeakPtr;
-    if (strongPtr == nil)
-    {
-        strongPtr = [[RiveRendererContext alloc] init];
-        _riveRendererContextWeakPtr = strongPtr;
-    }
-    return strongPtr;
+    return [[RiveRendererContext alloc] init];
 }
 
-- (RenderContext*)getCGRendererContext
+- (RenderContext*)newCGContext
 {
-    // Convert our weak reference to strong before trying to work with it. A
-    // weak pointer is liable to be released out from under us at any moment.
-    // https://stackoverflow.com/questions/15674320/understanding-weak-reference
-    CGRendererContext* strongPtr = _cgContextWeakPtr;
-    if (strongPtr == nil)
-    {
-        strongPtr = [[CGRendererContext alloc] init];
-        _cgContextWeakPtr = strongPtr;
-    }
-    return strongPtr;
-}
-
-- (RiveFactory*)getDefaultFactory
-{
-    return [[RiveFactory alloc]
-        initWithFactory:[[self getDefaultContext] factory]];
-}
-
-- (RiveFactory*)getRiveRendererFactory
-{
-    return [[RiveFactory alloc]
-        initWithFactory:[[self getRiveRendererContext] factory]];
-}
-
-- (RiveFactory*)getCGFactory
-{
-    return [[RiveFactory alloc]
-        initWithFactory:[[self getCGRendererContext] factory]];
+    return [[RiveRendererContext alloc] init];
 }
 
 @end

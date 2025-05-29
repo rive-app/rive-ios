@@ -21,13 +21,9 @@ typedef NS_ENUM(NSInteger, RendererType) { riveRenderer, cgRenderer };
 @interface RenderContextManager : NSObject
 @property RendererType defaultRenderer;
 + (RenderContextManager*)shared;
-- (RenderContext*)getDefaultContext;
-- (RenderContext*)getRiveRendererContext;
-- (RenderContext*)getCGRendererContext;
-// exposing these directly as RenderContext is not exposed
-- (RiveFactory*)getDefaultFactory;
-- (RiveFactory*)getCGFactory;
-- (RiveFactory*)getRiveRendererFactory;
+- (RenderContext*)newDefaultContext;
+- (RenderContext*)newRiveContext;
+- (RenderContext*)newCGContext;
 @end
 
 #endif

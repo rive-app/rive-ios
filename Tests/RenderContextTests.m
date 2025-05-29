@@ -22,13 +22,12 @@
     CGSize drawableSize = CGSizeMake(320, 240);
     CGFloat scale = 1.0f;
 
-    RenderContext* context =
-        [[RenderContextManager shared] getRiveRendererContext];
+    RenderContext* context = [[RenderContextManager shared] newRiveContext];
     XCTAssertTrue([context canDrawInRect:rect
                             drawableSize:drawableSize
                                    scale:scale]);
 
-    context = [[RenderContextManager shared] getCGRendererContext];
+    context = [[RenderContextManager shared] newCGContext];
     XCTAssertTrue([context canDrawInRect:rect
                             drawableSize:drawableSize
                                    scale:scale]);
@@ -40,13 +39,12 @@
     CGSize drawableSize = CGSizeMake(INFINITY, INFINITY);
     CGFloat scale = 1.0f;
 
-    RenderContext* context =
-        [[RenderContextManager shared] getRiveRendererContext];
+    RenderContext* context = [[RenderContextManager shared] newRiveContext];
     XCTAssertFalse([context canDrawInRect:rect
                              drawableSize:drawableSize
                                     scale:scale]);
 
-    context = [[RenderContextManager shared] getCGRendererContext];
+    context = [[RenderContextManager shared] newCGContext];
     XCTAssertFalse([context canDrawInRect:rect
                              drawableSize:drawableSize
                                     scale:scale]);
@@ -58,13 +56,12 @@
     CGSize drawableSize = CGSizeMake(320, 240);
     CGFloat scale = 1.0f;
 
-    RenderContext* context =
-        [[RenderContextManager shared] getRiveRendererContext];
+    RenderContext* context = [[RenderContextManager shared] newRiveContext];
     XCTAssertFalse([context canDrawInRect:rect
                              drawableSize:drawableSize
                                     scale:scale]);
 
-    context = [[RenderContextManager shared] getCGRendererContext];
+    context = [[RenderContextManager shared] newCGContext];
     XCTAssertFalse([context canDrawInRect:rect
                              drawableSize:drawableSize
                                     scale:scale]);
@@ -76,13 +73,12 @@
     CGSize drawableSize = CGSizeMake(320, 240);
     CGFloat scale = -1.0f;
 
-    RenderContext* context =
-        [[RenderContextManager shared] getRiveRendererContext];
+    RenderContext* context = [[RenderContextManager shared] newRiveContext];
     XCTAssertFalse([context canDrawInRect:rect
                              drawableSize:drawableSize
                                     scale:scale]);
 
-    context = [[RenderContextManager shared] getCGRendererContext];
+    context = [[RenderContextManager shared] newCGContext];
     XCTAssertFalse([context canDrawInRect:rect
                              drawableSize:drawableSize
                                     scale:scale]);
@@ -94,13 +90,12 @@
     CGSize drawableSize = CGSizeMake(320, 240);
     CGFloat scale = 1000.0f;
 
-    RenderContext* context =
-        [[RenderContextManager shared] getRiveRendererContext];
+    RenderContext* context = [[RenderContextManager shared] newRiveContext];
     XCTAssertFalse([context canDrawInRect:rect
                              drawableSize:drawableSize
                                     scale:scale]);
 
-    context = [[RenderContextManager shared] getCGRendererContext];
+    context = [[RenderContextManager shared] newCGContext];
     XCTAssertFalse([context canDrawInRect:rect
                              drawableSize:drawableSize
                                     scale:scale]);

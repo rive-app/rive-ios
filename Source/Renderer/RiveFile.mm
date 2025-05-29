@@ -23,6 +23,7 @@
 {
     std::unique_ptr<rive::File> riveFile;
     rive::FileAssetLoader* fileAssetLoader;
+    RenderContext* _renderContext;
 }
 
 + (uint)majorVersion
@@ -341,10 +342,9 @@
                 error:(NSError**)error
 {
     rive::ImportResult result;
-    RenderContext* renderContext =
-        [[RenderContextManager shared] getDefaultContext];
-    assert(renderContext);
-    rive::Factory* factory = [renderContext factory];
+    _renderContext = [[RenderContextManager shared] newDefaultContext];
+    assert(_renderContext);
+    rive::Factory* factory = [_renderContext factory];
 
     FallbackFileAssetLoader* fallbackLoader =
         [[FallbackFileAssetLoader alloc] init];
