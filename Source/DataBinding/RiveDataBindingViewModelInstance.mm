@@ -312,6 +312,41 @@
     return triggerProperty;
 }
 
+- (RiveDataBindingViewModelInstanceImageProperty*)imagePropertyFromPath:
+    (NSString*)path
+{
+    RiveDataBindingViewModelInstanceImageProperty* cached;
+    if ((cached = [self
+             cachedPropertyFromPath:path
+                            asClass:
+                                [RiveDataBindingViewModelInstanceImageProperty
+                                    class]]))
+    {
+        return cached;
+    }
+
+    auto image = _instance->propertyImage(std::string([path UTF8String]));
+    if (image == nullptr)
+    {
+        [RiveLogger logWithViewModelInstance:self
+                         imagePropertyAtPath:path
+                                       found:NO];
+        return nil;
+    }
+
+    [RiveLogger logWithViewModelInstance:self
+                     imagePropertyAtPath:path
+                                   found:YES];
+    RiveDataBindingViewModelInstanceImageProperty* imageProperty =
+        [[RiveDataBindingViewModelInstanceImageProperty alloc]
+            initWithImage:image];
+    imageProperty.valueDelegate = self;
+
+    [self cacheProperty:imageProperty withPath:path];
+
+    return imageProperty;
+}
+
 - (void)updateListeners
 {
     [_properties enumerateKeysAndObjectsUsingBlock:^(

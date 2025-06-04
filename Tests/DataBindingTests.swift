@@ -10,7 +10,7 @@ import XCTest
 @testable import RiveRuntime
 
 class DataBindingTests: XCTestCase {
-    let file = try! RiveFile(testfileName: "data_binding_test")
+    let file: RiveFile = try! RiveFile(testfileName: "data_binding_test")
 
     // MARK: - RiveFile
 
@@ -440,6 +440,28 @@ class DataBindingTests: XCTestCase {
         XCTAssertNotNil(instance.triggerProperty(fromPath: "Trigger Green"))
         XCTAssertNotNil(instance.triggerProperty(fromPath: "Trigger Blue"))
         XCTAssertNil(instance.triggerProperty(fromPath: "404"))
+    }
+
+    // MARK: Image
+
+    func test_viewModelInstance_imageProperty_returnsPropertyOrNil() throws {
+        let file = try RiveFile(testfileName: "data_binding_image_test")
+        let instance = file.viewModelNamed("vm")!.createDefaultInstance()!
+        XCTAssertNotNil(instance.imageProperty(fromPath: "img"))
+        XCTAssertNil(instance.imageProperty(fromPath: "404"))
+    }
+
+    func test_viewModelInstance_imageProperty_canSetValue() throws {
+        let file = try RiveFile(testfileName: "data_binding_image_test")
+        let instance = file.viewModelNamed("vm")!.createDefaultInstance()!
+        let property = instance.imageProperty(fromPath: "img")!
+
+        let bundle = Bundle(for: type(of: self))
+        let fileURL = bundle.url(forResource: "1x1_jpg", withExtension: "jpg")!
+        let data = try Data(contentsOf: fileURL)
+        let renderImage = RiveRenderImage(data: data)!
+        property.setValue(renderImage)
+        XCTAssertTrue(property.hasChanged)
     }
 
     // MARK: Binding

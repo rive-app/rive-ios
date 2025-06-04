@@ -22,6 +22,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RiveRenderImage : NSObject
+- (nullable instancetype)initWithData:(NSData*)data;
 @end
 
 @interface RiveAudio : NSObject

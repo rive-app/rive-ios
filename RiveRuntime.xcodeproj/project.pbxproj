@@ -93,12 +93,17 @@
 		E5964A982A9697B600140479 /* RiveEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5964A972A9697B600140479 /* RiveEvent.mm */; };
 		E599DCF92AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
 		E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
+		F21C3D1B2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */; };
 		F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */; };
 		F22CF1B12D380E3700D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1B02D380E3700D35779 /* data_binding_test.riv */; };
 		F22CF1B32D380E6900D35779 /* DataBindingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22CF1B22D380E6900D35779 /* DataBindingTests.swift */; };
 		F22E12112D67D47C00F2E8C3 /* RiveDisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23B2B7F2D2DCD70007AA53E /* RiveDisplayLink.swift */; };
 		F23626AA2C8F90FA00727D9A /* nested_text_run.riv in Resources */ = {isa = PBXBuildFile; fileRef = F23626A92C8F90FA00727D9A /* nested_text_run.riv */; };
 		F23992E72CB9C1C60021EF61 /* RenderContextTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F23992E62CB9C1C60021EF61 /* RenderContextTests.m */; };
+		F24FC6452DD3C83700DEE8C5 /* RiveRenderImageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24FC6442DD3C83700DEE8C5 /* RiveRenderImageTests.swift */; };
+		F24FC6492DD3C85E00DEE8C5 /* 1x1_jpg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F24FC6472DD3C85E00DEE8C5 /* 1x1_jpg.jpg */; };
+		F24FC64A2DD3C85E00DEE8C5 /* 1x1_png.png in Resources */ = {isa = PBXBuildFile; fileRef = F24FC6482DD3C85E00DEE8C5 /* 1x1_png.png */; };
+		F24FC6572DD3D7AD00DEE8C5 /* data_binding_image_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F24FC6562DD3D7AD00DEE8C5 /* data_binding_image_test.riv */; };
 		F259E5872D35B91700B78FEF /* RiveDataBindingViewModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = F259E5862D35B91700B78FEF /* RiveDataBindingViewModel.mm */; };
 		F259E5882D35B91700B78FEF /* RiveDataBindingViewModel.h in Headers */ = {isa = PBXBuildFile; fileRef = F259E5852D35B91700B78FEF /* RiveDataBindingViewModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F25C58A82D5A60EC00186C91 /* RiveLogger+DataBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25C58A72D5A60EC00186C91 /* RiveLogger+DataBinding.swift */; };
@@ -228,12 +233,17 @@
 		E5964A952A965A9300140479 /* RiveEvent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = RiveEvent.h; sourceTree = "<group>"; };
 		E5964A972A9697B600140479 /* RiveEvent.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveEvent.mm; sourceTree = "<group>"; };
 		E599DCF82AAFA06100D1E49A /* rating_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rating_animation.riv; path = "Example-iOS/Assets/rating_animation.riv"; sourceTree = SOURCE_ROOT; };
+		F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveRenderImage+Extensions.swift"; sourceTree = "<group>"; };
 		F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontDescriptor.swift; sourceTree = "<group>"; };
 		F22CF1B02D380E3700D35779 /* data_binding_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = data_binding_test.riv; sourceTree = "<group>"; };
 		F22CF1B22D380E6900D35779 /* DataBindingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBindingTests.swift; sourceTree = "<group>"; };
 		F23626A92C8F90FA00727D9A /* nested_text_run.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nested_text_run.riv; sourceTree = "<group>"; };
 		F23992E62CB9C1C60021EF61 /* RenderContextTests.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RenderContextTests.m; sourceTree = "<group>"; };
 		F23B2B7F2D2DCD70007AA53E /* RiveDisplayLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveDisplayLink.swift; sourceTree = "<group>"; };
+		F24FC6442DD3C83700DEE8C5 /* RiveRenderImageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveRenderImageTests.swift; sourceTree = "<group>"; };
+		F24FC6472DD3C85E00DEE8C5 /* 1x1_jpg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1x1_jpg.jpg; sourceTree = "<group>"; };
+		F24FC6482DD3C85E00DEE8C5 /* 1x1_png.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1x1_png.png; sourceTree = "<group>"; };
+		F24FC6562DD3D7AD00DEE8C5 /* data_binding_image_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = data_binding_image_test.riv; sourceTree = "<group>"; };
 		F259E5852D35B91700B78FEF /* RiveDataBindingViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveDataBindingViewModel.h; sourceTree = "<group>"; };
 		F259E5862D35B91700B78FEF /* RiveDataBindingViewModel.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveDataBindingViewModel.mm; sourceTree = "<group>"; };
 		F25C58A72D5A60EC00186C91 /* RiveLogger+DataBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+DataBinding.swift"; sourceTree = "<group>"; };
@@ -321,6 +331,9 @@
 		04BE53F726493FE600427B39 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				F24FC6562DD3D7AD00DEE8C5 /* data_binding_image_test.riv */,
+				F24FC6472DD3C85E00DEE8C5 /* 1x1_jpg.jpg */,
+				F24FC6482DD3C85E00DEE8C5 /* 1x1_png.png */,
 				F22CF1B02D380E3700D35779 /* data_binding_test.riv */,
 				F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */,
 				F23626A92C8F90FA00727D9A /* nested_text_run.riv */,
@@ -429,6 +442,7 @@
 		C9C73ED324FC478800EF9516 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F24FC6502DD3CF6700DEE8C5 /* Extensions */,
 				F259E5842D35B87800B78FEF /* DataBinding */,
 				F2CCA9C02C9E13B2007DC0D2 /* Logging */,
 				C3468E5727EB9887008652FD /* RiveView.swift */,
@@ -466,6 +480,7 @@
 				F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */,
 				F23992E62CB9C1C60021EF61 /* RenderContextTests.m */,
 				F22CF1B22D380E6900D35779 /* DataBindingTests.swift */,
+				F24FC6442DD3C83700DEE8C5 /* RiveRenderImageTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -482,6 +497,14 @@
 				F2FD94072CC94B1A00C1FC85 /* RiveFallbackFontCache.m */,
 			);
 			path = Fonts;
+			sourceTree = "<group>";
+		};
+		F24FC6502DD3CF6700DEE8C5 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		F259E5842D35B87800B78FEF /* DataBinding */ = {
@@ -673,6 +696,7 @@
 				0424A8742BD592F2000A9A1C /* audio_test.riv in Resources */,
 				0412652A2B0CCB8E009400EC /* embedded_assets.riv in Resources */,
 				04BE540B2649403600427B39 /* multiple_animations.riv in Resources */,
+				F24FC6572DD3D7AD00DEE8C5 /* data_binding_image_test.riv in Resources */,
 				041265282B0CC387009400EC /* hosted_assets.riv in Resources */,
 				E57798AB2A7310B700FF25C3 /* testtext.riv in Resources */,
 				04ED72F3299C115100E8DE53 /* empty_animation_state.riv in Resources */,
@@ -684,6 +708,8 @@
 				04BE54092649403600427B39 /* state_machine_configurations.riv in Resources */,
 				04BE54072649403600427B39 /* what_a_state.riv in Resources */,
 				04E222402BE3C85100D82668 /* ball_test.riv in Resources */,
+				F24FC6492DD3C85E00DEE8C5 /* 1x1_jpg.jpg in Resources */,
+				F24FC64A2DD3C85E00DEE8C5 /* 1x1_png.png in Resources */,
 				0424A8762BD59435000A9A1C /* img_test.riv in Resources */,
 				04BE541A264A823000427B39 /* animationconfigurations.riv in Resources */,
 				04BE540E2649403600427B39 /* multiple_state_machines.riv in Resources */,
@@ -733,6 +759,7 @@
 				046FB7F8264EAA60000129B1 /* RiveStateMachineInstance.mm in Sources */,
 				C3468E5C27ED4C41008652FD /* RiveModel.swift in Sources */,
 				F259E5872D35B91700B78FEF /* RiveDataBindingViewModel.mm in Sources */,
+				F21C3D1B2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift in Sources */,
 				046FB7FF264EAA61000129B1 /* RiveFile.mm in Sources */,
 				F2FD94082CC94B1A00C1FC85 /* RiveFallbackFontCache.m in Sources */,
 				046FB7F2264EAA60000129B1 /* RiveArtboard.mm in Sources */,
@@ -763,6 +790,7 @@
 				F22CF1B32D380E6900D35779 /* DataBindingTests.swift in Sources */,
 				04BE5418264A818F00427B39 /* RiveAnimationConfigurationsTest.mm in Sources */,
 				04BE5427264C02AA00427B39 /* StateMachineInstanceTest.mm in Sources */,
+				F24FC6452DD3C83700DEE8C5 /* RiveRenderImageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

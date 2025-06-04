@@ -232,4 +232,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithData:(rive::PropertyData)data;
 @end
 
+@interface RiveDataBindingViewModelInstanceImageProperty ()
+- (instancetype)initWithImage:(rive::ViewModelInstanceAssetImageRuntime*)image;
+@end
+
 NS_ASSUME_NONNULL_END

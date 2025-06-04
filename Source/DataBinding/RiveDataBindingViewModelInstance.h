@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveDataBindingViewModelInstanceColorProperty;
 @class RiveDataBindingViewModelInstanceEnumProperty;
 @class RiveDataBindingViewModelInstanceTriggerProperty;
+@class RiveDataBindingViewModelInstanceImageProperty;
 @class RiveDataBindingViewModelInstancePropertyData;
 
 /// An object that represents an instance of a view model, used to update
@@ -158,6 +159,19 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 /// - Returns: The property if it exists at the supplied path, otherwise nil.
 - (nullable RiveDataBindingViewModelInstanceTriggerProperty*)
     triggerPropertyFromPath:(NSString*)path;
+
+/// Gets an image property in the view model instance.
+///
+/// - Note: Unlike a `RiveViewModel.Instance`, a strong reference to this type
+/// does not have to be made. If the property exists, the underlying property
+/// will be cached, and calling this function again with the same path is
+/// guaranteed to return the same object.
+///
+/// - Parameter path: The path to the number property.
+///
+/// - Returns: The property if it exists at the supplied path, otherwise nil.
+- (nullable RiveDataBindingViewModelInstanceImageProperty*)
+    imagePropertyFromPath:(NSString*)path;
 
 /// Calls all registered property listeners for the properties of the view model
 /// instance.

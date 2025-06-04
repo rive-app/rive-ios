@@ -43,6 +43,10 @@ private class DataBindingViewModel: RiveViewModel {
         return dataBindingInstance?.viewModelInstanceProperty(fromPath: "Nested")
     }
 
+    var imageProperty: RiveDataBindingViewModel.Instance.ImageProperty? {
+        return dataBindingInstance?.imageProperty(fromPath: "Image")
+    }
+
     init(fileName: String) {
         super.init(fileName: fileName)
 
@@ -91,6 +95,7 @@ struct DataBindingView: DismissableView {
         updateEnum()
         updateNestedViewModel()
         updateTrigger()
+        updateImage()
 
         // Manually advance the Rive view since it is not playing.
         // When a Rive view is playing, this is handled for you.
@@ -174,6 +179,19 @@ struct DataBindingView: DismissableView {
         let trigger = triggers.randomElement()!
         guard let property = riveViewModel.triggerProperty(name: trigger) else { return }
         property.trigger()
+    }
+
+    private func updateImage() {
+        let images = [
+            UIImage(systemName: "square.and.arrow.down")!,
+            UIImage(systemName: "paperplane")!,
+            UIImage(systemName: "externaldrive")!,
+            // or any other UIImage initializer
+        ]
+        guard let property = riveViewModel.imageProperty else { return }
+        let image = images.randomElement()!
+        guard let renderImage = RiveRenderImage(image: image, format: .png) else { return }
+        property.setValue(renderImage)
     }
 }
 

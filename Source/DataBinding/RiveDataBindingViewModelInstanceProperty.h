@@ -262,4 +262,33 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.TriggerProperty)
 
 @end
 
+#pragma mark - Image
+
+typedef void (^RiveDataBindingViewModelInstanceImagePropertyListener)(void)
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceImageProperty.Listener);
+
+/// An object that represents a trigger property of a view model instance.
+NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ImageProperty)
+@interface RiveDataBindingViewModelInstanceImageProperty
+    : RiveDataBindingViewModelInstanceProperty
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (void)setValue:(nonnull RiveRenderImage*)image;
+
+/// Adds a block as a listener, called when the property is triggered.
+///
+/// - Note: The property can be triggered either explicitly by the developer,
+///  or as a result of a change in a state machine.
+///
+/// - Parameter listener: The block that will be called when the property's
+/// value changes.
+///
+/// - Returns: A UUID for the listener, used in conjunction with
+/// `removeListener`.
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceImagePropertyListener)listener;
+
+@end
+
 NS_ASSUME_NONNULL_END

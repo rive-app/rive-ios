@@ -536,3 +536,42 @@
 }
 
 @end
+
+#pragma mark - Image
+
+@implementation RiveDataBindingViewModelInstanceImageProperty
+{
+    rive::ViewModelInstanceAssetImageRuntime* _image;
+}
+
+- (instancetype)initWithImage:(rive::ViewModelInstanceAssetImageRuntime*)image
+{
+    if (self = [super initWithValue:image])
+    {
+        _image = image;
+    }
+    return self;
+}
+
+- (void)setValue:(RiveRenderImage*)renderImage
+{
+    [RiveLogger logPropertyUpdated:self value:@"new image"];
+    _image->value([renderImage instance].get());
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceTriggerPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceImagePropertyListener listener in self
+             .listeners.allValues)
+    {
+        listener();
+    }
+}
+
+@end

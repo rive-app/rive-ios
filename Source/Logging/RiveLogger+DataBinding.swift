@@ -27,6 +27,7 @@ enum RiveLoggerDataBindingEvent {
         case enumProperty(String, Bool)
         case viewModelProperty(String, Bool)
         case triggerProperty(String, Bool)
+        case imageProperty(String, Bool)
     }
     enum Property: DataBindingEvent {
         case propertyUpdated(String, String)
@@ -106,6 +107,11 @@ extension RiveLogger {
                 let message = message(instance: instance, for: "trigger", path: path, found: found)
                 dataBinding.debug("\(message)")
             }
+        case .imageProperty(let path, let found):
+            _log(event: event, level: .debug) {
+                let message = message(instance: instance, for: "image", path: path, found: found)
+                dataBinding.debug("\(message)")
+            }
         }
     }
 
@@ -172,6 +178,10 @@ extension RiveLogger {
 
     @objc static func log(viewModelInstance instance: RiveDataBindingViewModel.Instance, triggerPropertyAtPath path: String, found: Bool) {
         Self.log(viewModelInstance: instance, event: .triggerProperty(path, found))
+    }
+
+    @objc static func log(viewModelInstance instance: RiveDataBindingViewModel.Instance, imagePropertyAtPath path: String, found: Bool) {
+        Self.log(viewModelInstance: instance, event: .imageProperty(path, found))
     }
 
     // MARK: - Properties

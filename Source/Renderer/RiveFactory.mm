@@ -12,6 +12,7 @@
 #import <RiveRuntime/RiveRuntime-Swift.h>
 #import <CoreText/CTFont.h>
 #import <rive/text/font_hb.hpp>
+#import <RenderContext.h>
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIFont.h>
@@ -41,6 +42,7 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
     rive::rcp<rive::RenderImage>
         instance; // note: we do NOT own this, so don't delete it
 }
+
 - (instancetype)initWithImage:(rive::rcp<rive::RenderImage>)image
 {
     if (self = [super init])
@@ -53,6 +55,21 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
         return nil;
     }
 }
+
+- (instancetype)initWithData:(NSData*)data
+{
+    RenderContext* context = [[RenderContextManager shared] newDefaultContext];
+    RiveFactory* factory =
+        [[RiveFactory alloc] initWithFactory:[context factory]];
+    auto renderImage = [factory decodeImage:data];
+    auto image = [renderImage instance];
+    if (image == nullptr || image.get() == nullptr)
+    {
+        return nil;
+    }
+    return [[RiveRenderImage alloc] initWithImage:image];
+}
+
 - (rive::rcp<rive::RenderImage>)instance
 {
     return instance;
