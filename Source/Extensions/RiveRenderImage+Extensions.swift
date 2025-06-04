@@ -12,6 +12,7 @@ public extension RiveRenderImage {
         case png
     }
 
+    #if canImport(UIKit)
     convenience init?(image: UIImage, format: Format) {
         let data: Data?
         switch format {
@@ -23,4 +24,24 @@ public extension RiveRenderImage {
         guard let data else { return nil }
         self.init(data: data)
     }
+    #endif
+
+    #if canImport(AppKit) && !targetEnvironment(macCatalyst)
+    convenience init?(image: NSImage, format: Format) {
+        guard let data = image.tiffRepresentation,
+        let bitmap = NSBitmapImageRep(data: data)
+        else { return nil }
+
+        let bitmapData: Data?
+        switch format {
+        case .jpeg(let compressionQuality):
+            // Double(compressionQuality) will bridge to NSNumber, as required by .compressionFactor
+            bitmapData = bitmap.representation(using: .jpeg, properties: [.compressionFactor: Double(compressionQuality)])
+        case .png:
+            bitmapData = bitmap.representation(using: .png, properties: [:])
+        }
+        guard let bitmapData else { return nil }
+        self.init(data: bitmapData)
+    }
+    #endif
 }
