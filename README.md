@@ -27,34 +27,37 @@ The library is distributed both through Swift Package Manager and Cocoapods.
 
 :house_with_garden: [Homepage](https://rive.app/)
 
-:blue_book: [Rive docs](https://rive.app/community/doc/)
+:blue_book: [Rive docs](https://rive.app/docs/)
 
-🛠 [Rive Forums](https://community.rive.app/)
+🛠 [Rive Community](https://community.rive.app/)
 
 ## Getting started
 
-To get started with Rive iOS, check out the following resources:
+To get started with Rive Apple runtime, check out the following resources:
 
-- [Getting Started with Rive iOS](https://rive.app/community/doc/iosmacos/docXbeEcWybL)
+- [Getting Started with the Rive Apple runtime](https://rive.app/docs/runtimes/apple/apple)
 
 For more information, see the Runtime sections of the Rive help documentation:
 
-- [Animation Playback](https://rive.app/community/doc/animation-playback/docDKKxsr7ko)
-- [Layout](https://rive.app/community/doc/layout/docBl81zd1GB)
-- [State Machines](https://rive.app/community/doc/state-machines/docxeznG7iiK)
-- [Rive Text](https://rive.app/community/doc/text/docn2E6y1lXo)
-- [Rive Events](https://rive.app/community/doc/rive-events/docbOnaeffgr)
-- [Loading Assets](https://rive.app/community/doc/loading-assets/doct4wVHGPgC)
+- [Animation Playback](https://rive.app/docs/runtimes/animation-playback)
+- [Layout](https://rive.app/docs/runtimes/layout)
+- [State Machines](https://rive.app/docs/runtimes/state-machines)
+- [Rive Text](https://rive.app/docs/runtimes/text)
+- [Rive Events](https://rive.app/docs/runtimes/rive-events)
+- [Loading Assets](https://rive.app/docs/runtimes/loading-assets)
+- [Data Binding](https://rive.app/docs/runtimes/data-binding)
 
-## Supported devices
+## Supported platforms
 
-Currently, this runtime library supports a minimum iOS version of **14.0+**. Devices supported include iPhone, iPad, and Mac catalyst. macOS support supports a targeted version of **13.1**.
+Supported platforms include iOS, macOS, tvOS, and visionOS. For the minimum supported versions, see [Package.swift](./Package.swift).
 
 ## Examples
 
-Check out the `Example-iOS/` folder for an example application using the Rive iOS/macOS runtime.
+Check out the `Example-iOS/` folder for code examples on how to use the Rive Apple runtime.
 
-Open the project in XCode and ensure the selected scheme/target is set to `Preview`/`Preview (macOS)`. These schemes make use of the hosted Rive package dependency. The other targets are for local development and require additional configuration and set-up. See [Customizing the build schemes for a project](https://developer.apple.com/documentation/xcode/customizing-the-build-schemes-for-a-project) for instructions to switch schemes, and `CONTRIBUTING.md` for more information.
+Open `RiveRuntime.xcworkspace` in Xcode and ensure the selected scheme is set to `Preview (iOS)` or `Preview (macOS)`, based on what platform you want to preview. These schemes make use of the Swift Package Manager package of the Rive Apple runtime, and are the schemes you should use to preview the Rive examples.
+
+**Note**: The other targets are for local development and require additional configuration and set-up. See [Customizing the build schemes for a project](https://developer.apple.com/documentation/xcode/customizing-the-build-schemes-for-a-project) for instructions to switch schemes, and [CONTRIBUTING.md](./CONTRIBUTING.md) for more information. You should not use these schemes unless you are making changes to the underlying C++ runtime.
 
 The example showcases a number of ways to use the high-level `RiveViewModel` API through UIKit and SwiftUI examples, including:
 
@@ -72,7 +75,7 @@ For even more examples and resources on using Rive at runtime or in other tools,
 
 Using an older version of the runtime and need to learn how to upgrade to the latest version? Check out the migration guides below in our help center that help guide you through version bumps; breaking changes and all!
 
-[Migration guides](https://rive.app/community/doc/migrating-from-5xx-to-6xx/doczu7i8HFcV)
+[Migration Guides](https://rive.app/docs/runtimes/apple/migrating-from-5.x.x-to-6.x.x)
 
 ## Contributing
 

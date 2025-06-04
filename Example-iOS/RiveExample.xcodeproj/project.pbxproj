@@ -331,6 +331,7 @@
 		F22CF1AD2D380E1400D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
 		F22CF1AE2D380E1500D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
 		F22CF1AF2D380E1600D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */; };
+		F23A50602DE60E4600366506 /* DataBindingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F259E5822D35B7FA00B78FEF /* DataBindingView.swift */; };
 		F259E5832D35B7FA00B78FEF /* DataBindingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F259E5822D35B7FA00B78FEF /* DataBindingView.swift */; };
 		F26E20AC2CF0E21000130111 /* streaming.riv in Resources */ = {isa = PBXBuildFile; fileRef = F26E20A92CF0E21000130111 /* streaming.riv */; };
 		F2AB95D12CF0EB800055376E /* streaming.riv in Resources */ = {isa = PBXBuildFile; fileRef = F26E20A92CF0E21000130111 /* streaming.riv */; };
@@ -344,10 +345,6 @@
 		F2C291622DB6D571009A2918 /* rewards.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C2915C2DB6D571009A2918 /* rewards.riv */; };
 		F2C291662DB6D599009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
 		F2C291672DB6D599009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
-		F2C291682DB6D5A6009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
-		F2C291692DB6D5A6009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
-		F2C2916A2DB6D5A6009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
-		F2C2916B2DB6D5A6009A2918 /* RewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C291652DB6D599009A2918 /* RewardsView.swift */; };
 		F2C623362C874E3A0006E0CA /* fallback_fonts.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C623352C874E3A0006E0CA /* fallback_fonts.riv */; };
 		F2C623372C874E3A0006E0CA /* fallback_fonts.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2C623352C874E3A0006E0CA /* fallback_fonts.riv */; };
 		F2C623392C874E690006E0CA /* SwiftFallbackFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */; };
@@ -1391,7 +1388,6 @@
 				040553842B7A274B008F076A /* ContentView.swift in Sources */,
 				040553852B7A274B008F076A /* SwiftEvents.swift in Sources */,
 				040553862B7A274B008F076A /* Example__macOS_App.swift in Sources */,
-				F2C291682DB6D5A6009A2918 /* RewardsView.swift in Sources */,
 				040553882B7A274B008F076A /* DismissableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1422,6 +1418,7 @@
 				040553E42B7A2858008F076A /* SwiftLayout.swift in Sources */,
 				040553E52B7A2858008F076A /* SceneDelegate.swift in Sources */,
 				040553E62B7A2858008F076A /* SwiftEvents.swift in Sources */,
+				F23A50602DE60E4600366506 /* DataBindingView.swift in Sources */,
 				040553E72B7A2858008F076A /* StateMachine.swift in Sources */,
 				F2C291662DB6D599009A2918 /* RewardsView.swift in Sources */,
 				040553E82B7A2858008F076A /* RiveSlider.swift in Sources */,
@@ -1446,7 +1443,6 @@
 				04E51C382A151A1E0075E473 /* ContentView.swift in Sources */,
 				E5964AAC2A9CD49200140479 /* SwiftEvents.swift in Sources */,
 				04E51C362A151A1E0075E473 /* Example__macOS_App.swift in Sources */,
-				F2C291692DB6D5A6009A2918 /* RewardsView.swift in Sources */,
 				F8DA7B462AF523A800FF3CBF /* DismissableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1501,7 +1497,6 @@
 			files = (
 				F22138812CCBEDD400A25BA7 /* ContentView.swift in Sources */,
 				F221387F2CCBEDD400A25BA7 /* Example__visionOS_App.swift in Sources */,
-				F2C2916A2DB6D5A6009A2918 /* RewardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1511,7 +1506,6 @@
 			files = (
 				F2C852D62CD1772300F0D81F /* ContentView.swift in Sources */,
 				F2C852D42CD1772300F0D81F /* Example__tvOS_App.swift in Sources */,
-				F2C2916B2DB6D5A6009A2918 /* RewardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

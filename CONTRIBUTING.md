@@ -32,8 +32,10 @@ git submodule update --init --recursive
 Once you have cloned the repository, the prerequisites are installed, and your Xcode active developer directory is properly set, you can build this runtime by running the following from the **root** of your cloned repository:
 
 ```bash
-$ ./scripts/build.sh all release
+$ PATH=./submodules/rive-runtime/:$PATH ./scripts/build.sh all release
 ```
+
+Note: `PATH` must be updated for the Apple runtime build scripts to find `build_rive.sh`. The above command will temporarily set `PATH` to include the appropriate directory while the script is running.
 
 If the script completes successfully, then all necessary frameworks are built, and you can continue on to running the Example apps.
 

@@ -118,7 +118,7 @@ struct RewardsSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Reward") {
+            Section {
                 Picker("Type", selection: $viewModel.rewardType) {
                     Text("Coin").tag(RewardsViewModel.RewardType.coin)
                     Text("Gem").tag(RewardsViewModel.RewardType.gem)
@@ -138,20 +138,24 @@ struct RewardsSettingsView: View {
                     Text("Price")
                     TextField("Price", value: $viewModel.price, formatter: NumberFormatter()).multilineTextAlignment(.trailing)
                 }
+            } header: {
+                Text("Reward")
             }
 
-            Section("Button") {
+            Section {
                 HStack {
                     Text("Initial Text")
                     TextField("Initial Text", text: $viewModel.initialButtonText).multilineTextAlignment(.trailing)
                 }
+            } header: {
+                Text("Reward")
             }
 
             Section {
-                Button(role: .destructive) {
+                Button {
                     viewModel.reset()
                 } label: {
-                    Text("Reset")
+                    Text("Reset").foregroundColor(.red)
                 }
             }
         }
@@ -181,12 +185,16 @@ struct RewardsView: DismissableView {
                 if #available(iOS 16, *) {
                     RewardsSettingsView(viewModel: rewardsViewModel)
                         .presentationDetents([.medium])
+                } else {
+                    RewardsSettingsView(viewModel: rewardsViewModel)
                 }
             }
-            .alert("Congratulations!", isPresented: $rewardsViewModel.isPresentingAlert) {
-                Button("Okay") { }
-            } message: {
-                Text(rewardsViewModel.alertMessage)
+            .alert(isPresented: $rewardsViewModel.isPresentingAlert) {
+                Alert(
+                    title: Text("Congratulations"),
+                    message: Text(rewardsViewModel.alertMessage),
+                    dismissButton: .default(Text("Okay"))
+                )
             }
     }
 }
