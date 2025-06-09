@@ -22,7 +22,7 @@ Next, check out this repository, making sure to use ssh, and making sure to incl
 git clone --recurse-submodules git@github.com:rive-app/rive-ios.git
 ```
 
-This runtime relies on our open-source [Rive runtime](https://github.com/rive-app/rive-runtime) in order to be built. This dependency will automatically be included if you clone this repository with `--recurse-submobules`. If you have already cloned the directory without submodules, you can update the submodules by performing the following from the **root** of your cloned repository:
+This runtime relies on our open-source [Rive runtime](https://github.com/rive-app/rive-runtime) in order to be built. This dependency will automatically be included if you clone this repository with `--recurse-submodules`. If you have already cloned the directory without submodules, you can update the submodules by performing the following from the **root** of your cloned repository:
 
 ```bash
 cd submodules
