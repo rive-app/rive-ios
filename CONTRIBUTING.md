@@ -52,7 +52,7 @@ After releasing a new runtime version you'll need to manually update the `rive-i
 If you are contributing and you have access to Rives' AWS environment, make you sure install `aws-cli` and configure it with your credentials. If you run into permission issues here `aws sts get-caller-identity` can help make sure that your local developer environment is setup to talk to AWS correctly.
 See https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
-Note: on a Mac with brew, you can simply run 'brew install awscli'
+Note: on a Mac with brew, you can simply run 'brew install awscli'.
 
 Note: the 'dependencies' directory is just a cache of what the configure.sh script downloads. It can be removed if you suspect it is out of date, and then just rerun the script (./scripts/configure.sh)
 
