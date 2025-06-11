@@ -20,7 +20,9 @@ jobs:
       version: ${{ steps.echo_version.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_GITHUB }}
 
       - name: Install dependencies
         run: npm ci
@@ -31,24 +33,16 @@ jobs:
         name: Get Version - MAJOR
         run: npm run release -- major --ci --release-version | tail -n 1 > RELEASE_VERSION
         working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-
       - if: ${{inputs.major == false && inputs.minor == true}}
         id: determine_version_minor
         name: Get Version - MINOR
         run: npm run release -- minor --ci --release-version | tail -n 1 > RELEASE_VERSION
         working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-
       - if: ${{ inputs.major == false && inputs.minor == false }}
         id: determine_version_patch
         name: Get Version - PATCH
         run: npm run release -- --ci --release-version | tail -n 1 > RELEASE_VERSION
         working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
 
       - id: echo_version
         run: echo "::set-output name=version::$(cat ./.github/release/RELEASE_VERSION)"
@@ -206,23 +200,15 @@ jobs:
         name: Major Release - Bump version number, update changelog, push and tag
         run: npm run release -- major --ci
         working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-
       - if: ${{inputs.major == false && inputs.minor == true}}
         name: Minor release - Bump version number, update changelog, push and tag
         run: npm run release -- minor --ci
         working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-
       - if: ${{inputs.major == false && inputs.minor == false}}
         name: Build release - Bump version number, update changelog, push and tag
         run: npm run release -- --ci
         working-directory: ./.github/release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
-
+        
   publish_cocoapods:
     name: Publish framework to cocoapods
     runs-on: macos-14
