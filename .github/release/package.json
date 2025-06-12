@@ -1,6 +1,6 @@
 {
   "name": "release",
-  "version": "3.0.1",
+  "version": "6.9.4",
   "description": "",
   "scripts": {
     "release": "release-it"
@@ -8,8 +8,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@release-it/bumper": "^6.0.1",
-    "auto-changelog": "^2.3.0",
-    "release-it": "^17.0.0"
+    "@release-it/bumper": "^7.0.5",
+    "auto-changelog": "^2.5.0",
+    "release-it": "^19.0.3"
   }
 }
