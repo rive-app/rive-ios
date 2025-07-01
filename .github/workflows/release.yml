@@ -134,6 +134,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.PAT_GITHUB }}
 
       - name: Install dependencies
         run: npm ci
