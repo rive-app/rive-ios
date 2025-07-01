@@ -482,7 +482,6 @@ class DataBindingTests: XCTestCase {
         stateMachine.bind(viewModelInstance: instance)
         instance.booleanProperty(fromPath: "Boolean")?.value = true
         stateMachine.advance(by: 0)
-        print(stateMachine.stateChanges().contains("boolean_on"))
     }
 
     // MARK: - AutoBind

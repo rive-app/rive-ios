@@ -13,6 +13,11 @@ open class RiveView: RiveRendererView {
         static let layoutScaleFactorAutomatic: Double = -1
     }
 
+    public enum OffscreenBehavior {
+        case playAndDraw
+        case playAndNoDraw
+    }
+
     // MARK: Configuration
     internal weak var riveModel: RiveModel?
     internal var fit: RiveFit = .contain { didSet { needsDisplay() } }
@@ -41,6 +46,8 @@ open class RiveView: RiveRendererView {
     /// to any next responder(s). Defaults to `false`, as to preserve pre-existing runtime functionality.
     /// - Note: On iOS, this is handled separately from `isExclusiveTouch`.
     internal var forwardsListenerEvents: Bool = false
+
+    public var offscreenBehavior: OffscreenBehavior = .playAndNoDraw
 
     // MARK: Render Loop
     internal private(set) var isPlaying: Bool = false
@@ -166,9 +173,9 @@ open class RiveView: RiveRendererView {
 
     private func needsDisplay() {
         #if os(iOS) || os(visionOS) || os(tvOS)
-            setNeedsDisplay()
+        setNeedsDisplay()
         #else
-            needsDisplay=true
+        needsDisplay = true
         #endif
     }
 
@@ -427,6 +434,12 @@ open class RiveView: RiveRendererView {
         align(with: newFrame, contentRect: artboard.bounds(), alignment: alignment, fit: fit, scaleFactor: scale)
         draw(with: artboard)
 
+    }
+
+    open override func draw(_ rect: CGRect) {
+        if offscreenBehavior == .playAndDraw || isOnscreen() {
+            super.draw(rect)
+        }
     }
 
     // MARK: - UITraitCollection

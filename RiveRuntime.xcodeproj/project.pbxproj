@@ -93,6 +93,7 @@
 		E5964A982A9697B600140479 /* RiveEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5964A972A9697B600140479 /* RiveEvent.mm */; };
 		E599DCF92AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
 		E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
+		F20808E22E05C3FF0082A281 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20808E12E05C3FF0082A281 /* View+Extensions.swift */; };
 		F21C3D1B2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */; };
 		F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */; };
 		F22CF1B12D380E3700D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1B02D380E3700D35779 /* data_binding_test.riv */; };
@@ -120,6 +121,7 @@
 		F28DE4532C5002D900F3C379 /* RiveModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28DE4522C5002D900F3C379 /* RiveModelTests.swift */; };
 		F2B29EA22D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.h in Headers */ = {isa = PBXBuildFile; fileRef = F2B29EA02D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F2B29EA32D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B29EA12D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.m */; };
+		F2BE72112E05DB8E00B66C78 /* ViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BE72102E05DB8E00B66C78 /* ViewTests.swift */; };
 		F2C003E82C933D2300339E67 /* RiveMetalDrawableView.h in Headers */ = {isa = PBXBuildFile; fileRef = F2C003E72C933D2300339E67 /* RiveMetalDrawableView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F2C07B1B2DA9854F00DC8C84 /* WeakContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = F2C07B192DA9854F00DC8C84 /* WeakContainer.h */; };
 		F2C07B1C2DA9854F00DC8C84 /* WeakContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F2C07B1A2DA9854F00DC8C84 /* WeakContainer.m */; };
@@ -233,6 +235,7 @@
 		E5964A952A965A9300140479 /* RiveEvent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = RiveEvent.h; sourceTree = "<group>"; };
 		E5964A972A9697B600140479 /* RiveEvent.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveEvent.mm; sourceTree = "<group>"; };
 		E599DCF82AAFA06100D1E49A /* rating_animation.riv */ = {isa = PBXFileReference; lastKnownFileType = file; name = rating_animation.riv; path = "Example-iOS/Assets/rating_animation.riv"; sourceTree = SOURCE_ROOT; };
+		F20808E12E05C3FF0082A281 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveRenderImage+Extensions.swift"; sourceTree = "<group>"; };
 		F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontDescriptor.swift; sourceTree = "<group>"; };
 		F22CF1B02D380E3700D35779 /* data_binding_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = data_binding_test.riv; sourceTree = "<group>"; };
@@ -262,6 +265,7 @@
 		F2B29EA12D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveDataBindingViewModelInstancePropertyData.m; sourceTree = "<group>"; };
 		F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Catalyst.xcconfig; sourceTree = "<group>"; };
 		F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = macOS.xcconfig; sourceTree = "<group>"; };
+		F2BE72102E05DB8E00B66C78 /* ViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTests.swift; sourceTree = "<group>"; };
 		F2C003E72C933D2300339E67 /* RiveMetalDrawableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveMetalDrawableView.h; sourceTree = "<group>"; };
 		F2C07B192DA9854F00DC8C84 /* WeakContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeakContainer.h; sourceTree = "<group>"; };
 		F2C07B1A2DA9854F00DC8C84 /* WeakContainer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeakContainer.m; sourceTree = "<group>"; };
@@ -481,6 +485,7 @@
 				F23992E62CB9C1C60021EF61 /* RenderContextTests.m */,
 				F22CF1B22D380E6900D35779 /* DataBindingTests.swift */,
 				F24FC6442DD3C83700DEE8C5 /* RiveRenderImageTests.swift */,
+				F2BE72102E05DB8E00B66C78 /* ViewTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -503,6 +508,7 @@
 			isa = PBXGroup;
 			children = (
 				F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */,
+				F20808E12E05C3FF0082A281 /* View+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -733,6 +739,7 @@
 				E5964A982A9697B600140479 /* RiveEvent.mm in Sources */,
 				F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */,
 				F2CCA9C22C9E13BA007DC0D2 /* RiveLogger.swift in Sources */,
+				F20808E22E05C3FF0082A281 /* View+Extensions.swift in Sources */,
 				043025F82AFA46EF00320F2E /* CDNFileAssetLoader.mm in Sources */,
 				F27B615D2D35C75A003C0345 /* RiveDataBindingViewModelInstanceProperty.mm in Sources */,
 				043026042AFBA04100320F2E /* RiveFactory.mm in Sources */,
@@ -773,6 +780,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2BE72112E05DB8E00B66C78 /* ViewTests.swift in Sources */,
 				04BE5420264ACFC200427B39 /* RiveStateMachineLoadTest.mm in Sources */,
 				04BE541E264AC7A600427B39 /* RiveArtboardLoadTest.mm in Sources */,
 				041265262B0CB41E009400EC /* OutOfBandAssetTest.mm in Sources */,
