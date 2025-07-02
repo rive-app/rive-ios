@@ -129,6 +129,9 @@ jobs:
     name: Do the actual release
     runs-on: ubuntu-latest
     needs: [determine_version, build_framework]
+    permissions:
+      id-token: write
+      contents: write # allows release-it to pick up GITHUB_TOKEN
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -201,14 +204,20 @@ jobs:
         name: Major Release - Bump version number, update changelog, push and tag
         run: npm run release -- major --ci
         working-directory: ./.github/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: ${{inputs.major == false && inputs.minor == true}}
         name: Minor release - Bump version number, update changelog, push and tag
         run: npm run release -- minor --ci
         working-directory: ./.github/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: ${{inputs.major == false && inputs.minor == false}}
         name: Build release - Bump version number, update changelog, push and tag
         run: npm run release -- --ci
         working-directory: ./.github/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
   publish_cocoapods:
     name: Publish framework to cocoapods
