@@ -125,9 +125,11 @@ open class RiveView: RiveRendererView {
         }
 
         if #available(iOS 17, tvOS 17, visionOS 1, *) {
-            registerForTraitChanges([UITraitDisplayScale.self]) { [weak self] (_: UITraitEnvironment, traitCollection: UITraitCollection) in
+            registerForTraitChanges([UITraitDisplayScale.self]) { [weak self] (_: UITraitEnvironment, previousTraitCollection: UITraitCollection) in
                 guard let self else { return }
-                self._layoutScaleFactor = self.traitCollection.displayScale
+                if previousTraitCollection.displayScale != traitCollection.displayScale {
+                    updateLayoutScaleFactor()
+                }
             }
         }
         #endif
@@ -145,8 +147,7 @@ open class RiveView: RiveRendererView {
             forName: NSWindow.didChangeScreenNotification,
             object: nil,
             queue: nil) { [weak self] _ in
-                guard let self, let scale = window?.screen?.backingScaleFactor else { return }
-                _layoutScaleFactor = scale
+                self?.updateLayoutScaleFactor()
             }
         #endif
     }
@@ -179,23 +180,15 @@ open class RiveView: RiveRendererView {
         #endif
     }
 
-    #if os(iOS) || os(tvOS)
-    open override func didMoveToWindow() {
-        super.didMoveToWindow()
-        guard let scale = window?.windowScene?.screen.scale else { return }
-        _layoutScaleFactor = scale
-    }
-    #elseif os(visionOS)
-    open override func didMoveToWindow() {
-        super.didMoveToWindow()
-        let scale = traitCollection.displayScale
-        _layoutScaleFactor = scale
-    }
-    #else
+    #if os(macOS)
     open override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
-        guard let scale = window?.screen?.backingScaleFactor else { return }
-        _layoutScaleFactor = scale
+        updateLayoutScaleFactor()
+    }
+    #else
+    open override func didMoveToWindow() {
+        super.didMoveToWindow()
+        updateLayoutScaleFactor()
     }
     #endif
 
@@ -322,8 +315,7 @@ open class RiveView: RiveRendererView {
     private func timestamp() -> CFTimeInterval {
         return displaySync?.targetTimestamp ?? Date().timeIntervalSince1970
     }
-        
-    
+
     /// Start a redraw:
     /// - determine the elapsed time
     /// - advance the artbaord, which will invalidate the display.
@@ -454,7 +446,7 @@ open class RiveView: RiveRendererView {
             }
 
             if traitCollection.displayScale != previousTraitCollection?.displayScale {
-                _layoutScaleFactor = traitCollection.displayScale
+                updateLayoutScaleFactor()
             }
         }
     }
@@ -698,10 +690,27 @@ open class RiveView: RiveRendererView {
         }
     }
 
+    // MARK: - Private
+
     private func redrawIfNecessary() {
         if isPlaying == false {
             needsDisplay()
         }
+    }
+
+    private func updateLayoutScaleFactor() {
+        #if os(macOS)
+        guard let scale = window?.screen?.backingScaleFactor else { return }
+        _layoutScaleFactor = scale
+        #elseif os(visionOS)
+        _layoutScaleFactor = traitCollection.displayScale
+        #else
+        guard let nativeScale = window?.screen.nativeScale else {
+            _layoutScaleFactor = traitCollection.displayScale
+            return
+        }
+        _layoutScaleFactor = nativeScale
+        #endif
     }
 }
 
