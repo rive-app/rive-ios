@@ -274,7 +274,7 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ImageProperty)
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (void)setValue:(nonnull RiveRenderImage*)image;
+- (void)setValue:(nullable RiveRenderImage*)image;
 
 /// Adds a block as a listener, called when the property is triggered.
 ///
@@ -288,6 +288,80 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ImageProperty)
 /// `removeListener`.
 - (NSUUID*)addListener:
     (RiveDataBindingViewModelInstanceImagePropertyListener)listener;
+
+@end
+
+#pragma mark - List
+
+typedef void (^RiveDataBindingViewModelInstanceListPropertyListener)(void)
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceListProperty.Listener);
+
+/// An object that represents a trigger property of a view model instance.
+NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ListProperty)
+@interface RiveDataBindingViewModelInstanceListProperty
+    : RiveDataBindingViewModelInstanceProperty
+
+/// The number of instances in the list.
+@property(nonatomic, readonly) NSUInteger count;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+/// Gets an instance at the specified index.
+///
+/// - Parameter index: The index of the instance to get.
+///
+/// - Returns: The instance at the specified index, or nil if the index is out
+/// of range.
+- (nullable RiveDataBindingViewModelInstance*)instanceAtIndex:(int)index
+    NS_SWIFT_NAME(instance(at:));
+
+/// Adds an instance to the list.
+///
+/// - Parameter instance: The instance to add.
+- (void)addInstance:(RiveDataBindingViewModelInstance*)instance
+    NS_SWIFT_NAME(append(_:));
+
+/// Inserts an instance to the list at a given index.
+///
+/// - Parameter instance: The instance to add to the list.
+/// - Parameter index: The index in the list at which to insert an instance.
+/// This value must not be greater than the count of elements in the array.
+///
+/// - Returns: `true` if the instance has been added, otherwise `false`.
+- (BOOL)insertInstance:(RiveDataBindingViewModelInstance*)instance
+               atIndex:(int)index NS_SWIFT_NAME(insert(_:at:));
+
+/// Removes an instance from the list.
+///
+/// - Parameter instance: The instance to remove.
+- (void)removeInstance:(RiveDataBindingViewModelInstance*)instance
+    NS_SWIFT_NAME(remove(_:));
+
+/// Removes an instance at the specified index.
+///
+/// - Parameter index: The index of the instance to remove.
+- (void)removeInstanceAtIndex:(int)index NS_SWIFT_NAME(remove(at:));
+
+/// Swaps two instances in the list.
+///
+/// - Parameters:
+///   - firstIndex: The index of the first instance.
+///   - secondIndex: The index of the second instance.
+- (void)swapInstanceAtIndex:(uint32_t)firstIndex
+        withInstanceAtIndex:(uint32_t)secondIndex NS_SWIFT_NAME(swap(at:with:));
+
+/// Adds a block as a listener, called when there is a change to the list.
+///
+/// - Note: The property can be triggered either explicitly by the developer,
+///  or as a result of a change in a state machine.
+///
+/// - Parameter listener: The block that will be called when there is a change
+/// to the list.
+///
+/// - Returns: A UUID for the listener, used in conjunction with
+/// `removeListener`.
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceListPropertyListener)listener;
 
 @end
 

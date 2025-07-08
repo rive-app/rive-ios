@@ -347,6 +347,41 @@
     return imageProperty;
 }
 
+- (RiveDataBindingViewModelInstanceListProperty*)listPropertyFromPath:
+    (NSString*)path
+{
+    RiveDataBindingViewModelInstanceListProperty* cached;
+    if ((cached = [self
+             cachedPropertyFromPath:path
+                            asClass:
+                                [RiveDataBindingViewModelInstanceListProperty
+                                    class]]))
+    {
+        return cached;
+    }
+
+    auto list = _instance->propertyList(std::string([path UTF8String]));
+    if (list == nullptr)
+    {
+        [RiveLogger logWithViewModelInstance:self
+                          listPropertyAtPath:path
+                                       found:NO];
+        return nil;
+    }
+
+    [RiveLogger logWithViewModelInstance:self
+                      listPropertyAtPath:path
+                                   found:YES];
+    RiveDataBindingViewModelInstanceListProperty* listProperty =
+        [[RiveDataBindingViewModelInstanceListProperty alloc]
+            initWithList:list];
+    listProperty.valueDelegate = self;
+
+    [self cacheProperty:listProperty withPath:path];
+
+    return listProperty;
+}
+
 - (void)updateListeners
 {
     [_properties enumerateKeysAndObjectsUsingBlock:^(

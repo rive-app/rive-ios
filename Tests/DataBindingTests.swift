@@ -83,51 +83,57 @@ class DataBindingTests: XCTestCase {
 
     func test_viewModel_propertyCount_returnsCount() {
         let viewModel = file.viewModelNamed("Test")!
-        XCTAssertEqual(viewModel.propertyCount, 10)
+        XCTAssertEqual(viewModel.propertyCount, 12)
     }
 
     func test_viewModel_properties_returnsAllProperties() {
         let viewModel = file.viewModelNamed("Test")!
 
-        XCTAssertEqual(viewModel.properties.count, 10)
-
         var data = viewModel.properties[0]
+        XCTAssertEqual(data.type, .list)
+        XCTAssertEqual(data.name, "List")
+
+        data = viewModel.properties[1]
+        XCTAssertEqual(data.type, .assetImage)
+        XCTAssertEqual(data.name, "Image")
+
+        data = viewModel.properties[2]
         XCTAssertEqual(data.type, .viewModel)
         XCTAssertEqual(data.name, "SecondNested")
 
-        data = viewModel.properties[1]
+        data = viewModel.properties[3]
         XCTAssertEqual(data.type, .trigger)
         XCTAssertEqual(data.name, "Trigger Blue")
 
-        data = viewModel.properties[2]
+        data = viewModel.properties[4]
         XCTAssertEqual(data.type, .trigger)
         XCTAssertEqual(data.name, "Trigger Green")
 
-        data = viewModel.properties[3]
+        data = viewModel.properties[5]
         XCTAssertEqual(data.type, .trigger)
         XCTAssertEqual(data.name, "Trigger Red")
 
-        data = viewModel.properties[4]
+        data = viewModel.properties[6]
         XCTAssertEqual(data.type, .viewModel)
         XCTAssertEqual(data.name, "Nested")
 
-        data = viewModel.properties[5]
+        data = viewModel.properties[7]
         XCTAssertEqual(data.type, .enum)
         XCTAssertEqual(data.name, "Enum")
 
-        data = viewModel.properties[6]
+        data = viewModel.properties[8]
         XCTAssertEqual(data.type, .color)
         XCTAssertEqual(data.name, "Color")
 
-        data = viewModel.properties[7]
+        data = viewModel.properties[9]
         XCTAssertEqual(data.type, .boolean)
         XCTAssertEqual(data.name, "Boolean")
 
-        data = viewModel.properties[8]
+        data = viewModel.properties[10]
         XCTAssertEqual(data.type, .number)
         XCTAssertEqual(data.name, "Number")
 
-        data = viewModel.properties[9]
+        data = viewModel.properties[11]
         XCTAssertEqual(data.type, .string)
         XCTAssertEqual(data.name, "String")
     }
@@ -462,6 +468,61 @@ class DataBindingTests: XCTestCase {
         let renderImage = RiveRenderImage(data: data)!
         property.setValue(renderImage)
         XCTAssertTrue(property.hasChanged)
+        property.clearChanges()
+        property.setValue(nil)
+        XCTAssertTrue(property.hasChanged)
+    }
+
+    // MARK: Lists
+
+    func test_viewModelInstance_listProperty_canAddAndRemoveAndSwapIdenticalItems() throws {
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+
+        let list = instance.listProperty(fromPath: "List")!
+
+        XCTAssertEqual(list.count, 0)
+
+        let nestedInstance = file.viewModelNamed("Nested")!.createInstance()!
+        list.append(nestedInstance)
+        XCTAssertEqual(list.count, 1)
+        XCTAssertIdentical(list.instance(at: 0), nestedInstance)
+
+        list.remove(nestedInstance)
+        XCTAssertEqual(list.count, 0)
+        XCTAssertNil(list.instance(at: 0))
+
+        let instance1 = file.viewModelNamed("Nested")!.createInstance()!
+        let instance2 = file.viewModelNamed("Nested")!.createInstance()!
+        list.append(instance1)
+        list.append(instance2)
+        XCTAssertEqual(list.count, 2)
+        XCTAssertIdentical(list.instance(at: 0), instance1)
+        XCTAssertIdentical(list.instance(at: 1), instance2)
+
+        list.remove(at: 0)
+        XCTAssertEqual(list.count, 1)
+        XCTAssertIdentical(list.instance(at: 0), instance2)
+
+        let instance3 = file.viewModelNamed("Nested")!.createInstance()!
+        list.append(instance3)
+        list.swap(at: 0, with: 1)
+        XCTAssertIdentical(list.instance(at: 0), instance3)
+        XCTAssertIdentical(list.instance(at: 1), instance2)
+
+        for i in (0..<list.count).reversed() {
+            list.remove(at: Int32(i))
+        }
+
+        let instance4 = file.viewModelNamed("Nested")!.createInstance()!
+        let instance5 = file.viewModelNamed("Nested")!.createInstance()!
+        let instance6 = file.viewModelNamed("Nested")!.createInstance()!
+        XCTAssertFalse(list.insert(instance4, at: 100))
+        XCTAssertTrue(list.insert(instance4, at: 0))
+        XCTAssertTrue(list.insert(instance5, at: 1))
+        // One final check to check false if index > list.count (currently 2)
+        XCTAssertFalse(list.insert(instance6, at: 3))
+        XCTAssertIdentical(list.instance(at: 0)!, instance4)
+        XCTAssertEqual(list.count, 2)
     }
 
     // MARK: Binding

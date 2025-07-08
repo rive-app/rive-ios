@@ -555,6 +555,12 @@
 
 - (void)setValue:(RiveRenderImage*)renderImage
 {
+    if (renderImage == nil)
+    {
+        [RiveLogger logPropertyUpdated:self value:@"nil"];
+        _image->value(nullptr);
+    }
+
     [RiveLogger logPropertyUpdated:self value:@"new image"];
     _image->value([renderImage instance].get());
 }
@@ -568,6 +574,117 @@
 - (void)handleListeners
 {
     for (RiveDataBindingViewModelInstanceImagePropertyListener listener in self
+             .listeners.allValues)
+    {
+        listener();
+    }
+}
+
+@end
+
+#pragma mark - List
+
+@implementation RiveDataBindingViewModelInstanceListProperty
+{
+    rive::ViewModelInstanceListRuntime* _list;
+    NSMutableDictionary<NSValue*, RiveDataBindingViewModelInstance*>*
+        _instances;
+}
+
+- (instancetype)initWithList:(rive::ViewModelInstanceListRuntime*)list
+{
+    if (self = [super initWithValue:list])
+    {
+        _list = list;
+        _instances = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
+- (nullable RiveDataBindingViewModelInstance*)instanceAtIndex:(int)index
+{
+    auto instance = _list->instanceAt(index);
+    if (instance == nullptr)
+    {
+        return nil;
+    }
+
+    NSValue* key = [NSValue valueWithPointer:instance];
+    RiveDataBindingViewModelInstance* cachedInstance = _instances[key];
+    if (cachedInstance != nil)
+    {
+        return cachedInstance;
+    }
+
+    RiveDataBindingViewModelInstance* newInstance =
+        [[RiveDataBindingViewModelInstance alloc] initWithInstance:instance];
+    _instances[key] = newInstance;
+    return newInstance;
+}
+
+- (void)addInstance:(RiveDataBindingViewModelInstance*)instance
+{
+    auto i = [instance instance];
+    _list->addInstance(i);
+
+    NSValue* key = [NSValue valueWithPointer:i];
+    _instances[key] = instance;
+}
+
+- (BOOL)insertInstance:(RiveDataBindingViewModelInstance*)instance
+               atIndex:(int)index
+{
+    auto i = [instance instance];
+    BOOL success = _list->addInstanceAt(i, index);
+    if (success)
+    {
+        NSValue* key = [NSValue valueWithPointer:i];
+        _instances[key] = instance;
+    }
+    return success;
+}
+
+- (void)removeInstance:(RiveDataBindingViewModelInstance*)instance
+{
+    auto i = [instance instance];
+    _list->removeInstance(i);
+
+    NSValue* key = [NSValue valueWithPointer:i];
+    [_instances removeObjectForKey:key];
+}
+
+- (void)removeInstanceAtIndex:(int)index
+{
+    auto i = _list->instanceAt(index);
+    if (i != nullptr)
+    {
+        NSValue* key = [NSValue valueWithPointer:i];
+        [_instances removeObjectForKey:key];
+    }
+
+    _list->removeInstanceAt(index);
+}
+
+- (void)swapInstanceAtIndex:(uint32_t)firstIndex
+        withInstanceAtIndex:(uint32_t)secondIndex
+{
+    _list->swap(firstIndex, secondIndex);
+}
+
+- (NSUInteger)count
+{
+    return _list->size();
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceListPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceListPropertyListener listener in self
              .listeners.allValues)
     {
         listener();

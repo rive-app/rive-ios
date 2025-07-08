@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveDataBindingViewModelInstanceEnumProperty;
 @class RiveDataBindingViewModelInstanceTriggerProperty;
 @class RiveDataBindingViewModelInstanceImageProperty;
+@class RiveDataBindingViewModelInstanceListProperty;
 @class RiveDataBindingViewModelInstancePropertyData;
 
 /// An object that represents an instance of a view model, used to update
@@ -87,7 +88,7 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 /// will be cached, and calling this function again with the same path is
 /// guaranteed to return the same object.
 ///
-/// - Parameter path: The path to the number property.
+/// - Parameter path: The path to the boolean property.
 ///
 /// - Returns: The property if it exists at the supplied path, otherwise nil.
 - (nullable RiveDataBindingViewModelInstanceBooleanProperty*)
@@ -100,7 +101,7 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 /// will be cached, and calling this function again with the same path is
 /// guaranteed to return the same object.
 ///
-/// - Parameter path: The path to the number property.
+/// - Parameter path: The path to the color property.
 ///
 /// - Returns: The property if it exists at the supplied path, otherwise nil.
 - (nullable RiveDataBindingViewModelInstanceColorProperty*)
@@ -113,7 +114,7 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 /// will be cached, and calling this function again with the same path is
 /// guaranteed to return the same object.
 ///
-/// - Parameter path: The path to the number property.
+/// - Parameter path: The path to the enum property.
 ///
 /// - Returns: The property if it exists at the supplied path, otherwise nil.
 - (nullable RiveDataBindingViewModelInstanceEnumProperty*)enumPropertyFromPath:
@@ -126,7 +127,7 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 /// will be cached, and calling this function again with the same path is
 /// guaranteed to return the same object.
 ///
-/// - Parameter path: The path to the number property.
+/// - Parameter path: The path to the view model instance property.
 ///
 /// - Returns: The property if it exists at the supplied path, otherwise nil.
 - (nullable RiveDataBindingViewModelInstance*)viewModelInstancePropertyFromPath:
@@ -154,7 +155,7 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 /// will be cached, and calling this function again with the same path is
 /// guaranteed to return the same object.
 ///
-/// - Parameter path: The path to the number property.
+/// - Parameter path: The path to the trigger property.
 ///
 /// - Returns: The property if it exists at the supplied path, otherwise nil.
 - (nullable RiveDataBindingViewModelInstanceTriggerProperty*)
@@ -167,11 +168,24 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 /// will be cached, and calling this function again with the same path is
 /// guaranteed to return the same object.
 ///
-/// - Parameter path: The path to the number property.
+/// - Parameter path: The path to the image property.
 ///
 /// - Returns: The property if it exists at the supplied path, otherwise nil.
 - (nullable RiveDataBindingViewModelInstanceImageProperty*)
     imagePropertyFromPath:(NSString*)path;
+
+/// Gets a list property in the view model instance.
+///
+/// - Note: Unlike a `RiveViewModel.Instance`, a strong reference to this type
+/// does not have to be made. If the property exists, the underlying property
+/// will be cached, and calling this function again with the same path is
+/// guaranteed to return the same object.
+///
+/// - Parameter path: The path to the list property.
+///
+/// - Returns: The property if it exists at the supplied path, otherwise nil.
+- (nullable RiveDataBindingViewModelInstanceListProperty*)listPropertyFromPath:
+    (NSString*)path;
 
 /// Calls all registered property listeners for the properties of the view model
 /// instance.
