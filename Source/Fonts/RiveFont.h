@@ -6,6 +6,8 @@
 //  Copyright © 2024 Rive. All rights reserved.
 //
 
+#ifdef WITH_RIVE_TEXT
+
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -57,3 +59,5 @@ typedef NSArray<id<RiveFallbackFontProvider>>* _Nonnull (
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

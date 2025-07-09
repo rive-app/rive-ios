@@ -37,17 +37,21 @@
                     // Load the data into the reader
                     NSData* data = [NSData dataWithContentsOfURL:location];
 
+#ifdef WITH_RIVE_TEXT
                     if ([asset isKindOfClass:[RiveFontAsset class]])
                     {
                         RiveFontAsset* fontAsset = (RiveFontAsset*)asset;
                         [fontAsset font:[factory decodeFont:data]];
                         [RiveLogger logFontAssetLoad:fontAsset fromURL:URL];
+                        return;
                     }
-                    else if ([asset isKindOfClass:[RiveImageAsset class]])
+#endif
+                    if ([asset isKindOfClass:[RiveImageAsset class]])
                     {
                         RiveImageAsset* imageAsset = (RiveImageAsset*)asset;
                         [imageAsset renderImage:[factory decodeImage:data]];
                         [RiveLogger logImageAssetLoad:imageAsset fromURL:URL];
+                        return;
                     }
                 }
                 else

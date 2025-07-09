@@ -1,5 +1,5 @@
 //
-//  Build.xcconfig
+//  Catalyst.xcconfig
 //  RiveRuntime
 //
 //  Created by David Skuza on 5/20/25.
@@ -9,6 +9,8 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
+#include "Base.xcconfig"
+
 SUPPORTS_MACCATALYST=YES
 OTHER_LDFLAGS[sdk=macosx*] = -lrive_maccatalyst -lrive_harfbuzz_maccatalyst -lrive_sheenbidi_maccatalyst -lrive_yoga_maccatalyst -lminiaudio_maccatalyst -lrive_pls_renderer_maccatalyst -lrive_cg_renderer_maccatalyst -lrive_decoders_maccatalyst
-SWIFT_ACTIVE_COMPILATION_CONDITIONS = RIVE_MAC_CATALYST
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) RIVE_MAC_CATALYST

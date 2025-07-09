@@ -13,6 +13,76 @@ fi
 
 export RIVE_PLS_DIR="$RIVE_RUNTIME_DIR/renderer"
 
+if [ -z "${RIVE_PREMAKE_ARGS+null_detector_string}" ]; then
+    RIVE_PREMAKE_ARGS="--with_rive_layout"
+fi
+
+NO_AUDIO=false
+NO_TEXT=false
+PLATFORM=""
+CONFIG=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --no-audio)
+            NO_AUDIO=true
+            shift
+            ;;
+        --no-text)
+            NO_TEXT=true
+            shift
+            ;;
+        all|macosx|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|maccatalyst)
+            PLATFORM="$1"
+            shift
+            ;;
+        debug|release)
+            CONFIG="$1"
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+# Add audio flag to RIVE_PREMAKE_ARGS if --no-audio is not passed
+if [ "$NO_AUDIO" = false ]; then
+    RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS --with_rive_audio=system"
+fi
+
+# Add text flag to RIVE_PREMAKE_ARGS if --no-text is not passed
+if [ "$NO_TEXT" = false ]; then
+    RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS --with_rive_text"
+fi
+
+# Handle preprocessor definitions for audio and text
+# Build the definitions string
+DEFINITIONS=""
+if [ "$NO_AUDIO" = false ]; then
+    DEFINITIONS="$DEFINITIONS WITH_RIVE_AUDIO"
+fi
+if [ "$NO_TEXT" = false ]; then
+    DEFINITIONS="$DEFINITIONS WITH_RIVE_TEXT"
+fi
+
+# Set the preprocessor definitions line
+if [ -n "$DEFINITIONS" ]; then
+    # Remove leading space
+    DEFINITIONS=$(echo "$DEFINITIONS" | sed 's/^ //')
+    # Update the active GCC_PREPROCESSOR_DEFINITIONS line (not commented ones)
+    sed -i '' "/^GCC_PREPROCESSOR_DEFINITIONS = /s/= .*/= \$(inherited) $DEFINITIONS/" $DEV_SCRIPT_DIR/../Config/Base.xcconfig
+    # Update the active SWIFT_ACTIVE_COMPILATION_CONDITIONS line (not commented ones)
+    sed -i '' "/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= \$(inherited) $DEFINITIONS/" $DEV_SCRIPT_DIR/../Config/Base.xcconfig
+else
+    # Update the active GCC_PREPROCESSOR_DEFINITIONS line (not commented ones)
+    sed -i '' '/^GCC_PREPROCESSOR_DEFINITIONS = /s/= .*/= $(inherited)/' $DEV_SCRIPT_DIR/../Config/Base.xcconfig
+    # Update the active SWIFT_ACTIVE_COMPILATION_CONDITIONS line (not commented ones)
+    sed -i '' '/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= $(inherited)/' $DEV_SCRIPT_DIR/../Config/Base.xcconfig
+fi
+
+
 make_dependency_directories() {
     rm -fr $DEV_SCRIPT_DIR/../dependencies
 
@@ -28,7 +98,7 @@ make_dependency_directories() {
 
 build_runtime() {
     # Build the rive runtime.
-    build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua ios $1 --with_rive_audio=system universal clean
+    RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS" build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua ios $1 $AUDIO_FLAG universal clean
 
     cp -r out/ios_universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz.a
     cp -r out/ios_universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga.a
@@ -67,7 +137,7 @@ build_runtime() {
 
 build_runtime_sim() {
     # Build the rive runtime.
-    build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua iossim $1 --with_rive_audio=system clean
+    RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS" build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua iossim $1 $AUDIO_FLAG clean
 
     cp -r out/iossim_universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_sim.a
     cp -r out/iossim_universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_sim.a
@@ -107,7 +177,7 @@ build_runtime_sim() {
 
 build_runtime_macosx() {
     # Build the rive runtime.
-    build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua $1 universal --with_rive_audio=system clean
+    RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS" build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua $1 universal $AUDIO_FLAG clean
 
     cp -r out/universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_macos.a
     cp -r out/universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_macos.a
@@ -146,7 +216,7 @@ build_runtime_macosx() {
 
 build_runtime_xros() {
     # Build the rive runtime.
-    RIVE_OUT=out/xros_$1 build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua xros $1 --with_rive_audio=system clean
+    RIVE_OUT=out/xros_$1 RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS" build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua xros $1 $AUDIO_FLAG clean
 
     cp -r out/xros_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_xros.a
     cp -r out/xros_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_xros.a
@@ -185,7 +255,7 @@ build_runtime_xros() {
 
 build_runtime_xrsimulator() {
     # Build the rive runtime.
-    RIVE_OUT=out/xrsimulator_universal_$1 build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua xrsimulator $1 --with_rive_audio=system clean
+    RIVE_OUT=out/xrsimulator_universal_$1 RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS" build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua xrsimulator $1 $AUDIO_FLAG clean
 
     cp -r out/xrsimulator_universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_xrsimulator.a
     cp -r out/xrsimulator_universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_xrsimulator.a
@@ -224,7 +294,7 @@ build_runtime_xrsimulator() {
 }
 
 build_runtime_appletvos() {
-    RIVE_OUT=out/appletvos_$1 build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua appletvos $1 --with_rive_audio=system clean
+    RIVE_OUT=out/appletvos_$1 RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS" build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua appletvos $1 $AUDIO_FLAG clean
 
     cp -r out/appletvos_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_appletvos.a
     cp -r out/appletvos_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_appletvos.a
@@ -264,7 +334,7 @@ build_runtime_appletvos() {
 }
 
 build_runtime_appletvsimulator() {
-    RIVE_OUT=out/appletvsimulator_universal_$1 build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua appletvsimulator $1 --with_rive_audio=system clean
+    RIVE_OUT=out/appletvsimulator_universal_$1 RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS" build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua appletvsimulator $1 $AUDIO_FLAG clean
 
     cp -r out/appletvsimulator_universal_$1/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_harfbuzz_appletvsimulator.a
     cp -r out/appletvsimulator_universal_$1/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_yoga_appletvsimulator.a
@@ -310,7 +380,7 @@ build_runtime_maccatalyst() {
         local arch=$2
         
         # Build the rive runtime.
-        RIVE_OUT=out/maccatalyst_${arch}_${config} build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua ${config} ${arch} --with_rive_audio=system --variant=maccatalyst clean
+        RIVE_OUT=out/maccatalyst_${arch}_${config} RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS" build_rive.sh --file=$RIVE_RUNTIME_DIR/premake5_v2.lua ${config} ${arch} $AUDIO_FLAG --variant=maccatalyst clean
 
         cp -r out/maccatalyst_${arch}_${config}/librive_harfbuzz.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_harfbuzz_maccatalyst_${arch}.a
         cp -r out/maccatalyst_${arch}_${config}/librive_yoga.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_yoga_maccatalyst_${arch}.a
@@ -380,11 +450,11 @@ build_runtime_maccatalyst() {
 }
 
 usage() {
-    echo "USAGE: $0 <all|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|macosx|maccatalyst> <debug|release>"
+    echo "USAGE: $0 [--no-audio] <all|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|macosx|maccatalyst> <debug|release>"
     exit 1
 }
 
-if (($# < 1)); then
+if [ -z "$PLATFORM" ]; then
     usage
 fi
 
@@ -403,9 +473,9 @@ build_all() {
     build_runtime_maccatalyst $1
 }
 
-case $1 in
+case $PLATFORM in
 all)
-    case $2 in
+    case $CONFIG in
     "debug")
         echo "Building all Apple runtimes in debug..."
         make_dependency_directories
@@ -428,13 +498,13 @@ all)
     esac
     ;;
 macosx)
-    if (($# < 2)); then
+    if [ -z "$CONFIG" ]; then
         usage
     fi
-    case $2 in
+    case $CONFIG in
     release | debug)
         make_dependency_directories
-        build_runtime_macosx $2
+        build_runtime_macosx $CONFIG
         ;;
     *)
         usage
@@ -442,13 +512,13 @@ macosx)
     esac
     ;;
 ios)
-    if (($# < 2)); then
+    if [ -z "$CONFIG" ]; then
         usage
     fi
-    case $2 in
+    case $CONFIG in
     release | debug)
         make_dependency_directories
-        build_runtime $2
+        build_runtime $CONFIG
         ;;
     *)
         usage
@@ -456,13 +526,13 @@ ios)
     esac
     ;;
 ios_sim)
-    if (($# < 2)); then
+    if [ -z "$CONFIG" ]; then
         usage
     fi
-    case $2 in
+    case $CONFIG in
     release | debug)
         make_dependency_directories
-        build_runtime_sim $2
+        build_runtime_sim $CONFIG
         # TODO:
         # to build for the example you need debug, but to profile you need release.
         # each time you build, both version are removed. to imnprove this only remove
@@ -476,13 +546,13 @@ ios_sim)
     esac
     ;;
 xros)
-    if (($# < 2)); then
+    if [ -z "$CONFIG" ]; then
         usage
     fi
-    case $2 in
+    case $CONFIG in
     release | debug)
         make_dependency_directories
-        build_runtime_xros $2
+        build_runtime_xros $CONFIG
         ;;
     *)
         usage
@@ -490,13 +560,13 @@ xros)
     esac
     ;;
 xrsimulator)
-    if (($# < 2)); then
+    if [ -z "$CONFIG" ]; then
         usage
     fi
-    case $2 in
+    case $CONFIG in
     release | debug)
         make_dependency_directories
-        build_runtime_xrsimulator $2
+        build_runtime_xrsimulator $CONFIG
         # TODO:
         # to build for the example you need debug, but to profile you need release.
         # each time you build, both version are removed. to imnprove this only remove
@@ -510,13 +580,13 @@ xrsimulator)
     esac
     ;;
 appletvos)
-    if (($# < 2)); then
+    if [ -z "$CONFIG" ]; then
         usage
     fi
-    case $2 in
+    case $CONFIG in
     release | debug)
         make_dependency_directories
-        build_runtime_appletvos $2
+        build_runtime_appletvos $CONFIG
         ;;
     *)
         usage
@@ -524,13 +594,13 @@ appletvos)
     esac
     ;;
 appletvsimulator)
-    if (($# < 2)); then
+    if [ -z "$CONFIG" ]; then
         usage
     fi
-    case $2 in
+    case $CONFIG in
     release | debug)
         make_dependency_directories
-        build_runtime_appletvsimulator $2
+        build_runtime_appletvsimulator $CONFIG
         # TODO:
         # to build for the example you need debug, but to profile you need release.
         # each time you build, both version are removed. to imnprove this only remove
@@ -544,13 +614,13 @@ appletvsimulator)
     esac
     ;;
 maccatalyst)
-    if (($# < 2)); then
+    if [ -z "$CONFIG" ]; then
         usage
     fi
-    case $2 in
+    case $CONFIG in
     release | debug)
         make_dependency_directories
-        build_runtime_maccatalyst $2
+        build_runtime_maccatalyst $CONFIG
         ;;
     *)
         usage

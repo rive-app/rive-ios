@@ -6,6 +6,7 @@
 //  Copyright © 2024 Rive. All rights reserved.
 //
 
+#ifdef WITH_RIVE_TEXT
 #import "RiveFallbackFontCache.h"
 #import "RiveFont.h"
 
@@ -81,3 +82,4 @@
 }
 
 @end
+#endif

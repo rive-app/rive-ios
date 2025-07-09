@@ -1,3 +1,4 @@
+#if WITH_RIVE_TEXT
 //
 //  RiveFallbackFontDescriptor+UIKit.swift
 //  RiveRuntime
@@ -224,3 +225,4 @@ extension RiveNativeFont: RiveFontWidthProvider {
         return Int(calculatedWidth)
     }
 }
+#endif

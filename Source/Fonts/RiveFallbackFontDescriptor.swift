@@ -1,3 +1,4 @@
+#if WITH_RIVE_TEXT
 //
 //  RiveFallbackFontDescriptor.swift
 //  RiveRuntime
@@ -89,3 +90,4 @@ import SwiftUI
         self.width = width
     }
 }
+#endif // WITH_RIVE_TEXT

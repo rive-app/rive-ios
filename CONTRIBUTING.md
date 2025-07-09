@@ -39,6 +39,19 @@ Note: `PATH` must be updated for the Apple runtime build scripts to find `build_
 
 If the script completes successfully, then all necessary frameworks are built, and you can continue on to running the Example apps.
 
+### Building lite variations
+
+When manually building the Apple runtime, you can choose to build with all Rive features, or without certain features, such as audio or text. To build a lite version of the Apple runtime, run the same build script as shown above, supplying additional flags as needed:
+
+- `--no-audio` will build all libraries without audio support
+- `--no-text` will build all libraries without text support
+
+After running `build.sh` to build the framework dependencies, run the following script to build the final `.xcframework`:
+
+`./scripts/build_framework.sh -c Release`
+
+Running this script expects `build.sh` to be run and the resulting changes to `Base.xcconfig` to not be modified. Otherwise, the runtime will fail to successfully compile.
+
 ## Example and Preview targets / schemes
 
 The Example app has different targets and schemes, currently for both iOS and macOS. The `Example` targets make use of the local Rive dependency (built above) and the `Preview` targets make use of a hosted version of Rive, added via Swift Package Manager, to make it easy to run without needing to do all of the local development setup above. If you're making changes to the underlying runtime and need to test the Example app, be sure to set the scheme to either `Example (iOS)` or `Example (macOS)`, depending on your platform. See [Customizing the build schemes for a project](https://developer.apple.com/documentation/xcode/customizing-the-build-schemes-for-a-project) for more information.

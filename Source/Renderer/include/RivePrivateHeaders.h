@@ -29,8 +29,12 @@
 #import "rive/text/text_value_run.hpp"
 #import "rive/event.hpp"
 #import "rive/assets/image_asset.hpp"
+#ifdef WITH_RIVE_TEXT
 #import "rive/assets/font_asset.hpp"
+#endif
+#ifdef WITH_RIVE_AUDIO
 #import "rive/assets/audio_asset.hpp"
+#endif
 #import "rive/assets/file_asset.hpp"
 #import "rive/file_asset_loader.hpp"
 #import "rive/viewmodel/runtime/viewmodel_instance_runtime.hpp"
@@ -139,19 +143,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFileAsset:(const rive::ImageAsset*)fileAsset;
 @end
 
+#ifdef WITH_RIVE_TEXT
 /*
  * RiveFontAsset
  */
 @interface RiveFontAsset ()
 - (instancetype)initWithFileAsset:(const rive::FontAsset*)fileAsset;
 @end
+#endif
 
+#ifdef WITH_RIVE_AUDIO
 /*
  * RiveAudioAsset
  */
 @interface RiveAudioAsset ()
 - (instancetype)initWithFileAsset:(const rive::AudioAsset*)fileAsset;
 @end
+#endif
 
 /*
  * RiveFileAsset
@@ -160,20 +168,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFactory:(rive::Factory*)factory;
 @end
 
+#ifdef WITH_RIVE_TEXT
 @interface RiveFont ()
 - (instancetype)initWithFont:(rive::rcp<rive::Font>)font;
 - (rive::rcp<rive::Font>)instance;
 @end
+#endif
 
 @interface RiveRenderImage ()
 - (instancetype)initWithImage:(rive::rcp<rive::RenderImage>)image;
 - (rive::rcp<rive::RenderImage>)instance;
 @end
 
+#ifdef WITH_RIVE_AUDIO
 @interface RiveAudio ()
 - (instancetype)initWithAudio:(rive::rcp<rive::AudioSource>)audio;
 - (rive::rcp<rive::AudioSource>)instance;
 @end
+#endif
 
 @interface RiveDataBindingViewModel ()
 - (instancetype)initWithViewModel:(rive::ViewModelRuntime*)viewModel;

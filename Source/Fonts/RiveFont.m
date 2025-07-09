@@ -6,6 +6,8 @@
 //  Copyright © 2024 Rive. All rights reserved.
 //
 
+#ifdef WITH_RIVE_TEXT
+
 #import "RiveFont.h"
 #import "RiveFallbackFontCache.h"
 #import <RiveRuntime/RiveRuntime-Swift.h>
@@ -271,3 +273,5 @@ static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
 }
 
 @end
+
+#endif

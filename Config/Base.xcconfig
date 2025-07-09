@@ -1,5 +1,5 @@
 //
-//  macOS.xcconfig
+//  Base.xcconfig
 //  RiveRuntime
 //
 //  Created by David Skuza on 5/20/25.
@@ -9,7 +9,5 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-#include "Base.xcconfig"
-
-SUPPORTS_MACCATALYST=NO
-OTHER_LDFLAGS[sdk=macosx*] = -lrive_macos -lrive_harfbuzz_macos -lrive_sheenbidi_macos -lrive_yoga_macos -lminiaudio_macos -lrive_pls_renderer_macos -lrive_cg_renderer_macos -lrive_decoders_macos
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT

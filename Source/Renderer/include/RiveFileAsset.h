@@ -13,7 +13,9 @@
 
 @class RiveRenderImage;
 @class RiveFont;
+#ifdef WITH_RIVE_AUDIO
 @class RiveAudio;
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,12 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)font:(RiveFont*)font;
 @end
 
+#ifdef WITH_RIVE_AUDIO
 /*
  * RiveAudioAsset
  */
 @interface RiveAudioAsset : RiveFileAsset
 - (void)audio:(RiveAudio*)audio;
 @end
+#endif
 
 NS_ASSUME_NONNULL_END
 

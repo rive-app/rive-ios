@@ -25,6 +25,7 @@ bool rive::FileAssetLoaderAdapter::loadContents(rive::FileAsset& asset,
 {
     NSData* data = [NSData dataWithBytes:bytes.data() length:bytes.size()];
     RiveFactory* myFactory = [[RiveFactory alloc] initWithFactory:factory];
+#ifdef WITH_RIVE_TEXT
     if (asset.is<rive::FontAsset>())
     {
         RiveFontAsset* fontAsset = [[RiveFontAsset alloc]
@@ -33,7 +34,8 @@ bool rive::FileAssetLoaderAdapter::loadContents(rive::FileAsset& asset,
                                      andData:data
                                   andFactory:myFactory];
     }
-    else if (asset.is<rive::ImageAsset>())
+#endif
+    if (asset.is<rive::ImageAsset>())
     {
         RiveImageAsset* imageAsset = [[RiveImageAsset alloc]
             initWithFileAsset:asset.as<rive::ImageAsset>()];
@@ -41,7 +43,8 @@ bool rive::FileAssetLoaderAdapter::loadContents(rive::FileAsset& asset,
                                      andData:data
                                   andFactory:myFactory];
     }
-    else if (asset.is<rive::AudioAsset>())
+#ifdef WITH_RIVE_AUDIO
+    if (asset.is<rive::AudioAsset>())
     {
         RiveAudioAsset* audioAsset = [[RiveAudioAsset alloc]
             initWithFileAsset:asset.as<rive::AudioAsset>()];
@@ -49,6 +52,7 @@ bool rive::FileAssetLoaderAdapter::loadContents(rive::FileAsset& asset,
                                      andData:data
                                   andFactory:myFactory];
     }
+#endif
     return false;
 }
 

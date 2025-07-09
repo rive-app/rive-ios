@@ -238,6 +238,7 @@
 		F20808E12E05C3FF0082A281 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveRenderImage+Extensions.swift"; sourceTree = "<group>"; };
 		F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontDescriptor.swift; sourceTree = "<group>"; };
+		F22883752E1D61B50042FB20 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		F22CF1B02D380E3700D35779 /* data_binding_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = data_binding_test.riv; sourceTree = "<group>"; };
 		F22CF1B22D380E6900D35779 /* DataBindingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBindingTests.swift; sourceTree = "<group>"; };
 		F23626A92C8F90FA00727D9A /* nested_text_run.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nested_text_run.riv; sourceTree = "<group>"; };
@@ -535,6 +536,7 @@
 			children = (
 				F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */,
 				F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */,
+				F22883752E1D61B50042FB20 /* Base.xcconfig */,
 			);
 			path = Config;
 			sourceTree = "<group>";

@@ -6,6 +6,7 @@
 //  Copyright © 2024 Rive. All rights reserved.
 //
 
+#ifdef WITH_RIVE_TEXT
 #import <Foundation/Foundation.h>
 #import <rive/text/font_hb.hpp>
 #import <RiveRuntime/RiveRuntime-Swift.h>
@@ -42,3 +43,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+#endif

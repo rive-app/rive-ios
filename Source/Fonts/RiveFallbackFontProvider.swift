@@ -1,3 +1,4 @@
+#if WITH_RIVE_TEXT
 //
 //  RiveSystemFontProvider.swift
 //  RiveRuntime
@@ -13,3 +14,4 @@ import Foundation
     /// An array of possible fonts to use as fallback fonts.
     @objc var fallbackFont: RiveNativeFont { get }
 }
+#endif // WITH_RIVE_TEXT

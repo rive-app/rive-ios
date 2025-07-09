@@ -14,8 +14,10 @@
 #import <RenderContextManager.h>
 // We manually need to provide this as our build-time config isn't shared with
 // xcode.
-#define WITH_RIVE_AUDIO
+
+#ifdef WITH_RIVE_AUDIO
 #include "rive/audio/audio_engine.hpp"
+#endif
 
 #if TARGET_OS_VISION
 @implementation RiveMTKView
@@ -157,20 +159,24 @@
 
 - (void)didEnterBackground:(NSNotification*)notification
 {
+#ifdef WITH_RIVE_AUDIO
     auto engine = rive::AudioEngine::RuntimeEngine(false);
     if (engine != nil)
     {
         engine->stop();
     }
+#endif
 }
 
 - (void)didEnterForeground:(NSNotification*)notification
 {
+#ifdef WITH_RIVE_AUDIO
     auto engine = rive::AudioEngine::RuntimeEngine(false);
     if (engine != nil)
     {
         engine->start();
     }
+#endif
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder

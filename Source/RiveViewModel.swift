@@ -459,7 +459,8 @@ import Combine
         RiveLogger.log(viewModel: self, event: .doubleInput(inputName, path, value))
         setInput(inputName, value: Float(value), path: path)
     }
-    
+
+#if WITH_RIVE_TEXT
     /// Get a text value from a specified text run
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
@@ -522,6 +523,7 @@ import Combine
             throw RiveError.textValueRunError(errorMessage)
         }
     }
+#endif
 
     // TODO: Replace this with a more robust structure of the file's contents
     @objc open func artboardNames() -> [String] {
