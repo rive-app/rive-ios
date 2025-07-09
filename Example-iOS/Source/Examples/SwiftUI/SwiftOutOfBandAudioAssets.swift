@@ -28,10 +28,12 @@ struct SwiftOutOfBandAudioAssets: DismissableView {
                 guard let data = try? Data(contentsOf: url) else {
                     fatalError("Failed to load \(url) from bundle.")
                 }
-                
-                (asset as! RiveAudioAsset).audio(
-                    factory.decodeAudio(data)
-                )
+
+                guard let decoded = factory.decodeAudio(data) else {
+                    return false
+                }
+
+                (asset as! RiveAudioAsset).audio(decoded)
                 return true;
 
             }

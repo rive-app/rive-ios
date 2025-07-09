@@ -96,7 +96,6 @@
 
 @end
 
-#ifdef WITH_RIVE_TEXT
 @implementation RiveFontAsset
 - (instancetype)initWithFileAsset:(const rive::FontAsset*)fileAsset
 {
@@ -105,12 +104,12 @@
 
 - (void)font:(RiveFont*)font
 {
+#ifdef WITH_RIVE_TEXT
     ((rive::FontAsset*)[self getInstance])->font([font instance]);
+#endif
 }
 @end
-#endif
 
-#ifdef WITH_RIVE_AUDIO
 @implementation RiveAudioAsset
 - (instancetype)initWithFileAsset:(const rive::AudioAsset*)fileAsset
 {
@@ -119,7 +118,8 @@
 
 - (void)audio:(RiveAudio*)audio
 {
+#ifdef WITH_RIVE_AUDIO
     ((rive::AudioAsset*)[self getInstance])->audioSource([audio instance]);
+#endif
 }
 @end
-#endif

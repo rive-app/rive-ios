@@ -460,15 +460,16 @@ import Combine
         setInput(inputName, value: Float(value), path: path)
     }
 
-#if WITH_RIVE_TEXT
     /// Get a text value from a specified text run
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
     /// - Returns: String text value of the specified text run if applicable
     @objc open func getTextRunValue(_ textRunName: String) -> String? {
+        #if WITH_RIVE_TEXT
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
             return textRun.text()
         }
+        #endif
         return nil
     }
 
@@ -478,9 +479,11 @@ import Combine
     ///   - path: The path to the nested text run.
     /// - Returns: String text value of the specified text run if applicable
     @objc open func getTextRunValue(_ textRunName: String, path: String) -> String? {
+        #if WITH_RIVE_TEXT
         if let textRun = riveModel?.artboard?.textRun(textRunName, path: path) {
             return textRun.text()
         }
+        #endif
         return nil
     }
 
@@ -489,6 +492,7 @@ import Combine
     ///   - textRunName: The name of a `Text Run` on the active Artboard
     ///   - textValue: A String value for the text run
     @objc open func setTextRunValue(_ textRunName: String, textValue: String) throws {
+        #if WITH_RIVE_TEXT
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
             RiveLogger.log(viewModel: self, event: .textRun(textRunName, nil, textValue))
             textRun.setText(textValue)
@@ -501,6 +505,7 @@ import Combine
             RiveLogger.log(viewModel: self, event: .error(errorMessage))
             throw RiveError.textValueRunError(errorMessage)
         }
+        #endif
     }
 
     /// Set a text value for a specified text run
@@ -510,6 +515,7 @@ import Combine
     ///   - textValue: A String value for the text run
     /// - Note: If the specified path is empty, the parent artboard will be used to find the text run.
     @objc open func setTextRunValue(_ textRunName: String, path: String, textValue: String) throws {
+        #if WITH_RIVE_TEXT
         if let textRun = riveModel?.artboard?.textRun(textRunName, path: path) {
             RiveLogger.log(viewModel: self, event: .textRun(textRunName, path, textValue))
             textRun.setText(textValue)
@@ -522,8 +528,8 @@ import Combine
             RiveLogger.log(viewModel: self, event: .error(errorMessage))
             throw RiveError.textValueRunError(errorMessage)
         }
+        #endif
     }
-#endif
 
     // TODO: Replace this with a more robust structure of the file's contents
     @objc open func artboardNames() -> [String] {

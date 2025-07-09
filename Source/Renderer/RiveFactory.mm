@@ -12,7 +12,7 @@
 #import <RiveRuntime/RiveRuntime-Swift.h>
 #import <RenderContext.h>
 
-#if WITH_RIVE_TEXT
+#ifdef WITH_RIVE_TEXT
 #import <CoreText/CTFont.h>
 #import <rive/text/font_hb.hpp>
 
@@ -21,7 +21,7 @@
 #endif
 #endif
 
-#if WITH_RIVE_TEXT
+#ifdef WITH_RIVE_TEXT
 static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
                                                     bool useSystemShaper)
 {
@@ -82,7 +82,6 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
 
 @end
 
-#ifdef WITH_RIVE_AUDIO
 @implementation RiveAudio
 {
     rive::rcp<rive::AudioSource>
@@ -106,7 +105,6 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
 }
 
 @end
-#endif
 
 /*
  * RiveFactory
@@ -138,7 +136,6 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
                           rive::Span<const uint8_t>(bytes, [data length]))];
 }
 
-#ifdef WITH_RIVE_TEXT
 - (RiveFont*)decodeFont:(nonnull NSData*)data
 {
     UInt8* bytes = (UInt8*)[data bytes];
@@ -150,24 +147,33 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
 #if TARGET_OS_IPHONE
 - (RiveFont*)decodeUIFont:(UIFont*)font
 {
+#ifdef WITH_RIVE_TEXT
     return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font, true)];
+#else
+    return nil;
+#endif
 }
 #else
 - (RiveFont*)decodeNSFont:(NSFont*)font
 {
+#ifdef WITH_RIVE_TEXT
     return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font, true)];
+#else
+    return nil;
+#endif
 }
 #endif
-#endif
 
-#ifdef WITH_RIVE_AUDIO
 - (RiveAudio*)decodeAudio:(nonnull NSData*)data
 {
+#ifdef WITH_RIVE_AUDIO
     UInt8* bytes = (UInt8*)[data bytes];
     return [[RiveAudio alloc]
         initWithAudio:instance->decodeAudio(
                           rive::Span<const uint8_t>(bytes, [data length]))];
-}
+#else
+    return nil;
 #endif
+}
 
 @end

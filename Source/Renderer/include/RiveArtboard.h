@@ -54,10 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                        error:(NSError**)error;
 - (RiveStateMachineInstance* __nullable)defaultStateMachine;
 
-#if WITH_RIVE_TEXT
 - (RiveTextValueRun* __nullable)textRun:(NSString*)name;
 - (RiveTextValueRun* __nullable)textRun:(NSString*)name path:(NSString*)path;
-#endif
 
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer*)renderer;

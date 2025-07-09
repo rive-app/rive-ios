@@ -75,11 +75,15 @@ if [ -n "$DEFINITIONS" ]; then
     sed -i '' "/^GCC_PREPROCESSOR_DEFINITIONS = /s/= .*/= \$(inherited) $DEFINITIONS/" $DEV_SCRIPT_DIR/../Config/Base.xcconfig
     # Update the active SWIFT_ACTIVE_COMPILATION_CONDITIONS line (not commented ones)
     sed -i '' "/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= \$(inherited) $DEFINITIONS/" $DEV_SCRIPT_DIR/../Config/Base.xcconfig
+    # Update Catalyst.xcconfig SWIFT_ACTIVE_COMPILATION_CONDITIONS to include the definitions
+    sed -i '' "/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= \$(inherited) $DEFINITIONS RIVE_MAC_CATALYST/" $DEV_SCRIPT_DIR/../Config/Catalyst.xcconfig
 else
     # Update the active GCC_PREPROCESSOR_DEFINITIONS line (not commented ones)
     sed -i '' '/^GCC_PREPROCESSOR_DEFINITIONS = /s/= .*/= $(inherited)/' $DEV_SCRIPT_DIR/../Config/Base.xcconfig
     # Update the active SWIFT_ACTIVE_COMPILATION_CONDITIONS line (not commented ones)
     sed -i '' '/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= $(inherited)/' $DEV_SCRIPT_DIR/../Config/Base.xcconfig
+    # Reset Catalyst.xcconfig SWIFT_ACTIVE_COMPILATION_CONDITIONS to just inherited + RIVE_MAC_CATALYST
+    sed -i '' '/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= $(inherited) RIVE_MAC_CATALYST/' $DEV_SCRIPT_DIR/../Config/Catalyst.xcconfig
 fi
 
 
