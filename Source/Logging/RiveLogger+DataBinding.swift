@@ -29,6 +29,7 @@ enum RiveLoggerDataBindingEvent {
         case triggerProperty(String, Bool)
         case imageProperty(String, Bool)
         case listProperty(String, Bool)
+        case artboardProperty(String, Bool)
     }
     enum Property: DataBindingEvent {
         case propertyUpdated(String, String)
@@ -118,6 +119,11 @@ extension RiveLogger {
                 let message = message(instance: instance, for: "list", path: path, found: found)
                 dataBinding.debug("\(message)")
             }
+        case .artboardProperty(let path, let found):
+            _log(event: event, level: .debug) {
+                let message = message(instance: instance, for: "artboard", path: path, found: found)
+                dataBinding.debug("\(message)")
+            }
         }
     }
 
@@ -192,6 +198,10 @@ extension RiveLogger {
 
     @objc static func log(viewModelInstance instance: RiveDataBindingViewModel.Instance, listPropertyAtPath path: String, found: Bool) {
         Self.log(viewModelInstance: instance, event: .listProperty(path, found))
+    }
+
+    @objc static func log(viewModelInstance instance: RiveDataBindingViewModel.Instance, artboardPropertyAtPath path: String, found: Bool) {
+        Self.log(viewModelInstance: instance, event: .artboardProperty(path, found))
     }
 
     // MARK: - Properties

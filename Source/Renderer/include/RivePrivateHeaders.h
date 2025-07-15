@@ -240,4 +240,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithList:(rive::ViewModelInstanceListRuntime*)list;
 @end
 
+@interface RiveDataBindingViewModelInstanceArtboardProperty ()
+- (instancetype)initWithArtboard:(rive::ViewModelInstanceArtboardRuntime*)list;
+@end
+
+@interface RiveBindableArtboard ()
+- (rive::ArtboardInstance*)artboardInstance;
+- (instancetype)initWithArtboard:
+    (std::unique_ptr<rive::ArtboardInstance>)artboard;
+@end
+
 NS_ASSUME_NONNULL_END

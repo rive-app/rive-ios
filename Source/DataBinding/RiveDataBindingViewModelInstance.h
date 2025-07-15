@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveDataBindingViewModelInstanceTriggerProperty;
 @class RiveDataBindingViewModelInstanceImageProperty;
 @class RiveDataBindingViewModelInstanceListProperty;
+@class RiveDataBindingViewModelInstanceArtboardProperty;
 @class RiveDataBindingViewModelInstancePropertyData;
 
 /// An object that represents an instance of a view model, used to update
@@ -186,6 +187,19 @@ NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
 /// - Returns: The property if it exists at the supplied path, otherwise nil.
 - (nullable RiveDataBindingViewModelInstanceListProperty*)listPropertyFromPath:
     (NSString*)path;
+
+/// Gets an artboard property in the view model instance.
+///
+/// - Note: Unlike a `RiveViewModel.Instance`, a strong reference to this type
+/// does not have to be made. If the property exists, the underlying property
+/// will be cached, and calling this function again with the same path is
+/// guaranteed to return the same object.
+///
+/// - Parameter path: The path to the artboard property.
+///
+/// - Returns: The property if it exists at the supplied path, otherwise nil.
+- (nullable RiveDataBindingViewModelInstanceArtboardProperty*)
+    artboardPropertyFromPath:(NSString*)path;
 
 /// Calls all registered property listeners for the properties of the view model
 /// instance.

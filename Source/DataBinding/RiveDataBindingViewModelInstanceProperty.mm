@@ -692,3 +692,43 @@
 }
 
 @end
+
+#pragma mark - Artboard
+
+@implementation RiveDataBindingViewModelInstanceArtboardProperty
+{
+    rive::ViewModelInstanceArtboardRuntime* _artboard;
+}
+
+- (instancetype)initWithArtboard:
+    (rive::ViewModelInstanceArtboardRuntime*)artboard
+{
+    if (self = [super initWithValue:artboard])
+    {
+        _artboard = artboard;
+    }
+    return self;
+}
+
+- (void)setValue:(RiveBindableArtboard*)artboard
+{
+    _artboard->value([artboard artboardInstance]);
+    [RiveLogger logPropertyUpdated:self value:[artboard name]];
+}
+
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceTriggerPropertyListener)listener
+{
+    return [super addListener:listener];
+}
+
+- (void)handleListeners
+{
+    for (RiveDataBindingViewModelInstanceImagePropertyListener listener in self
+             .listeners.allValues)
+    {
+        listener();
+    }
+}
+
+@end

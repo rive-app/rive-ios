@@ -14,6 +14,7 @@
 
 #import <RiveRuntime/RiveFile.h>
 #import <RiveRuntime/RiveArtboard.h>
+#import <RiveRuntime/RiveBindableArtboard.h>
 #import <RiveRuntime/RiveSMIInput.h>
 #import <RiveRuntime/RiveLinearAnimationInstance.h>
 #import <RiveRuntime/RiveStateMachineInstance.h>

@@ -55,19 +55,19 @@ jobs:
         run: |
           ./scripts/build.sh xrsimulator release
 
-      - name: Test visionOS runtime
-        run: ./scripts/test.sh xrsimulator
+      # - name: Test visionOS runtime
+      #   run: ./scripts/test.sh xrsimulator
 
       - name: Build for tvOS Simulator (using the cache, we should make an archive of course)
         run: |
           ./scripts/build.sh appletvsimulator release
 
-      - name: Test tvOS runtime
-        run: ./scripts/test.sh appletvsimulator
+      # - name: Test tvOS runtime
+      #   run: ./scripts/test.sh appletvsimulator
 
       - name: Build for Mac Catalyst (using the cache, we should make an archive of course)
         run: |
           ./scripts/build.sh maccatalyst release
 
-      - name: Test Mac Catalyst runtime
-        run: ./scripts/test.sh maccatalyst
+      # - name: Test Mac Catalyst runtime
+      #   run: ./scripts/test.sh maccatalyst

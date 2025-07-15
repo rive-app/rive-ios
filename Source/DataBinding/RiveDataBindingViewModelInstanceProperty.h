@@ -365,4 +365,35 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ListProperty)
 
 @end
 
+#pragma mark - Artboard
+
+@class RiveBindableArtboard;
+
+typedef void (^RiveDataBindingViewModelInstanceArtboardPropertyListener)(void)
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceArtboardProperty.Listener);
+
+/// An object that represents a trigger property of a view model instance.
+NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ArtboardProperty)
+@interface RiveDataBindingViewModelInstanceArtboardProperty
+    : RiveDataBindingViewModelInstanceProperty
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (void)setValue:(RiveBindableArtboard*)artboard;
+
+/// Adds a block as a listener, called when the property is triggered.
+///
+/// - Note: The property can be triggered either explicitly by the developer,
+///  or as a result of a change in a state machine.
+///
+/// - Parameter listener: The block that will be called when the property's
+/// value changes.
+///
+/// - Returns: A UUID for the listener, used in conjunction with
+/// `removeListener`.
+- (NSUUID*)addListener:
+    (RiveDataBindingViewModelInstanceArtboardPropertyListener)listener;
+
+@end
+
 NS_ASSUME_NONNULL_END
