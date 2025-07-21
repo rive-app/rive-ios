@@ -84,7 +84,6 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
 
 + (int)instanceCount
 {
-    [RiveStateMachineInstance reduceInstanceCount];
     return smInstanceCount;
 }
 
