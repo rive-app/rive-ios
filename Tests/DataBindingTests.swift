@@ -529,7 +529,15 @@ class DataBindingTests: XCTestCase {
 
     func test_viewModelInstance_artboardInstance_canSetValue() throws {
         let file = try RiveFile(testfileName: "data_binding_artboard")
-        let instance = file.viewModelNamed("Default")!.createInstance()!
+
+        let viewModel = file.viewModelNamed("Default")!
+        let properties = viewModel.properties
+        XCTAssertEqual(properties.count, 1)
+        XCTAssertEqual(properties.first!.name, "Artboard")
+        XCTAssertEqual(properties.first!.type, .artboard)
+
+
+        let instance = viewModel.createInstance()!
 
         let artboardProperty = instance.artboardProperty(fromPath: "Artboard")
         XCTAssertNotNil(artboardProperty)
@@ -540,7 +548,7 @@ class DataBindingTests: XCTestCase {
         let blue = try file.bindableArtboard(withName: "Blue")
 
         let expectation = expectation(description: "artboard did set value")
-        expectation.expectedFulfillmentCount = 3
+        expectation.expectedFulfillmentCount = 4
 
         artboardProperty?.addListener {
             expectation.fulfill()
@@ -555,6 +563,10 @@ class DataBindingTests: XCTestCase {
         artboardProperty?.clearChanges()
 
         artboardProperty?.setValue(blue)
+        instance.updateListeners()
+        artboardProperty?.clearChanges()
+
+        artboardProperty?.setValue(nil)
         instance.updateListeners()
         artboardProperty?.clearChanges()
 

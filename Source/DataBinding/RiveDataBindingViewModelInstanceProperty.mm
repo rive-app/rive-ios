@@ -712,8 +712,16 @@
 
 - (void)setValue:(RiveBindableArtboard*)artboard
 {
-    _artboard->value([artboard artboardInstance]);
-    [RiveLogger logPropertyUpdated:self value:[artboard name]];
+    if (artboard == nil)
+    {
+        _artboard->value(nullptr);
+        [RiveLogger logPropertyUpdated:self value:@"nil"];
+    }
+    else
+    {
+        _artboard->value([artboard artboardInstance]);
+        [RiveLogger logPropertyUpdated:self value:[artboard name]];
+    }
 }
 
 - (NSUUID*)addListener:

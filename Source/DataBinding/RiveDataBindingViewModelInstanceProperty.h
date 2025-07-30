@@ -379,7 +379,14 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ArtboardProperty)
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (void)setValue:(RiveBindableArtboard*)artboard;
+/// Sets a bindable artboard as the new value of the property.
+/// Setting this value to `nil` will unbind the previously bound artboard.
+///
+/// - Parameter artboard: The artboard to bind to this property, or nil to
+/// unbind.
+///
+/// - Note: This will trigger any listeners added to this property.
+- (void)setValue:(nullable RiveBindableArtboard*)artboard;
 
 /// Adds a block as a listener, called when the property is triggered.
 ///
