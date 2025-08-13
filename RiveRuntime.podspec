@@ -1,11 +1,11 @@
 Pod::Spec.new do |spec|
   spec.name         = "RiveRuntime"
-  spec.version      = "6.11.1"
+  spec.version      = "6.11.2"
   spec.summary      = "iOS SDK to render Rive animations"
   spec.description  = "Rive is a real-time interactive design and animation tool. Use our collaborative editor to create motion graphics that respond to different states and user inputs. Then load your animations into apps, games, and websites with our lightweight open-source runtimes."
   spec.homepage     = "https://github.com/rive-app/rive-ios"
   spec.license      = { :type => "MIT", :text => <<-LICENSE
-    Copyright (c) 2020-2022 Rive
+    Copyright (c) 2020-2025 Rive
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,15 @@ Pod::Spec.new do |spec|
   spec.authors = { "Luigi Rosso" => "luigi@rive.app" }
   spec.ios.deployment_target  = '14.0'
   spec.osx.deployment_target  = '13.1'
-  spec.swift_version          = '5.0'
+  spec.tvos.deployment_target = '16.0'
+  spec.visionos.deployment_target = '1.0'
+  spec.swift_version          = '5.9'
   spec.source       = { 
-    :http => "https://github.com/rive-app/rive-ios/releases/download/6.11.1/RiveRuntime.xcframework.zip",
+    :http => "https://github.com/rive-app/rive-ios/releases/download/6.11.2/RiveRuntime.xcframework.zip",
   }
   spec.ios.vendored_frameworks = 'RiveRuntime.xcframework'
   spec.osx.vendored_frameworks = 'RiveRuntime.xcframework'
+  spec.tvos.vendored_frameworks = 'RiveRuntime.xcframework'
+  spec.visionos.vendored_frameworks = 'RiveRuntime.xcframework'
   spec.resource_bundles = {'runtime_ios_privacy' => ['RiveRuntime.xcframework/ios-arm64/RiveRuntime.framework/PrivacyInfo.xcprivacy']}
 end
