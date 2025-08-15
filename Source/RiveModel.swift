@@ -11,17 +11,18 @@ import Combine
 
 @objc open class RiveModel: NSObject, ObservableObject {
     public typealias AutoBindCallback = (RiveDataBindingViewModel.Instance) -> Void
-
+    
     // NOTE: the order here determines the order in which memory garbage collected
     public internal(set) var stateMachine: RiveStateMachineInstance?
     public internal(set) var animation: RiveLinearAnimationInstance?
     public private(set) var artboard: RiveArtboard!
     public private(set) var riveFile: RiveFile
-
+    
     private var isAutoBindEnabled = false
     private var autoBindCallback: AutoBindCallback?
-
-    public init(riveFile: RiveFile) {
+    
+    @objc(initWithRiveFile:)
+    public init(with riveFile: RiveFile) {
         self.riveFile = riveFile
     }
     
@@ -32,19 +33,19 @@ import Combine
     public init(webURL: String, delegate: RiveFileDelegate, loadCdn: Bool) {
         riveFile = RiveFile(httpUrl: webURL, loadCdn:loadCdn, with: delegate)!
     }
-
+    
     // rive-runtime defaults the volume to 1.0f
     // This value is used if there is no artboard,
     // and will be used to set the volume once a model is configured (with an artboard)
     private var _volume: Float = 1
-
+    
     /// The volume of the current artboard, if available. Defaults to 1.
     @objc open var volume: Float {
         get {
             if let volume = artboard?.__volume {
                 return volume
             }
-
+            
             return _volume
         }
         set {
@@ -53,7 +54,7 @@ import Combine
             artboard?.__volume = newValue
         }
     }
-
+    
     // MARK: - Setters
     
     /// Sets a new Artboard and makes the current StateMachine and Animation nil
@@ -133,7 +134,7 @@ import Combine
                 stateMachine = try artboard.stateMachine(from: 0)
                 RiveLogger.log(model: self, event: .stateMachineByIndex(0))
             }
-
+            
             autoBind()
         }
         catch {
@@ -169,9 +170,9 @@ import Combine
             throw RiveModelError.invalidAnimation(errorMessage)
         }
     }
-
+    
     // MARK: - Data Binding
-
+    
     /// Automatically binds the default instance of the current artboard when the artboard and/or state machine changes,
     /// including when it is first set. The callback will be called with the instance that has been bound.
     /// A strong reference to the instance must be made in order to update properties and utilize observability.
@@ -181,16 +182,16 @@ import Combine
     @objc open func enableAutoBind(_ callback: @escaping AutoBindCallback) {
         isAutoBindEnabled = true
         autoBindCallback = callback
-
+        
         autoBind()
     }
-
+    
     /// Disables the auto-binding featured enabled by `enableAutoBind`.
     @objc open func disableAutoBind() {
         isAutoBindEnabled = false
         autoBindCallback = nil
     }
-
+    
     private func autoBind() {
         // autobind needs at _least_ an artboard
         guard isAutoBindEnabled,
@@ -198,14 +199,14 @@ import Combine
               let viewModel = riveFile.defaultViewModel(for: artboard),
               let instance = viewModel.createDefaultInstance()
         else { return }
-
+        
         artboard.bind(viewModelInstance: instance)
         // If, for some reason, there is no state machine (e.g linear animation) then no need to bind
         stateMachine?.bind(viewModelInstance: instance)
-
+        
         autoBindCallback?(instance)
     }
-
+    
     // MARK: -
     
     public override var description: String {
