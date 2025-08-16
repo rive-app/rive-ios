@@ -618,7 +618,7 @@ import Combine
     
     /// Called by RiveFile when it finishes downloading an asset asynchronously
     @objc open func riveFileDidLoad(_ riveFile: RiveFile) throws {
-        riveModel = RiveModel(riveFile: riveFile)
+        riveModel = RiveModel(with: riveFile)
         
         sharedInit(
             artboardName: defaultModel.artboardName,
