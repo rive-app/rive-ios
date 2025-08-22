@@ -21,7 +21,7 @@
  */
 @implementation RiveFile
 {
-    std::unique_ptr<rive::File> riveFile;
+    rive::rcp<rive::File> riveFile;
     rive::FileAssetLoader* fileAssetLoader;
     RenderContext* _renderContext;
 }
@@ -587,7 +587,7 @@
 /// Clean up rive file
 - (void)dealloc
 {
-    riveFile.reset(nullptr);
+    riveFile = nullptr;
     delete fileAssetLoader;
 }
 
