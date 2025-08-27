@@ -25,6 +25,7 @@
 @property(nullable, nonatomic, readonly) id<CAMetalDrawable> currentDrawable;
 @property(nonatomic) MTLPixelFormat colorPixelFormat;
 @property(nonatomic) CGSize drawableSize;
+- (void)drawableSizeDidChange:(CGSize)drawableSize;
 @end
 
 #endif /* RiveMetalDrawableView_h */

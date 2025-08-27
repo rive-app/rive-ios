@@ -436,6 +436,28 @@ open class RiveView: RiveRendererView {
         }
     }
 
+    open override func drawableSizeDidChange(_ drawableSize: CGSize) {
+        super.drawableSizeDidChange(drawableSize)
+        if fit == .layout, let artboard = riveModel?.artboard {
+            let currentSize = drawableSize
+            let artboardSize = artboard.bounds().size
+            if currentSize != artboardSize {
+                // We can use currentSize; we are mirroring setting
+                // the updated layout size (if needed) as in drawRive,
+                // which uses the same rect as drawRect (assuming 'self')
+                let scale = layoutScaleFactor == RiveView.Constants.layoutScaleFactorAutomatic ? _layoutScaleFactor : layoutScaleFactor
+                artboard.setWidth(Double(currentSize.width) / scale)
+                artboard.setHeight(Double(currentSize.height) / scale)
+                advance(delta: 0)
+            }
+        }
+    }
+
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        drawableSizeDidChange(drawableSize)
+    }
+
     // MARK: - UITraitCollection
     #if os(iOS)
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

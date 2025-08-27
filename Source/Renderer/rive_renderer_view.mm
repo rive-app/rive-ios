@@ -110,6 +110,7 @@
     newSize.width *= self.traitCollection.displayScale;
     newSize.height *= self.traitCollection.displayScale;
     self.drawableSize = newSize;
+    [self drawableSizeDidChange:newSize];
 }
 
 - (void)setContentScaleFactor:(CGFloat)contentScaleFactor
@@ -145,9 +146,19 @@
     [self drawRect:self.bounds];
 }
 
+- (void)drawableSizeDidChange:(CGSize)drawableSize
+{}
+
 @end
 #else
 @implementation RiveMTKView
+- (void)setDrawableSize:(CGSize)drawableSize
+{
+    [super setDrawableSize:drawableSize];
+    [self drawableSizeDidChange:drawableSize];
+}
+- (void)drawableSizeDidChange:(CGSize)drawableSize
+{}
 @end
 #endif
 
