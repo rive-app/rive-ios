@@ -193,7 +193,7 @@ open class RiveView: RiveRendererView {
     #endif
 
     /// This resets the view with the new model. Useful when the `RiveView` was initialized without one.
-    open func setModel(_ model: RiveModel, autoPlay: Bool = true) throws {
+    @objc open func setModel(_ model: RiveModel, autoPlay: Bool = true) throws {
         stopTimer()
         isPlaying = false
         riveModel = model
@@ -216,6 +216,7 @@ open class RiveView: RiveRendererView {
     /// Hints to underlying CADisplayLink the preferred FPS to run at
     /// - Parameters:
     ///   - preferredFramesPerSecond: Integer number of seconds to set preferred FPS at
+    @objc(setPreferredFPS:)
     open func setPreferredFramesPerSecond(preferredFramesPerSecond: Int) {
         userFPS = preferredFramesPerSecond
         displaySync?.set(preferredFramesPerSecond: preferredFramesPerSecond)
@@ -225,6 +226,7 @@ open class RiveView: RiveRendererView {
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
     @available(iOS 15, macOS 14, tvOS 15, visionOS 1, *)
+    @objc(setPreferredFrameRateRange:)
     open func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
         userFPS = preferredFrameRateRange
         displaySync?.set(preferredFrameRateRange: preferredFrameRateRange)

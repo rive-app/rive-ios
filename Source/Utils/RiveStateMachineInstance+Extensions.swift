@@ -9,7 +9,7 @@
 import Foundation
 
  extension RiveStateMachineInstance {
-     public var inputs: [StateMachineInput] {
+     @objc public var inputs: [StateMachineInput] {
          var inputs: [StateMachineInput] = []
 
          for i in 0 ..< inputCount() {

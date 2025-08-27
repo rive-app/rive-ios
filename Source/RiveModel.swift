@@ -21,15 +21,15 @@ import Combine
     private var isAutoBindEnabled = false
     private var autoBindCallback: AutoBindCallback?
 
-    public init(riveFile: RiveFile) {
+    @objc public init(riveFile: RiveFile) {
         self.riveFile = riveFile
     }
     
-    public init(fileName: String, extension: String = ".riv", in bundle: Bundle = .main, loadCdn: Bool = true, customLoader: LoadAsset? = nil) throws {
+    @objc public init(fileName: String, extension: String = ".riv", in bundle: Bundle = .main, loadCdn: Bool = true, customLoader: LoadAsset? = nil) throws {
         riveFile = try RiveFile(name: fileName, extension: `extension`, in: bundle, loadCdn: loadCdn, customLoader: customLoader)
     }
     
-    public init(webURL: String, delegate: RiveFileDelegate, loadCdn: Bool) {
+    @objc public init(webURL: String, delegate: RiveFileDelegate, loadCdn: Bool) {
         riveFile = RiveFile(httpUrl: webURL, loadCdn:loadCdn, with: delegate)!
     }
 
@@ -57,7 +57,7 @@ import Combine
     // MARK: - Setters
     
     /// Sets a new Artboard and makes the current StateMachine and Animation nil
-    open func setArtboard(_ name: String) throws {
+    @objc open func setArtboard(_ name: String) throws {
         do {
             RiveLogger.log(model: self, event: .artboardByName(name))
             stateMachine = nil
@@ -101,7 +101,7 @@ import Combine
         }
     }
     
-    open func setStateMachine(_ name: String) throws {
+    @objc open func setStateMachine(_ name: String) throws {
         do {
             stateMachine = try artboard.stateMachine(fromName: name)
             RiveLogger.log(model: self, event: .stateMachineByName(name))
@@ -143,7 +143,7 @@ import Combine
         }
     }
     
-    open func setAnimation(_ name: String) throws {
+    @objc open func setAnimation(_ name: String) throws {
         guard animation?.name() != name else { return }
         do {
             animation = try artboard.animation(fromName: name)

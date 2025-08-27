@@ -167,7 +167,7 @@ import Combine
     
     // MARK: - RiveView
     
-    open private(set) var riveModel: RiveModel? {
+    @objc open private(set) var riveModel: RiveModel? {
         didSet {
             if let model = riveModel {
                 try! riveView?.setModel(model, autoPlay: autoPlay)
@@ -175,22 +175,22 @@ import Combine
         }
     }
     
-    open var isPlaying: Bool { riveView?.isPlaying ?? false }
-    
-    open var autoPlay: Bool
-    
-    open var fit: RiveFit = .contain {
+    @objc open var isPlaying: Bool { riveView?.isPlaying ?? false }
+
+    @objc open var autoPlay: Bool
+
+    @objc open var fit: RiveFit = .contain {
         didSet { riveView?.fit = fit }
     }
     
-    open var alignment: RiveAlignment = .center {
+    @objc open var alignment: RiveAlignment = .center {
         didSet { riveView?.alignment = alignment }
     }
     
     /// The scale factor to apply when using the `layout` fit. By default, this value is -1, where Rive will determine
     /// the correct scale for your device.To override this default behavior, set this value to a value greater than 0.
     /// - Note: If the scale factor <= 0, nothing will be drawn.
-    open var layoutScaleFactor: Double = layoutScaleFactorAutomatic {
+    @objc open var layoutScaleFactor: Double = layoutScaleFactorAutomatic {
         didSet { riveView?.layoutScaleFactor = layoutScaleFactor }
     }
     
@@ -199,7 +199,7 @@ import Combine
     /// When false, only the Rive view will handle touch / click events, and will not forward
     /// to any next responder(s). Defaults to `false`, as to preserve pre-existing runtime functionality.
     /// - Note: On iOS, this is handled separately from `isExclusiveTouch`.
-    open var forwardsListenerEvents: Bool = false {
+    @objc open var forwardsListenerEvents: Bool = false {
         didSet { riveView?.forwardsListenerEvents = forwardsListenerEvents }
     }
 
@@ -209,6 +209,7 @@ import Combine
     /// - Parameters:
     ///   - preferredFramesPerSecond: Integer number of seconds to set preferred FPS at
     @available(macOS 14, *)
+    @objc(setPreferredFramesPerSecond:)
     public func setPreferredFramesPerSecond(preferredFramesPerSecond: Int) {
         riveView?.setPreferredFramesPerSecond(preferredFramesPerSecond: preferredFramesPerSecond)
     }
@@ -218,6 +219,7 @@ import Combine
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
     @available(macOS 14, *)
+    @objc(setPreferredFrameRateRange)
     public func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
         riveView?.setPreferredFrameRateRange(preferredFrameRateRange: preferredFrameRateRange)
     }
@@ -226,7 +228,8 @@ import Combine
     /// For more, see: https://developer.apple.com/documentation/quartzcore/cadisplaylink/1648421-preferredframespersecond
     /// - Parameters:
     ///   - preferredFramesPerSecond: Integer number of seconds to set preferred FPS at
-    public func setPreferredFramesPerSecond(preferredFramesPerSecond: Int) {
+    @objc(setPreferredFramesPerSecond:)
+    open func setPreferredFramesPerSecond(preferredFramesPerSecond: Int) {
         riveView?.setPreferredFramesPerSecond(preferredFramesPerSecond: preferredFramesPerSecond)
     }
     
@@ -235,7 +238,8 @@ import Combine
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
     @available(iOS 15.0, tvOS 15.0, visionOS 1.0, *)
-    public func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
+    @objc(setPreferredFrameRateRange:)
+    open func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
         riveView?.setPreferredFrameRateRange(preferredFrameRateRange: preferredFrameRateRange)
     }
     #endif
@@ -422,7 +426,7 @@ import Combine
     /// - Parameters:
     ///   - inputName: The name of a `Trigger` input on the active StateMachine
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
-    open func triggerInput(_ inputName: String, path: String) {
+    @objc open func triggerInput(_ inputName: String, path: String) {
         RiveLogger.log(viewModel: self, event: .triggerInput(inputName, path))
         riveModel?.artboard?.getTrigger(inputName, path: path).fire()
         play()
@@ -433,6 +437,7 @@ import Combine
     ///   - inputName: The name of a `Boolean` input on the active StateMachine
     ///   - value: A Bool value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    @objc(setBooleanInput:value:atPath:)
     open func setInput(_ inputName: String, value: Bool, path: String) {
         RiveLogger.log(viewModel: self, event: .booleanInput(inputName, path, value))
         riveModel?.artboard?.getBool(inputName, path: path).setValue(value)
@@ -444,6 +449,7 @@ import Combine
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Float value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    @objc(setFloatInput:value:atPath:)
     open func setInput(_ inputName: String, value: Float, path: String) {
         RiveLogger.log(viewModel: self, event: .floatInput(inputName, path, value))
         riveModel?.artboard?.getNumber(inputName, path: path).setValue(value);
@@ -455,6 +461,7 @@ import Combine
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Double value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    @objc(setDoubleInput:value:atPath:)
     open func setInput(_ inputName: String, value: Double, path: String) {
         RiveLogger.log(viewModel: self, event: .doubleInput(inputName, path, value))
         setInput(inputName, value: Float(value), path: path)
@@ -555,6 +562,7 @@ import Combine
         return view
     }
     
+    @objc(setRiveView:)
     open func setRiveView(view:RiveView)
     {
         registerView(view)
@@ -586,7 +594,7 @@ import Combine
     }
     
     /// Stops maintaining a connection to any `RiveView`
-    open func deregisterView() {
+    @objc open func deregisterView() {
         riveView = nil
     }
     
