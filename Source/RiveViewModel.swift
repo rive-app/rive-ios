@@ -219,7 +219,6 @@ import Combine
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
     @available(macOS 14, *)
-    @objc(setPreferredFrameRateRange)
     public func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
         riveView?.setPreferredFrameRateRange(preferredFrameRateRange: preferredFrameRateRange)
     }

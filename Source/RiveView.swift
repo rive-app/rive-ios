@@ -226,7 +226,9 @@ open class RiveView: RiveRendererView {
     /// - Parameters:
     ///   - preferredFrameRateRange: Frame rate range to set
     @available(iOS 15, macOS 14, tvOS 15, visionOS 1, *)
+#if !os(macOS) // The automatic Swift bridging header doesn't like bridging CAFrameRateRange automatically
     @objc(setPreferredFrameRateRange:)
+#endif
     open func setPreferredFrameRateRange(preferredFrameRateRange: CAFrameRateRange) {
         userFPS = preferredFrameRateRange
         displaySync?.set(preferredFrameRateRange: preferredFrameRateRange)
@@ -453,10 +455,19 @@ open class RiveView: RiveRendererView {
         }
     }
 
+    #if canImport(UIKit) || RIVE_MAC_CATALYST
     open override func layoutSubviews() {
         super.layoutSubviews()
         drawableSizeDidChange(drawableSize)
     }
+    #endif
+
+    #if canImport(AppKit) && !RIVE_MAC_CATALYST
+    open override func layout() {
+        super.layout()
+        drawableSizeDidChange(drawableSize)
+    }
+    #endif
 
     // MARK: - UITraitCollection
     #if os(iOS)
