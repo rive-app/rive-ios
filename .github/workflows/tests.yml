@@ -69,5 +69,9 @@ jobs:
         run: |
           ./scripts/build.sh maccatalyst release
 
+      - name: Build for Mac (using the cache, we should make an archive of course)
+        run: |
+          ./scripts/build.sh macosx release
+
       # - name: Test Mac Catalyst runtime
       #   run: ./scripts/test.sh maccatalyst
