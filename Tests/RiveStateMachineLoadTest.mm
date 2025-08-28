@@ -92,9 +92,12 @@
     RiveFile* file = [Util loadTestFile:@"noanimation" error:nil];
     RiveArtboard* artboard = [file artboard:nil];
 
+    // Test against index 1 since, by default, a file
+    // with no state machines will create a state machine
+    // (at index 0)
     NSError* error = nil;
     RiveStateMachineInstance* stateMachine =
-        [artboard stateMachineFromIndex:0 error:&error];
+        [artboard stateMachineFromIndex:1 error:&error];
 
     XCTAssertNil(stateMachine);
     XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
