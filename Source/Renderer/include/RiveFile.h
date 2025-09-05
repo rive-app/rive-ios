@@ -190,6 +190,7 @@ typedef bool (^LoadAsset)(RiveFileAsset* asset,
  */
 @protocol RiveFileDelegate <NSObject>
 - (BOOL)riveFileDidLoad:(RiveFile*)riveFile error:(NSError**)error;
+- (void)riveFileDidError:(NSError*)error;
 @end
 
 NS_ASSUME_NONNULL_END

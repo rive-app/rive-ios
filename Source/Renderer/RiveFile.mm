@@ -292,7 +292,15 @@
                     self.isLoaded = true;
                     [RiveLogger logLoadedFromURL:URL];
                     dispatch_async(dispatch_get_main_queue(), ^{
-                      if ([[NSThread currentThread] isMainThread])
+                      if (error)
+                      {
+                          if ([self.delegate respondsToSelector:@selector
+                                             (riveFileDidError:)])
+                          {
+                              [self.delegate riveFileDidError:error];
+                          }
+                      }
+                      else
                       {
                           if ([self.delegate respondsToSelector:@selector
                                              (riveFileDidLoad:error:)])
@@ -310,6 +318,13 @@
                                          URL.absoluteString,
                                          error.localizedDescription];
                     [RiveLogger logFile:nil error:message];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                      if ([self.delegate
+                              respondsToSelector:@selector(riveFileDidError:)])
+                      {
+                          [self.delegate riveFileDidError:error];
+                      }
+                    });
                 }
               }];
 

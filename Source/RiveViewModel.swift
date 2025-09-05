@@ -633,7 +633,11 @@ import Combine
             animationName: defaultModel.animationName
         )
     }
-    
+
+    @objc open func riveFileDidError(_ error: any Error) {
+        
+    }
+
     // MARK: - RivePlayer Delegate
     
     @objc open func player(playedWithModel riveModel: RiveModel?) { }
