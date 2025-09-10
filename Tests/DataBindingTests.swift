@@ -865,6 +865,72 @@ class DataBindingTests: XCTestCase {
         wait(for: [removeExpectation], timeout: 1)
     }
 
+    func test_listProperty_listener_canAddAndRemoveListener() throws {
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let artboard = try file.artboard()
+        let stateMachine = try artboard.stateMachine(from: 0)
+        stateMachine.bind(viewModelInstance: instance)
+
+        let addExpectation = expectation(description: "listener called")
+
+        let property = instance.listProperty(fromPath: "List")!
+        let listener = property.addListener {
+            addExpectation.fulfill()
+        }
+
+        let testInstance = file.viewModelNamed("Test")!.createInstance()!
+        property.append(testInstance)
+        stateMachine.advance(by: 0)
+        instance.updateListeners()
+
+        wait(for: [addExpectation], timeout: 1)
+
+        let removeExpectation = expectation(description: "listener called")
+        removeExpectation.isInverted = true
+        property.removeListener(listener)
+        property.remove(testInstance)
+        stateMachine.advance(by: 0)
+        instance.updateListeners()
+
+        wait(for: [removeExpectation], timeout: 1)
+    }
+
+    func test_listProperty_whenListItemUpdates_callsListener() throws {
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let artboard = try file.artboard()
+        let stateMachine = try artboard.stateMachine(from: 0)
+        stateMachine.bind(viewModelInstance: instance)
+
+        let testExpectation = expectation(description: "listener called")
+        testExpectation.expectedFulfillmentCount = 2
+
+        let testInstance = file.viewModelNamed("Test")!.createInstance()!
+        let testTrigger = testInstance.triggerProperty(fromPath: "Trigger Red")!
+        testTrigger.addListener {
+            testExpectation.fulfill()
+        }
+
+        let list = instance.listProperty(fromPath: "List")!
+        list.append(testInstance)
+
+        testTrigger.trigger()
+        stateMachine.advance(by: 0)
+        instance.updateListeners()
+
+        let nestedList = testInstance.listProperty(fromPath: "List")!
+        let nestedInstance = file.viewModelNamed("Test")!.createInstance()!
+        nestedList.append(nestedInstance)
+        let nestedTrigger = nestedInstance.triggerProperty(fromPath: "Trigger Red")!
+        nestedTrigger.addListener {
+            testExpectation.fulfill()
+        }
+        nestedTrigger.trigger()
+        stateMachine.advance(by: 0)
+        instance.updateListeners()
+
+        wait(for: [testExpectation], timeout: 1)
+    }
+
     func test_property_listener_afterAddingSingleListener_callsListener() throws {
         let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
         let artboard = try file.artboard()

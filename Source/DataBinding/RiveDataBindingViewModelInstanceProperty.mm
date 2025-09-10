@@ -193,10 +193,13 @@
 
 - (void)handleListeners
 {
-    for (RiveDataBindingViewModelInstanceStringPropertyListener listener in self
-             .listeners.allValues)
+    if (self.hasChanged)
     {
-        listener(self.value);
+        for (RiveDataBindingViewModelInstanceStringPropertyListener listener in
+                 self.listeners.allValues)
+        {
+            listener(self.value);
+        }
     }
 }
 
@@ -243,10 +246,13 @@
 
 - (void)handleListeners
 {
-    for (RiveDataBindingViewModelInstanceNumberPropertyListener listener in self
-             .listeners.allValues)
+    if (self.hasChanged)
     {
-        listener(self.value);
+        for (RiveDataBindingViewModelInstanceNumberPropertyListener listener in
+                 self.listeners.allValues)
+        {
+            listener(self.value);
+        }
     }
 }
 
@@ -296,10 +302,13 @@
 
 - (void)handleListeners
 {
-    for (RiveDataBindingViewModelInstanceBooleanPropertyListener listener in
-             self.listeners.allValues)
+    if (self.hasChanged)
     {
-        listener(self.value);
+        for (RiveDataBindingViewModelInstanceBooleanPropertyListener listener in
+                 self.listeners.allValues)
+        {
+            listener(self.value);
+        }
     }
 }
 
@@ -409,10 +418,13 @@
 
 - (void)handleListeners
 {
-    for (RiveDataBindingViewModelInstanceColorPropertyListener listener in self
-             .listeners.allValues)
+    if (self.hasChanged)
     {
-        listener(self.value);
+        for (RiveDataBindingViewModelInstanceColorPropertyListener listener in
+                 self.listeners.allValues)
+        {
+            listener(self.value);
+        }
     }
 }
 
@@ -484,10 +496,13 @@
 
 - (void)handleListeners
 {
-    for (RiveDataBindingViewModelInstanceEnumPropertyListener listener in self
-             .listeners.allValues)
+    if (self.hasChanged)
     {
-        listener(self.value);
+        for (RiveDataBindingViewModelInstanceEnumPropertyListener listener in
+                 self.listeners.allValues)
+        {
+            listener(self.value);
+        }
     }
 }
 
@@ -528,10 +543,13 @@
 
 - (void)handleListeners
 {
-    for (RiveDataBindingViewModelInstanceTriggerPropertyListener listener in
-             self.listeners.allValues)
+    if (self.hasChanged)
     {
-        listener();
+        for (RiveDataBindingViewModelInstanceTriggerPropertyListener listener in
+                 self.listeners.allValues)
+        {
+            listener();
+        }
     }
 }
 
@@ -573,10 +591,13 @@
 
 - (void)handleListeners
 {
-    for (RiveDataBindingViewModelInstanceImagePropertyListener listener in self
-             .listeners.allValues)
+    if (self.hasChanged)
     {
-        listener();
+        for (RiveDataBindingViewModelInstanceImagePropertyListener listener in
+                 self.listeners.allValues)
+        {
+            listener();
+        }
     }
 }
 
@@ -684,10 +705,18 @@
 
 - (void)handleListeners
 {
-    for (RiveDataBindingViewModelInstanceListPropertyListener listener in self
-             .listeners.allValues)
+    if (self.hasChanged)
     {
-        listener();
+        for (RiveDataBindingViewModelInstanceListPropertyListener listener in
+                 self.listeners.allValues)
+        {
+            listener();
+        }
+    }
+
+    for (RiveDataBindingViewModelInstance* instance in _instances.allValues)
+    {
+        [instance updateListeners];
     }
 }
 

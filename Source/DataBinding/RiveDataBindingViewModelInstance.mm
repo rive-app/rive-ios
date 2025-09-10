@@ -423,10 +423,7 @@
                      NSString* _Nonnull key,
                      RiveDataBindingViewModelInstanceProperty* _Nonnull obj,
                      BOOL* _Nonnull stop) {
-      if (obj.hasChanged)
-      {
-          [obj handleListeners];
-      }
+      [obj handleListeners];
     }];
 
     [_properties enumerateKeysAndObjectsUsingBlock:^(
