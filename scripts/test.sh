@@ -5,7 +5,7 @@ test_ios_simulator() {
     # Test RiveRuntime on a iOS simulator
     xcodebuild -workspace Rive.xcworkspace \
         -scheme RiveRuntime \
-        -destination platform=iOS\ Simulator,name=iPhone\ 15 \
+        -destination platform=iOS\ Simulator,name=iPhone\ 16 \
         clean test | xcpretty
 }
 

@@ -41,8 +41,8 @@ jobs:
           sudo mv premake5 /usr/local/bin
           pip3 install ply
 
-      - name: Select Xcode 15.4
-        run: sudo xcodes select 15.4
+      - name: Select Xcode 16.1
+        run: sudo xcodes select 16.1
 
       - name: Build for iOS Simulator (using the cache, we should make an archive of course)
         run: |
