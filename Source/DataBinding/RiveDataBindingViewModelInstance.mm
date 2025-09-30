@@ -16,14 +16,15 @@
 
 @implementation RiveDataBindingViewModelInstance
 {
-    rive::ViewModelInstanceRuntime* _instance;
+    rive::rcp<rive::ViewModelInstanceRuntime> _instance;
     NSMutableDictionary<NSString*, RiveDataBindingViewModelInstanceProperty*>*
         _properties;
     NSMutableDictionary<NSString*, RiveDataBindingViewModelInstance*>*
         _children;
 }
 
-- (instancetype)initWithInstance:(rive::ViewModelInstanceRuntime*)instance
+- (instancetype)initWithInstance:
+    (rive::rcp<rive::ViewModelInstanceRuntime>)instance
 {
     if (self = [super init])
     {
@@ -448,7 +449,7 @@
 
 - (rive::ViewModelInstanceRuntime*)instance
 {
-    return _instance;
+    return _instance.get();
 }
 
 - (void)cacheProperty:(RiveDataBindingViewModelInstanceProperty*)value

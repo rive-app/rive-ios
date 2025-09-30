@@ -11,29 +11,34 @@
 
 @implementation RiveBindableArtboard
 {
-    std::unique_ptr<rive::ArtboardInstance> _artboardInstance;
+    rive::rcp<rive::BindableArtboard> _bindableArtboard;
 }
 
-- (instancetype)initWithArtboard:
-    (std::unique_ptr<rive::ArtboardInstance>)artboard
+- (instancetype)initWithBindableArtboard:
+    (rive::rcp<rive::BindableArtboard>)bindableArtboard
 {
     if (self = [super init])
     {
-        _artboardInstance = std::move(artboard);
+        _bindableArtboard = bindableArtboard;
     }
     return self;
 }
 
-- (rive::ArtboardInstance*)artboardInstance
+- (rive::rcp<rive::BindableArtboard>)bindableArtboard
 {
-    return _artboardInstance.get();
+    return _bindableArtboard;
 }
 
 - (NSString*)name
 {
-    auto name = _artboardInstance->name();
+    auto name = _bindableArtboard->artboard()->name();
     return [NSString stringWithCString:name.c_str()
                               encoding:[NSString defaultCStringEncoding]];
+}
+
+- (void)dealloc
+{
+    _bindableArtboard = nullptr;
 }
 
 @end

@@ -10,7 +10,15 @@ import XCTest
 @testable import RiveRuntime
 
 class DataBindingTests: XCTestCase {
-    let file: RiveFile = try! RiveFile(testfileName: "data_binding_test")
+    var file: RiveFile!
+
+    override func setUp() {
+        file = try! RiveFile(testfileName: "data_binding_test")
+    }
+
+    override func tearDown() {
+        file = nil
+    }
 
     // MARK: - RiveFile
 
@@ -225,7 +233,8 @@ class DataBindingTests: XCTestCase {
     }
 
     func test_viewModelInstance_stringProperty_setsValue() {
-        let property = file.viewModelNamed("Test")!.createDefaultInstance()!.stringProperty(fromPath: "String")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.stringProperty(fromPath: "String")!
         XCTAssertEqual(property.value, "Text")
 
         // This, and similar tests below, verify that we are calling
@@ -244,7 +253,8 @@ class DataBindingTests: XCTestCase {
     }
 
     func test_viewModelInstance_numberProperty_setsValue() {
-        let property = file.viewModelNamed("Test")!.createDefaultInstance()!.numberProperty(fromPath: "Number")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.numberProperty(fromPath: "Number")!
         XCTAssertEqual(property.value, 0)
 
         let newValue: Float = 1337
@@ -261,7 +271,8 @@ class DataBindingTests: XCTestCase {
     }
 
     func test_viewModelInstance_booleanProperty_setsValue() {
-        let property = file.viewModelNamed("Test")!.createDefaultInstance()!.booleanProperty(fromPath: "Boolean")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.booleanProperty(fromPath: "Boolean")!
         XCTAssertEqual(property.value, false)
 
         let newValue = true
@@ -278,7 +289,8 @@ class DataBindingTests: XCTestCase {
     }
 
     func test_viewModelInstance_colorProperty_setsValue() {
-        let property = file.viewModelNamed("Test")!.createDefaultInstance()!.colorProperty(fromPath: "Color")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.colorProperty(fromPath: "Color")!
         XCTAssertEqual(Color(property.value), Color(.black))
 
         let updatedColor = UIColor(red: 0x1D / 255, green: 0x1D / 255, blue: 0x1D / 255, alpha: 0x1D / 255)
@@ -325,12 +337,14 @@ class DataBindingTests: XCTestCase {
     }
 
     func test_viewModelInstance_enumProperty_containsAllValues() {
-        let property = file.viewModelNamed("Test")!.createDefaultInstance()!.enumProperty(fromPath: "Enum")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.enumProperty(fromPath: "Enum")!
         XCTAssertEqual(Set(property.values), Set(["Foo", "Bar", "Baz"]))
     }
 
     func test_viewModelInstance_enumProperty_setsValue() {
-        let property = file.viewModelNamed("Test")!.createDefaultInstance()!.enumProperty(fromPath: "Enum")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.enumProperty(fromPath: "Enum")!
         XCTAssertEqual(property.value, "Foo")
 
         var newValue = "Bar"
@@ -347,7 +361,8 @@ class DataBindingTests: XCTestCase {
     }
 
     func test_viewModelInstance_enumProperty_setsValueIndex() {
-        let property = file.viewModelNamed("Test")!.createDefaultInstance()!.enumProperty(fromPath: "Enum")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.enumProperty(fromPath: "Enum")!
         XCTAssertEqual(property.value, "Foo")
         XCTAssertEqual(property.valueIndex, 2)
 
@@ -376,7 +391,8 @@ class DataBindingTests: XCTestCase {
     }
 
     func test_viewModelInstance_viewModelProperty_setsNestedValue() {
-        let property = file.viewModelNamed("Test")!.createDefaultInstance()!.viewModelInstanceProperty(fromPath: "Nested")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.viewModelInstanceProperty(fromPath: "Nested")!
         let nestedProperty = property.stringProperty(fromPath: "String")
         XCTAssertNotNil(nestedProperty)
         XCTAssertEqual(nestedProperty!.value, "Nested")
@@ -451,16 +467,14 @@ class DataBindingTests: XCTestCase {
     // MARK: Image
 
     func test_viewModelInstance_imageProperty_returnsPropertyOrNil() throws {
-        let file = try RiveFile(testfileName: "data_binding_image_test")
-        let instance = file.viewModelNamed("vm")!.createDefaultInstance()!
-        XCTAssertNotNil(instance.imageProperty(fromPath: "img"))
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        XCTAssertNotNil(instance.imageProperty(fromPath: "Image"))
         XCTAssertNil(instance.imageProperty(fromPath: "404"))
     }
 
     func test_viewModelInstance_imageProperty_canSetValue() throws {
-        let file = try RiveFile(testfileName: "data_binding_image_test")
-        let instance = file.viewModelNamed("vm")!.createDefaultInstance()!
-        let property = instance.imageProperty(fromPath: "img")!
+        let instance = file.viewModelNamed("Test")!.createDefaultInstance()!
+        let property = instance.imageProperty(fromPath: "Image")!
 
         let bundle = Bundle(for: type(of: self))
         let fileURL = bundle.url(forResource: "1x1_jpg", withExtension: "jpg")!

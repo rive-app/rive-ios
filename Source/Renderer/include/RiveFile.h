@@ -153,21 +153,6 @@ typedef bool (^LoadAsset)(RiveFileAsset* asset,
 - (nullable RiveDataBindingViewModel*)defaultViewModelForArtboard:
     (RiveArtboard*)artboard;
 
-/// Returns a bindable artboard from the file by its index.
-///
-/// A bindable artboard is an artboard that can be used with data binding
-/// features. The index of an artboard starts at 0, where 0 is the first
-/// artboard in the file.
-///
-/// - Parameter index: The index of the artboard to retrieve.
-/// - Parameter error: A pointer to an NSError object. If an error occurs, this
-/// pointer will contain an error object describing the problem.
-///
-/// - Returns: A bindable artboard if one exists at the specified index,
-/// otherwise nil.
-- (nullable RiveBindableArtboard*)bindableArtboardAtIndex:(NSInteger)index
-                                                    error:(NSError**)error;
-
 /// Returns a bindable artboard from the file by its name.
 ///
 /// A bindable artboard is an artboard that can be used with data binding
@@ -182,6 +167,17 @@ typedef bool (^LoadAsset)(RiveFileAsset* asset,
 /// otherwise nil.
 - (nullable RiveBindableArtboard*)bindableArtboardWithName:(NSString*)name
                                                      error:(NSError**)error;
+
+/// Returns the default bindable artboard from the file.
+///
+/// A bindable artboard is an artboard that can be used with data binding
+/// features. This returns the default artboard in the file.
+///
+/// - Parameter error: A pointer to an NSError object. If an error occurs, this
+/// pointer will contain an error object describing the problem.
+///
+/// - Returns: The default bindable artboard if one exists, otherwise nil.
+- (nullable RiveBindableArtboard*)defaultBindableArtboard:(NSError**)error;
 
 @end
 

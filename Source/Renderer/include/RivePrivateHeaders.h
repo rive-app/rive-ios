@@ -33,6 +33,7 @@
 #import "rive/assets/audio_asset.hpp"
 #import "rive/assets/file_asset.hpp"
 #import "rive/file_asset_loader.hpp"
+#import "rive/bindable_artboard.hpp"
 #import "rive/viewmodel/runtime/viewmodel_instance_runtime.hpp"
 #import "rive/viewmodel/runtime/viewmodel_runtime.hpp"
 
@@ -189,7 +190,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RiveDataBindingViewModelInstance ()
 @property(nonatomic, readonly) rive::ViewModelInstanceRuntime* instance;
-- (instancetype)initWithInstance:(rive::ViewModelInstanceRuntime*)instance;
+- (instancetype)initWithInstance:
+    (rive::rcp<rive::ViewModelInstanceRuntime>)instance;
 - (void)cacheProperty:(RiveDataBindingViewModelInstanceProperty*)value
              withPath:(NSString*)path;
 @end
@@ -245,9 +247,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface RiveBindableArtboard ()
-- (rive::ArtboardInstance*)artboardInstance;
-- (instancetype)initWithArtboard:
-    (std::unique_ptr<rive::ArtboardInstance>)artboard;
+- (rive::rcp<rive::BindableArtboard>)bindableArtboard;
+- (instancetype)initWithBindableArtboard:
+    (rive::rcp<rive::BindableArtboard>)bindableArtboard;
 @end
 
 NS_ASSUME_NONNULL_END

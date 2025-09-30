@@ -22,7 +22,7 @@
 @implementation RiveFile
 {
     rive::rcp<rive::File> riveFile;
-    rive::FileAssetLoader* fileAssetLoader;
+    rive::rcp<rive::FileAssetLoader> fileAssetLoader;
     RenderContext* _renderContext;
 }
 
@@ -374,13 +374,14 @@
         [fallbackLoader addLoader:cdnLoader];
     }
 
-    fileAssetLoader = new rive::FileAssetLoaderAdapter(fallbackLoader);
+    fileAssetLoader =
+        rive::make_rcp<rive::FileAssetLoaderAdapter>(fallbackLoader);
 
     auto file = rive::File::import(
-        rive::Span(bytes, length), factory, &result, fileAssetLoader);
+        rive::Span(bytes, length), factory, &result, fileAssetLoader.get());
     if (result == rive::ImportResult::success)
     {
-        riveFile = std::move(file);
+        riveFile = file;
         return true;
     }
 
@@ -553,37 +554,16 @@
     return [[RiveDataBindingViewModel alloc] initWithViewModel:viewModel];
 }
 
-- (RiveArtboard*)bindableArtboardAtIndex:(NSInteger)index
-                                   error:(NSError* __autoreleasing _Nullable*)
-                                             error
-{
-    auto artboard = riveFile->artboardAt(index);
-    if (artboard == nullptr)
-    {
-        NSString* message = [NSString
-            stringWithFormat:@"No Artboard Found at index %ld.", (long)index];
-        [RiveLogger logFile:nil error:message];
-        *error = [NSError errorWithDomain:RiveErrorDomain
-                                     code:RiveNoArtboardFound
-                                 userInfo:@{
-                                     NSLocalizedDescriptionKey : message,
-                                     @"name" : @"NoArtboardFound"
-                                 }];
-        return nil;
-    }
-    return [[RiveArtboard alloc] initWithArtboard:std::move(artboard)];
-}
-
-- (RiveArtboard*)bindableArtboardWithName:(NSString*)name
-                                    error:(NSError* __autoreleasing _Nullable*)
-                                              error
+- (RiveBindableArtboard*)
+    bindableArtboardWithName:(NSString*)name
+                       error:(NSError* __autoreleasing _Nullable*)error
 {
     std::string stdName = std::string([name UTF8String]);
-    auto artboard = riveFile->artboardNamed(stdName);
-    if (artboard == nullptr)
+    auto bindableArtboard = riveFile->bindableArtboardNamed(stdName);
+    if (bindableArtboard == nullptr)
     {
         NSString* message = [NSString
-            stringWithFormat:@"No Artboard Found with name %@.", name];
+            stringWithFormat:@"No Bindable Artboard Found with name %@.", name];
         [RiveLogger logFile:nil error:message];
         *error = [NSError errorWithDomain:RiveErrorDomain
                                      code:RiveNoArtboardFound
@@ -593,17 +573,35 @@
                                  }];
         return nil;
     }
-    else
+    return [[RiveBindableArtboard alloc]
+        initWithBindableArtboard:bindableArtboard];
+}
+
+- (RiveBindableArtboard*)defaultBindableArtboard:
+    (NSError* __autoreleasing _Nullable*)error
+{
+    auto bindableArtboard = riveFile->bindableArtboardDefault();
+    if (bindableArtboard == nullptr)
     {
-        return [[RiveArtboard alloc] initWithArtboard:std::move(artboard)];
+        NSString* message = @"No Default Bindable Artboard Found.";
+        [RiveLogger logFile:nil error:message];
+        *error = [NSError errorWithDomain:RiveErrorDomain
+                                     code:RiveNoArtboardFound
+                                 userInfo:@{
+                                     NSLocalizedDescriptionKey : message,
+                                     @"name" : @"NoArtboardFound"
+                                 }];
+        return nil;
     }
+    return [[RiveBindableArtboard alloc]
+        initWithBindableArtboard:bindableArtboard];
 }
 
 /// Clean up rive file
 - (void)dealloc
 {
     riveFile = nullptr;
-    delete fileAssetLoader;
+    fileAssetLoader = nullptr;
 }
 
 @end

@@ -625,12 +625,13 @@
 - (nullable RiveDataBindingViewModelInstance*)instanceAtIndex:(int)index
 {
     auto instance = _list->instanceAt(index);
+    auto instancePtr = instance.get();
     if (instance == nullptr)
     {
         return nil;
     }
 
-    NSValue* key = [NSValue valueWithPointer:instance];
+    NSValue* key = [NSValue valueWithPointer:instancePtr];
     RiveDataBindingViewModelInstance* cachedInstance = _instances[key];
     if (cachedInstance != nil)
     {
@@ -677,9 +678,10 @@
 - (void)removeInstanceAtIndex:(int)index
 {
     auto i = _list->instanceAt(index);
+    auto iPtr = i.get();
     if (i != nullptr)
     {
-        NSValue* key = [NSValue valueWithPointer:i];
+        NSValue* key = [NSValue valueWithPointer:iPtr];
         [_instances removeObjectForKey:key];
     }
 
@@ -748,7 +750,8 @@
     }
     else
     {
-        _artboard->value([artboard artboardInstance]);
+        auto bindableArtboard = [artboard bindableArtboard];
+        _artboard->value(bindableArtboard);
         [RiveLogger logPropertyUpdated:self value:[artboard name]];
     }
 }
