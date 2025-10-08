@@ -114,6 +114,8 @@
 		F2610DD82CA5B6570090D50B /* RiveLogger+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */; };
 		F2610DDA2CA5B84B0090D50B /* RiveLogger+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */; };
 		F2610DE12CA5FBE30090D50B /* RiveLogger+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */; };
+		F26698D72E8D70F600E03BBA /* IDPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26698D62E8D70F600E03BBA /* IDPool.swift */; };
+		F26698D92E8D74E700E03BBA /* IDPoolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26698D82E8D74E700E03BBA /* IDPoolTests.swift */; };
 		F268DE412E25D42300BAB7CF /* RiveBindableArtboard.h in Headers */ = {isa = PBXBuildFile; fileRef = F268DE3F2E25D42300BAB7CF /* RiveBindableArtboard.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F268DE422E25D42300BAB7CF /* RiveBindableArtboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = F268DE402E25D42300BAB7CF /* RiveBindableArtboard.mm */; };
 		F27B61582D35C00E003C0345 /* RiveDataBindingViewModelInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = F27B61562D35C00E003C0345 /* RiveDataBindingViewModelInstance.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -258,6 +260,8 @@
 		F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+Model.swift"; sourceTree = "<group>"; };
 		F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+File.swift"; sourceTree = "<group>"; };
 		F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveLogger+View.swift"; sourceTree = "<group>"; };
+		F26698D62E8D70F600E03BBA /* IDPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDPool.swift; sourceTree = "<group>"; };
+		F26698D82E8D74E700E03BBA /* IDPoolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDPoolTests.swift; sourceTree = "<group>"; };
 		F268DE3F2E25D42300BAB7CF /* RiveBindableArtboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveBindableArtboard.h; sourceTree = "<group>"; };
 		F268DE402E25D42300BAB7CF /* RiveBindableArtboard.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RiveBindableArtboard.mm; sourceTree = "<group>"; };
 		F27B61562D35C00E003C0345 /* RiveDataBindingViewModelInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveDataBindingViewModelInstance.h; sourceTree = "<group>"; };
@@ -398,6 +402,7 @@
 				C3745FD2282BFAB90087F4AF /* FPSCounterView.swift */,
 				C34609FB27FF9114002DBCB7 /* RiveFile+Extensions.swift */,
 				C3E2B57F282F242400A8651B /* RiveStateMachineInstance+Extensions.swift */,
+				F26698D62E8D70F600E03BBA /* IDPool.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -492,6 +497,7 @@
 				F22CF1B22D380E6900D35779 /* DataBindingTests.swift */,
 				F24FC6442DD3C83700DEE8C5 /* RiveRenderImageTests.swift */,
 				F2BE72102E05DB8E00B66C78 /* ViewTests.swift */,
+				F26698D82E8D74E700E03BBA /* IDPoolTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -741,6 +747,7 @@
 				F2610DD82CA5B6570090D50B /* RiveLogger+Model.swift in Sources */,
 				F22E12112D67D47C00F2E8C3 /* RiveDisplayLink.swift in Sources */,
 				F2610DD62CA5B5DD0090D50B /* RiveLogger+ViewModel.swift in Sources */,
+				F26698D72E8D70F600E03BBA /* IDPool.swift in Sources */,
 				F25C58A82D5A60EC00186C91 /* RiveLogger+DataBinding.swift in Sources */,
 				E5964A982A9697B600140479 /* RiveEvent.mm in Sources */,
 				F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */,
@@ -788,6 +795,7 @@
 			files = (
 				F2BE72112E05DB8E00B66C78 /* ViewTests.swift in Sources */,
 				04BE5420264ACFC200427B39 /* RiveStateMachineLoadTest.mm in Sources */,
+				F26698D92E8D74E700E03BBA /* IDPoolTests.swift in Sources */,
 				04BE541E264AC7A600427B39 /* RiveArtboardLoadTest.mm in Sources */,
 				041265262B0CB41E009400EC /* OutOfBandAssetTest.mm in Sources */,
 				04BE542D264C1A3300427B39 /* RiveDelegatesTest.swift in Sources */,

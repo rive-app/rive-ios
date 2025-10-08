@@ -62,11 +62,31 @@ typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
 /// @return The RiveHitResult of a touch beginning at the provided location.
 - (RiveHitResult)touchBeganAtLocation:(CGPoint)touchLocation;
 
+/// Tells this StateMachineInstance that a user began touching the artboard with
+/// a specific touch ID
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
+/// @param touchID A unique identifier for the touch event, used for multitouch
+/// support
+/// @return The RiveHitResult of a touch beginning at the provided location.
+- (RiveHitResult)touchBeganAtLocation:(CGPoint)touchLocation
+                              touchID:(int)touchID;
+
 /// Tells this StateMachineInstance that a touch moved on the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating
 /// artboard
 /// @return The RiveHitResult of a touch moving at the provided location.
 - (RiveHitResult)touchMovedAtLocation:(CGPoint)touchLocation;
+
+/// Tells this StateMachineInstance that a touch moved on the artboard with a
+/// specific touch ID
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
+/// @param touchID A unique identifier for the touch event, used for multitouch
+/// support
+/// @return The RiveHitResult of a touch moving at the provided location.
+- (RiveHitResult)touchMovedAtLocation:(CGPoint)touchLocation
+                              touchID:(int)touchID;
 
 /// Tells this StateMachineInstance that a user finished touching the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating
@@ -74,12 +94,49 @@ typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
 /// @return The RiveHitResult of a touch ending at the provided location.
 - (RiveHitResult)touchEndedAtLocation:(CGPoint)touchLocation;
 
+/// Tells this StateMachineInstance that a user finished touching the artboard
+/// with a specific touch ID
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
+/// @param touchID A unique identifier for the touch event, used for multitouch
+/// support
+/// @return The RiveHitResult of a touch ending at the provided location.
+- (RiveHitResult)touchEndedAtLocation:(CGPoint)touchLocation
+                              touchID:(int)touchID;
+
 /// Tells this StateMachineInstance that a user cancelled touching the artboard
 /// @param touchLocation A CGPoint in the coordinate space of the animating
 /// artboard
 /// @return The RiveHitResult of a touch being cancelled at the provided
 /// location.
 - (RiveHitResult)touchCancelledAtLocation:(CGPoint)touchLocation;
+
+/// Tells this StateMachineInstance that a user cancelled touching the artboard
+/// with a specific touch ID
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
+/// @param touchID A unique identifier for the touch event, used for multitouch
+/// support
+/// @return The RiveHitResult of a touch being cancelled at the provided
+/// location.
+- (RiveHitResult)touchCancelledAtLocation:(CGPoint)touchLocation
+                                  touchID:(int)touchID;
+
+/// Tells this StateMachineInstance that a touch exited the artboard
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
+/// @return The RiveHitResult of a touch exiting at the provided location.
+- (RiveHitResult)touchExitedAtLocation:(CGPoint)touchLocation;
+
+/// Tells this StateMachineInstance that a touch exited the artboard with a
+/// specific touch ID
+/// @param touchLocation A CGPoint in the coordinate space of the animating
+/// artboard
+/// @param touchID A unique identifier for the touch event, used for multitouch
+/// support
+/// @return The RiveHitResult of a touch exiting at the provided location.
+- (RiveHitResult)touchExitedAtLocation:(CGPoint)touchLocation
+                               touchID:(int)touchID;
 
 // MARK: - Data Binding
 

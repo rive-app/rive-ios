@@ -10,10 +10,11 @@ import Foundation
 import OSLog
 
 enum RiveLoggerViewEvent {
-    case touchBegan(CGPoint)
-    case touchMoved(CGPoint)
-    case touchEnded(CGPoint)
-    case touchCancelled(CGPoint)
+    case touchBegan(CGPoint, Int32)
+    case touchMoved(CGPoint, Int32)
+    case touchEnded(CGPoint, Int32)
+    case touchCancelled(CGPoint, Int32)
+    case touchExited(CGPoint, Int32)
     case play
     case pause
     case stop
@@ -29,21 +30,25 @@ extension RiveLogger {
 
     static func log(view: RiveView, event: RiveLoggerViewEvent) {
         switch event {
-        case .touchBegan(let point):
+        case .touchBegan(let point, let id):
             _log(event: event, level: .debug) {
-                Self.view.debug("\(self.prefix(for: view))Touch began at {\(point.x),\(point.y)}")
+                Self.view.debug("\(self.prefix(for: view))Touch (id: \(id)) began at {\(point.x),\(point.y)}")
             }
-        case .touchMoved(let point):
+        case .touchMoved(let point, let id):
             _log(event: event, level: .debug) {
-                Self.view.debug("\(self.prefix(for: view))Touch moved to {\(point.x),\(point.y)}")
+                Self.view.debug("\(self.prefix(for: view))Touch (id: \(id)) moved to {\(point.x),\(point.y)}")
             }
-        case .touchEnded(let point):
+        case .touchEnded(let point, let id):
             _log(event: event, level: .debug) {
-                Self.view.debug("\(self.prefix(for: view))Touch ended at {\(point.x),\(point.y)}")
+                Self.view.debug("\(self.prefix(for: view))Touch (id: \(id)) ended at {\(point.x),\(point.y)}")
             }
-        case .touchCancelled(let point):
+        case .touchCancelled(let point, let id):
             _log(event: event, level: .debug) {
-                Self.view.debug("\(self.prefix(for: view))Touch cancelled at {\(point.x),\(point.y)}")
+                Self.view.debug("\(self.prefix(for: view))Touch (id: \(id)) cancelled at {\(point.x),\(point.y)}")
+            }
+        case .touchExited(let point, let id):
+            _log(event: event, level: .debug) {
+                Self.view.debug("\(self.prefix(for: view))Touch (id: \(id)) exited at {\(point.x),\(point.y)}")
             }
         case .play:
             _log(event: event, level: .debug) {

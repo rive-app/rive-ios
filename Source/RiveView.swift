@@ -91,6 +91,10 @@ open class RiveView: RiveRendererView {
     private var orientationObserver: (any NSObjectProtocol)?
     private var screenObserver: (any NSObjectProtocol)?
 
+    #if !os(macOS)
+    private var touchPool = IDPool<UITouch>(range: 0..<10)
+    #endif
+
     /// Minimalist constructor, call `.configure` to customize the `RiveView` later.
     public init() {
         super.init(frame: .zero)
@@ -490,14 +494,17 @@ open class RiveView: RiveRendererView {
     // MARK: - UIResponder
     #if os(iOS) || os(visionOS) || os(tvOS)
         open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-            guard let touch = touches.first else { return }
-            
-            handleTouch(touch, delegate: stateMachineDelegate?.touchBegan) { stateMachine, location in
-                let result = stateMachine.touchBegan(atLocation: location)
-                RiveLogger.log(view: self, event: .touchBegan(location))
+            for touch in touches {
+                guard let id = touchPool.add(touch) else {
+                    return
+                }
+                handleTouch(touch, delegate: stateMachineDelegate?.touchBegan) { stateMachine, location in
+                    let result = stateMachine.touchBegan(atLocation: location, touchID: id)
+                    RiveLogger.log(view: self, event: .touchBegan(location, id))
 
-                if let stateMachine = riveModel?.stateMachine {
-                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .began)
+                    if let stateMachine = riveModel?.stateMachine {
+                        stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .began)
+                    }
                 }
             }
 
@@ -507,14 +514,17 @@ open class RiveView: RiveRendererView {
         }
         
         open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-            guard let touch = touches.first else { return }
+            for touch in touches {
+                guard let id = touchPool.add(touch) else {
+                    return
+                }
+                handleTouch(touch, delegate: stateMachineDelegate?.touchMoved) { stateMachine, location in
+                    RiveLogger.log(view: self, event: .touchMoved(location, id))
 
-            handleTouch(touch, delegate: stateMachineDelegate?.touchMoved) { stateMachine, location in
-                RiveLogger.log(view: self, event: .touchMoved(location))
-
-                let result = stateMachine.touchMoved(atLocation: location)
-                if let stateMachine = riveModel?.stateMachine {
-                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
+                    let result = stateMachine.touchMoved(atLocation: location, touchID: id)
+                    if let stateMachine = riveModel?.stateMachine {
+                        stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .moved)
+                    }
                 }
             }
 
@@ -524,14 +534,25 @@ open class RiveView: RiveRendererView {
         }
         
         open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-            guard let touch = touches.first else { return }
+            for touch in touches {
+                guard let id = touchPool.id(for: touch) else {
+                    return
+                }
+                touchPool.remove(touch)
 
-            handleTouch(touch, delegate: stateMachineDelegate?.touchEnded) { stateMachine, location in
-                RiveLogger.log(view: self, event: .touchEnded(location))
+                handleTouch(touch, delegate: stateMachineDelegate?.touchEnded) { stateMachine, location in
+                    RiveLogger.log(view: self, event: .touchEnded(location, id))
 
-                let result = stateMachine.touchEnded(atLocation: location)
-                if let stateMachine = riveModel?.stateMachine {
-                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .ended)
+                    var result = stateMachine.touchEnded(atLocation: location, touchID: id)
+                    if let stateMachine = riveModel?.stateMachine {
+                        stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .ended)
+                    }
+
+                    RiveLogger.log(view: self, event: .touchExited(location, id))
+                    result = stateMachine.touchExited(atLocation: location, touchID: id)
+                    if let stateMachine = riveModel?.stateMachine {
+                        stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .exited)
+                    }
                 }
             }
 
@@ -541,14 +562,25 @@ open class RiveView: RiveRendererView {
         }
         
         open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-            guard let touch = touches.first else { return }
+            for touch in touches {
+                guard let id = touchPool.id(for: touch) else {
+                    return
+                }
+                touchPool.remove(touch)
 
-            handleTouch(touch, delegate: stateMachineDelegate?.touchCancelled) { stateMachine, location in
-                RiveLogger.log(view: self, event: .touchCancelled(location))
+                handleTouch(touch, delegate: stateMachineDelegate?.touchCancelled) { stateMachine, location in
+                    RiveLogger.log(view: self, event: .touchCancelled(location, id))
 
-                let result = stateMachine.touchCancelled(atLocation: location)
-                if let stateMachine = riveModel?.stateMachine {
-                    stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .cancelled)
+                    var result = stateMachine.touchCancelled(atLocation: location, touchID: id)
+                    if let stateMachine = riveModel?.stateMachine {
+                        stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .cancelled)
+                    }
+
+                    RiveLogger.log(view: self, event: .touchExited(location, id))
+                    result = stateMachine.touchExited(atLocation: location, touchID: id)
+                    if let stateMachine = riveModel?.stateMachine {
+                        stateMachineDelegate?.stateMachine?(stateMachine, didReceiveHitResult: result, from: .exited)
+                    }
                 }
             }
 
@@ -759,6 +791,9 @@ open class RiveView: RiveRendererView {
     case ended
     /// The touch event that occurs when a touch or mouse click is cancelled.
     case cancelled
+    /// The touch event that occurs when a touch exits the artboard; specifically used when multitouch is enabled
+    /// This event is triggered when a touch leaves the artboard area during multitouch interactions
+    case exited
 }
 
 @objc public protocol RiveStateMachineDelegate: AnyObject {
@@ -766,7 +801,11 @@ open class RiveView: RiveRendererView {
     @objc optional func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
     @objc optional func touchEnded(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
     @objc optional func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
-    
+    /// Called when a touch exits the artboard, typically used for multitouch scenarios
+    /// @param artboard The artboard where the touch exited
+    /// @param location The location where the touch exited in artboard coordinates
+    @objc optional func touchExited(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
+
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, receivedInput input: StateMachineInput)
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, didChangeState stateName: String)
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, didReceiveHitResult hitResult: RiveHitResult, from event: RiveTouchEvent)

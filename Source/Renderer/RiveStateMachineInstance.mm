@@ -408,26 +408,62 @@ RiveHitResult RiveHitResultFromRuntime(rive::HitResult result)
 
 - (RiveHitResult)touchBeganAtLocation:(CGPoint)touchLocation
 {
-    return RiveHitResultFromRuntime(
-        instance->pointerDown(rive::Vec2D(touchLocation.x, touchLocation.y)));
+    return [self touchBeganAtLocation:touchLocation touchID:0];
+}
+
+- (RiveHitResult)touchBeganAtLocation:(CGPoint)touchLocation
+                              touchID:(int)touchID
+{
+    return RiveHitResultFromRuntime(instance->pointerDown(
+        rive::Vec2D(touchLocation.x, touchLocation.y), touchID));
 }
 
 - (RiveHitResult)touchMovedAtLocation:(CGPoint)touchLocation
 {
-    return RiveHitResultFromRuntime(
-        instance->pointerMove(rive::Vec2D(touchLocation.x, touchLocation.y)));
+    return [self touchMovedAtLocation:touchLocation touchID:0];
+}
+
+- (RiveHitResult)touchMovedAtLocation:(CGPoint)touchLocation
+                              touchID:(int)touchID
+{
+    return RiveHitResultFromRuntime(instance->pointerMove(
+        rive::Vec2D(touchLocation.x, touchLocation.y), 0, touchID));
 }
 
 - (RiveHitResult)touchEndedAtLocation:(CGPoint)touchLocation
 {
-    return RiveHitResultFromRuntime(
-        instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y)));
+    return [self touchEndedAtLocation:touchLocation touchID:0];
+}
+
+- (RiveHitResult)touchEndedAtLocation:(CGPoint)touchLocation
+                              touchID:(int)touchID
+{
+    return RiveHitResultFromRuntime(instance->pointerUp(
+        rive::Vec2D(touchLocation.x, touchLocation.y), touchID));
 }
 
 - (RiveHitResult)touchCancelledAtLocation:(CGPoint)touchLocation
 {
-    return RiveHitResultFromRuntime(
-        instance->pointerUp(rive::Vec2D(touchLocation.x, touchLocation.y)));
+    return [self touchCancelledAtLocation:touchLocation touchID:0];
+}
+
+- (RiveHitResult)touchCancelledAtLocation:(CGPoint)touchLocation
+                                  touchID:(int)touchID
+{
+    return RiveHitResultFromRuntime(instance->pointerUp(
+        rive::Vec2D(touchLocation.x, touchLocation.y), touchID));
+}
+
+- (RiveHitResult)touchExitedAtLocation:(CGPoint)touchLocation
+{
+    return [self touchExitedAtLocation:touchLocation touchID:0];
+}
+
+- (RiveHitResult)touchExitedAtLocation:(CGPoint)touchLocation
+                               touchID:(int)touchID
+{
+    return RiveHitResultFromRuntime(instance->pointerExit(
+        rive::Vec2D(touchLocation.x, touchLocation.y), touchID));
 }
 
 #pragma mark - Data Binding
