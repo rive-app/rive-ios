@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:5.10
 import PackageDescription
 
 let package = Package(
@@ -11,8 +11,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "RiveRuntime",
-            url: "https://github.com/rive-app/rive-ios/releases/download/6.11.4/RiveRuntime.xcframework.zip",
-            checksum: "041c564897441e867dc1d7cd057ec46da61bdd296a8091c00508e126bf9d06e8"
+            url: "https://github.com/rive-app/rive-ios/releases/download/6.12.0/RiveRuntime.xcframework.zip",
+            checksum: "9bc6fe1c01a9fc2a33f4bf437d156fcc5b00c1b834d0a8c018a8a603630a5419"
         )
     ]
 )
