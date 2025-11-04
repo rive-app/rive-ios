@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "RiveRuntime"
-  spec.version      = "6.12.0"
+  spec.version      = "6.12.1"
   spec.summary      = "iOS SDK to render Rive animations"
   spec.description  = "Rive is a real-time interactive design and animation tool. Use our collaborative editor to create motion graphics that respond to different states and user inputs. Then load your animations into apps, games, and websites with our lightweight open-source runtimes."
   spec.homepage     = "https://github.com/rive-app/rive-ios"
@@ -33,7 +33,7 @@ Pod::Spec.new do |spec|
   spec.visionos.deployment_target = '1.0'
   spec.swift_version          = '5.9'
   spec.source       = { 
-    :http => "https://github.com/rive-app/rive-ios/releases/download/6.12.0/RiveRuntime.xcframework.zip",
+    :http => "https://github.com/rive-app/rive-ios/releases/download/6.12.1/RiveRuntime.xcframework.zip",
   }
   spec.ios.vendored_frameworks = 'RiveRuntime.xcframework'
   spec.osx.vendored_frameworks = 'RiveRuntime.xcframework'
