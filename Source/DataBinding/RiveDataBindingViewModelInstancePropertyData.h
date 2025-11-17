@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, RiveDataBindingViewModelInstancePropertyDataType) {
     RiveDataBindingViewModelInstancePropertyDataTypeAssetImage,
     RiveDataBindingViewModelInstancePropertyDataTypeArtboard,
     RiveDataBindingViewModelInstancePropertyDataTypeInput,
+    RiveDataBindingViewModelInstancePropertyDataTypeAny,
 } NS_SWIFT_NAME(RiveDataBindingViewModelInstancePropertyData.DataType);
 
 NS_ASSUME_NONNULL_BEGIN
