@@ -286,7 +286,7 @@
                     NSError* error = nil;
                     [self import:bytes
                                byteLength:[data length]
-                                  loadCdn:true
+                                  loadCdn:cdn
                         customAssetLoader:customAssetLoader
                                     error:&error];
                     self.isLoaded = true;
