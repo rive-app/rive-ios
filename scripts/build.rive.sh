@@ -19,6 +19,7 @@ fi
 
 NO_AUDIO=false
 NO_TEXT=false
+NO_SCRIPTING=false
 PLATFORM=""
 CONFIG=""
 
@@ -30,6 +31,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-text)
             NO_TEXT=true
+            shift
+            ;;
+        --no-scripting)
+            NO_SCRIPTING=true
             shift
             ;;
         all|macosx|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|maccatalyst)
@@ -57,7 +62,12 @@ if [ "$NO_TEXT" = false ]; then
     RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS --with_rive_text"
 fi
 
-# Handle preprocessor definitions for audio and text
+# Add scripting flag to RIVE_PREMAKE_ARGS if --no-scripting is not passed
+if [ "$NO_SCRIPTING" = false ]; then
+    RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS --with_rive_scripting"
+fi
+
+# Handle preprocessor definitions for audio, text, and scripting
 # Build the definitions string
 DEFINITIONS=""
 if [ "$NO_AUDIO" = false ]; then
@@ -65,6 +75,9 @@ if [ "$NO_AUDIO" = false ]; then
 fi
 if [ "$NO_TEXT" = false ]; then
     DEFINITIONS="$DEFINITIONS WITH_RIVE_TEXT"
+fi
+if [ "$NO_SCRIPTING" = false ]; then
+    DEFINITIONS="$DEFINITIONS WITH_RIVE_SCRIPTING"
 fi
 
 # Set the preprocessor definitions line
@@ -109,6 +122,7 @@ build_runtime() {
     cp -r out/ios_universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi.a
     cp -r out/ios_universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio.a
     cp -r out/ios_universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive.a
+    cp -r out/ios_universal_$1/libluau_vm.a $DEV_SCRIPT_DIR/../dependencies/$1/libluau_vm.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -148,6 +162,7 @@ build_runtime_sim() {
     cp -r out/iossim_universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_sim.a
     cp -r out/iossim_universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_sim.a
     cp -r out/iossim_universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sim.a
+    cp -r out/iossim_universal_$1/libluau_vm.a $DEV_SCRIPT_DIR/../dependencies/$1/libluau_vm_sim.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -188,6 +203,7 @@ build_runtime_macosx() {
     cp -r out/universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_macos.a
     cp -r out/universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_macos.a
     cp -r out/universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_macos.a
+    cp -r out/universal_$1/libluau_vm.a $DEV_SCRIPT_DIR/../dependencies/$1/libluau_vm_macos.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -227,6 +243,7 @@ build_runtime_xros() {
     cp -r out/xros_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_xros.a
     cp -r out/xros_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_xros.a
     cp -r out/xros_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_xros.a
+    cp -r out/xros_$1/libluau_vm.a $DEV_SCRIPT_DIR/../dependencies/$1/libluau_vm_xros.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -266,6 +283,7 @@ build_runtime_xrsimulator() {
     cp -r out/xrsimulator_universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_xrsimulator.a
     cp -r out/xrsimulator_universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_xrsimulator.a
     cp -r out/xrsimulator_universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_xrsimulator.a
+    cp -r out/xrsimulator_universal_$1/libluau_vm.a $DEV_SCRIPT_DIR/../dependencies/$1/libluau_vm_xrsimulator.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -305,6 +323,7 @@ build_runtime_appletvos() {
     cp -r out/appletvos_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_appletvos.a
     cp -r out/appletvos_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_appletvos.a
     cp -r out/appletvos_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_appletvos.a
+    cp -r out/appletvos_$1/libluau_vm.a $DEV_SCRIPT_DIR/../dependencies/$1/libluau_vm_appletvos.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -345,6 +364,7 @@ build_runtime_appletvsimulator() {
     cp -r out/appletvsimulator_universal_$1/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_sheenbidi_appletvsimulator.a
     cp -r out/appletvsimulator_universal_$1/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/$1/libminiaudio_appletvsimulator.a
     cp -r out/appletvsimulator_universal_$1/librive.a $DEV_SCRIPT_DIR/../dependencies/$1/librive_appletvsimulator.a
+    cp -r out/appletvsimulator_universal_$1/libluau_vm.a $DEV_SCRIPT_DIR/../dependencies/$1/libluau_vm_appletvsimulator.a
     cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
     # Build rive_cg_renderer.
@@ -391,6 +411,7 @@ build_runtime_maccatalyst() {
         cp -r out/maccatalyst_${arch}_${config}/librive_sheenbidi.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_sheenbidi_maccatalyst_${arch}.a
         cp -r out/maccatalyst_${arch}_${config}/libminiaudio.a $DEV_SCRIPT_DIR/../dependencies/${config}/libminiaudio_maccatalyst_${arch}.a
         cp -r out/maccatalyst_${arch}_${config}/librive.a $DEV_SCRIPT_DIR/../dependencies/${config}/librive_maccatalyst_${arch}.a
+        cp -r out/maccatalyst_${arch}_${config}/libluau_vm.a $DEV_SCRIPT_DIR/../dependencies/${config}/libluau_vm_maccatalyst_${arch}.a
         cp -r $RIVE_RUNTIME_DIR/include $DEV_SCRIPT_DIR/../dependencies/includes/rive
 
         # Build rive_cg_renderer.
@@ -434,6 +455,7 @@ build_runtime_maccatalyst() {
             "librive_cg_renderer_maccatalyst"
             "librive_pls_renderer_maccatalyst"
             "librive_decoders_maccatalyst"
+            "libluau_vm_maccatalyst"
         )
 
         # Create universal binaries for each library

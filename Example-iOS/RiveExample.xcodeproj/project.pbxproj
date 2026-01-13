@@ -356,6 +356,14 @@
 		F2C852EB2CD17B8200F0D81F /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		F2C852EC2CD17B8200F0D81F /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F2C852F22CD19F6A00F0D81F /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
+		F2E2F2762F1176CD000F3E20 /* blinko.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2E2F2752F1176CD000F3E20 /* blinko.riv */; };
+		F2E2F2772F1176CD000F3E20 /* blinko.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2E2F2752F1176CD000F3E20 /* blinko.riv */; };
+		F2E2F2782F1176CD000F3E20 /* blinko.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2E2F2752F1176CD000F3E20 /* blinko.riv */; };
+		F2E2F2792F1176CD000F3E20 /* blinko.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2E2F2752F1176CD000F3E20 /* blinko.riv */; };
+		F2E2F2852F118819000F3E20 /* BlinkoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E2F2842F118819000F3E20 /* BlinkoView.swift */; };
+		F2E2F2862F118819000F3E20 /* BlinkoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E2F2842F118819000F3E20 /* BlinkoView.swift */; };
+		F2E2F2892F1188AC000F3E20 /* ExamplesMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */; };
+		F2E2F28A2F1188AC000F3E20 /* ExamplesMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */; };
 		F8772AF02AD94A4400AB5920 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		F8772AF12AD94A4400AB5920 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
 		F8772AF22AD94A4400AB5920 /* Bear.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83DE4CB42AB3974300B88B72 /* Bear.riv */; };
@@ -554,6 +562,8 @@
 		F2C852D52CD1772300F0D81F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F2C852D72CD1772400F0D81F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F2C852DA2CD1772400F0D81F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F2E2F2752F1176CD000F3E20 /* blinko.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = blinko.riv; sourceTree = "<group>"; };
+		F2E2F2842F118819000F3E20 /* BlinkoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkoView.swift; sourceTree = "<group>"; };
 		F8DA7B442AF523A800FF3CBF /* DismissableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -751,6 +761,7 @@
 				C3D187F8280770EA008B739A /* truck.riv */,
 				C9BD3925263B5FC700696C37 /* truck_v7.riv */,
 				046AFA6E2673AF04004ED497 /* blendmodes.riv */,
+				F2E2F2752F1176CD000F3E20 /* blinko.riv */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -776,6 +787,7 @@
 				F2C623382C874E690006E0CA /* SwiftFallbackFonts.swift */,
 				F259E5822D35B7FA00B78FEF /* DataBindingView.swift */,
 				F2C291652DB6D599009A2918 /* RewardsView.swift */,
+				F2E2F2842F118819000F3E20 /* BlinkoView.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -1100,6 +1112,7 @@
 				040553992B7A274B008F076A /* asset_load_check.riv in Resources */,
 				0405539A2B7A274B008F076A /* rbutton.riv in Resources */,
 				0405539B2B7A274B008F076A /* constrained.riv in Resources */,
+				F2E2F2762F1176CD000F3E20 /* blinko.riv in Resources */,
 				0405539C2B7A274B008F076A /* nothing.riv in Resources */,
 				0405539D2B7A274B008F076A /* artboard_animations.riv in Resources */,
 				0405539E2B7A274B008F076A /* testtext.riv in Resources */,
@@ -1190,6 +1203,7 @@
 				040554142B7A2858008F076A /* testanimation.riv in Resources */,
 				040554152B7A2858008F076A /* truck.riv in Resources */,
 				040554162B7A2858008F076A /* simple_assets.riv in Resources */,
+				F2E2F2782F1176CD000F3E20 /* blinko.riv in Resources */,
 				040554172B7A2858008F076A /* Preview Assets.xcassets in Resources */,
 				040554182B7A2858008F076A /* bullet_man_game.riv in Resources */,
 				040554192B7A2858008F076A /* ui_swipe_left_to_delete.riv in Resources */,
@@ -1237,6 +1251,7 @@
 				E5B5C2192B238829006E57C8 /* asset_load_check.riv in Resources */,
 				04E51C512A151C230075E473 /* rbutton.riv in Resources */,
 				04E51C522A151C230075E473 /* constrained.riv in Resources */,
+				F2E2F2792F1176CD000F3E20 /* blinko.riv in Resources */,
 				04E51C532A151C230075E473 /* nothing.riv in Resources */,
 				04E51C542A151C230075E473 /* artboard_animations.riv in Resources */,
 				E57798AC2A731C5800FF25C3 /* testtext.riv in Resources */,
@@ -1327,6 +1342,7 @@
 				C3D187F9280770EA008B739A /* truck.riv in Resources */,
 				043026062B012C5000320F2E /* simple_assets.riv in Resources */,
 				C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */,
+				F2E2F2772F1176CD000F3E20 /* blinko.riv in Resources */,
 				C3E2B58A2833ECB500A8651B /* bullet_man_game.riv in Resources */,
 				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
 				042C88E52644447500E7DBB2 /* explorer.riv in Resources */,
@@ -1389,6 +1405,7 @@
 				040553852B7A274B008F076A /* SwiftEvents.swift in Sources */,
 				040553862B7A274B008F076A /* Example__macOS_App.swift in Sources */,
 				040553882B7A274B008F076A /* DismissableView.swift in Sources */,
+				F2E2F2892F1188AC000F3E20 /* ExamplesMaster.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1430,6 +1447,7 @@
 				040553ED2B7A2858008F076A /* SwiftSimpleAnimation.swift in Sources */,
 				040553EE2B7A2858008F076A /* SimpleOutOfBand.swift in Sources */,
 				040553EF2B7A2858008F076A /* SwiftTestText.swift in Sources */,
+				F2E2F2862F118819000F3E20 /* BlinkoView.swift in Sources */,
 				040553F02B7A2858008F076A /* SwiftStateMachine.swift in Sources */,
 				040553F12B7A2858008F076A /* DismissableView.swift in Sources */,
 				2E83910A2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */,
@@ -1444,6 +1462,7 @@
 				E5964AAC2A9CD49200140479 /* SwiftEvents.swift in Sources */,
 				04E51C362A151A1E0075E473 /* Example__macOS_App.swift in Sources */,
 				F8DA7B462AF523A800FF3CBF /* DismissableView.swift in Sources */,
+				F2E2F28A2F1188AC000F3E20 /* ExamplesMaster.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1485,6 +1504,7 @@
 				04026DC427CE3ED6002B3DBF /* SwiftSimpleAnimation.swift in Sources */,
 				0453FCB92B012DA9001185C8 /* SimpleOutOfBand.swift in Sources */,
 				E57798A92A730A9B00FF25C3 /* SwiftTestText.swift in Sources */,
+				F2E2F2852F118819000F3E20 /* BlinkoView.swift in Sources */,
 				04026DCE27CE3F0F002B3DBF /* SwiftStateMachine.swift in Sources */,
 				F8DA7B452AF523A800FF3CBF /* DismissableView.swift in Sources */,
 				2E83910B2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */,

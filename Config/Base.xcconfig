@@ -9,5 +9,5 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-GCC_PREPROCESSOR_DEFINITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT
-SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING

@@ -91,7 +91,6 @@
 		E57798AB2A7310B700FF25C3 /* testtext.riv in Resources */ = {isa = PBXBuildFile; fileRef = E57798AA2A7310B700FF25C3 /* testtext.riv */; };
 		E5964A962A965A9300140479 /* RiveEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = E5964A952A965A9300140479 /* RiveEvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E5964A982A9697B600140479 /* RiveEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = E5964A972A9697B600140479 /* RiveEvent.mm */; };
-		E599DCF92AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
 		E599DCFA2AAFA06100D1E49A /* rating_animation.riv in Resources */ = {isa = PBXBuildFile; fileRef = E599DCF82AAFA06100D1E49A /* rating_animation.riv */; };
 		F20808E22E05C3FF0082A281 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20808E12E05C3FF0082A281 /* View+Extensions.swift */; };
 		F21C3D1B2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */; };
@@ -694,7 +693,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E54F23A2BE428990013016C /* PrivacyInfo.xcprivacy in Resources */,
-				E599DCF92AAFA06100D1E49A /* rating_animation.riv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1015,6 +1013,7 @@
 					"-lrive_cg_renderer_appletvos",
 					"-lrive_decoders_appletvos",
 					"-lrive_webp_appletvos",
+					"-lluau_vm_appletvos",
 				);
 				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
 					"-lrive_appletvsimulator",
@@ -1026,6 +1025,7 @@
 					"-lrive_cg_renderer_appletvsimulator",
 					"-lrive_decoders_appletvsimulator",
 					"-lrive_webp_appletvsimulator",
+					"-lluau_vm_appletvsimulator",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lrive",
@@ -1036,6 +1036,7 @@
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
 					"-lrive_decoders",
+					"-lluau_vm",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lrive_sim",
@@ -1046,6 +1047,7 @@
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
 					"-lrive_decoders_sim",
+					"-lluau_vm_sim",
 				);
 				"OTHER_LDFLAGS[sdk=xros*]" = (
 					"-lrive_xros",
@@ -1056,6 +1058,7 @@
 					"-lrive_pls_renderer_xros",
 					"-lrive_cg_renderer_xros",
 					"-lrive_decoders_xros",
+					"-lluau_vm_xros",
 				);
 				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
 					"-lrive_xrsimulator",
@@ -1066,6 +1069,7 @@
 					"-lrive_pls_renderer_xrsimulator",
 					"-lrive_cg_renderer_xrsimulator",
 					"-lrive_decoders_xrsimulator",
+					"-lluau_vm_xrsimulator",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1140,6 +1144,7 @@
 					"-lrive_cg_renderer_appletvos",
 					"-lrive_decoders_appletvos",
 					"-lrive_webp_appletvos",
+					"-lluau_vm_appletvos",
 				);
 				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
 					"-lrive_appletvsimulator",
@@ -1151,6 +1156,7 @@
 					"-lrive_cg_renderer_appletvsimulator",
 					"-lrive_decoders_appletvsimulator",
 					"-lrive_webp_appletvsimulator",
+					"-lluau_vm_appletvsimulator",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lrive",
@@ -1161,6 +1167,7 @@
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
 					"-lrive_decoders",
+					"-lluau_vm",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lrive_sim",
@@ -1171,6 +1178,7 @@
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
 					"-lrive_decoders_sim",
+					"-lluau_vm_sim",
 				);
 				"OTHER_LDFLAGS[sdk=xros*]" = (
 					"-lrive_xros",
@@ -1181,6 +1189,7 @@
 					"-lrive_pls_renderer_xros",
 					"-lrive_cg_renderer_xros",
 					"-lrive_decoders_xros",
+					"-lluau_vm_xros",
 				);
 				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
 					"-lrive_xrsimulator",
@@ -1191,6 +1200,7 @@
 					"-lrive_pls_renderer_xrsimulator",
 					"-lrive_cg_renderer_xrsimulator",
 					"-lrive_decoders_xrsimulator",
+					"-lluau_vm_xrsimulator",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1385,6 +1395,7 @@
 					"-lrive_cg_renderer_appletvos",
 					"-lrive_decoders_appletvos",
 					"-lrive_webp_appletvos",
+					"-lluau_vm_appletvos",
 				);
 				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
 					"-lrive_appletvsimulator",
@@ -1396,6 +1407,7 @@
 					"-lrive_cg_renderer_appletvsimulator",
 					"-lrive_decoders_appletvsimulator",
 					"-lrive_webp_appletvsimulator",
+					"-lluau_vm_appletvsimulator",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lrive",
@@ -1406,6 +1418,7 @@
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
 					"-lrive_decoders",
+					"-lluau_vm",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lrive_sim",
@@ -1416,6 +1429,7 @@
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
 					"-lrive_decoders_sim",
+					"-lluau_vm_sim",
 				);
 				"OTHER_LDFLAGS[sdk=xros*]" = (
 					"-lrive_xros",
@@ -1426,6 +1440,7 @@
 					"-lrive_pls_renderer_xros",
 					"-lrive_cg_renderer_xros",
 					"-lrive_decoders_xros",
+					"-lluau_vm_xros",
 				);
 				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
 					"-lrive_xrsimulator",
@@ -1436,6 +1451,7 @@
 					"-lrive_pls_renderer_xrsimulator",
 					"-lrive_cg_renderer_xrsimulator",
 					"-lrive_decoders_xrsimulator",
+					"-lluau_vm_xrsimulator",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1607,6 +1623,7 @@
 					"-lrive_cg_renderer_appletvos",
 					"-lrive_decoders_appletvos",
 					"-lrive_webp_appletvos",
+					"-lluau_vm_appletvos",
 				);
 				"OTHER_LDFLAGS[sdk=appletvsimulator*]" = (
 					"-lrive_appletvsimulator",
@@ -1618,6 +1635,7 @@
 					"-lrive_cg_renderer_appletvsimulator",
 					"-lrive_decoders_appletvsimulator",
 					"-lrive_webp_appletvsimulator",
+					"-lluau_vm_appletvsimulator",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"-lrive",
@@ -1628,6 +1646,7 @@
 					"-lrive_pls_renderer",
 					"-lrive_cg_renderer",
 					"-lrive_decoders",
+					"-lluau_vm",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-lrive_sim",
@@ -1638,6 +1657,7 @@
 					"-lrive_pls_renderer_sim",
 					"-lrive_cg_renderer_sim",
 					"-lrive_decoders_sim",
+					"-lluau_vm_sim",
 				);
 				"OTHER_LDFLAGS[sdk=xros*]" = (
 					"-lrive_xros",
@@ -1648,6 +1668,7 @@
 					"-lrive_pls_renderer_xros",
 					"-lrive_cg_renderer_xros",
 					"-lrive_decoders_xros",
+					"-lluau_vm_xros",
 				);
 				"OTHER_LDFLAGS[sdk=xrsimulator*]" = (
 					"-lrive_xrsimulator",
@@ -1658,6 +1679,7 @@
 					"-lrive_pls_renderer_xrsimulator",
 					"-lrive_cg_renderer_xrsimulator",
 					"-lrive_decoders_xrsimulator",
+					"-lluau_vm_xrsimulator",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntime;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";

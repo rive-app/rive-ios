@@ -12,5 +12,5 @@
 #include "Base.xcconfig"
 
 SUPPORTS_MACCATALYST=YES
-OTHER_LDFLAGS[sdk=macosx*] = -lrive_maccatalyst -lrive_harfbuzz_maccatalyst -lrive_sheenbidi_maccatalyst -lrive_yoga_maccatalyst -lminiaudio_maccatalyst -lrive_pls_renderer_maccatalyst -lrive_cg_renderer_maccatalyst -lrive_decoders_maccatalyst
-SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT RIVE_MAC_CATALYST
+OTHER_LDFLAGS[sdk=macosx*] = -lrive_maccatalyst -lrive_harfbuzz_maccatalyst -lrive_sheenbidi_maccatalyst -lrive_yoga_maccatalyst -lminiaudio_maccatalyst -lrive_pls_renderer_maccatalyst -lrive_cg_renderer_maccatalyst -lrive_decoders_maccatalyst -lluau_vm_maccatalyst
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING RIVE_MAC_CATALYST

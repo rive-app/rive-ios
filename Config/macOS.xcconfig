@@ -12,4 +12,4 @@
 #include "Base.xcconfig"
 
 SUPPORTS_MACCATALYST=NO
-OTHER_LDFLAGS[sdk=macosx*] = -lrive_macos -lrive_harfbuzz_macos -lrive_sheenbidi_macos -lrive_yoga_macos -lminiaudio_macos -lrive_pls_renderer_macos -lrive_cg_renderer_macos -lrive_decoders_macos
+OTHER_LDFLAGS[sdk=macosx*] = -lrive_macos -lrive_harfbuzz_macos -lrive_sheenbidi_macos -lrive_yoga_macos -lminiaudio_macos -lrive_pls_renderer_macos -lrive_cg_renderer_macos -lrive_decoders_macos -lluau_vm_macos
