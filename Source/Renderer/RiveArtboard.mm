@@ -420,6 +420,11 @@ static int artInstanceCount = 0;
     _artboardInstance->height(_artboardInstance->originalHeight());
 }
 
+- (BOOL)didChange
+{
+    return _artboardInstance->didChange();
+}
+
 #pragma mark - Data Binding
 
 - (void)bindViewModelInstance:(RiveDataBindingViewModelInstance*)instance

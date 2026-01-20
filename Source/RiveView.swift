@@ -18,6 +18,11 @@ open class RiveView: RiveRendererView {
         case playAndNoDraw
     }
 
+    public enum DrawOptimization {
+        case alwaysDraw
+        case drawOnChanged
+    }
+
     // MARK: Configuration
     internal weak var riveModel: RiveModel?
     internal var fit: RiveFit = .contain { didSet { needsDisplay() } }
@@ -47,7 +52,13 @@ open class RiveView: RiveRendererView {
     /// - Note: On iOS, this is handled separately from `isExclusiveTouch`.
     internal var forwardsListenerEvents: Bool = false
 
+    /// Sets whether the view should continue drawing while offscreen.
     public var offscreenBehavior: OffscreenBehavior = .playAndNoDraw
+
+    /// Sets whether the view should always draw, or skip drawing
+    /// if the artboard is unchanged.
+    public var drawOptimization: DrawOptimization = .drawOnChanged
+    private var forceDraw: Bool = false
 
     // MARK: Render Loop
     internal private(set) var isPlaying: Bool = false
@@ -84,6 +95,9 @@ open class RiveView: RiveRendererView {
 
     open override var frame: CGRect {
         didSet {
+            if oldValue != frame {
+                forceDraw = true
+            }
             redrawIfNecessary()
         }
     }
@@ -437,8 +451,18 @@ open class RiveView: RiveRendererView {
     }
 
     open override func draw(_ rect: CGRect) {
+        // First check whether we should draw and we're on-screen
         if offscreenBehavior == .playAndDraw || isOnscreen() {
+            // Then check our optimization. Draw if:
+            // 1. We always draw, or
+            // 2. If we don't, if the artboard changed
+            // 3. foceDraw == true; e.g our frame has changed, but we want to maintain the rendering transform
+            guard let artboard = riveModel?.artboard,
+            (drawOptimization == .alwaysDraw || artboard.didChange || forceDraw)
+            else { return }
+
             super.draw(rect)
+            forceDraw = false
         }
     }
 
