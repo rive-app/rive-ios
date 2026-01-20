@@ -388,6 +388,12 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ArtboardProperty)
 /// - Note: This will trigger any listeners added to this property.
 - (void)setValue:(nullable RiveBindableArtboard*)artboard;
 
+/// Sets the view model instance to bind to the value of this artboard property.
+///
+/// - Parameter instance: The view model instance to set for this property.
+- (void)setViewModelInstance:
+    (nullable RiveDataBindingViewModelInstance*)instance;
+
 /// Adds a block as a listener, called when the property is triggered.
 ///
 /// - Note: The property can be triggered either explicitly by the developer,

@@ -756,6 +756,19 @@
     }
 }
 
+- (void)setViewModelInstance:(RiveDataBindingViewModelInstance*)instance
+{
+    if (instance == nil)
+    {
+        _artboard->viewModelInstance(nullptr);
+    }
+
+    // RiveDataBindingViewModelInstance
+    // -> rive::ViewModelInstanceRuntime (from RCP)
+    // -> rive::rcp<rive::ViewModelInstance>
+    _artboard->viewModelInstance(instance.instance->instance());
+}
+
 - (NSUUID*)addListener:
     (RiveDataBindingViewModelInstanceTriggerPropertyListener)listener
 {
