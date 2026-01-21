@@ -34,6 +34,8 @@
 #import <RiveRuntime/RiveDataBindingViewModelInstanceProperty.h>
 #import <RiveRuntime/RiveDataBindingViewModelInstancePropertyData.h>
 
+#import <RiveRuntime/RiveExperimental.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 /*

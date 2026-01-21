@@ -9,7 +9,7 @@ on:
 jobs:
   run_tests:
     name: Run Rive tests
-    runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
+    runs-on: ghcr.io/cirruslabs/macos-runner:sequoia
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -41,8 +41,8 @@ jobs:
           sudo mv premake5 /usr/local/bin
           pip3 install ply
 
-      - name: Select Xcode 16.1
-        run: sudo xcodes select 16.1
+      - name: Select Xcode 16.4
+        run: sudo xcodes select 16.4
 
       - name: Build for iOS Simulator (using the cache, we should make an archive of course)
         run: |

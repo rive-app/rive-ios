@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -334,6 +334,10 @@
 		F23A50602DE60E4600366506 /* DataBindingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F259E5822D35B7FA00B78FEF /* DataBindingView.swift */; };
 		F259E5832D35B7FA00B78FEF /* DataBindingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F259E5822D35B7FA00B78FEF /* DataBindingView.swift */; };
 		F26E20AC2CF0E21000130111 /* streaming.riv in Resources */ = {isa = PBXBuildFile; fileRef = F26E20A92CF0E21000130111 /* streaming.riv */; };
+		F2777A8C2F158F40001FE3F1 /* quick_start.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2777A8B2F158F40001FE3F1 /* quick_start.riv */; };
+		F2777A8D2F158F40001FE3F1 /* quick_start.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2777A8B2F158F40001FE3F1 /* quick_start.riv */; };
+		F2777A8E2F158F40001FE3F1 /* quick_start.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2777A8B2F158F40001FE3F1 /* quick_start.riv */; };
+		F2777A8F2F158F40001FE3F1 /* quick_start.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2777A8B2F158F40001FE3F1 /* quick_start.riv */; };
 		F2AB95D12CF0EB800055376E /* streaming.riv in Resources */ = {isa = PBXBuildFile; fileRef = F26E20A92CF0E21000130111 /* streaming.riv */; };
 		F2AC7F3C2CCBEEDC00E3ED79 /* RiveRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; };
 		F2AC7F3D2CCBEEDC00E3ED79 /* RiveRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 04A8F6BD26452E10002C909A /* RiveRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -364,6 +368,10 @@
 		F2E2F2862F118819000F3E20 /* BlinkoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E2F2842F118819000F3E20 /* BlinkoView.swift */; };
 		F2E2F2892F1188AC000F3E20 /* ExamplesMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */; };
 		F2E2F28A2F1188AC000F3E20 /* ExamplesMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3357CA0280F42EC00F03B6F /* ExamplesMaster.swift */; };
+		F2F067172EF5C44E00FC884C /* marty_v2.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2F067162EF5C44E00FC884C /* marty_v2.riv */; };
+		F2F067182EF5C44E00FC884C /* marty_v2.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2F067162EF5C44E00FC884C /* marty_v2.riv */; };
+		F2F067192EF5C44E00FC884C /* marty_v2.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2F067162EF5C44E00FC884C /* marty_v2.riv */; };
+		F2F0671A2EF5C44E00FC884C /* marty_v2.riv in Resources */ = {isa = PBXBuildFile; fileRef = F2F067162EF5C44E00FC884C /* marty_v2.riv */; };
 		F8772AF02AD94A4400AB5920 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		F8772AF12AD94A4400AB5920 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
 		F8772AF22AD94A4400AB5920 /* Bear.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83DE4CB42AB3974300B88B72 /* Bear.riv */; };
@@ -552,6 +560,7 @@
 		F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = data_binding_test.riv; sourceTree = "<group>"; };
 		F259E5822D35B7FA00B78FEF /* DataBindingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBindingView.swift; sourceTree = "<group>"; };
 		F26E20A92CF0E21000130111 /* streaming.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = streaming.riv; sourceTree = "<group>"; };
+		F2777A8B2F158F40001FE3F1 /* quick_start.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = quick_start.riv; sourceTree = "<group>"; };
 		F2B7F2F72C5AC09200F47FBC /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		F2C2915C2DB6D571009A2918 /* rewards.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rewards.riv; sourceTree = "<group>"; };
 		F2C291652DB6D599009A2918 /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
@@ -564,8 +573,13 @@
 		F2C852DA2CD1772400F0D81F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F2E2F2752F1176CD000F3E20 /* blinko.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = blinko.riv; sourceTree = "<group>"; };
 		F2E2F2842F118819000F3E20 /* BlinkoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkoView.swift; sourceTree = "<group>"; };
+		F2F067162EF5C44E00FC884C /* marty_v2.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = marty_v2.riv; sourceTree = "<group>"; };
 		F8DA7B442AF523A800FF3CBF /* DismissableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		F23255D52EF5C09C0096E26F /* Experimental */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Experimental; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		040553892B7A274B008F076A /* Frameworks */ = {
@@ -676,6 +690,7 @@
 		C3ECAC322818608B00A81123 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
+				F23255D52EF5C09C0096E26F /* Experimental */,
 				C3ECAC33281860E900A81123 /* ViewModel */,
 				042C88862643DB2200E7DBB2 /* Storyboard */,
 				C9A84F342644931E0014D8E0 /* SwiftUI */,
@@ -762,6 +777,8 @@
 				C9BD3925263B5FC700696C37 /* truck_v7.riv */,
 				046AFA6E2673AF04004ED497 /* blendmodes.riv */,
 				F2E2F2752F1176CD000F3E20 /* blinko.riv */,
+				F2F067162EF5C44E00FC884C /* marty_v2.riv */,
+				F2777A8B2F158F40001FE3F1 /* quick_start.riv */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -934,6 +951,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				F23255D52EF5C09C0096E26F /* Experimental */,
+			);
 			name = "Preview (iOS)";
 			packageProductDependencies = (
 				040554322B7A291A008F076A /* RiveRuntime */,
@@ -972,6 +992,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F23255D52EF5C09C0096E26F /* Experimental */,
 			);
 			name = "Example (iOS)";
 			productName = RiveExample;
@@ -1099,6 +1122,7 @@
 				0405538E2B7A274B008F076A /* teststatemachine.riv in Resources */,
 				0405538F2B7A274B008F076A /* bullet_man_game.riv in Resources */,
 				040553902B7A274B008F076A /* hero_editor.riv in Resources */,
+				F2F067172EF5C44E00FC884C /* marty_v2.riv in Resources */,
 				040553912B7A274B008F076A /* watch_v1.riv in Resources */,
 				040553922B7A274B008F076A /* leg_day_events_example.riv in Resources */,
 				F22CF1AC2D380E1300D35779 /* data_binding_test.riv in Resources */,
@@ -1126,6 +1150,7 @@
 				040553A62B7A274B008F076A /* life_bar.riv in Resources */,
 				040553A72B7A274B008F076A /* rating_animation.riv in Resources */,
 				040553A82B7A274B008F076A /* prop_example.riv in Resources */,
+				F2777A8F2F158F40001FE3F1 /* quick_start.riv in Resources */,
 				040553A92B7A274B008F076A /* two_bone_ik.riv in Resources */,
 				040553AA2B7A274B008F076A /* energy_bar_example.riv in Resources */,
 				2E974F962CB3509200642588 /* layout_test.riv in Resources */,
@@ -1204,6 +1229,7 @@
 				040554152B7A2858008F076A /* truck.riv in Resources */,
 				040554162B7A2858008F076A /* simple_assets.riv in Resources */,
 				F2E2F2782F1176CD000F3E20 /* blinko.riv in Resources */,
+				F2F0671A2EF5C44E00FC884C /* marty_v2.riv in Resources */,
 				040554172B7A2858008F076A /* Preview Assets.xcassets in Resources */,
 				040554182B7A2858008F076A /* bullet_man_game.riv in Resources */,
 				040554192B7A2858008F076A /* ui_swipe_left_to_delete.riv in Resources */,
@@ -1223,6 +1249,7 @@
 				040554262B7A2858008F076A /* asset_load_check.riv in Resources */,
 				0490915A2BC832B000F2C12B /* table-59328.wav in Resources */,
 				040554272B7A2858008F076A /* energy_bar_example.riv in Resources */,
+				F2777A8E2F158F40001FE3F1 /* quick_start.riv in Resources */,
 				040554282B7A2858008F076A /* clipping.riv in Resources */,
 				040554292B7A2858008F076A /* watch_v1.riv in Resources */,
 				0405542A2B7A2858008F076A /* prop_example.riv in Resources */,
@@ -1238,6 +1265,7 @@
 				04E51C472A151C230075E473 /* teststatemachine.riv in Resources */,
 				04E51C482A151C230075E473 /* bullet_man_game.riv in Resources */,
 				04E51C492A151C230075E473 /* hero_editor.riv in Resources */,
+				F2F067192EF5C44E00FC884C /* marty_v2.riv in Resources */,
 				04E51C4A2A151C230075E473 /* watch_v1.riv in Resources */,
 				04E51C4B2A151C230075E473 /* leg_day_events_example.riv in Resources */,
 				F22CF1AD2D380E1400D35779 /* data_binding_test.riv in Resources */,
@@ -1265,6 +1293,7 @@
 				04E51C5C2A151C230075E473 /* life_bar.riv in Resources */,
 				E5964AB22A9CDB2100140479 /* rating_animation.riv in Resources */,
 				04E51C5D2A151C230075E473 /* prop_example.riv in Resources */,
+				F2777A8D2F158F40001FE3F1 /* quick_start.riv in Resources */,
 				04E51C5E2A151C230075E473 /* two_bone_ik.riv in Resources */,
 				04E51C5F2A151C230075E473 /* energy_bar_example.riv in Resources */,
 				2E974F982CB3509200642588 /* layout_test.riv in Resources */,
@@ -1343,6 +1372,7 @@
 				043026062B012C5000320F2E /* simple_assets.riv in Resources */,
 				C9C73EA124FC471E00EF9516 /* Preview Assets.xcassets in Resources */,
 				F2E2F2772F1176CD000F3E20 /* blinko.riv in Resources */,
+				F2F067182EF5C44E00FC884C /* marty_v2.riv in Resources */,
 				C3E2B58A2833ECB500A8651B /* bullet_man_game.riv in Resources */,
 				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
 				042C88E52644447500E7DBB2 /* explorer.riv in Resources */,
@@ -1362,6 +1392,7 @@
 				E5B5C2182B238829006E57C8 /* asset_load_check.riv in Resources */,
 				0490915B2BC832B000F2C12B /* table-59328.wav in Resources */,
 				E5A7874A27E115170056F24B /* energy_bar_example.riv in Resources */,
+				F2777A8C2F158F40001FE3F1 /* quick_start.riv in Resources */,
 				042C88EB2644447500E7DBB2 /* clipping.riv in Resources */,
 				C3E383482837E6B00029D65E /* watch_v1.riv in Resources */,
 				E5A7874C27E1158E0056F24B /* prop_example.riv in Resources */,

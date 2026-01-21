@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 73;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -113,7 +113,6 @@
 		F2610DD82CA5B6570090D50B /* RiveLogger+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD72CA5B6570090D50B /* RiveLogger+Model.swift */; };
 		F2610DDA2CA5B84B0090D50B /* RiveLogger+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DD92CA5B84B0090D50B /* RiveLogger+File.swift */; };
 		F2610DE12CA5FBE30090D50B /* RiveLogger+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2610DE02CA5FBE30090D50B /* RiveLogger+View.swift */; };
-		F26698D72E8D70F600E03BBA /* IDPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26698D62E8D70F600E03BBA /* IDPool.swift */; };
 		F26698D92E8D74E700E03BBA /* IDPoolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26698D82E8D74E700E03BBA /* IDPoolTests.swift */; };
 		F268DE412E25D42300BAB7CF /* RiveBindableArtboard.h in Headers */ = {isa = PBXBuildFile; fileRef = F268DE3F2E25D42300BAB7CF /* RiveBindableArtboard.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F268DE422E25D42300BAB7CF /* RiveBindableArtboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = F268DE402E25D42300BAB7CF /* RiveBindableArtboard.mm */; };
@@ -121,6 +120,7 @@
 		F27B61592D35C00E003C0345 /* RiveDataBindingViewModelInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = F27B61572D35C00E003C0345 /* RiveDataBindingViewModelInstance.mm */; };
 		F27B615C2D35C75A003C0345 /* RiveDataBindingViewModelInstanceProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = F27B615A2D35C75A003C0345 /* RiveDataBindingViewModelInstanceProperty.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F27B615D2D35C75A003C0345 /* RiveDataBindingViewModelInstanceProperty.mm in Sources */ = {isa = PBXBuildFile; fileRef = F27B615B2D35C75A003C0345 /* RiveDataBindingViewModelInstanceProperty.mm */; };
+		F28B046F2EA7C660003C161D /* IDPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26698D62E8D70F600E03BBA /* IDPool.swift */; };
 		F28DE4532C5002D900F3C379 /* RiveModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28DE4522C5002D900F3C379 /* RiveModelTests.swift */; };
 		F2B29EA22D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.h in Headers */ = {isa = PBXBuildFile; fileRef = F2B29EA02D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F2B29EA32D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B29EA12D52B5EB00CB30ED /* RiveDataBindingViewModelInstancePropertyData.m */; };
@@ -286,6 +286,43 @@
 		F2FD94032CC9492B00C1FC85 /* RiveFont.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveFont.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F2C675412ECE33F500CAAEFD /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			publicHeaders = (
+				Artboard/RiveArtboardListener.h,
+				Audio/RiveAudioListener.h,
+				CommandQueue/RiveCommandQueue.h,
+				CommandServer/RiveCommandServer.h,
+				DataBinding/RiveViewModelInstanceData.h,
+				DataBinding/RiveViewModelInstanceListener.h,
+				File/RiveFileListener.h,
+				Font/RiveFontListener.h,
+				Image/RiveRenderImageListener.h,
+				Renderer/Renderer.h,
+				Renderer/RiveRenderContext.h,
+				RiveEnums.h,
+				RiveExperimental.h,
+			);
+			target = C9C73ED024FC478800EF9516 /* RiveRuntime */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		F2C675422ECE33F500CAAEFD /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = C9C73ECD24FC478800EF9516 /* Sources */;
+			membershipExceptions = (
+				RiveEnums.h,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		F2C675292ECE33F500CAAEFD /* Experimental */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F2C675412ECE33F500CAAEFD /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F2C675422ECE33F500CAAEFD /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Experimental; sourceTree = "<group>"; };
+		F2C814C82ED4F64400C96BAC /* Experimental */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Experimental; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		C9C73ECE24FC478800EF9516 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -435,12 +472,12 @@
 		C9C73EC724FC478800EF9516 = {
 			isa = PBXGroup;
 			children = (
-				F2BD96D72DDCC7A200E7F49A /* Config */,
 				C9C73ED324FC478800EF9516 /* Source */,
 				2E54F2382BE428750013016C /* Resources */,
 				C9C73EDE24FC478900EF9516 /* Tests */,
 				C9C73ED224FC478800EF9516 /* Products */,
 				2AD589AE2B5705D800CD1D24 /* Frameworks */,
+				F273BAAC2DE8DC8C00458C14 /* Config */,
 			);
 			sourceTree = "<group>";
 		};
@@ -457,6 +494,7 @@
 			isa = PBXGroup;
 			children = (
 				F24FC6502DD3CF6700DEE8C5 /* Extensions */,
+				F2C675292ECE33F500CAAEFD /* Experimental */,
 				F259E5842D35B87800B78FEF /* DataBinding */,
 				F2CCA9C02C9E13B2007DC0D2 /* Logging */,
 				C3468E5727EB9887008652FD /* RiveView.swift */,
@@ -474,6 +512,7 @@
 		C9C73EDE24FC478900EF9516 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				F2C814C82ED4F64400C96BAC /* Experimental */,
 				04BE53F726493FE600427B39 /* Assets */,
 				C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.mm */,
 				C9C73EE124FC478900EF9516 /* Info.plist */,
@@ -539,7 +578,7 @@
 			path = DataBinding;
 			sourceTree = "<group>";
 		};
-		F2BD96D72DDCC7A200E7F49A /* Config */ = {
+		F273BAAC2DE8DC8C00458C14 /* Config */ = {
 			isa = PBXGroup;
 			children = (
 				F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */,
@@ -625,6 +664,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				F2C675292ECE33F500CAAEFD /* Experimental */,
+			);
 			name = RiveRuntime;
 			productName = RiveRuntime;
 			productReference = C9C73ED124FC478800EF9516 /* RiveRuntime.framework */;
@@ -643,6 +685,9 @@
 			);
 			dependencies = (
 				C9C73EDD24FC478900EF9516 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F2C814C82ED4F64400C96BAC /* Experimental */,
 			);
 			name = RiveRuntimeTests;
 			productName = RiveRuntimeTests;
@@ -669,7 +714,6 @@
 				};
 			};
 			buildConfigurationList = C9C73ECB24FC478800EF9516 /* Build configuration list for PBXProject "RiveRuntime" */;
-			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -677,6 +721,7 @@
 				Base,
 			);
 			mainGroup = C9C73EC724FC478800EF9516;
+			preferredProjectObjectVersion = 50;
 			productRefGroup = C9C73ED224FC478800EF9516 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -743,9 +788,9 @@
 				C34609FC27FF9114002DBCB7 /* RiveFile+Extensions.swift in Sources */,
 				C3468E5827EB9887008652FD /* RiveView.swift in Sources */,
 				F2610DD82CA5B6570090D50B /* RiveLogger+Model.swift in Sources */,
+				F28B046F2EA7C660003C161D /* IDPool.swift in Sources */,
 				F22E12112D67D47C00F2E8C3 /* RiveDisplayLink.swift in Sources */,
 				F2610DD62CA5B5DD0090D50B /* RiveLogger+ViewModel.swift in Sources */,
-				F26698D72E8D70F600E03BBA /* IDPool.swift in Sources */,
 				F25C58A82D5A60EC00186C91 /* RiveLogger+DataBinding.swift in Sources */,
 				E5964A982A9697B600140479 /* RiveEvent.mm in Sources */,
 				F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */,
@@ -889,6 +934,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -952,6 +998,7 @@
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1076,6 +1123,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				STRIP_STYLE = "non-global";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1207,6 +1255,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				STRIP_STYLE = "non-global";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -1458,6 +1507,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				STRIP_STYLE = "non-global";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RiveRuntime-Swift.h";
@@ -1686,6 +1736,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				STRIP_STYLE = "non-global";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RiveRuntime-Swift.h";

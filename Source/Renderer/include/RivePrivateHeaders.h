@@ -42,6 +42,10 @@
 #include "rive/custom_property_string.hpp"
 #include "rive/custom_property_number.hpp"
 
+#include "rive/command_server.hpp"
+#include "rive/command_queue.hpp"
+#include "rive/factory.hpp"
+
 // MARK: - Feature Flags
 
 #define RIVE_ENABLE_REFERENCE_COUNTING false
@@ -158,6 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
  * RiveFileAsset
  */
 @interface RiveFactory ()
+@property(nonatomic, readonly) rive::Factory* factory;
 - (instancetype)initWithFactory:(rive::Factory*)factory;
 @end
 

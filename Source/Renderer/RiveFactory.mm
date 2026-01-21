@@ -176,4 +176,11 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
 #endif
 }
 
+#pragma mark Private
+
+- (rive::Factory*)factory
+{
+    return instance;
+}
+
 @end
