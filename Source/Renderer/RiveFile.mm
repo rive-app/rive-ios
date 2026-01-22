@@ -44,6 +44,10 @@
         UInt8* bytes;
         @try
         {
+            if (array.count > SIZE_MAX / sizeof(UInt64)) {
+                return nil;
+            }
+
             bytes = (UInt8*)calloc(array.count, sizeof(UInt64));
 
             [array enumerateObjectsUsingBlock:^(
