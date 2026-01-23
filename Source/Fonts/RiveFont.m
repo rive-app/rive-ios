@@ -8,6 +8,7 @@
 
 #import "RiveFont.h"
 #import <rive/text/font_hb.hpp>
+#import <rive/text/utf.hpp>
 #import <RiveRuntime/RiveRuntime-Swift.h>
 #import <CoreText/CoreText.h>
 
@@ -151,9 +152,42 @@ static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
         id<RiveFallbackFontProvider> provider =
             providers[fallbackIndex % providers.count];
         id fallbackFont = provider.fallbackFont;
+
+        if (provider.allowsSuggestedFonts)
+        {
+            uint16_t utf16[2];
+            int utf16Count = rive::UTF::ToUTF16(missing, utf16);
+            CFStringRef string = CFStringCreateWithCharacters(
+                kCFAllocatorDefault, utf16, utf16Count);
+
+            if (string)
+            {
+                CTFontRef baseCTFont = (__bridge CTFontRef)fallbackFont;
+
+                // Get Core Text's suggestion for a fallback font
+                CTFontRef ctSuggestedFont = CTFontCreateForString(
+                    baseCTFont,
+                    string,
+                    CFRangeMake(0, CFStringGetLength(string)));
+                if (ctSuggestedFont)
+                {
+                    // Convert CTFontRef to the native font (UIFont / NSFont)
+                    // (they are toll-free bridged) Use __bridge_transfer to
+                    // transfer ownership to ARC
+                    id suggestedFont = (__bridge_transfer id)ctSuggestedFont;
+                    if (suggestedFont)
+                    {
+                        fallbackFont = suggestedFont;
+                    }
+                }
+            }
+
+            CFRelease(string);
+        }
+
         BOOL usesSystemShaper = fallbackIndex >= providers.count;
-        auto font = riveFontFromNativeFont(fallbackFont, usesSystemShaper);
-        return rive::rcp<rive::Font>(font);
+        auto riveFont = riveFontFromNativeFont(fallbackFont, usesSystemShaper);
+        return rive::rcp<rive::Font>(riveFont);
     }
 
     return nullptr;
@@ -196,9 +230,10 @@ static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
     if (_fallbackFonts.count == 0)
     {
         return @[ [[RiveFallbackFontDescriptor alloc]
-            initWithDesign:RiveFallbackFontDescriptorDesignDefault
-                    weight:RiveFallbackFontDescriptorWeightRegular
-                     width:RiveFallbackFontDescriptorWidthStandard] ];
+                  initWithDesign:RiveFallbackFontDescriptorDesignDefault
+                          weight:RiveFallbackFontDescriptorWeightRegular
+                           width:RiveFallbackFontDescriptorWidthStandard
+            allowsSuggestedFonts:YES] ];
     }
 
     return _fallbackFonts;

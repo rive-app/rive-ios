@@ -139,6 +139,10 @@ extension RiveFallbackFontDescriptor: RiveFallbackFontProvider {
     public var fallbackFont: RiveNativeFont {
         return self
     }
+
+    public var allowsSuggestedFonts: Bool {
+        return false
+    }
 }
 
 /// An enumeration of all possible usages of fonts within UI elements. They mirror the various available native font weights.
@@ -161,16 +165,37 @@ enum RiveFallbackFontUIUsage: String {
     var riveWeightValue: Int { get }
 }
 
+fileprivate extension RiveNativeFontWeight {
+    // An array of all possible native font weights that we test against
+    static let allWeights: [RiveNativeFontWeight] = [
+        .ultraLight, .thin, .light,
+        .regular, .medium, .semibold,
+        .bold, .heavy, .black
+    ]
+
+    // Fonts return weight values as floats with varying precision, which may not exactly match the constants in allWeights.
+    // We normalize the weight by comparing with a small tolerance and mapping it to the nearest known weight.
+    static func normalized(from value: CGFloat, tolerance: CGFloat = 0.001) -> RiveNativeFontWeight {
+        for weight in allWeights {
+            if abs(weight.rawValue - value) < tolerance {
+                return weight
+            }
+        }
+        return RiveNativeFontWeight(rawValue: value)
+    }
+}
+
 extension RiveNativeFont: RiveWeightProvider {
     var riveWeightValue: Int {
         let weight: RiveNativeFontWeight?
-        
+
         // First, check if the font has its weight as an available trait within the descriptor.
         // If not, check if the font has its UI usage available as a trait within the descriptor.
         // Otherwise, return a default (400).
         if let traits = fontDescriptor.object(forKey: .traits) as? [RiveNativeFontDescriptor.TraitKey: Any],
            let rawValue = traits[.weight] as? CGFloat {
-            weight = RiveNativeFontWeight(rawValue: rawValue)
+            // rawValue can be floats of various precision, so normalize it
+            weight = RiveNativeFontWeight.normalized(from: rawValue)
         } else if let attribute = fontDescriptor.object(forKey: .init(rawValue: "NSCTFontUIUsageAttribute")) as? String,
                   let usage = RiveFallbackFontUIUsage(rawValue: attribute) {
             weight = RiveNativeFontWeight(usage)

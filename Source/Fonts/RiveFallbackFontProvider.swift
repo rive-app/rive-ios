@@ -12,4 +12,5 @@ import Foundation
 @objc public protocol RiveFallbackFontProvider {
     /// An array of possible fonts to use as fallback fonts.
     @objc var fallbackFont: RiveNativeFont { get }
+    @objc var allowsSuggestedFonts: Bool { get }
 }
