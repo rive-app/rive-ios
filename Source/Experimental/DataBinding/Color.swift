@@ -43,7 +43,7 @@ public struct Color: Equatable {
         self.alpha = alpha
     }
     
-    public var argbValue: UInt32 {
+    var argbValue: UInt32 {
         return (UInt32(alpha) << 24) |
                (UInt32(red) << 16) |
                (UInt32(green) << 8) |
