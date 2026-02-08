@@ -87,11 +87,8 @@ RiveViewModelInstanceDataType RiveViewModelInstanceDataTypeFromCpp(
                 break;
             case rive::DataType::string:
             case rive::DataType::enumType:
-                if (!data.stringValue.empty())
-                {
-                    _stringValue = [NSString
-                        stringWithUTF8String:data.stringValue.c_str()];
-                }
+                _stringValue = [NSString
+                    stringWithUTF8String:data.stringValue.c_str()];
                 break;
             default:
                 // For other types, try stringValue if it's not empty
