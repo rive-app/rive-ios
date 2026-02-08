@@ -14,10 +14,10 @@ import Foundation
 /// or individual component values.
 @_spi(RiveExperimental)
 public struct Color: Equatable {
-    let alpha: UInt8
-    let red: UInt8
-    let green: UInt8
-    let blue: UInt8
+    public let alpha: UInt8
+    public let red: UInt8
+    public let green: UInt8
+    public let blue: UInt8
     
     /// Creates a color from a 32-bit ARGB integer value.
     ///
