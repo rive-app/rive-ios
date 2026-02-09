@@ -1169,16 +1169,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteFile:(uint64_t)file requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      // Clean up the file listener
-      NSValue* listenerValue = self->_fileListeners[@(file)];
-      if (listenerValue)
-      {
-          _FileListener* listener =
-              static_cast<_FileListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_fileListeners removeObjectForKey:@(file)];
-      }
-
       auto handle = reinterpret_cast<rive::FileHandle>(file);
       self->_commandQueue->deleteFile(handle, requestID);
     }];
@@ -1283,16 +1273,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteArtboard:(uint64_t)artboard requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      // Remove and release the associated listener
-      NSValue* listenerValue = self->_artboardListeners[@(artboard)];
-      if (listenerValue)
-      {
-          _ArtboardListener* listener =
-              static_cast<_ArtboardListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_artboardListeners removeObjectForKey:@(artboard)];
-      }
-
       auto handle = reinterpret_cast<rive::ArtboardHandle>(artboard);
       self->_commandQueue->deleteArtboard(handle, requestID);
     }];
@@ -1882,19 +1862,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                       requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      // Remove and release the associated listener
-      NSValue* listenerValue =
-          self->_viewModelInstanceListeners[@(viewModelInstance)];
-      if (listenerValue)
-      {
-          _ViewModelInstanceListener* listener =
-              static_cast<_ViewModelInstanceListener*>(
-                  listenerValue.pointerValue);
-          delete listener;
-          [self->_viewModelInstanceListeners
-              removeObjectForKey:@(viewModelInstance)];
-      }
-
       auto handle =
           reinterpret_cast<rive::ViewModelInstanceHandle>(viewModelInstance);
       self->_commandQueue->deleteViewModelInstance(handle, requestID);
@@ -1964,15 +1931,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteImage:(uint64_t)renderImage requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      NSValue* listenerValue = self->_renderImageListeners[@(renderImage)];
-      if (listenerValue)
-      {
-          _RenderImageListener* listener =
-              static_cast<_RenderImageListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_renderImageListeners removeObjectForKey:@(renderImage)];
-      }
-
       auto handle = reinterpret_cast<rive::RenderImageHandle>(renderImage);
       self->_commandQueue->deleteImage(handle, requestID);
     }];
@@ -2025,15 +1983,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteFont:(uint64_t)font requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      NSValue* listenerValue = self->_fontListeners[@(font)];
-      if (listenerValue)
-      {
-          _FontListener* listener =
-              static_cast<_FontListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_fontListeners removeObjectForKey:@(font)];
-      }
-
       auto handle = reinterpret_cast<rive::FontHandle>(font);
       self->_commandQueue->deleteFont(handle, requestID);
     }];
@@ -2086,15 +2035,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteAudio:(uint64_t)audio requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      NSValue* listenerValue = self->_audioListeners[@(audio)];
-      if (listenerValue)
-      {
-          _AudioListener* listener =
-              static_cast<_AudioListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_audioListeners removeObjectForKey:@(audio)];
-      }
-
       auto handle = reinterpret_cast<rive::AudioSourceHandle>(audio);
       self->_commandQueue->deleteAudio(handle, requestID);
     }];
@@ -2314,7 +2254,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (void)processMessages
 {
-    // Process messages directly since we're already on the main queue
     _commandQueue->processMessages();
 }
 
