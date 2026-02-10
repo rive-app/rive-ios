@@ -12,6 +12,8 @@ import Foundation
 public enum RiveUIViewError: LocalizedError {
     case renderer(String)
     case noDrawable
+    case noDevice
+    case noRenderer
 
     public var errorDescription: String? {
         switch self {
@@ -19,6 +21,10 @@ public enum RiveUIViewError: LocalizedError {
             return "Renderer error: \(message)"
         case .noDrawable:
             return "Could not retrieve drawable for drawing"
+        case .noDevice:
+            return "No available device for drawing"
+        case .noRenderer:
+            return "No available renderer for drawing"
         }
     }
 }

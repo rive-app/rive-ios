@@ -17,22 +17,27 @@ import Combine
 @_spi(RiveExperimental)
 public class Rive: ObservableObject {
     /// The Rive file containing the artboard and state machine.
-    public var file: File
+    public let file: File
     /// The artboard to render.
-    public var artboard: Artboard
+    public let artboard: Artboard
     /// The state machine that controls animations and state transitions.
-    public var stateMachine: StateMachine
+    public let stateMachine: StateMachine
     /// The view model instance that handles data binding in the state machine.
     /// This is the result of processing the dataBind argument when initializing a Rive object.
-    public var viewModelInstance: ViewModelInstance?
+    public let viewModelInstance: ViewModelInstance?
     /// The background color to use when rendering the artboard.
-    public var backgroundColor: Color
+    public var backgroundColor: Color {
+        didSet {
+            backgroundColorDidChange.send(backgroundColor)
+        }
+    }
     /// The fit mode that determines how the artboard is scaled and positioned within its bounds.
     public var fit: Fit {
         didSet {
             fitDidChange.send(fit)
         }
     }
+    let backgroundColorDidChange = PassthroughSubject<Color, Never>()
     let fitDidChange = PassthroughSubject<Fit, Never>()
 
     /// Creates a new Rive configuration with the specified components.
@@ -64,11 +69,14 @@ public class Rive: ObservableObject {
             if let instance = try? await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(self.artboard))) {
                 self.viewModelInstance = instance
                 self.stateMachine.bindViewModelInstance(instance)
+            } else {
+                self.viewModelInstance = nil
             }
         case .instance(let instance):
             self.viewModelInstance = instance
             self.stateMachine.bindViewModelInstance(instance)
         case .none:
+            self.viewModelInstance = nil
             break
         }
     }

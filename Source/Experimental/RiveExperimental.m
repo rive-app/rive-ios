@@ -10,19 +10,8 @@
 #import <Metal/Metal.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-id<MTLDevice> MTLRiveDevice(void)
+CGSize CGSizeMaximum2DTextureSize(id<MTLDevice> device)
 {
-    static dispatch_once_t onceToken;
-    static id<MTLDevice> device;
-    dispatch_once(&onceToken, ^{
-      device = MTLCreateSystemDefaultDevice();
-    });
-    return device;
-}
-
-CGSize CGSizeMaximum2DTextureSize(void)
-{
-    id<MTLDevice> device = MTLRiveDevice();
     CGSize size = CGSizeZero;
     // Fall back in reverse order of the table in the above linked document.
     // See Page 1 for additional details on GPUs in each family.

@@ -10,6 +10,7 @@ import Foundation
 import MetalKit
 import SwiftUI
 import Combine
+import os
 
 #if canImport(UIKit) || RIVE_MAC_CATALYST
 import UIKit
@@ -129,7 +130,9 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
         self.delegate = delegate
         super.init(frame: .zero)
 
-        setup()
+        Task { @MainActor in
+            await setup()
+        }
     }
 
     /// Initializer for Interface Builder (not supported).
@@ -139,9 +142,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
         fatalError("init?(coder:) is not yet implemented")
     }
 
-    private func setup() {
-        guard mtkView == nil else { return }
-        let mtkView = MTKView(frame: bounds, device: MTLRiveDevice())
+    @MainActor
+    private func setup() async {
+        guard mtkView == nil, let device = await MetalDevice.shared.defaultDevice() else { return }
+        let mtkView = MTKView(frame: bounds, device: device)
         mtkView.delegate = self
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
         self.mtkView = mtkView
@@ -173,23 +177,33 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
     ///
     /// - Parameter view: The Metal view to render into
     public func draw(in view: MTKView) {
-        guard let rive, let renderer else {
+        guard let rive else {
             return
         }
 
         if let lastTimestamp {
-            let now = Date().timeIntervalSince1970
+            let now = CACurrentMediaTime()
             rive.stateMachine.advance(by: now - lastTimestamp)
             self.lastTimestamp = now
         } else {
             rive.stateMachine.advance(by: 0)
-            lastTimestamp = Date().timeIntervalSince1970
+            lastTimestamp = CACurrentMediaTime()
         }
 
         if isOnscreen() {
             autoreleasepool {
+                guard let device = view.device else {
+                    delegate?.view(self, didReceiveError: .noDevice)
+                    return
+                }
+
                 guard let currentDrawable = view.currentDrawable else {
                     delegate?.view(self, didReceiveError: .noDrawable)
+                    return
+                }
+
+                guard let renderer else {
+                    delegate?.view(self, didReceiveError: .noRenderer)
                     return
                 }
 
@@ -205,7 +219,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
                     color: rive.backgroundColor.argbValue
                 )
 
-                renderer.draw(configuration, to: currentDrawable.texture) { commandBuffer in
+                renderer.draw(configuration, to: currentDrawable.texture, from: device) { commandBuffer in
                     commandBuffer.present(currentDrawable)
                     commandBuffer.commit()
                 } onError: { [weak self] error in

@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RiveCommandQueueProtocol;
 @protocol MTLTexture;
 @protocol MTLCommandBuffer;
+@protocol MTLDevice;
 @class RiveRenderContext;
 
 /// Configuration structure for rendering a Rive artboard to a Metal texture.
@@ -122,6 +123,7 @@ NS_SWIFT_NAME(Renderer)
  */
 - (void)drawConfiguration:(RendererConfiguration)configuration
                 toTexture:(id<MTLTexture>)texture
+               fromDevice:(id<MTLDevice>)device
                  finalize:(nullable void (^)(id<MTLCommandBuffer>))finalize
                   onError:(nullable void (^)(NSError*))onError;
 

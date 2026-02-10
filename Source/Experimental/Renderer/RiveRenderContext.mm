@@ -26,11 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
     id<MTLCommandQueue> _metalQueue;
 }
 
-- (instancetype)init
+- (instancetype)initWithDevice:(id<MTLDevice>)device
 {
     if (self = [super init])
     {
-        id<MTLDevice> device = MTLRiveDevice();
         _renderContext = rive::gpu::RenderContextMetalImpl::MakeContext(
             device, rive::gpu::RenderContextMetalImpl::ContextOptions());
         _metalQueue = [device newCommandQueue];

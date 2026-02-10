@@ -27,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Typically, this is the background thread where the command server runs
 @interface RiveRenderContext : NSObject
 
+- (instancetype)initWithDevice:(id<MTLDevice>)device;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 /**
  * Creates a new Metal command buffer for rendering operations.
  *

@@ -109,6 +109,7 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
 
 - (void)drawConfiguration:(RendererConfiguration)configuration
                 toTexture:(id<MTLTexture>)texture
+               fromDevice:(id<MTLDevice>)device
                  finalize:(nullable void (^)(id<MTLCommandBuffer>))finalize
                   onError:(nullable void (^)(NSError* _Nonnull))onError
 {
@@ -122,7 +123,8 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
     // CGSizeWithinRange checks for width > 0 && height > 0,
     // so negative-width, 0-width, negative-height, 0-height,
     // and > max texture size are all accounted for.
-    if (!CGSizeWithinRange(configuration.size, CGSizeMaximum2DTextureSize()))
+    if (!CGSizeWithinRange(configuration.size,
+                           CGSizeMaximum2DTextureSize(device)))
     {
         NSError* invalidSize = [NSError
             errorWithDomain:@"app.rive.renderer"

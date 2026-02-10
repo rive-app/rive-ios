@@ -29,8 +29,25 @@ public class Worker {
     ///
     /// The worker will automatically start processing when initialized.
     @MainActor
-    public convenience init() {
-        let renderContext = RiveRenderContext()
+    public convenience init() throws {
+        guard let device = MetalDevice.shared.defaultDevice() else {
+            throw WorkerError.missingDevice
+        }
+
+        self.init(device: device)
+    }
+
+    @MainActor
+    public convenience init() async throws {
+        guard let device = await MetalDevice.shared.defaultDevice() else {
+            throw WorkerError.missingDevice
+        }
+        self.init(device: device)
+    }
+
+    @MainActor
+    public convenience init(device: any MTLDevice) {
+        let renderContext = RiveRenderContext(device: device)
         let commandQueue = CommandQueue()
         let commandServer = CommandServer(commandQueue: commandQueue, renderContext: renderContext)
         self.init(

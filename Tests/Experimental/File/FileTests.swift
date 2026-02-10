@@ -40,11 +40,11 @@ class FileTests: XCTestCase {
             return testData
         }
         
-        let workerService = WorkerService(
+        let workerService = await WorkerService(
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext()
+                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!)
             )
         )
         let workerDependencies = Worker.Dependencies(workerService: workerService)

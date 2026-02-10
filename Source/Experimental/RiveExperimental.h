@@ -20,15 +20,6 @@ extern "C"
 #endif
 
     /**
-     * Returns the shared Metal device singleton used for Rive rendering.
-     *
-     * @return The shared Metal device instance
-     * @note The device is created using MTLCreateSystemDefaultDevice() and
-     *       is thread-safe for concurrent access.
-     */
-    extern id<MTLDevice> MTLRiveDevice(void);
-
-    /**
      * Returns the maximum 2D texture size supported by the current Metal
      * device.
      *
@@ -40,7 +31,7 @@ extern "C"
      * @note The size is determined based on the GPU family. Most modern Apple
      *       GPUs support 16384x16384, while older GPUs support 8192x8192.
      */
-    extern CGSize CGSizeMaximum2DTextureSize(void);
+    extern CGSize CGSizeMaximum2DTextureSize(id<MTLDevice>);
 
     /**
      * Returns the pixel format used for Rive color textures.
