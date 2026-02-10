@@ -2,10 +2,22 @@ set -eo pipefail
 
 test_ios_simulator() {
     echo "=== Running tests on iOS Simulator ==="
-    # Test RiveRuntime on a iOS simulator
+    # xcodebuild test requires a concrete device (generic "Any iOS Simulator" is not allowed).
+    # Discover the first available iOS Simulator for this workspace/scheme.
+    echo "Discovering available iOS Simulator destination..."
+    DEST=$(xcodebuild -showdestinations -workspace Rive.xcworkspace -scheme RiveRuntime 2>/dev/null | \
+        grep "platform:iOS Simulator" | grep -v "placeholder" | grep "id:" | head -1)
+    echo "Matched destination line: ${DEST:-(none)}"
+    DEST_ID=$(echo "$DEST" | sed 's/.*id: *\([^,}]*\).*/\1/' | tr -d ' ')
+    if [[ -z "$DEST_ID" ]]; then
+        echo "No iOS Simulator destination found (could not parse id). Available iOS Simulator destinations:"
+        xcodebuild -showdestinations -workspace Rive.xcworkspace -scheme RiveRuntime 2>/dev/null | grep "platform:iOS Simulator" || true
+        exit 1
+    fi
+    echo "Using iOS Simulator destination id: $DEST_ID"
     xcodebuild -workspace Rive.xcworkspace \
         -scheme RiveRuntime \
-        -destination platform=iOS\ Simulator,name=iPhone\ 16 \
+        -destination "id=$DEST_ID" \
         clean test | xcpretty
 }
 

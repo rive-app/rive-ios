@@ -55,7 +55,7 @@ jobs:
       checksum: ${{steps.get_checksum.outputs.checksum}}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           submodules: true
           token: ${{ secrets.PAT_GITHUB }}
@@ -134,7 +134,7 @@ jobs:
       contents: write # allows release-it to pick up GITHUB_TOKEN
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.PAT_GITHUB }}

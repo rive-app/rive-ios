@@ -12,7 +12,7 @@ jobs:
     runs-on: ghcr.io/cirruslabs/macos-runner:sequoia
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.PAT_GITHUB }}
           submodules: true
