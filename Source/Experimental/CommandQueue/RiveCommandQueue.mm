@@ -27,6 +27,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface RiveCommandQueue ()
+- (void)_cleanupFileListener:(uint64_t)handle;
+- (void)_cleanupArtboardListener:(uint64_t)handle;
+- (void)_cleanupViewModelInstanceListener:(uint64_t)handle;
+- (void)_cleanupRenderImageListener:(uint64_t)handle;
+- (void)_cleanupFontListener:(uint64_t)handle;
+- (void)_cleanupAudioListener:(uint64_t)handle;
+@end
+
 rive::DataType RiveViewModelInstanceDataTypeToCppType(
     RiveViewModelInstanceDataType type)
 {
@@ -191,9 +200,11 @@ public:
      * @param observer The Objective-C observer that will receive artboard
      * events. The observer is held as a weak reference to avoid retain cycles.
      */
-    _ArtboardListener(id<RiveArtboardListener> observer)
+    _ArtboardListener(id<RiveArtboardListener> observer,
+                      RiveCommandQueue* queue)
     {
         _observer = observer;
+        _queue = queue;
     }
 
     /**
@@ -248,8 +259,12 @@ public:
         std::string viewModelName,
         std::string instanceName) override;
 
+    virtual void onArtboardDeleted(const rive::ArtboardHandle handle,
+                                   uint64_t requestId) override;
+
 private:
     __weak id<RiveArtboardListener> _observer;
+    __weak RiveCommandQueue* _queue;
 };
 } // namespace
 
@@ -305,6 +320,12 @@ void _ArtboardListener::onDefaultViewModelInfoReceived(
     }
 }
 
+void _ArtboardListener::onArtboardDeleted(const rive::ArtboardHandle handle,
+                                          uint64_t requestId)
+{
+    [_queue _cleanupArtboardListener:reinterpret_cast<uint64_t>(handle)];
+}
+
 // MARK: - Internal File Listener Implementation
 
 namespace
@@ -328,7 +349,11 @@ public:
      *                 The observer is held as a weak reference to avoid retain
      *                 cycles.
      */
-    _FileListener(id<RiveFileListener> observer) { _observer = observer; }
+    _FileListener(id<RiveFileListener> observer, RiveCommandQueue* queue)
+    {
+        _observer = observer;
+        _queue = queue;
+    }
 
     /**
      * Called when a file loading operation encounters an error.
@@ -426,6 +451,7 @@ public:
 
 private:
     __weak id<RiveFileListener> _observer;
+    __weak RiveCommandQueue* _queue;
 };
 } // namespace
 
@@ -459,6 +485,7 @@ void _FileListener::onFileDeleted(const rive::FileHandle handle,
         [_observer onFileDeleted:reinterpret_cast<uint64_t>(handle)
                        requestID:reinterpret_cast<uint64_t>(requestId)];
     }
+    [_queue _cleanupFileListener:reinterpret_cast<uint64_t>(handle)];
 }
 
 void _FileListener::onArtboardsListed(const rive::FileHandle handle,
@@ -629,9 +656,11 @@ public:
      *                 instance events. The observer is held as a weak reference
      *                 to avoid retain cycles.
      */
-    _ViewModelInstanceListener(id<RiveViewModelInstanceListener> observer)
+    _ViewModelInstanceListener(id<RiveViewModelInstanceListener> observer,
+                               RiveCommandQueue* queue)
     {
         _observer = observer;
+        _queue = queue;
     }
 
     /**
@@ -683,6 +712,7 @@ public:
 
 private:
     __weak id<RiveViewModelInstanceListener> _observer;
+    __weak RiveCommandQueue* _queue;
 };
 } // namespace
 
@@ -690,11 +720,15 @@ void _ViewModelInstanceListener::onViewModelInstanceError(
     const rive::ViewModelInstanceHandle handle,
     uint64_t requestId,
     std::string error)
-{}
+{
+}
 
 void _ViewModelInstanceListener::onViewModelDeleted(
     const rive::ViewModelInstanceHandle handle, uint64_t requestId)
-{}
+{
+    [_queue _cleanupViewModelInstanceListener:reinterpret_cast<uint64_t>(
+                                                 handle)];
+}
 
 void _ViewModelInstanceListener::onViewModelDataReceived(
     const rive::ViewModelInstanceHandle handle,
@@ -735,9 +769,11 @@ namespace
 class _RenderImageListener : public rive::CommandQueue::RenderImageListener
 {
 public:
-    _RenderImageListener(id<RiveRenderImageListener> observer)
+    _RenderImageListener(id<RiveRenderImageListener> observer,
+                         RiveCommandQueue* queue)
     {
         _observer = observer;
+        _queue = queue;
     }
 
     virtual void onRenderImageDecoded(const rive::RenderImageHandle handle,
@@ -752,6 +788,7 @@ public:
 
 private:
     __weak id<RiveRenderImageListener> _observer;
+    __weak RiveCommandQueue* _queue;
 };
 } // namespace
 
@@ -785,6 +822,7 @@ void _RenderImageListener::onRenderImageDeleted(
         [_observer onRenderImageDeleted:reinterpret_cast<uint64_t>(handle)
                               requestID:requestId];
     }
+    [_queue _cleanupRenderImageListener:reinterpret_cast<uint64_t>(handle)];
 }
 
 namespace
@@ -792,7 +830,11 @@ namespace
 class _FontListener : public rive::CommandQueue::FontListener
 {
 public:
-    _FontListener(id<RiveFontListener> observer) { _observer = observer; }
+    _FontListener(id<RiveFontListener> observer, RiveCommandQueue* queue)
+    {
+        _observer = observer;
+        _queue = queue;
+    }
 
     virtual void onFontDecoded(const rive::FontHandle handle,
                                uint64_t requestId) override;
@@ -806,6 +848,7 @@ public:
 
 private:
     __weak id<RiveFontListener> _observer;
+    __weak RiveCommandQueue* _queue;
 };
 } // namespace
 
@@ -839,6 +882,7 @@ void _FontListener::onFontDeleted(const rive::FontHandle handle,
         [_observer onFontDeleted:reinterpret_cast<uint64_t>(handle)
                        requestID:requestId];
     }
+    [_queue _cleanupFontListener:reinterpret_cast<uint64_t>(handle)];
 }
 
 namespace
@@ -846,7 +890,11 @@ namespace
 class _AudioListener : public rive::CommandQueue::AudioSourceListener
 {
 public:
-    _AudioListener(id<RiveAudioListener> observer) { _observer = observer; }
+    _AudioListener(id<RiveAudioListener> observer, RiveCommandQueue* queue)
+    {
+        _observer = observer;
+        _queue = queue;
+    }
 
     virtual void onAudioSourceDecoded(const rive::AudioSourceHandle handle,
                                       uint64_t requestId) override;
@@ -860,6 +908,7 @@ public:
 
 private:
     __weak id<RiveAudioListener> _observer;
+    __weak RiveCommandQueue* _queue;
 };
 } // namespace
 
@@ -894,6 +943,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         [_observer onAudioSourceDeleted:reinterpret_cast<uint64_t>(handle)
                               requestID:requestId];
     }
+    [_queue _cleanupAudioListener:reinterpret_cast<uint64_t>(handle)];
 }
 
 /**
@@ -1137,7 +1187,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       // Create a new listener for this specific observer
-      auto listener = std::make_unique<_FileListener>(observer);
+      auto listener = std::make_unique<_FileListener>(observer, self);
 
       const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
       size_t length = data.length;
@@ -1228,7 +1278,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ArtboardListener>(observer);
+      auto listener = std::make_unique<_ArtboardListener>(observer, self);
 
       auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
       rive::ArtboardHandle artboardHandle =
@@ -1251,7 +1301,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ArtboardListener>(observer);
+      auto listener = std::make_unique<_ArtboardListener>(observer, self);
 
       auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
       auto stdName = std::string([name UTF8String]);
@@ -1488,7 +1538,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer, self);
 
       rive::ViewModelInstanceHandle handle =
           self->_commandQueue->instantiateBlankViewModelInstance(
@@ -1516,7 +1566,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer, self);
 
       auto stdName = std::string([viewModelName UTF8String]);
       rive::ViewModelInstanceHandle handle =
@@ -1546,7 +1596,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer, self);
 
       rive::ViewModelInstanceHandle handle =
           self->_commandQueue->instantiateDefaultViewModelInstance(
@@ -1574,7 +1624,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer, self);
 
       auto stdName = std::string([viewModelName UTF8String]);
       rive::ViewModelInstanceHandle handle =
@@ -1602,7 +1652,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                requestID:(uint64_t)requestID
 {
     return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer, self);
 
       auto stdInstanceName = std::string([instanceName UTF8String]);
       rive::ViewModelInstanceHandle handle =
@@ -1630,7 +1680,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                requestID:(uint64_t)requestID
 {
     return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer, self);
 
       auto stdViewModelName = std::string([viewModelName UTF8String]);
       auto stdInstanceName = std::string([instanceName UTF8String]);
@@ -1910,7 +1960,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       auto renderImageListener =
-          std::make_unique<_RenderImageListener>(listener);
+          std::make_unique<_RenderImageListener>(listener, self);
 
       const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
       size_t length = data.length;
@@ -1962,7 +2012,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
              requestID:(uint64_t)requestID
 {
     return [self executeCommandWithReturn:^uint64_t {
-      auto fontListener = std::make_unique<_FontListener>(listener);
+      auto fontListener = std::make_unique<_FontListener>(listener, self);
 
       const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
       size_t length = data.length;
@@ -2014,7 +2064,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
               requestID:(uint64_t)requestID
 {
     return [self executeCommandWithReturn:^uint64_t {
-      auto audioListener = std::make_unique<_AudioListener>(listener);
+      auto audioListener = std::make_unique<_AudioListener>(listener, self);
 
       const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
       size_t length = data.length;
@@ -2067,7 +2117,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 {
     return [self executeCommandWithReturn:^uint64_t {
       // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer, self);
 
       auto stdPath = std::string([path UTF8String]);
       auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
@@ -2093,7 +2143,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                          requestID:(uint64_t)requestID
 {
     return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer, self);
 
       auto stdPath = std::string([path UTF8String]);
       auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
@@ -2255,6 +2305,81 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)processMessages
 {
     _commandQueue->processMessages();
+}
+
+#pragma mark - Listener Cleanup
+
+- (void)_cleanupFileListener:(uint64_t)handle
+{
+    NSValue* listenerValue = _fileListeners[@(handle)];
+    if (listenerValue)
+    {
+        _FileListener* listener =
+            static_cast<_FileListener*>(listenerValue.pointerValue);
+        [_fileListeners removeObjectForKey:@(handle)];
+        delete listener;
+    }
+}
+
+- (void)_cleanupArtboardListener:(uint64_t)handle
+{
+    NSValue* listenerValue = _artboardListeners[@(handle)];
+    if (listenerValue)
+    {
+        _ArtboardListener* listener =
+            static_cast<_ArtboardListener*>(listenerValue.pointerValue);
+        [_artboardListeners removeObjectForKey:@(handle)];
+        delete listener;
+    }
+}
+
+- (void)_cleanupViewModelInstanceListener:(uint64_t)handle
+{
+    NSValue* listenerValue = _viewModelInstanceListeners[@(handle)];
+    if (listenerValue)
+    {
+        _ViewModelInstanceListener* listener =
+            static_cast<_ViewModelInstanceListener*>(
+                listenerValue.pointerValue);
+        [_viewModelInstanceListeners removeObjectForKey:@(handle)];
+        delete listener;
+    }
+}
+
+- (void)_cleanupRenderImageListener:(uint64_t)handle
+{
+    NSValue* listenerValue = _renderImageListeners[@(handle)];
+    if (listenerValue)
+    {
+        _RenderImageListener* listener =
+            static_cast<_RenderImageListener*>(listenerValue.pointerValue);
+        [_renderImageListeners removeObjectForKey:@(handle)];
+        delete listener;
+    }
+}
+
+- (void)_cleanupFontListener:(uint64_t)handle
+{
+    NSValue* listenerValue = _fontListeners[@(handle)];
+    if (listenerValue)
+    {
+        _FontListener* listener =
+            static_cast<_FontListener*>(listenerValue.pointerValue);
+        [_fontListeners removeObjectForKey:@(handle)];
+        delete listener;
+    }
+}
+
+- (void)_cleanupAudioListener:(uint64_t)handle
+{
+    NSValue* listenerValue = _audioListeners[@(handle)];
+    if (listenerValue)
+    {
+        _AudioListener* listener =
+            static_cast<_AudioListener*>(listenerValue.pointerValue);
+        [_audioListeners removeObjectForKey:@(handle)];
+        delete listener;
+    }
 }
 
 @end
