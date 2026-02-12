@@ -7,9 +7,16 @@
         <key>manageAppVersionAndBuildNumber</key>
         <true/>
         <key>method</key>
-        <string>debugging</string>
+        <string>ad-hoc</string>
         <key>signingStyle</key>
-        <string>automatic</string>
+        <string>manual</string>
+        <key>teamID</key>
+        <string>NJ3JMFUNS9</string>
+        <key>provisioningProfiles</key>
+        <dict>
+                <key>rive.app.golden-test-app</key>
+                <string>Golden Test Ad Hoc Distribution</string>
+        </dict>
         <key>stripSwiftSymbols</key>
         <true/>
         <key>uploadSymbols</key>
