@@ -1965,6 +1965,7 @@
 		};
 		F2BD96E02DDCEE7B00E7F49A /* Debug (Catalyst) */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A181D572F40A86500687030 /* RiveExample.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
