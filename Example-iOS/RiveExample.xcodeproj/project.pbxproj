@@ -1795,6 +1795,7 @@
 		};
 		C9C73EBD24FC471E00EF9516 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A181D572F40A86500687030 /* RiveExample.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
