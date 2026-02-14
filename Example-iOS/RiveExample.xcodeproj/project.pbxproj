@@ -1863,7 +1863,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
@@ -1887,7 +1887,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
@@ -2091,7 +2091,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
@@ -2320,7 +2320,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
