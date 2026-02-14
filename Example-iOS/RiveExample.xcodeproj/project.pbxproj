@@ -263,6 +263,8 @@
 		04E51C702A151C230075E473 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
 		27108F2F282C96E700A99D81 /* light_switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = 27108F2C282C96E700A99D81 /* light_switch.riv */; };
+		2A181D582F40A86500687030 /* RiveExample.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2A181D572F40A86500687030 /* RiveExample.xcconfig */; };
+		2A181D592F40A86500687030 /* RiveExample.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2A181D572F40A86500687030 /* RiveExample.xcconfig */; };
 		2E83910A2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */; };
 		2E83910B2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */; };
 		2E83910D2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
@@ -502,6 +504,7 @@
 		04E51C3E2A151A1F0075E473 /* Example__macOS_.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example__macOS_.entitlements; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
 		27108F2C282C96E700A99D81 /* light_switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = light_switch.riv; sourceTree = "<group>"; };
+		2A181D572F40A86500687030 /* RiveExample.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RiveExample.xcconfig; sourceTree = "<group>"; };
 		2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftNestedInputs.swift; sourceTree = "<group>"; };
 		2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = runtime_nested_inputs.riv; sourceTree = "<group>"; };
 		2E974F942CB3509200642588 /* layout_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = layout_test.riv; sourceTree = "<group>"; };
@@ -849,6 +852,7 @@
 				C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */,
 				C9C73E9724FC471E00EF9516 /* AppDelegate.swift */,
 				C9C73EA524FC471E00EF9516 /* Info.plist */,
+				2A181D572F40A86500687030 /* RiveExample.xcconfig */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1207,6 +1211,7 @@
 				040554032B7A2858008F076A /* off_road_car_blog.riv in Resources */,
 				040554042B7A2858008F076A /* Main.storyboard in Resources */,
 				F2C2915D2DB6D571009A2918 /* rewards.riv in Resources */,
+				2A181D582F40A86500687030 /* RiveExample.xcconfig in Resources */,
 				040554052B7A2858008F076A /* skills.riv in Resources */,
 				F22CF1AB2D380E1200D35779 /* data_binding_test.riv in Resources */,
 				040554062B7A2858008F076A /* artboard_animations.riv in Resources */,
@@ -1350,6 +1355,7 @@
 				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
 				F2C2915F2DB6D571009A2918 /* rewards.riv in Resources */,
+				2A181D592F40A86500687030 /* RiveExample.xcconfig in Resources */,
 				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
