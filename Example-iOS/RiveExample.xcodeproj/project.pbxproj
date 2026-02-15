@@ -263,6 +263,8 @@
 		04E51C702A151C230075E473 /* blendmodes.riv in Resources */ = {isa = PBXBuildFile; fileRef = 046AFA6E2673AF04004ED497 /* blendmodes.riv */; };
 		04F1C80B26A8442300CEE6BE /* two_bone_ik.riv in Resources */ = {isa = PBXBuildFile; fileRef = 04F1C80826A8442300CEE6BE /* two_bone_ik.riv */; };
 		27108F2F282C96E700A99D81 /* light_switch.riv in Resources */ = {isa = PBXBuildFile; fileRef = 27108F2C282C96E700A99D81 /* light_switch.riv */; };
+		2A181D582F40A86500687030 /* RiveExample.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2A181D572F40A86500687030 /* RiveExample.xcconfig */; };
+		2A181D592F40A86500687030 /* RiveExample.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2A181D572F40A86500687030 /* RiveExample.xcconfig */; };
 		2E83910A2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */; };
 		2E83910B2C050B0F003BCF2A /* SwiftNestedInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */; };
 		2E83910D2C050BC4003BCF2A /* runtime_nested_inputs.riv in Resources */ = {isa = PBXBuildFile; fileRef = 2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */; };
@@ -502,6 +504,7 @@
 		04E51C3E2A151A1F0075E473 /* Example__macOS_.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example__macOS_.entitlements; sourceTree = "<group>"; };
 		04F1C80826A8442300CEE6BE /* two_bone_ik.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = two_bone_ik.riv; sourceTree = "<group>"; };
 		27108F2C282C96E700A99D81 /* light_switch.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = light_switch.riv; sourceTree = "<group>"; };
+		2A181D572F40A86500687030 /* RiveExample.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RiveExample.xcconfig; sourceTree = "<group>"; };
 		2E8391072C050B0F003BCF2A /* SwiftNestedInputs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftNestedInputs.swift; sourceTree = "<group>"; };
 		2E83910C2C050BC4003BCF2A /* runtime_nested_inputs.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = runtime_nested_inputs.riv; sourceTree = "<group>"; };
 		2E974F942CB3509200642588 /* layout_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = layout_test.riv; sourceTree = "<group>"; };
@@ -849,6 +852,7 @@
 				C9C73E9924FC471E00EF9516 /* SceneDelegate.swift */,
 				C9C73E9724FC471E00EF9516 /* AppDelegate.swift */,
 				C9C73EA524FC471E00EF9516 /* Info.plist */,
+				2A181D572F40A86500687030 /* RiveExample.xcconfig */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1207,6 +1211,7 @@
 				040554032B7A2858008F076A /* off_road_car_blog.riv in Resources */,
 				040554042B7A2858008F076A /* Main.storyboard in Resources */,
 				F2C2915D2DB6D571009A2918 /* rewards.riv in Resources */,
+				2A181D582F40A86500687030 /* RiveExample.xcconfig in Resources */,
 				040554052B7A2858008F076A /* skills.riv in Resources */,
 				F22CF1AB2D380E1200D35779 /* data_binding_test.riv in Resources */,
 				040554062B7A2858008F076A /* artboard_animations.riv in Resources */,
@@ -1350,6 +1355,7 @@
 				042C88E92644447500E7DBB2 /* off_road_car_blog.riv in Resources */,
 				042C88832643D6B900E7DBB2 /* Main.storyboard in Resources */,
 				F2C2915F2DB6D571009A2918 /* rewards.riv in Resources */,
+				2A181D592F40A86500687030 /* RiveExample.xcconfig in Resources */,
 				042C88EA2644447500E7DBB2 /* skills.riv in Resources */,
 				042C88E62644447500E7DBB2 /* artboard_animations.riv in Resources */,
 				042C88E72644447500E7DBB2 /* trailblaze.riv in Resources */,
@@ -1574,7 +1580,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1585,7 +1591,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1604,7 +1610,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1615,7 +1621,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1629,7 +1635,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1637,7 +1643,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1650,7 +1656,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1658,7 +1664,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1676,7 +1682,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1687,7 +1693,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1706,7 +1712,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1717,7 +1723,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1727,6 +1733,7 @@
 		};
 		C9C73EBC24FC471E00EF9516 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A181D572F40A86500687030 /* RiveExample.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1788,6 +1795,7 @@
 		};
 		C9C73EBD24FC471E00EF9516 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A181D572F40A86500687030 /* RiveExample.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1847,7 +1855,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -1855,7 +1863,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
@@ -1871,7 +1879,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -1879,7 +1887,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
@@ -1899,7 +1907,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (visionOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = 8N4K3S3FJ4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1911,7 +1919,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "app.rive.Example--visionOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "app.rive.Example--visionOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
@@ -1933,7 +1941,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (visionOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = 8N4K3S3FJ4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1945,7 +1953,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "app.rive.Example--visionOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "app.rive.Example--visionOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
@@ -1958,6 +1966,7 @@
 		};
 		F2BD96E02DDCEE7B00E7F49A /* Debug (Catalyst) */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A181D572F40A86500687030 /* RiveExample.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2023,7 +2032,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -2031,7 +2040,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2049,7 +2058,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2060,7 +2069,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2074,7 +2083,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -2082,7 +2091,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
@@ -2103,7 +2112,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2114,7 +2123,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2132,7 +2141,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (visionOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = 8N4K3S3FJ4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2144,7 +2153,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "app.rive.Example--visionOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "app.rive.Example--visionOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
@@ -2166,7 +2175,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (tvOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = 8N4K3S3FJ4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2179,7 +2188,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "david.app.rive.Example--tvOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "david.app.rive.Example--tvOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
@@ -2192,6 +2201,7 @@
 		};
 		F2BD96E72DDCEE8200E7F49A /* Release (Catalyst) */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A181D572F40A86500687030 /* RiveExample.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2251,7 +2261,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -2259,7 +2269,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2277,7 +2287,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2288,7 +2298,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2302,7 +2312,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Source/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Source/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -2310,7 +2320,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.RiveExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.ios.RiveExample.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = YES;
@@ -2331,7 +2341,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (macOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = NJ3JMFUNS9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2342,7 +2352,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "rive.app.Example--macOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2360,7 +2370,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (visionOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = 8N4K3S3FJ4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2372,7 +2382,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "app.rive.Example--visionOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "app.rive.Example--visionOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
@@ -2393,7 +2403,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (tvOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = 8N4K3S3FJ4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2406,7 +2416,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "david.app.rive.Example--tvOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "david.app.rive.Example--tvOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2426,7 +2436,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (tvOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = 8N4K3S3FJ4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2439,7 +2449,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "david.app.rive.Example--tvOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "david.app.rive.Example--tvOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
@@ -2460,7 +2470,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Example (tvOS)/Preview Content\"";
-				DEVELOPMENT_TEAM = 8N4K3S3FJ4;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2473,7 +2483,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "david.app.rive.Example--tvOS-";
+				PRODUCT_BUNDLE_IDENTIFIER = "david.app.rive.Example--tvOS-.${RIVE_EXAMPLE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
