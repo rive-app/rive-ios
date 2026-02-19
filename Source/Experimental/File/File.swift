@@ -84,7 +84,8 @@ public class File: Equatable {
         let service = dependencies.fileService
         let handle = fileHandle
         Task { @MainActor in
-            service.deleteFile(handle)
+            guard let deletedHandle = try? await service.deleteFile(handle) else { return }
+            service.deleteFileListener(deletedHandle)
         }
     }
 

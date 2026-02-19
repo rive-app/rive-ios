@@ -293,10 +293,21 @@ class ArtboardTests: XCTestCase {
             artboardService: artboardService
         )
 
-        let expectation = expectation(description: "delete artboard")
-        mockCommandQueue.stubDeleteArtboard { handle in
+        let deleteArtboardExpectation = expectation(description: "delete artboard")
+        let deleteArtboardListenerExpectation = expectation(description: "delete artboard listener")
+        mockCommandQueue.stubDeleteArtboard { handle, requestID in
             XCTAssertEqual(handle, 1)
-            expectation.fulfill()
+            XCTAssertTrue(
+                mockCommandQueue.deleteArtboardListenerCalls.isEmpty,
+                "Listener should not be removed before delete callback is received"
+            )
+            deleteArtboardExpectation.fulfill()
+            artboardService.onArtboardDeleted(handle, requestID: requestID)
+        }
+
+        mockCommandQueue.stubDeleteArtboardListener { handle in
+            XCTAssertEqual(handle, 1)
+            deleteArtboardListenerExpectation.fulfill()
         }
 
         autoreleasepool {
@@ -305,8 +316,9 @@ class ArtboardTests: XCTestCase {
             artboard = nil
         }
 
-        wait(for: [expectation])
+        wait(for: [deleteArtboardExpectation, deleteArtboardListenerExpectation])
         XCTAssertEqual(mockCommandQueue.deleteArtboardCalls.first?.artboardHandle, 1)
+        XCTAssertEqual(mockCommandQueue.deleteArtboardListenerCalls.first?.artboardHandle, 1)
     }
 
     @MainActor

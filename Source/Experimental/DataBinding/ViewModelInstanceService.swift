@@ -152,12 +152,26 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
 
     /// Deletes a view model instance via the command queue.
     ///
-    /// After deletion, the instance handle becomes invalid. This operation is irreversible.
-    /// No listener callback is invoked for this operation.
+    /// The continuation is resumed when `onViewModelDeleted` is called.
+    ///
+    /// - Parameter instance: The view model instance handle to delete
+    /// - Returns: The view model instance handle that was deleted
     @MainActor
-    func deleteViewModelInstance(_ instance: ViewModelInstance.ViewModelInstanceHandle) {
-        let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.deleteViewModelInstance(instance, requestID: requestID)
+    func deleteViewModelInstance(_ instance: ViewModelInstance.ViewModelInstanceHandle) async throws -> ViewModelInstance.ViewModelInstanceHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = AnyContinuation(continuation)
+            commandQueue.deleteViewModelInstance(instance, requestID: requestID)
+        }
+    }
+
+    /// Deletes a view model instance listener via the command queue.
+    ///
+    /// - Parameter instance: The view model instance handle whose listener should be removed
+    @MainActor
+    func deleteViewModelInstanceListener(_ instance: ViewModelInstance.ViewModelInstanceHandle) {
+        dependencies.commandQueue.deleteViewModelInstanceListener(instance)
     }
 
     // MARK: - StringProperty
@@ -707,6 +721,21 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         Task { @MainActor in
             if let continuation = continuations.removeValue(forKey: requestID) {
                 try continuation.resume(with: .success(size))
+            }
+        }
+    }
+
+    /// Called when a view model instance deletion operation completes.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the deleted handle.
+    nonisolated public func onViewModelDeleted(
+        _ viewModelInstanceHandle: UInt64,
+        requestID: UInt64
+    ) {
+        Task { @MainActor in
+            if let continuation = continuations.removeValue(forKey: requestID) {
+                try continuation.resume(with: .success(viewModelInstanceHandle))
             }
         }
     }

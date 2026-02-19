@@ -47,13 +47,26 @@ class ImageService: NSObject, RenderImageListener {
 
     /// Deletes an image via the command queue.
     ///
-    /// After deletion, the image handle becomes invalid. This operation is irreversible.
-    /// The `onRenderImageDeleted` callback is invoked when the deletion completes, but no
-    /// continuation handling is required for this fire-and-forget operation.
+    /// The continuation is resumed when `onRenderImageDeleted` is called.
+    ///
+    /// - Parameter renderImage: The image handle to delete
+    /// - Returns: The image handle that was deleted
     @MainActor
-    func deleteImage(_ renderImage: Image.ImageHandle) {
-        let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.deleteImage(renderImage, requestID: requestID)
+    func deleteImage(_ renderImage: Image.ImageHandle) async throws -> Image.ImageHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = continuation
+            commandQueue.deleteImage(renderImage, requestID: requestID)
+        }
+    }
+
+    /// Deletes an image listener via the command queue.
+    ///
+    /// - Parameter renderImage: The image handle whose listener should be removed
+    @MainActor
+    func deleteImageListener(_ renderImage: Image.ImageHandle) {
+        dependencies.commandQueue.deleteImageListener(renderImage)
     }
 
     /// Called when image decoding completes successfully.
@@ -84,10 +97,15 @@ class ImageService: NSObject, RenderImageListener {
 
     /// Called when an image is deleted.
     ///
-    /// Listener callback invoked by the command server. Image deletions are fire-and-forget
-    /// operations that don't require continuation handling.
+    /// Listener callback invoked by the command server. Resumes the continuation with the image handle.
     nonisolated func onRenderImageDeleted(_ renderImageHandle: UInt64, requestID: UInt64) {
+        Task { @MainActor in
+            guard let continuation = continuations.removeValue(forKey: requestID) else {
+                return
+            }
 
+            continuation.resume(returning: renderImageHandle)
+        }
     }
 }
 

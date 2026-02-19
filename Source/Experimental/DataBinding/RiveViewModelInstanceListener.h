@@ -43,6 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
 NS_SWIFT_NAME(ViewModelInstanceListener)
 @protocol RiveViewModelInstanceListener <NSObject>
 
+/**
+ * Called when a view model instance deletion request completes.
+ *
+ * @param viewModelInstanceHandle The deleted view model instance handle.
+ * @param requestID The unique identifier for the request that completed.
+ */
+- (void)onViewModelDeleted:(uint64_t)viewModelInstanceHandle
+                 requestID:(uint64_t)requestID;
+
 - (void)onViewModelDataReceived:(uint64_t)viewModelInstanceHandle
                       requestID:(uint64_t)requestID
                            data:(RiveViewModelInstanceData*)data;

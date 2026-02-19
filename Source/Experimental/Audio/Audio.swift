@@ -50,7 +50,8 @@ public class Audio: Equatable {
         let service = dependencies.audioService
         let handle = self.handle
         Task { @MainActor in
-            service.deleteAudio(handle)
+            guard let deletedHandle = try? await service.deleteAudio(handle) else { return }
+            service.deleteAudioListener(deletedHandle)
         }
     }
 

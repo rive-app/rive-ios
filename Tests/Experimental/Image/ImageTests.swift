@@ -97,17 +97,29 @@ class ImageTests: XCTestCase {
         XCTAssertEqual(commandQueue.deleteImageCalls.count, 0)
         
         let deleteExpectation = expectation(description: "deleteImage called")
+        let deleteListenerExpectation = expectation(description: "deleteImageListener called")
         commandQueue.stubDeleteImage { handle in
             XCTAssertEqual(handle, 100)
             deleteExpectation.fulfill()
+            guard let requestID = commandQueue.deleteImageCalls.last?.requestID else {
+                XCTFail("Missing delete image request ID")
+                return
+            }
+            imageService.onRenderImageDeleted(handle, requestID: requestID)
+        }
+        commandQueue.stubDeleteImageListener { handle in
+            XCTAssertEqual(handle, 100)
+            deleteListenerExpectation.fulfill()
         }
         
         renderImage = nil
         
-        await fulfillment(of: [deleteExpectation], timeout: 1)
+        await fulfillment(of: [deleteExpectation, deleteListenerExpectation], timeout: 1)
         
         XCTAssertEqual(commandQueue.deleteImageCalls.count, 1)
+        XCTAssertEqual(commandQueue.deleteImageListenerCalls.count, 1)
         XCTAssertEqual(commandQueue.deleteImageCalls.first?.renderImageHandle, 100)
+        XCTAssertEqual(commandQueue.deleteImageListenerCalls.first?.renderImageHandle, 100)
     }
 }
 

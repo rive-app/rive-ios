@@ -378,6 +378,49 @@ class FileTests: XCTestCase {
         
         XCTAssertNotEqual(file1, file2)
     }
+
+    @MainActor
+    func test_deinit_deletesFileAndThenDeletesFileListener() async {
+        let deleteFileExpectation = expectation(description: "deleteFile called")
+        let deleteFileListenerExpectation = expectation(description: "deleteFileListener called")
+        let mockCommandQueue = MockCommandQueue()
+        let mockCommandServer = MockCommandServer()
+        var file: File?
+        _ = file
+        let fileService: FileService = {
+            let result = File.mock(
+                fileHandle: 123,
+                commandQueue: mockCommandQueue,
+                commandServer: mockCommandServer
+            )
+            file = result.file
+            return result.file.dependencies.fileService
+        }()
+
+        mockCommandQueue.stubDeleteFile { fileHandle, requestID in
+            XCTAssertEqual(fileHandle, 123)
+            XCTAssertTrue(
+                mockCommandQueue.deleteFileListenerCalls.isEmpty,
+                "Listener should not be removed before delete callback is received"
+            )
+            deleteFileExpectation.fulfill()
+            fileService.onFileDeleted(fileHandle, requestID: requestID)
+        }
+
+        mockCommandQueue.stubDeleteFileListener { fileHandle in
+            XCTAssertEqual(fileHandle, 123)
+            deleteFileListenerExpectation.fulfill()
+        }
+
+        autoreleasepool {
+            file = nil
+        }
+
+        await fulfillment(of: [deleteFileExpectation, deleteFileListenerExpectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteFileCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteFileListenerCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteFileListenerCalls.first?.fileHandle, 123)
+    }
     
     @MainActor
     func test_getDefaultViewModelInfo_withValidArtboard_returnsViewModelInfo() async throws {

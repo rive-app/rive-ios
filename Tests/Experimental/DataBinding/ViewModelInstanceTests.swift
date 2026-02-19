@@ -50,6 +50,58 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertNotNil(viewModelInstance)
         XCTAssertEqual(viewModelInstance.viewModelInstanceHandle, 99)
     }
+
+    @MainActor
+    func test_deinit_deletesViewModelInstanceAndThenDeletesListener() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue)
+        )
+        let dependencies = ViewModelInstance.Dependencies(
+            viewModelInstanceService: viewModelInstanceService
+        )
+
+        let deleteExpectation = expectation(description: "deleteViewModelInstance called")
+        let deleteListenerExpectation = expectation(
+            description: "deleteViewModelInstanceListener called"
+        )
+
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            XCTAssertEqual(handle, 99)
+            XCTAssertTrue(
+                mockCommandQueue.deleteViewModelInstanceListenerCalls.isEmpty,
+                "Listener should not be removed before delete callback is received"
+            )
+            deleteExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+
+        mockCommandQueue.stubDeleteViewModelInstanceListener { handle in
+            XCTAssertEqual(handle, 99)
+            deleteListenerExpectation.fulfill()
+        }
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: dependencies
+            )
+            _ = viewModelInstance
+            viewModelInstance = nil
+        }
+
+        await fulfillment(of: [deleteExpectation, deleteListenerExpectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteViewModelInstanceListenerCalls.count, 1)
+        XCTAssertEqual(
+            mockCommandQueue.deleteViewModelInstanceCalls.first?.viewModelInstanceHandle,
+            99
+        )
+        XCTAssertEqual(
+            mockCommandQueue.deleteViewModelInstanceListenerCalls.first?.viewModelInstanceHandle,
+            99
+        )
+    }
     
     // MARK: - String
     
@@ -188,6 +240,61 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(unsubscribeCall.requestID, requestID)
     }
     
+    @MainActor
+    func test_value_withEmptyStringProperty_returnsEmptyString() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        var capturedObserver: ViewModelInstanceListener?
+
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+            capturedObserver = observer
+        }
+
+        mockCommandQueue.stubRequestViewModelInstanceString { instanceHandle, path, requestID in
+            let mockData = MockRiveViewModelInstanceData(stringValue: "")
+            capturedObserver?.onViewModelDataReceived(instanceHandle, requestID: requestID, data: mockData)
+        }
+
+        let property = StringProperty(path: "test.path")
+        let value = try await viewModelInstance.value(of: property)
+
+        XCTAssertEqual(value, "")
+    }
+
+    @MainActor
+    func test_valueStream_withEmptyStringProperty_yieldsEmptyString() async throws {
+        let mockCommandQueue = MockCommandQueue()
+
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let property = StringProperty(path: "test.path")
+        let stream = viewModelInstance.valueStream(of: property)
+
+        let subscribeCall = mockCommandQueue.subscribeToViewModelPropertyCalls[0]
+        let observer = mockCommandQueue.getObserver(for: 99)
+        let requestID = subscribeCall.requestID
+
+        let task = Task {
+            var values: [String] = []
+            for try await value in stream {
+                values.append(value)
+                if values.count >= 2 { break }
+            }
+            return values
+        }
+
+        let nonEmpty = MockRiveViewModelInstanceData(stringValue: "hello")
+        observer?.onViewModelDataReceived(99, requestID: requestID, data: nonEmpty)
+
+        let empty = MockRiveViewModelInstanceData(stringValue: "")
+        observer?.onViewModelDataReceived(99, requestID: requestID, data: empty)
+
+        let values = try await task.value
+
+        XCTAssertEqual(values.count, 2)
+        XCTAssertEqual(values[0], "hello")
+        XCTAssertEqual(values[1], "")
+    }
+
     // MARK: - Number
     
     @MainActor

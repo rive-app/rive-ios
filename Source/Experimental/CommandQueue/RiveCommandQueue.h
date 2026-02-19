@@ -98,6 +98,14 @@ NS_SWIFT_NAME(CommandQueueProtocol)
 - (void)deleteFile:(uint64_t)file requestID:(uint64_t)requestID;
 
 /**
+ * Deletes the file listener associated with a loaded file handle.
+ *
+ * @param file The file handle whose listener should be removed
+ * @note This only removes the listener bridge and does not delete the file.
+ */
+- (void)deleteFileListener:(uint64_t)file;
+
+/**
  * Requests artboard names for a loaded file.
  *
  * @param fileHandle The file handle of the file to query
@@ -189,6 +197,14 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  *       cannot be recovered and all references to it become invalid.
  */
 - (void)deleteArtboard:(uint64_t)artboard requestID:(uint64_t)requestID;
+
+/**
+ * Deletes the artboard listener associated with an artboard handle.
+ *
+ * @param artboard The artboard handle whose listener should be removed
+ * @note This only removes the listener bridge and does not delete the artboard.
+ */
+- (void)deleteArtboardListener:(uint64_t)artboard;
 
 /**
  * Sets the size of an artboard.
@@ -909,6 +925,16 @@ NS_SWIFT_NAME(CommandQueueProtocol)
                       requestID:(uint64_t)requestID;
 
 /**
+ * Deletes the view model instance listener associated with a handle.
+ *
+ * @param viewModelInstance The view model instance handle whose listener should
+ * be removed
+ * @note This only removes the listener bridge and does not delete the view
+ * model instance.
+ */
+- (void)deleteViewModelInstanceListener:(uint64_t)viewModelInstance;
+
+/**
  * Subscribes to property change notifications for a view model property.
  *
  * @param viewModelInstance The handle of the view model instance
@@ -970,6 +996,14 @@ NS_SWIFT_NAME(CommandQueueProtocol)
 - (void)deleteImage:(uint64_t)renderImage requestID:(uint64_t)requestID;
 
 /**
+ * Deletes the render image listener associated with an image handle.
+ *
+ * @param renderImage The image handle whose listener should be removed
+ * @note This only removes the listener bridge and does not delete the image.
+ */
+- (void)deleteImageListener:(uint64_t)renderImage;
+
+/**
  * Adds a decoded image as a global asset that can be referenced by name.
  *
  * @param name The asset name to use (must match the name in the Rive file)
@@ -1025,6 +1059,14 @@ NS_SWIFT_NAME(CommandQueueProtocol)
 - (void)deleteFont:(uint64_t)font requestID:(uint64_t)requestID;
 
 /**
+ * Deletes the font listener associated with a font handle.
+ *
+ * @param font The font handle whose listener should be removed
+ * @note This only removes the listener bridge and does not delete the font.
+ */
+- (void)deleteFontListener:(uint64_t)font;
+
+/**
  * Adds a decoded font as a global asset that can be referenced by name.
  *
  * @param name The asset name to use (must match the name in the Rive file)
@@ -1078,6 +1120,14 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  *       any global assets before deleting it.
  */
 - (void)deleteAudio:(uint64_t)audio requestID:(uint64_t)requestID;
+
+/**
+ * Deletes the audio listener associated with an audio handle.
+ *
+ * @param audio The audio handle whose listener should be removed
+ * @note This only removes the listener bridge and does not delete the audio.
+ */
+- (void)deleteAudioListener:(uint64_t)audio;
 
 /**
  * Adds a decoded audio as a global asset that can be referenced by name.

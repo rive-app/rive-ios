@@ -140,12 +140,38 @@ class ArtboardService: NSObject, ArtboardListener {
 
     /// Deletes an artboard via the command queue.
     ///
-    /// After deletion, the artboard handle becomes invalid. This operation is irreversible.
-    /// No listener callback is invoked for this operation.
+    /// The continuation is resumed when `onArtboardDeleted` is called.
+    ///
+    /// - Parameter artboard: The artboard handle to delete
+    /// - Returns: The artboard handle that was deleted
     @MainActor
-    func deleteArtboard(_ artboard: Artboard.ArtboardHandle) {
-        let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.deleteArtboard(artboard, requestID: requestID)
+    func deleteArtboard(_ artboard: Artboard.ArtboardHandle) async throws -> Artboard.ArtboardHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = continuation
+            commandQueue.deleteArtboard(artboard, requestID: requestID)
+        }
+    }
+
+    /// Deletes an artboard listener via the command queue.
+    ///
+    /// - Parameter artboard: The artboard handle whose listener should be removed
+    @MainActor
+    func deleteArtboardListener(_ artboard: Artboard.ArtboardHandle) {
+        dependencies.commandQueue.deleteArtboardListener(artboard)
+    }
+
+    /// Called when an artboard deletion operation completes.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the artboard handle.
+    nonisolated func onArtboardDeleted(_ artboardHandle: UInt64, requestID: UInt64) {
+        Task { @MainActor in
+            guard let continuation = continuations[requestID] as? CheckedContinuation<UInt64, any Error> else { return }
+            continuation.resume(returning: artboardHandle)
+            continuations[requestID] = nil
+        }
     }
 }
 

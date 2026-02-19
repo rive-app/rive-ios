@@ -105,7 +105,8 @@ public class ViewModelInstance: Equatable {
         let service = dependencies.viewModelInstanceService
         let handle = viewModelInstanceHandle
         Task { @MainActor in
-            service.deleteViewModelInstance(handle)
+            guard let deletedHandle = try? await service.deleteViewModelInstance(handle) else { return }
+            service.deleteViewModelInstanceListener(deletedHandle)
         }
     }
 

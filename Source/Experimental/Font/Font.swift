@@ -50,7 +50,8 @@ public class Font: Equatable {
         let service = dependencies.fontService
         let handle = self.handle
         Task { @MainActor in
-            service.deleteFont(handle)
+            guard let deletedHandle = try? await service.deleteFont(handle) else { return }
+            service.deleteFontListener(deletedHandle)
         }
     }
 
