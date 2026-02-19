@@ -32,6 +32,24 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         self.dependencies = dependencies
     }
 
+    // MARK: - Name
+
+    /// Retrieves the name of a view model instance.
+    ///
+    /// The continuation is resumed when `onViewModelInstanceNameReceived` is called.
+    ///
+    /// - Parameter instance: The view model instance handle
+    /// - Returns: The name of the view model instance
+    @MainActor
+    func name(for instance: ViewModelInstance.ViewModelInstanceHandle) async throws -> String {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = AnyContinuation(continuation)
+            commandQueue.requestViewModelInstanceName(instance, requestID: requestID)
+        }
+    }
+
     /// Creates a blank view model instance from an artboard.
     ///
     /// Delegates to the command queue. Returns immediately with the instance handle.
@@ -690,6 +708,22 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
                     streamContinuation.finish(throwing: ViewModelInstanceError.error(error))
                     streamContinuations.removeValue(forKey: requestID)
                 }
+            }
+        }
+    }
+
+    /// Called when a view model instance name is received.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the instance name.
+    nonisolated public func onViewModelInstanceNameReceived(
+        _ viewModelInstanceHandle: UInt64,
+        requestID: UInt64,
+        name: String
+    ) {
+        Task { @MainActor in
+            if let continuation = continuations.removeValue(forKey: requestID) {
+                try continuation.resume(with: .success(name))
             }
         }
     }

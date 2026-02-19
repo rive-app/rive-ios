@@ -122,8 +122,24 @@ public class ViewModelInstance: Equatable {
         return lhs.viewModelInstanceHandle == rhs.viewModelInstanceHandle
     }
 
+    // MARK: - Name
+
+    /// Retrieves the name of this view model instance.
+    ///
+    /// The name is resolved from the C++ runtime via the command queue.
+    /// For named instances (created via `.name("myInstance", from:)`), this returns
+    /// the instance name as defined in the Rive file. For default or blank instances,
+    /// the name comes from the Rive file's default instance naming.
+    ///
+    /// - Returns: The name of this view model instance
+    /// - Throws: An error if the name cannot be retrieved
+    @MainActor
+    public func name() async throws -> String {
+        return try await dependencies.viewModelInstanceService.name(for: viewModelInstanceHandle)
+    }
+
     // MARK: - StringProperty
-    
+
     /// Retrieves the current value of a string property.
     ///
     /// - Parameter property: The string property to read

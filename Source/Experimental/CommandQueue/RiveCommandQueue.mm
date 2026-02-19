@@ -681,6 +681,11 @@ public:
         std::string path,
         size_t size) override;
 
+    virtual void onViewModelInstanceNameReceived(
+        const rive::ViewModelInstanceHandle handle,
+        uint64_t requestId,
+        std::string name) override;
+
 private:
     __weak id<RiveViewModelInstanceListener> _observer;
 };
@@ -727,6 +732,21 @@ void _ViewModelInstanceListener::onViewModelListSizeReceived(
                               requestID:requestId
                                    path:nsPath
                                    size:static_cast<NSInteger>(size)];
+    }
+}
+
+void _ViewModelInstanceListener::onViewModelInstanceNameReceived(
+    const rive::ViewModelInstanceHandle handle,
+    uint64_t requestId,
+    std::string name)
+{
+    if (_observer)
+    {
+        NSString* nsName = [NSString stringWithUTF8String:name.c_str()];
+        [_observer
+            onViewModelInstanceNameReceived:reinterpret_cast<uint64_t>(handle)
+                                  requestID:requestId
+                                       name:nsName];
     }
 }
 
@@ -1745,6 +1765,16 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto stdPath = std::string([path UTF8String]);
       self->_commandQueue->requestViewModelInstanceListSize(
           handle, stdPath, requestID);
+    }];
+}
+
+- (void)requestViewModelInstanceName:(uint64_t)viewModelInstanceHandle
+                           requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+          viewModelInstanceHandle);
+      self->_commandQueue->requestViewModelInstanceName(handle, requestID);
     }];
 }
 
