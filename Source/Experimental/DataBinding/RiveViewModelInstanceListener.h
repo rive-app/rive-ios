@@ -52,6 +52,10 @@ NS_SWIFT_NAME(ViewModelInstanceListener)
                                path:(NSString*)path
                                size:(NSInteger)size;
 
+- (void)onViewModelInstanceNameReceived:(uint64_t)viewModelInstanceHandle
+                              requestID:(uint64_t)requestID
+                                   name:(NSString*)name;
+
 @end
 
 NS_ASSUME_NONNULL_END

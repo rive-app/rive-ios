@@ -637,6 +637,15 @@ NS_SWIFT_NAME(CommandQueueProtocol)
                                requestID:(uint64_t)requestID;
 
 /**
+ * Requests the name of a view model instance.
+ *
+ * @param viewModelInstanceHandle The handle of the view model instance
+ * @param requestID The request ID for correlating the response
+ */
+- (void)requestViewModelInstanceName:(uint64_t)viewModelInstanceHandle
+                           requestID:(uint64_t)requestID;
+
+/**
  * Sets the string value of a view model property.
  *
  * @param viewModelInstanceHandle The handle of the view model instance
