@@ -26,7 +26,7 @@ class WorkerTests: XCTestCase {
             serveUntilDisconnectExpectation.fulfill()
         }
 
-        let device = await MetalDevice.shared.defaultDevice()!
+        let device = await MetalDevice.shared.defaultDevice()!.value
         let workerService = WorkerService(
             dependencies: .init(
                 commandQueue: mockCommandQueue,
@@ -76,7 +76,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!)
+                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
@@ -113,7 +113,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!)
+                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
@@ -150,7 +150,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!)
+                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)

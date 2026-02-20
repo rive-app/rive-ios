@@ -30,7 +30,7 @@ public class Worker {
     /// The worker will automatically start processing when initialized.
     @MainActor
     public convenience init() throws {
-        guard let device = MetalDevice.shared.defaultDevice() else {
+        guard let device = MetalDevice.shared.defaultDevice()?.value else {
             throw WorkerError.missingDevice
         }
 
@@ -39,7 +39,7 @@ public class Worker {
 
     @MainActor
     public convenience init() async throws {
-        guard let device = await MetalDevice.shared.defaultDevice() else {
+        guard let device = await MetalDevice.shared.defaultDevice()?.value else {
             throw WorkerError.missingDevice
         }
         self.init(device: device)
@@ -76,7 +76,7 @@ public class Worker {
 
     deinit {
         let service = dependencies.workerService
-        DispatchQueue.main.async { [service] in
+        Task { @MainActor in
             service.stop()
         }
     }

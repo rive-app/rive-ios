@@ -9,40 +9,53 @@
 import Foundation
 @testable import RiveRuntime
 
-@objc class MockRiveViewModelInstanceData: RiveViewModelInstanceData {
-    private let _type: RiveViewModelInstanceDataType
-    private let _stringValue: String?
-    private let _numberValue: NSNumber?
-    private let _boolValue: NSNumber?
-    private let _colorValue: NSNumber?
+class MockRiveViewModelInstanceData {
+    private let type: RiveViewModelInstanceDataType
+    private let stringValue: String?
+    private let numberValue: NSNumber?
+    private let boolValue: NSNumber?
+    private let colorValue: NSNumber?
 
     init(type: RiveViewModelInstanceDataType = .none, stringValue: String? = nil, numberValue: NSNumber? = nil, boolValue: NSNumber? = nil, colorValue: NSNumber? = nil) {
-        self._type = type
-        self._stringValue = stringValue
-        self._numberValue = numberValue
-        self._boolValue = boolValue
-        self._colorValue = colorValue
-        super.init()
-    }
-    
-    override var type: RiveViewModelInstanceDataType {
-        return _type
-    }
-    
-    override var stringValue: String? {
-        return _stringValue
-    }
-    
-    override var numberValue: NSNumber? {
-        return _numberValue
+        self.type = type
+        self.stringValue = stringValue
+        self.numberValue = numberValue
+        self.boolValue = boolValue
+        self.colorValue = colorValue
     }
 
-    override var boolValue: NSNumber? {
-        return _boolValue
+    var dictionary: [String: Any] {
+        var result: [String: Any] = [
+            "type": NSNumber(value: type.rawValue),
+            "name": ""
+        ]
+        if let stringValue {
+            result["stringValue"] = stringValue
+        }
+        if let numberValue {
+            result["numberValue"] = numberValue
+        }
+        if let boolValue {
+            result["booleanValue"] = boolValue
+        }
+        if let colorValue {
+            result["colorValue"] = colorValue
+        }
+        return result
     }
-    
-    override var colorValue: NSNumber? {
-        return _colorValue
+}
+
+extension ViewModelInstanceListener {
+    func onViewModelDataReceived(
+        _ viewModelInstanceHandle: UInt64,
+        requestID: UInt64,
+        data: MockRiveViewModelInstanceData
+    ) {
+        onViewModelDataReceived(
+            viewModelInstanceHandle,
+            requestID: requestID,
+            data: data.dictionary
+        )
     }
 }
 

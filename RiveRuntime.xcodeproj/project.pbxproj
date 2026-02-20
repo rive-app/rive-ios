@@ -294,7 +294,6 @@
 				Audio/RiveAudioListener.h,
 				CommandQueue/RiveCommandQueue.h,
 				CommandServer/RiveCommandServer.h,
-				DataBinding/RiveViewModelInstanceData.h,
 				DataBinding/RiveViewModelInstanceListener.h,
 				File/RiveFileListener.h,
 				Font/RiveFontListener.h,
@@ -1127,6 +1126,7 @@
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
 				TVOS_DEPLOYMENT_TARGET = 16.0;
@@ -1259,6 +1259,7 @@
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
 				TVOS_DEPLOYMENT_TARGET = 16.0;
@@ -1512,6 +1513,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RiveRuntime-Swift.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
 				TVOS_DEPLOYMENT_TARGET = 16.0;
@@ -1741,6 +1743,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RiveRuntime-Swift.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,6,7";
 				TVOS_DEPLOYMENT_TARGET = 16.0;

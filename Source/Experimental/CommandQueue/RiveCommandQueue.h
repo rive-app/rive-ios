@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
  * 5. Receive responses via listener protocol callbacks
  * 6. Call disconnect() and stop() when done
  */
+NS_SWIFT_UI_ACTOR
 NS_SWIFT_NAME(CommandQueueProtocol)
 @protocol RiveCommandQueueProtocol
 
@@ -1171,6 +1172,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * machines, etc.) and ensures proper cleanup when resources are deleted.
  * All operations use request IDs for correlation with asynchronous responses.
  */
+NS_SWIFT_UI_ACTOR
 NS_SWIFT_NAME(CommandQueue)
 @interface RiveCommandQueue : NSObject <RiveCommandQueueProtocol>
 

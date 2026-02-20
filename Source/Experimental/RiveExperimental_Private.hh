@@ -17,10 +17,6 @@
 @property(nonatomic, readonly) rive::rcp<rive::CommandQueue> commandQueue;
 @end
 
-@interface RiveViewModelInstanceData ()
-- (instancetype)initWithData:(rive::CommandQueue::ViewModelInstanceData)data;
-@end
-
 @interface RiveRenderContext ()
 - (rive::Factory*)factory;
 @end

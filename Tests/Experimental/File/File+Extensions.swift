@@ -23,7 +23,7 @@ extension File {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!)
+                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)

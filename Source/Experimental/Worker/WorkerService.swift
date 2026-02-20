@@ -14,6 +14,7 @@ import Foundation
 /// (images, fonts, audio) that can be shared across multiple Rive files. All operations are
 /// fire-and-forget (no listener callbacks). All command queue operations must be performed on
 /// the main thread (either marked `@MainActor` or dispatched to the main queue).
+@MainActor
 class WorkerService {
     let dependencies: Dependencies
 

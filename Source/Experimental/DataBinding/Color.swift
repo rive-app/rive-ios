@@ -13,7 +13,7 @@ import Foundation
 /// Colors are used in view model properties and can be created from ARGB integer values
 /// or individual component values.
 @_spi(RiveExperimental)
-public struct Color: Equatable {
+public struct Color: Sendable, Equatable {
     public let alpha: UInt8
     public let red: UInt8
     public let green: UInt8

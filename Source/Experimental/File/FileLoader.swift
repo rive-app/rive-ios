@@ -12,7 +12,7 @@ import Foundation
 ///
 /// Sources can be either local files stored in app bundles or remote files accessible via URL.
 @_spi(RiveExperimental)
-public enum Source {
+public enum Source: Sendable {
     /// A local Rive file stored within an app bundle.
     ///
     /// - Parameters:
@@ -35,7 +35,7 @@ public enum Source {
 ///
 /// This protocol does not interact with the command queue; it only loads raw file data.
 /// The loaded data is then passed to `FileService` which handles command queue interactions.
-protocol FileLoaderProtocol: AnyObject {
+protocol FileLoaderProtocol: AnyObject, Sendable {
     /// Loads a Rive file and returns a file handle for further operations.
     ///
     /// This method performs the actual loading of the Rive file based on the source
@@ -54,7 +54,7 @@ protocol FileLoaderProtocol: AnyObject {
 ///
 /// Does not interact with the command queue; only handles data retrieval. The loaded data
 /// is passed to `FileService` for command queue-based parsing.
-class FileLoader: FileLoaderProtocol {
+final class FileLoader: FileLoaderProtocol {
     /// The source of the Rive file to be loaded
     private let source: Source
     
@@ -159,7 +159,7 @@ extension FileLoader {
     ///
     /// Protocol-based design allows for dependency injection and testing.
     /// Does not include command queue dependencies; only handles data retrieval.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// The URL session used for downloading remote files.
         let urlSession: URLSessionProtocol
     }
@@ -169,7 +169,7 @@ extension FileLoader {
 ///
 /// Enables dependency injection and testing. The completion handler is called on an
 /// arbitrary background queue, so callers must dispatch to the appropriate actor.
-protocol URLSessionProtocol {
+protocol URLSessionProtocol: Sendable {
     /// Creates a data task for the specified URL.
     ///
     /// - Parameters:
@@ -188,7 +188,7 @@ protocol URLSessionDataTaskProtocol {
 }
 
 extension URLSession: URLSessionProtocol {
-    func get(url: URL, completionHandler: @escaping (Data?, URLResponse?, (any Error)?) -> Void) -> any URLSessionDataTaskProtocol {
+    func get(url: URL, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> any URLSessionDataTaskProtocol {
         return self.dataTask(with: url, completionHandler: completionHandler)
     }
 }

@@ -44,7 +44,7 @@ class FileTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!)
+                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
             )
         )
         let workerDependencies = Worker.Dependencies(workerService: workerService)

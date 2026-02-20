@@ -144,7 +144,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
 
     @MainActor
     private func setup() async {
-        guard mtkView == nil, let device = await MetalDevice.shared.defaultDevice() else { return }
+        guard mtkView == nil, let device = await MetalDevice.shared.defaultDevice()?.value else { return }
         let mtkView = MTKView(frame: bounds, device: device)
         mtkView.delegate = self
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)

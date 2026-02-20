@@ -653,22 +653,28 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     nonisolated public func onViewModelDataReceived(
         _ viewModelInstanceHandle: UInt64,
         requestID: UInt64,
-        data: RiveViewModelInstanceData
+        data: [String: Any]
     ) {
+        let viewModelInstanceData = ViewModelInstanceData(from: data)
         Task { @MainActor in
             if let continuation = continuations.removeValue(forKey: requestID) {
                 do {
-                    if let stringValue = data.stringValue {
-                        try continuation.resume(with: .success(stringValue))
-                    } else if let numberValue = data.numberValue {
-                        try continuation.resume(with: .success(numberValue.floatValue))
-                    } else if let boolValue = data.boolValue {
-                        try continuation.resume(with: .success(boolValue.boolValue))
-                    } else if let colorValue = data.colorValue {
-                        let argbValue = colorValue.uint32Value
-                        try continuation.resume(with: .success(Color(argbValue)))
-                    } else {
+                    switch viewModelInstanceData.type {
+                    case .trigger:
                         try continuation.resume(with: .failure(ViewModelInstanceError.missingData))
+                    case .value(let value):
+                        switch value {
+                        case .string(let stringValue):
+                            try continuation.resume(with: .success(stringValue))
+                        case .number(let numberValue):
+                            try continuation.resume(with: .success(numberValue))
+                        case .boolean(let booleanValue):
+                            try continuation.resume(with: .success(booleanValue))
+                        case .color(let argbValue):
+                            try continuation.resume(with: .success(Color(argbValue)))
+                        case .none:
+                            try continuation.resume(with: .failure(ViewModelInstanceError.missingData))
+                        }
                     }
                 } catch AnyContinuationError.typeMismatch(expected: let expected, actual: let actual) {
                     try continuation.resume(with: .failure(ViewModelInstanceError.valueMismatch(expected, actual)))
@@ -678,21 +684,20 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             
             if let streamContinuation = streamContinuations[requestID] {
                 do {
-                    // Trigger is a special case where we want to yield ()
-                    // and ignore any data values
-                    if case .trigger = data.type {
+                    switch viewModelInstanceData.type {
+                    case .trigger:
                         try streamContinuation.yield(())
-                    } else {
-                        if let stringValue = data.stringValue {
+                    case .value(let value):
+                        switch value {
+                        case .string(let stringValue):
                             try streamContinuation.yield(stringValue)
-                        } else if let numberValue = data.numberValue {
-                            try streamContinuation.yield(numberValue.floatValue)
-                        } else if let boolValue = data.boolValue {
-                            try streamContinuation.yield(boolValue.boolValue)
-                        } else if let colorValue = data.colorValue {
-                            let argbValue = colorValue.uint32Value
+                        case .number(let numberValue):
+                            try streamContinuation.yield(numberValue)
+                        case .boolean(let booleanValue):
+                            try streamContinuation.yield(booleanValue)
+                        case .color(let argbValue):
                             try streamContinuation.yield(Color(argbValue))
-                        } else {
+                        case .none:
                             streamContinuation.finish(throwing: ViewModelInstanceError.missingData)
                             streamContinuations.removeValue(forKey: requestID)
                         }

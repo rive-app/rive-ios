@@ -15,7 +15,6 @@
 #import "RiveRenderImageListener.h"
 #import "RiveFontListener.h"
 #import "RiveAudioListener.h"
-#import "RiveViewModelInstanceData.h"
 #import "RivePrivateHeaders.h"
 #import "RiveExperimental_Private.hh"
 
@@ -722,13 +721,42 @@ void _ViewModelInstanceListener::onViewModelDataReceived(
 {
     if (_observer)
     {
-        // Convert C++ ViewModelInstanceData to Objective-C object
-        RiveViewModelInstanceData* dataObj =
-            [[RiveViewModelInstanceData alloc] initWithData:data];
+        NSMutableDictionary<NSString*, id>* dataDict =
+            [NSMutableDictionary dictionary];
+        RiveViewModelInstanceDataType type =
+            RiveViewModelInstanceDataTypeFromCpp(data.metaData.type);
+        dataDict[@"type"] = @(type);
+        dataDict[@"name"] =
+            [NSString stringWithUTF8String:data.metaData.name.c_str()];
+
+        switch (data.metaData.type)
+        {
+            case rive::DataType::boolean:
+                dataDict[@"booleanValue"] = @(data.boolValue);
+                break;
+            case rive::DataType::number:
+                dataDict[@"numberValue"] = @(data.numberValue);
+                break;
+            case rive::DataType::color:
+                dataDict[@"colorValue"] = @(data.colorValue);
+                break;
+            case rive::DataType::string:
+            case rive::DataType::enumType:
+                dataDict[@"stringValue"] =
+                    [NSString stringWithUTF8String:data.stringValue.c_str()];
+                break;
+            default:
+                if (!data.stringValue.empty())
+                {
+                    dataDict[@"stringValue"] = [NSString
+                        stringWithUTF8String:data.stringValue.c_str()];
+                }
+                break;
+        }
 
         [_observer onViewModelDataReceived:reinterpret_cast<uint64_t>(handle)
                                  requestID:requestId
-                                      data:dataObj];
+                                      data:dataDict];
     }
 }
 

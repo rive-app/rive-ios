@@ -10,27 +10,27 @@ import Foundation
 import Metal
 
 /// Singleton that safely caches the system default Metal device.
-final class MetalDevice {
+final class MetalDevice: @unchecked Sendable {
     static let shared = MetalDevice()
 
-    private var device: MTLDevice?
-    private var deviceTask: Task<MTLDevice?, Never>?
+    private var device: UncheckedSendable<MTLDevice>?
+    private var deviceTask: Task<UncheckedSendable<MTLDevice>?, Never>?
     private let lock = NSLock()
 
-    func defaultDevice() -> MTLDevice? {
+    func defaultDevice() -> UncheckedSendable<MTLDevice>? {
         // Serialize access to the cached device.
         lock.withLock {
             if let device { return device }
 
             // First access pays the system lookup cost once.
-            let defaultDevice = MTLCreateSystemDefaultDevice()
+            let defaultDevice = MTLCreateSystemDefaultDevice().map(UncheckedSendable.init)
 
             device = defaultDevice
             return defaultDevice
         }
     }
 
-    func defaultDevice() async -> MTLDevice? {
+    func defaultDevice() async -> UncheckedSendable<MTLDevice>? {
         // Fast-path: return cached device without spawning a task.
         if let cached = cachedDevice() {
             return cached
@@ -38,16 +38,16 @@ final class MetalDevice {
         return await asyncDefaultDevice()
     }
 
-    private func cachedDevice() -> MTLDevice? {
+    private func cachedDevice() -> UncheckedSendable<MTLDevice>? {
         // Read the cached device under lock to avoid races.
         lock.withLock { device }
     }
 
-    private func asyncDefaultDevice() async -> MTLDevice? {
+    private func asyncDefaultDevice() async -> UncheckedSendable<MTLDevice>? {
         // Ensure only one async task performs device creation.
-        var existingDevice: MTLDevice?
-        var existingTask: Task<MTLDevice?, Never>?
-        var createdTask: Task<MTLDevice?, Never>?
+        var existingDevice: UncheckedSendable<MTLDevice>?
+        var existingTask: Task<UncheckedSendable<MTLDevice>?, Never>?
+        var createdTask: Task<UncheckedSendable<MTLDevice>?, Never>?
 
         lock.withLock {
             if let cachedDevice = self.device {
@@ -80,14 +80,8 @@ final class MetalDevice {
         return resolvedDevice
     }
 
-    private func makeDeviceTask() -> Task<MTLDevice?, Never> {
-        if Thread.isMainThread {
-            // Ensure we don't block the main thread while creating the device.
-            return Task.detached(priority: .userInitiated) { [weak self] in
-                self?.defaultDevice()
-            }
-        }
-        return Task(priority: .userInitiated) { [weak self] in
+    private func makeDeviceTask() -> Task<UncheckedSendable<MTLDevice>?, Never> {
+        return Task.detached { [weak self] in
             self?.defaultDevice()
         }
     }

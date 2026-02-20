@@ -11,8 +11,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class RiveViewModelInstanceData;
-
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -54,7 +52,7 @@ NS_SWIFT_NAME(ViewModelInstanceListener)
 
 - (void)onViewModelDataReceived:(uint64_t)viewModelInstanceHandle
                       requestID:(uint64_t)requestID
-                           data:(RiveViewModelInstanceData*)data;
+                           data:(NSDictionary<NSString*, id>*)data;
 
 - (void)onViewModelListSizeReceived:(uint64_t)viewModelInstanceHandle
                           requestID:(uint64_t)requestID

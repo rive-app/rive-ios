@@ -46,7 +46,8 @@ class InputHandler {
 
     /// Handles an input event by sending it to the state machine via the command queue.
     ///
-    /// Delegates to the command queue. No listener callback is invoked for this operation.
+    /// Delegates to the command queue. No listener callback is invoked for this operation
+    @MainActor
     func handle(_ input: Input, in stateMachine: StateMachine) {
         switch input {
         case .pointerUp(let event):
@@ -63,6 +64,7 @@ class InputHandler {
     /// Sends a pointer event to the command queue.
     ///
     /// Creates a request ID and calls the appropriate command queue function with the event data.
+    @MainActor
     private func send(_ pointerEvent: (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void, with event: PointerEvent, in stateMachine: StateMachine) -> Void {
         let requestID = dependencies.commandQueue.nextRequestID
         pointerEvent(stateMachine.stateMachineHandle, event.position, event.bounds, event.fit, event.alignment, event.scaleFactor, requestID)

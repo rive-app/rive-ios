@@ -62,7 +62,6 @@ extern "C"
 #import <RiveRuntime/RiveAudioListener.h>
 #import <RiveRuntime/Renderer.h>
 #import <RiveRuntime/RiveViewModelInstanceListener.h>
-#import <RiveRuntime/RiveViewModelInstanceData.h>
 #import <RiveRuntime/RiveRenderContext.h>
 
 #endif /* RiveUI_h */
