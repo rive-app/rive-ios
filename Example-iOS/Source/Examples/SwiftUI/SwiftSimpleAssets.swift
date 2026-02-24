@@ -25,7 +25,7 @@ struct SwiftSimpleAssets: DismissableView {
                 factory.decodeImage(data)
             )
             return true;
-        }else if (asset is RiveFontAsset) {
+        }else if let asset = asset as? RiveFontAsset {
             guard let url = (.main as Bundle).url(forResource: asset.uniqueName(), withExtension: asset.fileExtension()) else {
                 fatalError("Failed to locate '\(asset.uniqueName())' in bundle.")
             }
@@ -33,7 +33,7 @@ struct SwiftSimpleAssets: DismissableView {
                 fatalError("Failed to load \(url) from bundle.")
             }
             
-            (asset as! RiveFontAsset).font(
+            asset.font(
                 factory.decodeFont(data)
             )
             return true;
