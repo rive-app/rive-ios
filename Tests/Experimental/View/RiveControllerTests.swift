@@ -57,6 +57,7 @@ final class RiveControllerTests: XCTestCase {
         await expectSettled(within: fixture)
 
         let event = PointerEvent(
+            id: "touch-test",
             position: CGPoint(x: 10, y: 20),
             bounds: CGSize(width: 100, height: 200),
             fit: .contain,

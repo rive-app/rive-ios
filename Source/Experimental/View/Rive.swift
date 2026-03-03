@@ -53,7 +53,6 @@ public class Rive: ObservableObject, Equatable {
     ///   - dataBind: How data binding should be initialized
     ///   - fit: The fit mode for scaling and positioning, defaults to `.contain(alignment: .center)`
     ///   - backgroundColor: The background color, defaults to clear
-    ///   - isPaused: Whether the Rive graphic is paused
     @MainActor
     public init(
         file: File,

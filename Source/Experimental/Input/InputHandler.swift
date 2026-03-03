@@ -24,6 +24,7 @@ enum Input {
 /// Contains the position, bounds, fit mode, alignment, and scale factor needed
 /// to properly transform pointer coordinates for the state machine.
 struct PointerEvent {
+    let id: AnyHashable
     let position: CGPoint
     let bounds: CGSize
     let fit: RiveConfigurationFit
@@ -37,6 +38,7 @@ struct PointerEvent {
 /// (no listener callbacks). All command queue operations must be performed on the main
 /// thread (either marked `@MainActor` or dispatched to the main queue).
 class InputHandler {
+    private let idPool = IDPool<AnyHashable>(range: 0..<10)
     private let dependencies: Dependencies
 
     @MainActor
@@ -46,28 +48,37 @@ class InputHandler {
 
     /// Handles an input event by sending it to the state machine via the command queue.
     ///
-    /// Delegates to the command queue. No listener callback is invoked for this operation
+    /// Resolves a stable pointer ID from the pool for each event. The ID is upserted
+    /// (added if new, reused if existing). For exit events, the ID is additionally
+    /// released back to the pool after sending.
+    /// Returns `true` if a valid pointer ID was available, `false` otherwise.
     @MainActor
-    func handle(_ input: Input, in stateMachine: StateMachine) {
+    @discardableResult
+    func handle(_ input: Input, in stateMachine: StateMachine) -> Bool {
         switch input {
         case .pointerUp(let event):
-            send(dependencies.commandQueue.pointerUp, with: event, in: stateMachine)
+            guard let id = idPool.add(event.id) else { return false }
+            send(dependencies.commandQueue.pointerUp, id: id, with: event, in: stateMachine)
+            idPool.remove(event.id)
         case .pointerDown(let event):
-            send(dependencies.commandQueue.pointerDown, with: event, in: stateMachine)
+            guard let id = idPool.add(event.id) else { return false }
+            send(dependencies.commandQueue.pointerDown, id: id, with: event, in: stateMachine)
         case .pointerMove(let event):
-            send(dependencies.commandQueue.pointerMove, with: event, in: stateMachine)
+            guard let id = idPool.add(event.id) else { return false }
+            send(dependencies.commandQueue.pointerMove, id: id, with: event, in: stateMachine)
         case .pointerExit(let event):
-            send(dependencies.commandQueue.pointerExit, with: event, in: stateMachine)
+            guard let id = idPool.add(event.id) else { return false }
+            send(dependencies.commandQueue.pointerExit, id: id, with: event, in: stateMachine)
+            idPool.remove(event.id)
         }
+        return true
     }
 
-    /// Sends a pointer event to the command queue.
-    ///
-    /// Creates a request ID and calls the appropriate command queue function with the event data.
+    /// Sends a pointer event to the command queue with a pre-resolved pointer ID.
     @MainActor
-    private func send(_ pointerEvent: (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void, with event: PointerEvent, in stateMachine: StateMachine) -> Void {
+    private func send(_ pointerEvent: (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void, id: Int32, with event: PointerEvent, in stateMachine: StateMachine) {
         let requestID = dependencies.commandQueue.nextRequestID
-        pointerEvent(stateMachine.stateMachineHandle, event.position, event.bounds, event.fit, event.alignment, event.scaleFactor, requestID)
+        pointerEvent(stateMachine.stateMachineHandle, id, event.position, event.bounds, event.fit, event.alignment, event.scaleFactor, requestID)
     }
 }
 

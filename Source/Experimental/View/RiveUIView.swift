@@ -161,6 +161,14 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
     public weak var delegate: RiveUIViewDelegate?
 
+    #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
+    public override var isMultipleTouchEnabled: Bool {
+        didSet {
+            mtkView?.isMultipleTouchEnabled = isMultipleTouchEnabled
+        }
+    }
+    #endif
+
     // MARK: -
 
     /// Creates a new RiveUIView that asynchronously loads a Rive configuration.
@@ -196,6 +204,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         self.rive = rive
         self.delegate = delegate
         super.init(frame: .zero)
+
+        #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
+        self.isMultipleTouchEnabled = true
+        #endif
 
         self.isPaused = isPaused
 
@@ -236,6 +248,9 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         mtkView.isPaused = true
         mtkView.enableSetNeedsDisplay = true
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
+        #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
+        mtkView.isMultipleTouchEnabled = isMultipleTouchEnabled
+        #endif
         self.mtkView = mtkView
         addSubview(mtkView)
 
@@ -369,6 +384,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     ///
     /// This method converts touch events into pointer down events for the state machine.
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
         handlePointerEvent(from: touches, with: { .pointerDown($0) })
     }
 
@@ -376,6 +392,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     ///
     /// This method converts touch events into pointer up events for the state machine.
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
         handlePointerEvent(from: touches, with: { .pointerUp($0) })
     }
 
@@ -383,6 +400,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     ///
     /// This method converts touch events into pointer move events for the state machine.
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
         handlePointerEvent(from: touches, with: { .pointerMove($0) })
     }
 
@@ -390,6 +408,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     ///
     /// This method converts touch events into pointer exit events for the state machine.
     public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
         handlePointerEvent(from: touches, with: { .pointerExit($0) })
     }
 
@@ -398,35 +417,41 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         with inputType: (PointerEvent) -> Input
     ) {
         guard let rive,
-              let controller,
-              let touch = touches.first
+              let controller
         else { return }
 
-        let fitBridge = rive.fit.bridged(from: self)
+        for touch in touches {
+            let fitBridge = rive.fit.bridged(from: self)
 
-        let event = PointerEvent(
-            position: touch.location(in: self),
-            bounds: bounds.size,
-            fit: fitBridge.fit,
-            alignment: fitBridge.alignment,
-            scaleFactor: Float(fitBridge.scaleFactor)
-        )
-        controller.handleInput(inputType(event))
+            let event = PointerEvent(
+                id: AnyHashable(touch),
+                position: touch.location(in: self),
+                bounds: bounds.size,
+                fit: fitBridge.fit,
+                alignment: fitBridge.alignment,
+                scaleFactor: Float(fitBridge.scaleFactor)
+            )
+            controller.handleInput(inputType(event))
+        }
     }
 #else
     public override func mouseDown(with event: NSEvent) {
+        super.mouseDown(with: event)
         handlePointerEvent(from: event, with: { .pointerDown($0) })
     }
 
     public override func mouseUp(with event: NSEvent) {
+        super.mouseUp(with: event)
         handlePointerEvent(from: event, with: { .pointerUp($0) })
     }
 
     public override func mouseMoved(with event: NSEvent) {
+        super.mouseMoved(with: event)
         handlePointerEvent(from: event, with: { .pointerMove($0) })
     }
 
     public override func mouseExited(with event: NSEvent) {
+        super.mouseExited(with: event)
         handlePointerEvent(from: event, with: { .pointerExit($0) })
     }
 
@@ -442,6 +467,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         let position = convert(event.locationInWindow, to: self)
 
         let event = PointerEvent(
+            id: AnyHashable(event.buttonNumber),
             position: position,
             bounds: bounds.size,
             fit: fitBridge.fit,

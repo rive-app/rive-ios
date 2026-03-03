@@ -153,6 +153,7 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
 }
 
 static rive::CommandQueue::PointerEvent RivePointerEventToCpp(
+    int pointerId,
     CGPoint position,
     CGSize screenBounds,
     RiveConfigurationFit fit,
@@ -166,6 +167,7 @@ static rive::CommandQueue::PointerEvent RivePointerEventToCpp(
         rive::Vec2D(screenBounds.width, screenBounds.height);
     cppEvent.position = rive::Vec2D(position.x, position.y);
     cppEvent.scaleFactor = scaleFactor;
+    cppEvent.pointerId = pointerId;
     return cppEvent;
 }
 
@@ -1096,7 +1098,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         delete listener;
     }
 
-    // Clean up all view model instance listeners
+    // Clean up all state machine listeners
     for (NSValue* listenerValue in _stateMachineListeners.allValues)
     {
         _StateMachineListener* listener =
@@ -1551,6 +1553,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 }
 
 - (void)pointerMove:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit
@@ -1562,12 +1565,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
       rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          position, screenBounds, fit, alignment, scaleFactor);
+          id, position, screenBounds, fit, alignment, scaleFactor);
       self->_commandQueue->pointerMove(handle, cppEvent, requestID);
     }];
 }
 
 - (void)pointerDown:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit
@@ -1579,12 +1583,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
       rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          position, screenBounds, fit, alignment, scaleFactor);
+          id, position, screenBounds, fit, alignment, scaleFactor);
       self->_commandQueue->pointerDown(handle, cppEvent, requestID);
     }];
 }
 
 - (void)pointerUp:(uint64_t)stateMachineHandle
+               id:(int)id
          position:(CGPoint)position
      screenBounds:(CGSize)screenBounds
               fit:(RiveConfigurationFit)fit
@@ -1596,12 +1601,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
       rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          position, screenBounds, fit, alignment, scaleFactor);
+          id, position, screenBounds, fit, alignment, scaleFactor);
       self->_commandQueue->pointerUp(handle, cppEvent, requestID);
     }];
 }
 
 - (void)pointerExit:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit
@@ -1613,7 +1619,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
       rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          position, screenBounds, fit, alignment, scaleFactor);
+          id, position, screenBounds, fit, alignment, scaleFactor);
       self->_commandQueue->pointerExit(handle, cppEvent, requestID);
     }];
 }

@@ -367,6 +367,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  *
  * @param stateMachineHandle The handle of the state machine to receive the
  * event
+ * @param id Stable pointer identifier for multitouch
  * @param position The cursor position in screen coordinates
  * @param screenBounds The bounds of the coordinate system of the cursor
  * @param fit The fit the artboard is drawn with
@@ -375,6 +376,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @param requestID The request ID for this operation
  */
 - (void)pointerMove:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit
@@ -387,6 +389,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  *
  * @param stateMachineHandle The handle of the state machine to receive the
  * event
+ * @param id Stable pointer identifier for multitouch
  * @param position The cursor position in screen coordinates
  * @param screenBounds The bounds of the coordinate system of the cursor
  * @param fit The fit the artboard is drawn with
@@ -395,6 +398,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @param requestID The request ID for this operation
  */
 - (void)pointerDown:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit
@@ -407,6 +411,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  *
  * @param stateMachineHandle The handle of the state machine to receive the
  * event
+ * @param id Stable pointer identifier for multitouch
  * @param position The cursor position in screen coordinates
  * @param screenBounds The bounds of the coordinate system of the cursor
  * @param fit The fit the artboard is drawn with
@@ -415,6 +420,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @param requestID The request ID for this operation
  */
 - (void)pointerUp:(uint64_t)stateMachineHandle
+               id:(int)id
          position:(CGPoint)position
      screenBounds:(CGSize)screenBounds
               fit:(RiveConfigurationFit)fit
@@ -427,6 +433,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  *
  * @param stateMachineHandle The handle of the state machine to receive the
  * event
+ * @param id Stable pointer identifier for multitouch
  * @param position The cursor position in screen coordinates
  * @param screenBounds The bounds of the coordinate system of the cursor
  * @param fit The fit the artboard is drawn with
@@ -435,6 +442,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @param requestID The request ID for this operation
  */
 - (void)pointerExit:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit

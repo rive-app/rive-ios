@@ -112,13 +112,13 @@ class MockCommandQueue: CommandQueueProtocol {
     private var bindViewModelInstanceStub: ((UInt64, UInt64, UInt64) -> Void)?
     private(set) var bindViewModelInstanceCalls: [BindViewModelInstanceCall] = []
     
-    private var pointerMoveStub: ((UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
+    private var pointerMoveStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerMoveCalls: [PointerMoveCall] = []
-    private var pointerDownStub: ((UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
+    private var pointerDownStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerDownCalls: [PointerDownCall] = []
-    private var pointerUpStub: ((UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
+    private var pointerUpStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerUpCalls: [PointerUpCall] = []
-    private var pointerExitStub: ((UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
+    private var pointerExitStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerExitCalls: [PointerExitCall] = []
     
     private var decodeImageStub: ((Data, any RenderImageListener, UInt64) -> UInt64)?
@@ -325,19 +325,19 @@ class MockCommandQueue: CommandQueueProtocol {
         bindViewModelInstanceStub = stub
     }
     
-    func stubPointerMove(_ stub: @escaping (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
+    func stubPointerMove(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerMoveStub = stub
     }
     
-    func stubPointerDown(_ stub: @escaping (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
+    func stubPointerDown(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerDownStub = stub
     }
     
-    func stubPointerUp(_ stub: @escaping (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
+    func stubPointerUp(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerUpStub = stub
     }
     
-    func stubPointerExit(_ stub: @escaping (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
+    func stubPointerExit(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerExitStub = stub
     }
     
@@ -523,9 +523,10 @@ class MockCommandQueue: CommandQueueProtocol {
         bindViewModelInstanceStub?(stateMachineHandle, viewModelInstanceHandle, requestID)
     }
     
-    func pointerMove(_ stateMachineHandle: UInt64, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
+    func pointerMove(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerMoveCalls.append(PointerMoveCall(
             stateMachineHandle: stateMachineHandle,
+            id: id,
             position: position,
             screenBounds: screenBounds,
             fit: fit,
@@ -533,12 +534,13 @@ class MockCommandQueue: CommandQueueProtocol {
             scaleFactor: scaleFactor,
             requestID: requestID
         ))
-        pointerMoveStub?(stateMachineHandle, position, screenBounds, fit, alignment, scaleFactor, requestID)
+        pointerMoveStub?(stateMachineHandle, id, position, screenBounds, fit, alignment, scaleFactor, requestID)
     }
     
-    func pointerDown(_ stateMachineHandle: UInt64, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
+    func pointerDown(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerDownCalls.append(PointerDownCall(
             stateMachineHandle: stateMachineHandle,
+            id: id,
             position: position,
             screenBounds: screenBounds,
             fit: fit,
@@ -546,12 +548,13 @@ class MockCommandQueue: CommandQueueProtocol {
             scaleFactor: scaleFactor,
             requestID: requestID
         ))
-        pointerDownStub?(stateMachineHandle, position, screenBounds, fit, alignment, scaleFactor, requestID)
+        pointerDownStub?(stateMachineHandle, id, position, screenBounds, fit, alignment, scaleFactor, requestID)
     }
     
-    func pointerUp(_ stateMachineHandle: UInt64, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
+    func pointerUp(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerUpCalls.append(PointerUpCall(
             stateMachineHandle: stateMachineHandle,
+            id: id,
             position: position,
             screenBounds: screenBounds,
             fit: fit,
@@ -559,12 +562,13 @@ class MockCommandQueue: CommandQueueProtocol {
             scaleFactor: scaleFactor,
             requestID: requestID
         ))
-        pointerUpStub?(stateMachineHandle, position, screenBounds, fit, alignment, scaleFactor, requestID)
+        pointerUpStub?(stateMachineHandle, id, position, screenBounds, fit, alignment, scaleFactor, requestID)
     }
     
-    func pointerExit(_ stateMachineHandle: UInt64, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
+    func pointerExit(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerExitCalls.append(PointerExitCall(
             stateMachineHandle: stateMachineHandle,
+            id: id,
             position: position,
             screenBounds: screenBounds,
             fit: fit,
@@ -572,7 +576,7 @@ class MockCommandQueue: CommandQueueProtocol {
             scaleFactor: scaleFactor,
             requestID: requestID
         ))
-        pointerExitStub?(stateMachineHandle, position, screenBounds, fit, alignment, scaleFactor, requestID)
+        pointerExitStub?(stateMachineHandle, id, position, screenBounds, fit, alignment, scaleFactor, requestID)
     }
 
     func createDrawKey() -> UInt64 {
@@ -1111,6 +1115,7 @@ extension MockCommandQueue {
     
     struct PointerMoveCall {
         let stateMachineHandle: UInt64
+        let id: Int32
         let position: CGPoint
         let screenBounds: CGSize
         let fit: RiveConfigurationFit
@@ -1121,6 +1126,7 @@ extension MockCommandQueue {
     
     struct PointerDownCall {
         let stateMachineHandle: UInt64
+        let id: Int32
         let position: CGPoint
         let screenBounds: CGSize
         let fit: RiveConfigurationFit
@@ -1131,6 +1137,7 @@ extension MockCommandQueue {
     
     struct PointerUpCall {
         let stateMachineHandle: UInt64
+        let id: Int32
         let position: CGPoint
         let screenBounds: CGSize
         let fit: RiveConfigurationFit
@@ -1141,6 +1148,7 @@ extension MockCommandQueue {
     
     struct PointerExitCall {
         let stateMachineHandle: UInt64
+        let id: Int32
         let position: CGPoint
         let screenBounds: CGSize
         let fit: RiveConfigurationFit
