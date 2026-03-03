@@ -931,7 +931,111 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(call.viewModelInstanceHandle, 99) // The handle returned by the stub
         XCTAssertEqual(call.path, "test.trigger.path")
     }
-    
+
+    @MainActor
+    func test_dirtyStream_withSetValue_emitsEvent() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let stream = viewModelInstance.dirtyStream()
+        let expectedDirtyEvents = 14
+        let dirtyExpectation = expectation(description: "Dirty stream emits for all mutating APIs")
+
+        let task = Task {
+            var eventCount = 0
+            for await _ in stream {
+                eventCount += 1
+                if eventCount >= expectedDirtyEvents {
+                    dirtyExpectation.fulfill()
+                    break
+                }
+            }
+        }
+
+        // Value-property mutations
+        viewModelInstance.setValue(of: StringProperty(path: "test.path"), to: "updated")
+        viewModelInstance.setValue(of: NumberProperty(path: "test.number"), to: 1.0)
+        viewModelInstance.setValue(of: BoolProperty(path: "test.bool"), to: true)
+        viewModelInstance.setValue(of: ColorProperty(path: "test.color"), to: Color(red: 0, green: 255, blue: 0, alpha: 255))
+        viewModelInstance.setValue(of: EnumProperty(path: "test.enum"), to: "enum_value")
+
+        // Image + artboard mutations
+        let imageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue))
+        let imageDependencies = Image.Dependencies(imageService: imageService)
+        let imageDecodeExpectation = expectation(description: "Image decoded")
+        mockCommandQueue.stubDecodeImage { _, listener, requestID in
+            listener.onRenderImageDecoded(42, requestID: requestID)
+            imageDecodeExpectation.fulfill()
+            return 42
+        }
+        let image = try await Image(data: Data([0x89, 0x50, 0x4E, 0x47]), dependencies: imageDependencies)
+        await fulfillment(of: [imageDecodeExpectation], timeout: 1.0)
+        viewModelInstance.setValue(of: ImageProperty(path: "test.image"), to: image)
+
+        let artboard = Artboard(
+            dependencies: .init(
+                artboardService: .init(
+                    dependencies: .init(commandQueue: mockCommandQueue)
+                )
+            ),
+            artboardHandle: 42
+        )
+        viewModelInstance.setValue(of: ArtboardProperty(path: "test.artboard"), to: artboard)
+
+        // Nested-view-model mutation
+        let nestedService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let nestedInstance = ViewModelInstance(
+            handle: 200,
+            dependencies: .init(viewModelInstanceService: nestedService)
+        )
+        viewModelInstance.setValue(of: ViewModelInstanceProperty(path: "test.nested"), to: nestedInstance)
+
+        // List mutations
+        let listProperty = ListProperty(path: "test.list")
+        viewModelInstance.appendInstance(nestedInstance, to: listProperty)
+        viewModelInstance.insertInstance(nestedInstance, to: listProperty, at: 0)
+        viewModelInstance.removeInstance(at: 0, from: listProperty)
+        viewModelInstance.removeInstance(nestedInstance, from: listProperty)
+        viewModelInstance.swapInstance(atIndex: 0, withIndex: 1, in: listProperty)
+
+        // Trigger mutation
+        viewModelInstance.fire(trigger: TriggerProperty(path: "test.trigger"))
+
+        await fulfillment(of: [dirtyExpectation], timeout: 1.0)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withMultipleSubscribers_emitsToAll() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let streamA = viewModelInstance.dirtyStream()
+        let streamB = viewModelInstance.dirtyStream()
+        let dirtyAExpectation = expectation(description: "Dirty stream A emits")
+        let dirtyBExpectation = expectation(description: "Dirty stream B emits")
+
+        let taskA = Task {
+            for await _ in streamA {
+                dirtyAExpectation.fulfill()
+                break
+            }
+        }
+
+        let taskB = Task {
+            for await _ in streamB {
+                dirtyBExpectation.fulfill()
+                break
+            }
+        }
+
+        viewModelInstance.setValue(of: StringProperty(path: "test.path"), to: "updated")
+
+        await fulfillment(of: [dirtyAExpectation, dirtyBExpectation], timeout: 1.0)
+        taskA.cancel()
+        taskB.cancel()
+    }
+
     @MainActor
     func test_stream_withTriggerProperty_receivesEvents() async throws {
         let mockCommandQueue = MockCommandQueue()

@@ -14,7 +14,7 @@ import Foundation
 /// inputs, and animation playback. They can be bound to view model instances to enable
 /// data-driven animations.
 @_spi(RiveExperimental)
-public class StateMachine {
+public class StateMachine: Equatable {
     /// The underlying type for the state machine handle identifier.
     ///
     /// Handle to a state machine instance in the C++ runtime. Obtained from the command queue
@@ -45,7 +45,8 @@ public class StateMachine {
         let service = dependencies.stateMachineService
         let handle = stateMachineHandle
         Task { @MainActor in
-            service.deleteStateMachine(handle)
+            guard let deletedHandle = try? await service.deleteStateMachine(handle) else { return }
+            service.deleteStateMachineListener(deletedHandle)
         }
     }
 
@@ -74,6 +75,14 @@ public class StateMachine {
         dependencies.stateMachineService.advanceStateMachine(stateMachineHandle, by: time)
     }
 
+    /// Stream of state machine settled events.
+    ///
+    /// Emits `Void` each time the runtime reports this state machine has settled.
+    @MainActor
+    public func settledStream() -> AsyncStream<Void> {
+        return dependencies.stateMachineService.settledStream(for: stateMachineHandle)
+    }
+
     /// Binds a view model instance to this state machine.
     ///
     /// Binding a view model instance allows the state machine to access and modify view model
@@ -90,7 +99,7 @@ extension StateMachine {
     /// Container for all dependencies required by a StateMachine instance.
     struct Dependencies {
         /// Provides state machine-level services via command queue interactions.
-        /// All operations are fire-and-forget (no listener callbacks).
+        /// Implements `StateMachineListener` to receive callbacks from the command server.
         let stateMachineService: StateMachineService
     }
 }

@@ -113,10 +113,25 @@ class StateMachineTests: XCTestCase {
             stateMachineService: stateMachineService
         )
 
-        let expectation = expectation(description: "delete state machine")
+        let deleteStateMachineExpectation = expectation(description: "delete state machine")
+        let deleteStateMachineListenerExpectation = expectation(description: "delete state machine listener")
         mockCommandQueue.stubDeleteStateMachine { handle in
             XCTAssertEqual(handle, 1)
-            expectation.fulfill()
+            XCTAssertTrue(
+                mockCommandQueue.deleteStateMachineListenerCalls.isEmpty,
+                "Listener should not be removed before delete callback is received"
+            )
+            deleteStateMachineExpectation.fulfill()
+            guard let requestID = mockCommandQueue.deleteStateMachineCalls.last?.requestID else {
+                XCTFail("Expected deleteStateMachine call to be tracked before stub callback")
+                return
+            }
+            stateMachineService.onStateMachineDeleted(handle, requestID: requestID)
+        }
+
+        mockCommandQueue.stubDeleteStateMachineListener { handle in
+            XCTAssertEqual(handle, 1)
+            deleteStateMachineListenerExpectation.fulfill()
         }
 
         autoreleasepool {
@@ -125,8 +140,65 @@ class StateMachineTests: XCTestCase {
             stateMachine = nil
         }
 
-        wait(for: [expectation])
+        wait(for: [deleteStateMachineExpectation, deleteStateMachineListenerExpectation])
         XCTAssertEqual(mockCommandQueue.deleteStateMachineCalls.first?.stateMachineHandle, 1)
+        XCTAssertEqual(mockCommandQueue.deleteStateMachineListenerCalls.first?.stateMachineHandle, 1)
+    }
+
+    @MainActor
+    func test_settledStream_emitsVoid_whenStateMachineSettles() async {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let dependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
+        let stateMachine = StateMachine(dependencies: dependencies, stateMachineHandle: 123)
+
+        let settledExpectation = expectation(description: "settled stream emits")
+
+        let stream = stateMachine.settledStream()
+        let waitForSettledTask = Task {
+            var iterator = stream.makeAsyncIterator()
+            _ = await iterator.next()
+            settledExpectation.fulfill()
+        }
+
+        await Task.yield()
+        stateMachineService.onStateMachineSettled(123, requestID: 999)
+
+        await fulfillment(of: [settledExpectation], timeout: 1.0)
+        waitForSettledTask.cancel()
+    }
+
+    @MainActor
+    func test_settledStream_withMultipleSubscribers_emitsToAll() async {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let dependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
+        let stateMachine = StateMachine(dependencies: dependencies, stateMachineHandle: 123)
+
+        let settledAExpectation = expectation(description: "settled stream A emits")
+        let settledBExpectation = expectation(description: "settled stream B emits")
+
+        let streamA = stateMachine.settledStream()
+        let streamB = stateMachine.settledStream()
+
+        let waitForSettledATask = Task {
+            var iterator = streamA.makeAsyncIterator()
+            _ = await iterator.next()
+            settledAExpectation.fulfill()
+        }
+
+        let waitForSettledBTask = Task {
+            var iterator = streamB.makeAsyncIterator()
+            _ = await iterator.next()
+            settledBExpectation.fulfill()
+        }
+
+        await Task.yield()
+        stateMachineService.onStateMachineSettled(123, requestID: 999)
+
+        await fulfillment(of: [settledAExpectation, settledBExpectation], timeout: 1.0)
+        waitForSettledATask.cancel()
+        waitForSettledBTask.cancel()
     }
 
 

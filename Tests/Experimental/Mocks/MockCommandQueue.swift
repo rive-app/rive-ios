@@ -37,8 +37,8 @@ class MockCommandQueue: CommandQueueProtocol {
     private var createArtboardNamedStub: ((String, UInt64, any ArtboardListener) -> UInt64)?
     private var requestStateMachineNamesStub: ((UInt64, UInt64) -> Void)?
     private var requestDefaultViewModelInfoStub: ((UInt64, UInt64, UInt64) -> Void)?
-    private var createDefaultStateMachineStub: ((UInt64) -> UInt64)?
-    private var createStateMachineNamedStub: ((String, UInt64) -> UInt64)?
+    private var createDefaultStateMachineStub: ((UInt64, any StateMachineListener) -> UInt64)?
+    private var createStateMachineNamedStub: ((String, UInt64, any StateMachineListener) -> UInt64)?
     private var createBlankViewModelInstanceStub: ((UInt64, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
     private var createBlankViewModelInstanceNamedStub: ((String, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
     private var createDefaultViewModelInstanceStub: ((UInt64, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
@@ -107,6 +107,8 @@ class MockCommandQueue: CommandQueueProtocol {
     private(set) var advanceStateMachineCalls: [AdvanceStateMachineCall] = []
     private var deleteStateMachineStub: ((UInt64) -> Void)?
     private(set) var deleteStateMachineCalls: [DeleteStateMachineCall] = []
+    private var deleteStateMachineListenerStub: ((UInt64) -> Void)?
+    private(set) var deleteStateMachineListenerCalls: [DeleteStateMachineListenerCall] = []
     private var bindViewModelInstanceStub: ((UInt64, UInt64, UInt64) -> Void)?
     private(set) var bindViewModelInstanceCalls: [BindViewModelInstanceCall] = []
     
@@ -227,11 +229,11 @@ class MockCommandQueue: CommandQueueProtocol {
         requestDefaultViewModelInfoStub = stub
     }
     
-    func stubCreateDefaultStateMachine(_ stub: @escaping (UInt64) -> UInt64) {
+    func stubCreateDefaultStateMachine(_ stub: @escaping (UInt64, any StateMachineListener) -> UInt64) {
         createDefaultStateMachineStub = stub
     }
     
-    func stubCreateStateMachineNamed(_ stub: @escaping (String, UInt64) -> UInt64) {
+    func stubCreateStateMachineNamed(_ stub: @escaping (String, UInt64, any StateMachineListener) -> UInt64) {
         createStateMachineNamedStub = stub
     }
     
@@ -313,6 +315,10 @@ class MockCommandQueue: CommandQueueProtocol {
 
     func stubDeleteStateMachine(_ stub: @escaping (UInt64) -> Void) {
         deleteStateMachineStub = stub
+    }
+
+    func stubDeleteStateMachineListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteStateMachineListenerStub = stub
     }
 
     func stubBindViewModelInstance(_ stub: @escaping (UInt64, UInt64, UInt64) -> Void) {
@@ -462,19 +468,30 @@ class MockCommandQueue: CommandQueueProtocol {
         requestDefaultViewModelInfoStub?(artboardHandle, fileHandle, requestID)
     }
 
-    func createDefaultStateMachine(fromArtboard artboardHandle: UInt64, requestID: UInt64) -> UInt64 {
-        createDefaultStateMachineCalls.append(CreateDefaultStateMachineCall(artboardHandle: artboardHandle))
+    func createDefaultStateMachine(fromArtboard artboardHandle: UInt64, observer: any StateMachineListener, requestID: UInt64) -> UInt64 {
+        createDefaultStateMachineCalls.append(
+            CreateDefaultStateMachineCall(
+                artboardHandle: artboardHandle,
+                observer: observer
+            )
+        )
         if let stub = createDefaultStateMachineStub {
-            return stub(artboardHandle)
+            return stub(artboardHandle, observer)
         }
         stateMachineHandle += 1
         return stateMachineHandle
     }
 
-    func createStateMachineNamed(_ name: String, fromArtboard artboardHandle: UInt64, requestID: UInt64) -> UInt64 {
-        createStateMachineNamedCalls.append(CreateStateMachineNamedCall(name: name, artboardHandle: artboardHandle))
+    func createStateMachineNamed(_ name: String, fromArtboard artboardHandle: UInt64, observer: any StateMachineListener, requestID: UInt64) -> UInt64 {
+        createStateMachineNamedCalls.append(
+            CreateStateMachineNamedCall(
+                name: name,
+                artboardHandle: artboardHandle,
+                observer: observer
+            )
+        )
         if let stub = createStateMachineNamedStub {
-            return stub(name, artboardHandle)
+            return stub(name, artboardHandle, observer)
         }
         stateMachineHandle += 1
         return stateMachineHandle
@@ -488,6 +505,13 @@ class MockCommandQueue: CommandQueueProtocol {
     func deleteStateMachine(_ stateMachineHandle: UInt64, requestID: UInt64) {
         deleteStateMachineCalls.append(DeleteStateMachineCall(stateMachineHandle: stateMachineHandle, requestID: requestID))
         deleteStateMachineStub?(stateMachineHandle)
+    }
+
+    func deleteStateMachineListener(_ stateMachineHandle: UInt64) {
+        deleteStateMachineListenerCalls.append(
+            DeleteStateMachineListenerCall(stateMachineHandle: stateMachineHandle)
+        )
+        deleteStateMachineListenerStub?(stateMachineHandle)
     }
 
     func bindViewModelInstance(_ stateMachineHandle: UInt64, toViewModelInstance viewModelInstanceHandle: UInt64, requestID: UInt64) {
@@ -1046,11 +1070,13 @@ extension MockCommandQueue {
     
     struct CreateDefaultStateMachineCall {
         let artboardHandle: UInt64
+        let observer: any StateMachineListener
     }
     
     struct CreateStateMachineNamedCall {
         let name: String
         let artboardHandle: UInt64
+        let observer: any StateMachineListener
     }
 
     struct AdvanceStateMachineCall {
@@ -1062,6 +1088,10 @@ extension MockCommandQueue {
     struct DeleteStateMachineCall {
         let stateMachineHandle: UInt64
         let requestID: UInt64
+    }
+
+    struct DeleteStateMachineListenerCall {
+        let stateMachineHandle: UInt64
     }
 
     struct DeleteViewModelInstanceCall {

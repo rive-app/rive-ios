@@ -15,7 +15,8 @@ import Combine
 /// used for rendering. It manages the relationship between these components and provides
 /// properties for controlling how the artboard is displayed, including fit mode and background color.
 @_spi(RiveExperimental)
-public class Rive: ObservableObject {
+@MainActor
+public class Rive: ObservableObject, Equatable {
     /// The Rive file containing the artboard and state machine.
     public let file: File
     /// The artboard to render.
@@ -37,6 +38,9 @@ public class Rive: ObservableObject {
             fitDidChange.send(fit)
         }
     }
+
+    // Publishers for various mutable properties, so that RiveUIView can
+    // listen to these changes and react appropriately
     let backgroundColorDidChange = PassthroughSubject<Color, Never>()
     let fitDidChange = PassthroughSubject<Fit, Never>()
 
@@ -49,6 +53,7 @@ public class Rive: ObservableObject {
     ///   - dataBind: How data binding should be initialized
     ///   - fit: The fit mode for scaling and positioning, defaults to `.contain(alignment: .center)`
     ///   - backgroundColor: The background color, defaults to clear
+    ///   - isPaused: Whether the Rive graphic is paused
     @MainActor
     public init(
         file: File,
@@ -56,7 +61,7 @@ public class Rive: ObservableObject {
         stateMachine: StateMachine? = nil,
         dataBind: DataBind = .auto,
         fit: Fit = .contain(alignment: .center),
-        backgroundColor: Color = Color(red: 0, green: 0, blue: 0, alpha: 0)
+        backgroundColor: Color = Color(red: 0, green: 0, blue: 0, alpha: 0),
     ) async throws {
         self.file = file
         self.artboard = try await Self.resolveArtboard(artboard, for: file)
@@ -78,6 +83,21 @@ public class Rive: ObservableObject {
         case .none:
             self.viewModelInstance = nil
             break
+        }
+    }
+
+    nonisolated public static func ==(lhs: Rive, rhs: Rive) -> Bool {
+        if lhs === rhs {
+            return true
+        }
+
+        return MainActor.assumeIsolated {
+            return lhs.file == rhs.file
+            && lhs.artboard == rhs.artboard
+            && lhs.stateMachine == rhs.stateMachine
+            && lhs.viewModelInstance == rhs.viewModelInstance
+            && lhs.backgroundColor == rhs.backgroundColor
+            && lhs.fit == rhs.fit
         }
     }
 

@@ -83,7 +83,7 @@ class RiveTests: XCTestCase {
         
         let stateMachineExpectation = expectation(description: "state machine created")
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle in
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _  in
             capturedArtboardHandle = artboardHandle
             stateMachineExpectation.fulfill()
             return 99
@@ -116,7 +116,7 @@ class RiveTests: XCTestCase {
         
         let stateMachineExpectation = expectation(description: "state machine created")
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle in
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _ in
             capturedArtboardHandle = artboardHandle
             stateMachineExpectation.fulfill()
             return 99

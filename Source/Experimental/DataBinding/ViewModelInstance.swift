@@ -123,6 +123,14 @@ public class ViewModelInstance: Equatable {
         return lhs.viewModelInstanceHandle == rhs.viewModelInstanceHandle
     }
 
+    /// Creates a stream that emits whenever this instance is mutated.
+    ///
+    /// The stream yields `Void` to indicate a dirty event with no payload.
+    @MainActor
+    public func dirtyStream() -> AsyncStream<Void> {
+        return dependencies.viewModelInstanceService.dirtyStream(for: viewModelInstanceHandle)
+    }
+
     // MARK: - StringProperty
     
     /// Retrieves the current value of a string property.

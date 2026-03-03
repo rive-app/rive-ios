@@ -57,6 +57,7 @@ extern "C"
 #import <RiveRuntime/RiveCommandServer.h>
 #import <RiveRuntime/RiveFileListener.h>
 #import <RiveRuntime/RiveArtboardListener.h>
+#import <RiveRuntime/RiveStateMachineListener.h>
 #import <RiveRuntime/RiveRenderImageListener.h>
 #import <RiveRuntime/RiveFontListener.h>
 #import <RiveRuntime/RiveAudioListener.h>

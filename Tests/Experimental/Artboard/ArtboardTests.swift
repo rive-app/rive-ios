@@ -204,7 +204,7 @@ class ArtboardTests: XCTestCase {
 
         // Mock the command queue to return a specific state machine handle and capture the artboard handle
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle in
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _ in
             capturedArtboardHandle = artboardHandle
             return 42 // Return a specific state machine handle
         }
@@ -238,7 +238,7 @@ class ArtboardTests: XCTestCase {
         // Mock the command queue to return a specific state machine handle and capture parameters
         var capturedName: String = ""
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateStateMachineNamed { name, artboardHandle in
+        mockCommandQueue.stubCreateStateMachineNamed { name, artboardHandle, _ in
             capturedName = name
             capturedArtboardHandle = artboardHandle
             return 42 // Return a specific state machine handle

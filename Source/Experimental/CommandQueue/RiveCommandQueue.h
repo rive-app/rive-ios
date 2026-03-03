@@ -16,6 +16,7 @@
 @protocol RiveCommandServerProtocol;
 @protocol RiveFileListener;
 @protocol RiveArtboardListener;
+@protocol RiveStateMachineListener;
 @protocol RiveViewModelInstanceListener;
 @protocol RiveRenderImageListener;
 @protocol RiveFontListener;
@@ -286,8 +287,10 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * machine
  * @return The state machine handle of the created state machine
  */
-- (uint64_t)createDefaultStateMachineFromArtboard:(uint64_t)artboardHandle
-                                        requestID:(uint64_t)requestID;
+- (uint64_t)
+    createDefaultStateMachineFromArtboard:(uint64_t)artboardHandle
+                                 observer:(id<RiveStateMachineListener>)observer
+                                requestID:(uint64_t)requestID;
 ;
 
 /**
@@ -304,6 +307,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  */
 - (uint64_t)createStateMachineNamed:(NSString*)name
                        fromArtboard:(uint64_t)artboardHandle
+                           observer:(id<RiveStateMachineListener>)observer
                           requestID:(uint64_t)requestID;
 
 /**
@@ -333,6 +337,15 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  */
 - (void)deleteStateMachine:(uint64_t)stateMachineHandle
                  requestID:(uint64_t)requestID;
+
+/**
+ * Deletes the state machine listener associated with a state machine handle.
+ *
+ * @param stateMachineHandle The handle whose listener should be removed
+ * @note This only removes the listener bridge and does not delete the state
+ * machine.
+ */
+- (void)deleteStateMachineListener:(uint64_t)stateMachineHandle;
 
 /**
  * Binds a view model instance to a state machine for data binding.

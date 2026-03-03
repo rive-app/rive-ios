@@ -14,6 +14,7 @@ public enum RiveUIViewError: LocalizedError {
     case noDrawable
     case noDevice
     case noRenderer
+    case failedToLoad(Error)
 
     public var errorDescription: String? {
         switch self {
@@ -25,6 +26,8 @@ public enum RiveUIViewError: LocalizedError {
             return "No available device for drawing"
         case .noRenderer:
             return "No available renderer for drawing"
+        case .failedToLoad(let error):
+            return "Failed to load: \(error.localizedDescription)"
         }
     }
 }
