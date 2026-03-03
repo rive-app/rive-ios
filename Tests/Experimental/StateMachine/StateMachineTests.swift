@@ -36,10 +36,12 @@ class StateMachineTests: XCTestCase {
         let expectation = expectation(description: "advanceStateMachine called")
         var capturedStateMachineHandle: UInt64 = 0
         var capturedTime: TimeInterval = 0
+        var capturedRequestID: UInt64 = 0
 
-        mockCommandQueue.stubAdvanceStateMachine { stateMachineHandle, time, _ in
+        mockCommandQueue.stubAdvanceStateMachine { stateMachineHandle, time, requestID in
             capturedStateMachineHandle = stateMachineHandle
             capturedTime = time
+            capturedRequestID = requestID
             expectation.fulfill()
         }
 
@@ -49,6 +51,7 @@ class StateMachineTests: XCTestCase {
 
         XCTAssertEqual(capturedStateMachineHandle, 123)
         XCTAssertEqual(capturedTime, 0.75)
+        XCTAssertEqual(capturedRequestID, mockCommandQueue.advanceStateMachineCalls.first?.requestID)
     }
 
     @MainActor

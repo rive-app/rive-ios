@@ -1381,6 +1381,37 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(call.withIndex, withIndex)
     }
     
+    // MARK: - Error Handling
+    
+    @MainActor
+    func test_value_withServerError_throwsMessageError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        var capturedObserver: ViewModelInstanceListener?
+        
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+            capturedObserver = observer
+        }
+        
+        mockCommandQueue.stubRequestViewModelInstanceString { instanceHandle, path, requestID in
+            capturedObserver?.onViewModelInstanceError(instanceHandle, requestID: requestID, message: "failed to find property at path test.path")
+        }
+        
+        let property = StringProperty(path: "test.path")
+        
+        do {
+            _ = try await viewModelInstance.value(of: property)
+            XCTFail("Expected ViewModelInstanceError.message to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .message(let message) = error else {
+                XCTFail("Expected .message error, got \(error)")
+                return
+            }
+            XCTAssertEqual(message, "failed to find property at path test.path")
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.message, got \(type(of: error)): \(error)")
+        }
+    }
+    
     // MARK: - ViewModelInstanceSource Tests
     
     @MainActor

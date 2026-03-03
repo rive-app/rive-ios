@@ -689,6 +689,23 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         emitDirty(for: base)
     }
 
+    /// Called when a view model instance operation encounters an error.
+    ///
+    /// Listener callback invoked by the command server when an operation fails.
+    nonisolated public func onViewModelInstanceError(
+        _ viewModelInstanceHandle: UInt64,
+        requestID: UInt64,
+        message: String
+    ) {
+        Task { @MainActor in
+            if let continuation = continuations.removeValue(forKey: requestID) {
+                try continuation.resume(
+                    with: .failure(ViewModelInstanceError.message(message))
+                )
+            }
+        }
+    }
+
     /// Called when view model data is received.
     ///
     /// Listener callback invoked by the command server. Handles both regular continuations

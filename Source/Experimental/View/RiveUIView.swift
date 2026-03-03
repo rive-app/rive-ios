@@ -30,7 +30,7 @@ public protocol RiveUIViewDelegate: AnyObject {
 ///
 /// RiveUIView provides a native view that can display Rive animations with automatic rendering,
 /// state machine advancement, and touch / pointer input handling. It uses Metal for high-performance
-/// rendering and integrates with SwiftUI through the `view()` method.
+/// rendering.
 @_spi(RiveExperimental)
 public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink {
     public var rive: Rive? {

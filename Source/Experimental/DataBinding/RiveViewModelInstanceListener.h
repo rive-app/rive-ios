@@ -42,6 +42,18 @@ NS_SWIFT_NAME(ViewModelInstanceListener)
 @protocol RiveViewModelInstanceListener <NSObject>
 
 /**
+ * Called when a view model instance operation encounters an error.
+ *
+ * @param viewModelInstanceHandle The view model instance handle that
+ *        encountered the error.
+ * @param requestID The unique identifier for the request that failed.
+ * @param message A description of the error that occurred.
+ */
+- (void)onViewModelInstanceError:(uint64_t)viewModelInstanceHandle
+                       requestID:(uint64_t)requestID
+                         message:(NSString*)message;
+
+/**
  * Called when a view model instance deletion request completes.
  *
  * @param viewModelInstanceHandle The deleted view model instance handle.

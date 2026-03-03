@@ -764,7 +764,16 @@ void _ViewModelInstanceListener::onViewModelInstanceError(
     const rive::ViewModelInstanceHandle handle,
     uint64_t requestId,
     std::string error)
-{}
+{
+    if (_observer)
+    {
+        [_observer
+            onViewModelInstanceError:reinterpret_cast<uint64_t>(handle)
+                           requestID:requestId
+                             message:[NSString
+                                         stringWithUTF8String:error.c_str()]];
+    }
+}
 
 void _ViewModelInstanceListener::onViewModelDeleted(
     const rive::ViewModelInstanceHandle handle, uint64_t requestId)
@@ -1522,7 +1531,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     [self executeCommand:^{
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->advanceStateMachine(handle, float(time));
+      self->_commandQueue->advanceStateMachine(handle, float(time), requestID);
     }];
 }
 
