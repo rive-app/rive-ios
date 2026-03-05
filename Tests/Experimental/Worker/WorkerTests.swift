@@ -69,14 +69,15 @@ class WorkerTests: XCTestCase {
     }
 
     @MainActor
-    func test_setAndRemoveImage_callsCommandQueueWithCorrectArguments() {
+    func test_setAndRemoveImage_callsCommandQueueWithCorrectArguments() async {
         let mockCommandQueue = MockCommandQueue()
         let mockCommandServer = MockCommandServer()
+        let device = await MetalDevice.shared.defaultDevice()!.value
         let workerService = WorkerService(
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
+                renderContext: RiveRenderContext(device: device)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
@@ -106,14 +107,15 @@ class WorkerTests: XCTestCase {
     }
     
     @MainActor
-    func test_setAndRemoveFont_callsCommandQueueWithCorrectArguments() {
+    func test_setAndRemoveFont_callsCommandQueueWithCorrectArguments() async {
         let mockCommandQueue = MockCommandQueue()
         let mockCommandServer = MockCommandServer()
+        let device = await MetalDevice.shared.defaultDevice()!.value
         let workerService = WorkerService(
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
+                renderContext: RiveRenderContext(device: device)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
@@ -143,14 +145,15 @@ class WorkerTests: XCTestCase {
     }
     
     @MainActor
-    func test_setAndRemoveAudio_callsCommandQueueWithCorrectArguments() {
+    func test_setAndRemoveAudio_callsCommandQueueWithCorrectArguments() async {
         let mockCommandQueue = MockCommandQueue()
         let mockCommandServer = MockCommandServer()
+        let device = await MetalDevice.shared.defaultDevice()!.value
         let workerService = WorkerService(
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
+                renderContext: RiveRenderContext(device: device)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)

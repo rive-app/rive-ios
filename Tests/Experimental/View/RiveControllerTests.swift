@@ -207,7 +207,7 @@ final class RiveControllerTests: XCTestCase {
     private func makeController(
         dataBind: DataBind = .none
     ) async throws -> ControllerFixture {
-        let (file, commandQueue, _, _) = File.mock(fileHandle: 123)
+        let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
 
         let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue))
         let artboard = Artboard(

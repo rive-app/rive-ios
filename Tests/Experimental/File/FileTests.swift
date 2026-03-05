@@ -58,7 +58,7 @@ class FileTests: XCTestCase {
 
     @MainActor
     func test_getArtboardNames_withValidFileHandle_returnsArtboardNames() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 1)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
         let fileService = file.dependencies.fileService
         
         // Mock the command queue to trigger the onArtboardsListed callback
@@ -77,7 +77,7 @@ class FileTests: XCTestCase {
 
     @MainActor
     func test_getArtboardNames_withEmptyArtboardList_returnsEmptyArray() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 1)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
         let fileService = file.dependencies.fileService
         
         // Mock the command queue to trigger the onArtboardsListed callback
@@ -96,7 +96,7 @@ class FileTests: XCTestCase {
 
     @MainActor
     func test_getArtboardNames_passesCorrectFileHandle() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 42)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 42)
         let fileService = file.dependencies.fileService
         
         // Mock the command queue to trigger the onArtboardsListed callback
@@ -114,8 +114,8 @@ class FileTests: XCTestCase {
     
     @MainActor
     func test_createDefaultArtboard_returnsArtboardWithCorrectHandle() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         // Mock the command queue to return a specific artboard handle and capture the file handle
         var capturedFileHandle: UInt64 = 0
         mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _ in
@@ -131,7 +131,7 @@ class FileTests: XCTestCase {
 
     @MainActor
     func test_createArtboardNamed_returnsArtboardWithCorrectName() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
         
         // Mock the command queue to return artboard names for validation
@@ -162,7 +162,7 @@ class FileTests: XCTestCase {
     
     @MainActor
     func test_createArtboardNamed_withInvalidName_throwsError() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
         
         // Mock the command queue to return artboard names that don't include the requested name
@@ -192,8 +192,8 @@ class FileTests: XCTestCase {
     
     @MainActor
     func test_createViewModelInstance_returnsViewModelInstanceWithCorrectHandles() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -259,7 +259,7 @@ class FileTests: XCTestCase {
     
     @MainActor
     func test_createViewModelInstance_withNamedInstanceAndViewModel_returnsViewModelInstanceWithCorrectHandles() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
         
         // Mock the command queue to return view model names for validation
@@ -303,7 +303,7 @@ class FileTests: XCTestCase {
     
     @MainActor
     func test_createViewModelInstance_withInvalidViewModelName_throwsError() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
         
         // Mock the command queue to return view model names that don't include the requested name
@@ -329,7 +329,7 @@ class FileTests: XCTestCase {
     
     @MainActor
     func test_createViewModelInstance_withInvalidInstanceName_throwsError() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
         
         // Mock the command queue to return view model names for validation
@@ -364,18 +364,18 @@ class FileTests: XCTestCase {
     }
 
     @MainActor
-    func test_equality_withSameFileHandle_returnsTrue() {
-        let (file1, _, _, _) = File.mock(fileHandle: 1)
-        let (file2, _, _, _) = File.mock(fileHandle: 1)
-        
+    func test_equality_withSameFileHandle_returnsTrue() async {
+        let (file1, _, _, _) = await File.mock(fileHandle: 1)
+        let (file2, _, _, _) = await File.mock(fileHandle: 1)
+
         XCTAssertEqual(file1, file2)
     }
 
     @MainActor
-    func test_equality_withDifferentFileHandles_returnsFalse() {
-        let (file1, _, _, _) = File.mock(fileHandle: 1)
-        let (file2, _, _, _) = File.mock(fileHandle: 2)
-        
+    func test_equality_withDifferentFileHandles_returnsFalse() async {
+        let (file1, _, _, _) = await File.mock(fileHandle: 1)
+        let (file2, _, _, _) = await File.mock(fileHandle: 2)
+
         XCTAssertNotEqual(file1, file2)
     }
 
@@ -385,17 +385,12 @@ class FileTests: XCTestCase {
         let deleteFileListenerExpectation = expectation(description: "deleteFileListener called")
         let mockCommandQueue = MockCommandQueue()
         let mockCommandServer = MockCommandServer()
-        var file: File?
-        _ = file
-        let fileService: FileService = {
-            let result = File.mock(
-                fileHandle: 123,
-                commandQueue: mockCommandQueue,
-                commandServer: mockCommandServer
-            )
-            file = result.file
-            return result.file.dependencies.fileService
-        }()
+        var file: File? = await File.mock(
+            fileHandle: 123,
+            commandQueue: mockCommandQueue,
+            commandServer: mockCommandServer
+        ).file
+        let fileService = file!.dependencies.fileService
 
         mockCommandQueue.stubDeleteFile { fileHandle, requestID in
             XCTAssertEqual(fileHandle, 123)
@@ -412,9 +407,11 @@ class FileTests: XCTestCase {
             deleteFileListenerExpectation.fulfill()
         }
 
+        weak var weakFile = file
         autoreleasepool {
             file = nil
         }
+        XCTAssertNil(weakFile)
 
         await fulfillment(of: [deleteFileExpectation, deleteFileListenerExpectation], timeout: 1)
         XCTAssertEqual(mockCommandQueue.deleteFileCalls.count, 1)
@@ -424,8 +421,8 @@ class FileTests: XCTestCase {
     
     @MainActor
     func test_getDefaultViewModelInfo_withValidArtboard_returnsViewModelInfo() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -455,8 +452,8 @@ class FileTests: XCTestCase {
     
     @MainActor
     func test_getDefaultViewModelInfo_passesCorrectArtboardAndFileHandles() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 456)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 456)
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService

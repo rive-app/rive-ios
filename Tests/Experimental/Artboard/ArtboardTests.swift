@@ -140,7 +140,7 @@ class ArtboardTests: XCTestCase {
         let artboard = Artboard(dependencies: dependencies, artboardHandle: 1)
         
         // Create a mock file with dependencies
-        let (file, _, _, _) = File.mock(fileHandle: 123)
+        let (file, _, _, _) = await File.mock(fileHandle: 123)
 
         // Mock the command queue to trigger the onDefaultViewModelInfoReceived callback
         let expectation = expectation(description: "default view model info received")
@@ -175,7 +175,7 @@ class ArtboardTests: XCTestCase {
         let artboard = Artboard(dependencies: dependencies, artboardHandle: 42)
         
         // Create a mock file with dependencies
-        let (file, _, _, _) = File.mock(fileHandle: 456)
+        let (file, _, _, _) = await File.mock(fileHandle: 456)
 
         // Mock the command queue to verify correct handles are passed
         let expectation = expectation(description: "default view model info received")

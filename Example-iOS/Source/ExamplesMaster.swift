@@ -63,7 +63,8 @@ class ExamplesMasterTableViewController: UITableViewController {
     private let experimental: [(String, AnyView)] = [
         ("Simple - Marty", AnyView(MartyView())),
         ("Quick Start - Data Binding", AnyView(QuickStartView())),
-        ("Animation Player", AnyView(PlayerView()))
+        ("Animation Player", AnyView(PlayerView())),
+        ("Shared Worker", AnyView(SharedWorkerView()))
     ]
 }
 

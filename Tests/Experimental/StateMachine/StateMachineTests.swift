@@ -55,7 +55,7 @@ class StateMachineTests: XCTestCase {
     }
 
     @MainActor
-    func test_bindViewModelInstance_callsServiceWithCorrectParameters() {
+    func test_bindViewModelInstance_callsServiceWithCorrectParameters() async {
         let mockCommandQueue = MockCommandQueue()
         let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
         let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
@@ -75,7 +75,7 @@ class StateMachineTests: XCTestCase {
             return 456
         }
 
-        let (file, _, _, _) = File.mock(fileHandle: 1)
+        let (file, _, _, _) = await File.mock(fileHandle: 1)
 
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(
@@ -96,7 +96,7 @@ class StateMachineTests: XCTestCase {
 
         stateMachine.bindViewModelInstance(viewModelInstance)
 
-        wait(for: [expectation])
+        await fulfillment(of: [expectation], timeout: 1)
 
         XCTAssertEqual(capturedStateMachineHandle, 123)
         XCTAssertEqual(capturedViewModelInstanceHandle, 456)
