@@ -11,3 +11,8 @@
 
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING
+
+// Custom modulemap omitting the .Swift Clang submodule to prevent ODR errors
+// when CocoaPods consumers use a different Xcode/Swift version than the one
+// used to build this XCFramework.
+MODULEMAP_FILE = $(SRCROOT)/Source/RiveRuntime.modulemap
