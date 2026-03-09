@@ -98,17 +98,29 @@ class AudioTests: XCTestCase {
         XCTAssertEqual(commandQueue.deleteAudioCalls.count, 0)
         
         let deleteExpectation = expectation(description: "deleteAudio called")
+        let deleteListenerExpectation = expectation(description: "deleteAudioListener called")
         commandQueue.stubDeleteAudio { handle in
             XCTAssertEqual(handle, 100)
             deleteExpectation.fulfill()
+            guard let requestID = commandQueue.deleteAudioCalls.last?.requestID else {
+                XCTFail("Missing delete audio request ID")
+                return
+            }
+            audioService.onAudioSourceDeleted(handle, requestID: requestID)
+        }
+        commandQueue.stubDeleteAudioListener { handle in
+            XCTAssertEqual(handle, 100)
+            deleteListenerExpectation.fulfill()
         }
         
         audio = nil
         
-        await fulfillment(of: [deleteExpectation], timeout: 1)
+        await fulfillment(of: [deleteExpectation, deleteListenerExpectation], timeout: 1)
         
         XCTAssertEqual(commandQueue.deleteAudioCalls.count, 1)
+        XCTAssertEqual(commandQueue.deleteAudioListenerCalls.count, 1)
         XCTAssertEqual(commandQueue.deleteAudioCalls.first?.audioHandle, 100)
+        XCTAssertEqual(commandQueue.deleteAudioListenerCalls.first?.audioHandle, 100)
     }
 }
 

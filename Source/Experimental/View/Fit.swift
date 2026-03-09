@@ -28,6 +28,7 @@ public enum Fit: Equatable {
     /// Uses layout-based scaling with an explicit scale factor.
     case layout(scaleFactor: ScaleFactor)
 
+    @MainActor
     func bridged(from provider: ScaleProvider) -> (fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: CGFloat) {
         switch self {
         case .fill(let alignment):

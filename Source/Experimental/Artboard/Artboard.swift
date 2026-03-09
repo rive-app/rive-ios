@@ -67,7 +67,8 @@ public class Artboard: Equatable {
         let service = dependencies.artboardService
         let handle = artboardHandle
         Task { @MainActor in
-            service.deleteArtboard(handle)
+            guard let deletedHandle = try? await service.deleteArtboard(handle) else { return }
+            service.deleteArtboardListener(deletedHandle)
         }
     }
 

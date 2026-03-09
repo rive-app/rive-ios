@@ -24,25 +24,31 @@ public class Worker {
     private var images: [String: Image] = [:]
     private var fonts: [String: Font] = [:]
     private var audios: [String: Audio] = [:]
-    
-    /// Creates a new worker that spawns a new background instance of Rive.
-    ///
-    /// The worker will automatically start processing when initialized.
-    @MainActor
-    public convenience init() throws {
-        guard let device = MetalDevice.shared.defaultDevice() else {
-            throw WorkerError.missingDevice
-        }
-
-        self.init(device: device)
-    }
 
     @MainActor
     public convenience init() async throws {
         guard let device = await MetalDevice.shared.defaultDevice() else {
             throw WorkerError.missingDevice
         }
-        self.init(device: device)
+
+        let renderContext = await Task.detached(priority: .userInitiated) { () -> UncheckedSendable<RiveRenderContext> in
+            UncheckedSendable(value: RiveRenderContext(device: device.value))
+        }.value
+
+        let commandQueue = CommandQueue()
+        let commandServer = CommandServer(commandQueue: commandQueue, renderContext: renderContext.value)
+
+        self.init(
+            dependencies: .init(
+                workerService: .init(
+                    dependencies: .init(
+                        commandQueue: commandQueue,
+                        commandServer: commandServer,
+                        renderContext: renderContext.value
+                    )
+                )
+            )
+        )
     }
 
     @MainActor
@@ -76,7 +82,7 @@ public class Worker {
 
     deinit {
         let service = dependencies.workerService
-        DispatchQueue.main.async { [service] in
+        Task { @MainActor in
             service.stop()
         }
     }

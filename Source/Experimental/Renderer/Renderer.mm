@@ -182,6 +182,11 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
               return;
           }
 
+          if (artboard->didChange() == false)
+          {
+              return;
+          }
+
           auto stateMachine = server->getStateMachineInstance(
               reinterpret_cast<rive::StateMachineHandle>(
                   configuration.stateMachineHandle));

@@ -15,8 +15,8 @@ class RiveTests: XCTestCase {
     
     @MainActor
     func test_init_withAllParameters_succeeds() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)
         let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
@@ -46,8 +46,8 @@ class RiveTests: XCTestCase {
     
     @MainActor
     func test_init_withOptionalArtboard_createsDefaultArtboard() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardExpectation = expectation(description: "artboard created")
         var capturedFileHandle: UInt64 = 0
         mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _ in
@@ -75,15 +75,15 @@ class RiveTests: XCTestCase {
     
     @MainActor
     func test_init_withOptionalStateMachine_createsDefaultStateMachine() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)
         let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
         
         let stateMachineExpectation = expectation(description: "state machine created")
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle in
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _  in
             capturedArtboardHandle = artboardHandle
             stateMachineExpectation.fulfill()
             return 99
@@ -104,8 +104,8 @@ class RiveTests: XCTestCase {
     
     @MainActor
     func test_init_withBothOptional_createsBothDefaults() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardExpectation = expectation(description: "artboard created")
         var capturedFileHandle: UInt64 = 0
         mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _ in
@@ -116,7 +116,7 @@ class RiveTests: XCTestCase {
         
         let stateMachineExpectation = expectation(description: "state machine created")
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle in
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _ in
             capturedArtboardHandle = artboardHandle
             stateMachineExpectation.fulfill()
             return 99
@@ -138,8 +138,8 @@ class RiveTests: XCTestCase {
     
     @MainActor
     func test_init_withDataBindViewModelInstance_bindsToStateMachine() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)
         let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
@@ -187,8 +187,8 @@ class RiveTests: XCTestCase {
     
     @MainActor
     func test_init_withDataBindAuto_whenViewModelInstanceCreated_bindsToStateMachine() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)
         let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
@@ -233,8 +233,8 @@ class RiveTests: XCTestCase {
     
     @MainActor
     func test_init_withDataBindNone_doesNotBind() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
-        
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)
         let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
@@ -269,7 +269,7 @@ class RiveTests: XCTestCase {
     
     @MainActor
     func test_init_withDefaultDataBind_usesAuto() async throws {
-        let (file, mockCommandQueue, _, _) = File.mock(fileHandle: 123)
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)

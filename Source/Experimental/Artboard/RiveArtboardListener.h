@@ -72,6 +72,15 @@ NS_SWIFT_NAME(ArtboardListener)
                 message:(NSString*)message;
 
 /**
+ * Called when an artboard delete request completes.
+ *
+ * @param artboardHandle The handle of the artboard that was deleted.
+ * @param requestID The unique identifier for the request that completed.
+ */
+- (void)onArtboardDeleted:(uint64_t)artboardHandle
+                requestID:(uint64_t)requestID;
+
+/**
  * Called when default view model information is received for an artboard.
  *
  * This method is invoked by the command queue when a request for default view

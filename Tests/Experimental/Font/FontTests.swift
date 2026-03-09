@@ -97,17 +97,29 @@ class FontTests: XCTestCase {
         XCTAssertEqual(commandQueue.deleteFontCalls.count, 0)
         
         let deleteExpectation = expectation(description: "deleteFont called")
+        let deleteListenerExpectation = expectation(description: "deleteFontListener called")
         commandQueue.stubDeleteFont { handle in
             XCTAssertEqual(handle, 100)
             deleteExpectation.fulfill()
+            guard let requestID = commandQueue.deleteFontCalls.last?.requestID else {
+                XCTFail("Missing delete font request ID")
+                return
+            }
+            fontService.onFontDeleted(handle, requestID: requestID)
+        }
+        commandQueue.stubDeleteFontListener { handle in
+            XCTAssertEqual(handle, 100)
+            deleteListenerExpectation.fulfill()
         }
         
         font = nil
         
-        await fulfillment(of: [deleteExpectation], timeout: 1)
+        await fulfillment(of: [deleteExpectation, deleteListenerExpectation], timeout: 1)
         
         XCTAssertEqual(commandQueue.deleteFontCalls.count, 1)
+        XCTAssertEqual(commandQueue.deleteFontListenerCalls.count, 1)
         XCTAssertEqual(commandQueue.deleteFontCalls.first?.fontHandle, 100)
+        XCTAssertEqual(commandQueue.deleteFontListenerCalls.first?.fontHandle, 100)
     }
 }
 

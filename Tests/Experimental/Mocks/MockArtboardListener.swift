@@ -24,6 +24,11 @@ class MockArtboardListener: NSObject, ArtboardListener {
     func onArtboardError(_ artboardHandle: UInt64, requestID: UInt64, message: String) {
 
     }
+
+    func onArtboardDeleted(_ artboardHandle: UInt64, requestID: UInt64) {
+        capturedArtboardHandle = artboardHandle
+        capturedRequestID = requestID
+    }
     
     func onDefaultViewModelInfoReceived(_ artboardHandle: UInt64, requestID: UInt64, viewModelName: String, instanceName: String) {
         capturedArtboardHandle = artboardHandle

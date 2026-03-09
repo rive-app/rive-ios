@@ -19,7 +19,7 @@ struct AnyAsyncThrowingStreamContinuation {
     private let finishStream: () -> Void
     private let finishStreamThrowing: (Error) -> Void
 
-    init<T>(_ continuation: AsyncThrowingStream<T, Error>.Continuation) {
+    init<T: Sendable>(_ continuation: AsyncThrowingStream<T, Error>.Continuation) {
         yieldValue = { value in
             if let typedValue = value as? T {
                 continuation.yield(typedValue)

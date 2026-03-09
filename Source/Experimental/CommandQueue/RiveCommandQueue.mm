@@ -12,10 +12,10 @@
 #import <rive/command_server.hpp>
 #import <QuartzCore/CoreAnimation.h>
 #import "RiveArtboardListener.h"
+#import "RiveStateMachineListener.h"
 #import "RiveRenderImageListener.h"
 #import "RiveFontListener.h"
 #import "RiveAudioListener.h"
-#import "RiveViewModelInstanceData.h"
 #import "RivePrivateHeaders.h"
 #import "RiveExperimental_Private.hh"
 
@@ -153,6 +153,7 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
 }
 
 static rive::CommandQueue::PointerEvent RivePointerEventToCpp(
+    int pointerId,
     CGPoint position,
     CGSize screenBounds,
     RiveConfigurationFit fit,
@@ -166,6 +167,7 @@ static rive::CommandQueue::PointerEvent RivePointerEventToCpp(
         rive::Vec2D(screenBounds.width, screenBounds.height);
     cppEvent.position = rive::Vec2D(position.x, position.y);
     cppEvent.scaleFactor = scaleFactor;
+    cppEvent.pointerId = pointerId;
     return cppEvent;
 }
 
@@ -210,6 +212,9 @@ public:
     virtual void onArtboardError(const rive::ArtboardHandle handle,
                                  uint64_t requestId,
                                  std::string error) override;
+
+    virtual void onArtboardDeleted(const rive::ArtboardHandle handle,
+                                   uint64_t requestId) override;
 
     /**
      * Called when state machine names are listed for an artboard.
@@ -266,6 +271,16 @@ void _ArtboardListener::onArtboardError(const rive::ArtboardHandle handle,
     }
 }
 
+void _ArtboardListener::onArtboardDeleted(const rive::ArtboardHandle handle,
+                                          uint64_t requestId)
+{
+    if (_observer)
+    {
+        [_observer onArtboardDeleted:reinterpret_cast<uint64_t>(handle)
+                           requestID:requestId];
+    }
+}
+
 void _ArtboardListener::onStateMachinesListed(
     const rive::ArtboardHandle handle,
     uint64_t requestId,
@@ -302,6 +317,65 @@ void _ArtboardListener::onDefaultViewModelInfoReceived(
                                  requestID:requestId
                              viewModelName:viewModelNameObjC
                               instanceName:instanceNameObjC];
+    }
+}
+
+namespace
+{
+class _StateMachineListener : public rive::CommandQueue::StateMachineListener
+{
+public:
+    _StateMachineListener(id<RiveStateMachineListener> observer)
+    {
+        _observer = observer;
+    }
+
+    virtual void onStateMachineError(const rive::StateMachineHandle handle,
+                                     uint64_t requestId,
+                                     std::string error) override;
+
+    virtual void onStateMachineDeleted(const rive::StateMachineHandle handle,
+                                       uint64_t requestId) override;
+
+    virtual void onStateMachineSettled(const rive::StateMachineHandle handle,
+                                       uint64_t requestId) override;
+
+private:
+    __weak id<RiveStateMachineListener> _observer;
+};
+} // namespace
+
+void _StateMachineListener::onStateMachineError(
+    const rive::StateMachineHandle handle,
+    uint64_t requestId,
+    std::string error)
+{
+    if (_observer)
+    {
+        [_observer
+            onStateMachineError:reinterpret_cast<uint64_t>(handle)
+                      requestID:requestId
+                        message:[NSString stringWithUTF8String:error.c_str()]];
+    }
+}
+
+void _StateMachineListener::onStateMachineDeleted(
+    const rive::StateMachineHandle handle, uint64_t requestId)
+{
+    if (_observer)
+    {
+        [_observer onStateMachineDeleted:reinterpret_cast<uint64_t>(handle)
+                               requestID:requestId];
+    }
+}
+
+void _StateMachineListener::onStateMachineSettled(
+    const rive::StateMachineHandle handle, uint64_t requestId)
+{
+    if (_observer)
+    {
+        [_observer onStateMachineSettled:reinterpret_cast<uint64_t>(handle)
+                               requestID:requestId];
     }
 }
 
@@ -690,11 +764,26 @@ void _ViewModelInstanceListener::onViewModelInstanceError(
     const rive::ViewModelInstanceHandle handle,
     uint64_t requestId,
     std::string error)
-{}
+{
+    if (_observer)
+    {
+        [_observer
+            onViewModelInstanceError:reinterpret_cast<uint64_t>(handle)
+                           requestID:requestId
+                             message:[NSString
+                                         stringWithUTF8String:error.c_str()]];
+    }
+}
 
 void _ViewModelInstanceListener::onViewModelDeleted(
     const rive::ViewModelInstanceHandle handle, uint64_t requestId)
-{}
+{
+    if (_observer)
+    {
+        [_observer onViewModelDeleted:reinterpret_cast<uint64_t>(handle)
+                            requestID:requestId];
+    }
+}
 
 void _ViewModelInstanceListener::onViewModelDataReceived(
     const rive::ViewModelInstanceHandle handle,
@@ -703,13 +792,42 @@ void _ViewModelInstanceListener::onViewModelDataReceived(
 {
     if (_observer)
     {
-        // Convert C++ ViewModelInstanceData to Objective-C object
-        RiveViewModelInstanceData* dataObj =
-            [[RiveViewModelInstanceData alloc] initWithData:data];
+        NSMutableDictionary<NSString*, id>* dataDict =
+            [NSMutableDictionary dictionary];
+        RiveViewModelInstanceDataType type =
+            RiveViewModelInstanceDataTypeFromCpp(data.metaData.type);
+        dataDict[@"type"] = @(type);
+        dataDict[@"name"] =
+            [NSString stringWithUTF8String:data.metaData.name.c_str()];
+
+        switch (data.metaData.type)
+        {
+            case rive::DataType::boolean:
+                dataDict[@"booleanValue"] = @(data.boolValue);
+                break;
+            case rive::DataType::number:
+                dataDict[@"numberValue"] = @(data.numberValue);
+                break;
+            case rive::DataType::color:
+                dataDict[@"colorValue"] = @(data.colorValue);
+                break;
+            case rive::DataType::string:
+            case rive::DataType::enumType:
+                dataDict[@"stringValue"] =
+                    [NSString stringWithUTF8String:data.stringValue.c_str()];
+                break;
+            default:
+                if (!data.stringValue.empty())
+                {
+                    dataDict[@"stringValue"] = [NSString
+                        stringWithUTF8String:data.stringValue.c_str()];
+                }
+                break;
+        }
 
         [_observer onViewModelDataReceived:reinterpret_cast<uint64_t>(handle)
                                  requestID:requestId
-                                      data:dataObj];
+                                      data:dataDict];
     }
 }
 
@@ -909,6 +1027,9 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     /** Dictionary mapping artboard handles to their listeners for proper
      * cleanup */
     NSMutableDictionary<NSNumber*, NSValue*>* _artboardListeners;
+    /** Dictionary mapping state machine handles to their listeners for proper
+     * cleanup */
+    NSMutableDictionary<NSNumber*, NSValue*>* _stateMachineListeners;
     /** Dictionary mapping view model instance handles to their listeners for
      * proper cleanup */
     NSMutableDictionary<NSNumber*, NSValue*>* _viewModelInstanceListeners;
@@ -949,6 +1070,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         _commandQueue = rive::make_rcp<rive::CommandQueue>();
         _fileListeners = [[NSMutableDictionary alloc] init];
         _artboardListeners = [[NSMutableDictionary alloc] init];
+        _stateMachineListeners = [[NSMutableDictionary alloc] init];
         _viewModelInstanceListeners = [[NSMutableDictionary alloc] init];
         _renderImageListeners = [[NSMutableDictionary alloc] init];
         _fontListeners = [[NSMutableDictionary alloc] init];
@@ -982,6 +1104,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     {
         _ArtboardListener* listener =
             static_cast<_ArtboardListener*>(listenerValue.pointerValue);
+        delete listener;
+    }
+
+    // Clean up all state machine listeners
+    for (NSValue* listenerValue in _stateMachineListeners.allValues)
+    {
+        _StateMachineListener* listener =
+            static_cast<_StateMachineListener*>(listenerValue.pointerValue);
         delete listener;
     }
 
@@ -1021,6 +1151,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     _commandQueue = nullptr;
     _fileListeners = nil;
     _artboardListeners = nil;
+    _stateMachineListeners = nil;
     _viewModelInstanceListeners = nil;
     _renderImageListeners = nil;
     _fontListeners = nil;
@@ -1169,7 +1300,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteFile:(uint64_t)file requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      // Clean up the file listener
+      auto handle = reinterpret_cast<rive::FileHandle>(file);
+      self->_commandQueue->deleteFile(handle, requestID);
+    }];
+}
+
+- (void)deleteFileListener:(uint64_t)file
+{
+    [self executeCommand:^{
       NSValue* listenerValue = self->_fileListeners[@(file)];
       if (listenerValue)
       {
@@ -1178,9 +1316,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           delete listener;
           [self->_fileListeners removeObjectForKey:@(file)];
       }
-
-      auto handle = reinterpret_cast<rive::FileHandle>(file);
-      self->_commandQueue->deleteFile(handle, requestID);
     }];
 }
 
@@ -1283,7 +1418,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteArtboard:(uint64_t)artboard requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      // Remove and release the associated listener
+      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboard);
+      self->_commandQueue->deleteArtboard(handle, requestID);
+    }];
+}
+
+- (void)deleteArtboardListener:(uint64_t)artboard
+{
+    [self executeCommand:^{
       NSValue* listenerValue = self->_artboardListeners[@(artboard)];
       if (listenerValue)
       {
@@ -1292,9 +1434,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           delete listener;
           [self->_artboardListeners removeObjectForKey:@(artboard)];
       }
-
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboard);
-      self->_commandQueue->deleteArtboard(handle, requestID);
     }];
 }
 
@@ -1340,15 +1479,24 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     }];
 }
 
-- (uint64_t)createDefaultStateMachineFromArtboard:(uint64_t)artboardHandle
-                                        requestID:(uint64_t)requestID
+- (uint64_t)
+    createDefaultStateMachineFromArtboard:(uint64_t)artboardHandle
+                                 observer:(id<RiveStateMachineListener>)observer
+                                requestID:(uint64_t)requestID
 {
     return [self executeCommandWithReturn:^uint64_t {
+      auto listener = std::make_unique<_StateMachineListener>(observer);
       auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
       rive::StateMachineHandle stateMachineHandle =
           self->_commandQueue->instantiateDefaultStateMachine(
-              handle, nullptr, requestID);
-      return reinterpret_cast<uint64_t>(stateMachineHandle);
+              handle, listener.get(), requestID);
+
+      uint64_t stateMachineHandleUInt =
+          reinterpret_cast<uint64_t>(stateMachineHandle);
+      self->_stateMachineListeners[@(stateMachineHandleUInt)] =
+          [NSValue valueWithPointer:listener.release()];
+
+      return stateMachineHandleUInt;
     }];
 }
 
@@ -1356,15 +1504,23 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 
 - (uint64_t)createStateMachineNamed:(NSString*)name
                        fromArtboard:(uint64_t)artboardHandle
+                           observer:(id<RiveStateMachineListener>)observer
                           requestID:(uint64_t)requestID
 {
     return [self executeCommandWithReturn:^uint64_t {
+      auto listener = std::make_unique<_StateMachineListener>(observer);
       auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
       auto stdName = std::string([name UTF8String]);
       rive::StateMachineHandle stateMachineHandle =
           self->_commandQueue->instantiateStateMachineNamed(
-              handle, stdName, nullptr, requestID);
-      return reinterpret_cast<uint64_t>(stateMachineHandle);
+              handle, stdName, listener.get(), requestID);
+
+      uint64_t stateMachineHandleUInt =
+          reinterpret_cast<uint64_t>(stateMachineHandle);
+      self->_stateMachineListeners[@(stateMachineHandleUInt)] =
+          [NSValue valueWithPointer:listener.release()];
+
+      return stateMachineHandleUInt;
     }];
 }
 
@@ -1375,7 +1531,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     [self executeCommand:^{
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->advanceStateMachine(handle, float(time));
+      self->_commandQueue->advanceStateMachine(handle, float(time), requestID);
     }];
 }
 
@@ -1389,7 +1545,24 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     }];
 }
 
+- (void)deleteStateMachineListener:(uint64_t)stateMachineHandle
+{
+    [self executeCommand:^{
+      NSValue* listenerValue =
+          self->_stateMachineListeners[@(stateMachineHandle)];
+      if (listenerValue)
+      {
+          _StateMachineListener* listener =
+              static_cast<_StateMachineListener*>(listenerValue.pointerValue);
+          delete listener;
+          [self->_stateMachineListeners
+              removeObjectForKey:@(stateMachineHandle)];
+      }
+    }];
+}
+
 - (void)pointerMove:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit
@@ -1401,12 +1574,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
       rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          position, screenBounds, fit, alignment, scaleFactor);
+          id, position, screenBounds, fit, alignment, scaleFactor);
       self->_commandQueue->pointerMove(handle, cppEvent, requestID);
     }];
 }
 
 - (void)pointerDown:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit
@@ -1418,12 +1592,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
       rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          position, screenBounds, fit, alignment, scaleFactor);
+          id, position, screenBounds, fit, alignment, scaleFactor);
       self->_commandQueue->pointerDown(handle, cppEvent, requestID);
     }];
 }
 
 - (void)pointerUp:(uint64_t)stateMachineHandle
+               id:(int)id
          position:(CGPoint)position
      screenBounds:(CGSize)screenBounds
               fit:(RiveConfigurationFit)fit
@@ -1435,12 +1610,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
       rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          position, screenBounds, fit, alignment, scaleFactor);
+          id, position, screenBounds, fit, alignment, scaleFactor);
       self->_commandQueue->pointerUp(handle, cppEvent, requestID);
     }];
 }
 
 - (void)pointerExit:(uint64_t)stateMachineHandle
+                 id:(int)id
            position:(CGPoint)position
        screenBounds:(CGSize)screenBounds
                 fit:(RiveConfigurationFit)fit
@@ -1452,7 +1628,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto handle =
           reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
       rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          position, screenBounds, fit, alignment, scaleFactor);
+          id, position, screenBounds, fit, alignment, scaleFactor);
       self->_commandQueue->pointerExit(handle, cppEvent, requestID);
     }];
 }
@@ -1882,7 +2058,15 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                       requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
-      // Remove and release the associated listener
+      auto handle =
+          reinterpret_cast<rive::ViewModelInstanceHandle>(viewModelInstance);
+      self->_commandQueue->deleteViewModelInstance(handle, requestID);
+    }];
+}
+
+- (void)deleteViewModelInstanceListener:(uint64_t)viewModelInstance
+{
+    [self executeCommand:^{
       NSValue* listenerValue =
           self->_viewModelInstanceListeners[@(viewModelInstance)];
       if (listenerValue)
@@ -1894,10 +2078,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           [self->_viewModelInstanceListeners
               removeObjectForKey:@(viewModelInstance)];
       }
-
-      auto handle =
-          reinterpret_cast<rive::ViewModelInstanceHandle>(viewModelInstance);
-      self->_commandQueue->deleteViewModelInstance(handle, requestID);
     }];
 }
 
@@ -1964,6 +2144,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteImage:(uint64_t)renderImage requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::RenderImageHandle>(renderImage);
+      self->_commandQueue->deleteImage(handle, requestID);
+    }];
+}
+
+- (void)deleteImageListener:(uint64_t)renderImage
+{
+    [self executeCommand:^{
       NSValue* listenerValue = self->_renderImageListeners[@(renderImage)];
       if (listenerValue)
       {
@@ -1972,9 +2160,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           delete listener;
           [self->_renderImageListeners removeObjectForKey:@(renderImage)];
       }
-
-      auto handle = reinterpret_cast<rive::RenderImageHandle>(renderImage);
-      self->_commandQueue->deleteImage(handle, requestID);
     }];
 }
 
@@ -2025,6 +2210,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteFont:(uint64_t)font requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::FontHandle>(font);
+      self->_commandQueue->deleteFont(handle, requestID);
+    }];
+}
+
+- (void)deleteFontListener:(uint64_t)font
+{
+    [self executeCommand:^{
       NSValue* listenerValue = self->_fontListeners[@(font)];
       if (listenerValue)
       {
@@ -2033,9 +2226,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           delete listener;
           [self->_fontListeners removeObjectForKey:@(font)];
       }
-
-      auto handle = reinterpret_cast<rive::FontHandle>(font);
-      self->_commandQueue->deleteFont(handle, requestID);
     }];
 }
 
@@ -2086,6 +2276,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)deleteAudio:(uint64_t)audio requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::AudioSourceHandle>(audio);
+      self->_commandQueue->deleteAudio(handle, requestID);
+    }];
+}
+
+- (void)deleteAudioListener:(uint64_t)audio
+{
+    [self executeCommand:^{
       NSValue* listenerValue = self->_audioListeners[@(audio)];
       if (listenerValue)
       {
@@ -2094,9 +2292,6 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           delete listener;
           [self->_audioListeners removeObjectForKey:@(audio)];
       }
-
-      auto handle = reinterpret_cast<rive::AudioSourceHandle>(audio);
-      self->_commandQueue->deleteAudio(handle, requestID);
     }];
 }
 

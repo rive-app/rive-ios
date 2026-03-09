@@ -16,6 +16,7 @@ public enum ViewModelInstanceError: LocalizedError {
     case missingData
     case valueMismatch(String, String)
     case error(Error)
+    case message(String)
 
     public var errorDescription: String? {
         switch self {
@@ -25,6 +26,8 @@ public enum ViewModelInstanceError: LocalizedError {
             "Expected value of type \(expected), received value of type \(actual)"
         case .error(let error):
             error.localizedDescription
+        case .message(let message):
+            message
         }
     }
 }

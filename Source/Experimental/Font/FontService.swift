@@ -47,13 +47,26 @@ class FontService: NSObject, FontListener {
 
     /// Deletes a font via the command queue.
     ///
-    /// After deletion, the font handle becomes invalid. This operation is irreversible.
-    /// The `onFontDeleted` callback is invoked when the deletion completes, but no
-    /// continuation handling is required for this fire-and-forget operation.
+    /// The continuation is resumed when `onFontDeleted` is called.
+    ///
+    /// - Parameter fontHandle: The font handle to delete
+    /// - Returns: The font handle that was deleted
     @MainActor
-    func deleteFont(_ fontHandle: Font.FontHandle) {
-        let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.deleteFont(fontHandle, requestID: requestID)
+    func deleteFont(_ fontHandle: Font.FontHandle) async throws -> Font.FontHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = continuation
+            commandQueue.deleteFont(fontHandle, requestID: requestID)
+        }
+    }
+
+    /// Deletes a font listener via the command queue.
+    ///
+    /// - Parameter fontHandle: The font handle whose listener should be removed
+    @MainActor
+    func deleteFontListener(_ fontHandle: Font.FontHandle) {
+        dependencies.commandQueue.deleteFontListener(fontHandle)
     }
 
     /// Called when font decoding completes successfully.
@@ -84,10 +97,15 @@ class FontService: NSObject, FontListener {
 
     /// Called when a font is deleted.
     ///
-    /// Listener callback invoked by the command server. Font deletions are fire-and-forget
-    /// operations that don't require continuation handling.
+    /// Listener callback invoked by the command server. Resumes the continuation with the font handle.
     nonisolated func onFontDeleted(_ fontHandle: UInt64, requestID: UInt64) {
+        Task { @MainActor in
+            guard let continuation = continuations.removeValue(forKey: requestID) else {
+                return
+            }
 
+            continuation.resume(returning: fontHandle)
+        }
     }
 }
 

@@ -13,7 +13,7 @@ import Foundation
 /// This struct contains information about a property defined in a view model, including
 /// its type, name, and optional metadata. It is used to discover the structure of view models.
 @_spi(RiveExperimental)
-public struct ViewModelProperty: Equatable {
+public struct ViewModelProperty: Sendable, Equatable {
     /// The data type of the property within the view model.
     public let type: DataType
     
@@ -64,7 +64,7 @@ extension ViewModelProperty {
     /// This enum wraps `RiveViewModelInstanceDataType` to avoid exposing Objective-C types
     /// in the public Swift API.
     @_spi(RiveExperimental)
-    public enum DataType: Equatable {
+    public enum DataType: Sendable, Equatable {
         /// None.
         case none
         /// String.

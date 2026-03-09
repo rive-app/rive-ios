@@ -11,10 +11,10 @@ import SwiftUI
 
 struct MartyView: View {
     var body: some View {
-        RiveUIView(rive: {
-            let worker = Worker()
+        AsyncRiveUIViewRepresentable {
+            let worker = try await Worker()
             let file = try await File(source: .local("marty_v2", Bundle.main), worker: worker)
             return try await Rive(file: file)
-        }).view()
+        }
     }
 }

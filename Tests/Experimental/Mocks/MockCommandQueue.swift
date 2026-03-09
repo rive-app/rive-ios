@@ -26,6 +26,8 @@ class MockCommandQueue: CommandQueueProtocol {
     private var startStub: (() -> Void)?
     private var stopStub: (() -> Void)?
     private var disconnectStub: (() -> Void)?
+    private var deleteFileStub: ((UInt64, UInt64) -> Void)?
+    private var deleteFileListenerStub: ((UInt64) -> Void)?
     private var requestArtboardNamesStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelNamesStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelEnumsStub: ((UInt64, UInt64) -> Void)?
@@ -35,8 +37,8 @@ class MockCommandQueue: CommandQueueProtocol {
     private var createArtboardNamedStub: ((String, UInt64, any ArtboardListener) -> UInt64)?
     private var requestStateMachineNamesStub: ((UInt64, UInt64) -> Void)?
     private var requestDefaultViewModelInfoStub: ((UInt64, UInt64, UInt64) -> Void)?
-    private var createDefaultStateMachineStub: ((UInt64) -> UInt64)?
-    private var createStateMachineNamedStub: ((String, UInt64) -> UInt64)?
+    private var createDefaultStateMachineStub: ((UInt64, any StateMachineListener) -> UInt64)?
+    private var createStateMachineNamedStub: ((String, UInt64, any StateMachineListener) -> UInt64)?
     private var createBlankViewModelInstanceStub: ((UInt64, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
     private var createBlankViewModelInstanceNamedStub: ((String, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
     private var createDefaultViewModelInstanceStub: ((UInt64, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
@@ -45,6 +47,8 @@ class MockCommandQueue: CommandQueueProtocol {
     private var createViewModelInstanceNamedStub: ((String, String, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
     private var referenceNestedViewModelInstanceStub: ((UInt64, String, any ViewModelInstanceListener, UInt64) -> UInt64)?
     private var referenceListViewModelInstanceStub: ((UInt64, String, Int32, any ViewModelInstanceListener, UInt64) -> UInt64)?
+    private var deleteViewModelInstanceStub: ((UInt64, UInt64) -> Void)?
+    private var deleteViewModelInstanceListenerStub: ((UInt64) -> Void)?
     private var requestViewModelInstanceStringStub: ((UInt64, String, UInt64) -> Void)?
     private var requestViewModelInstanceNumberStub: ((UInt64, String, UInt64) -> Void)?
     private var requestViewModelInstanceBoolStub: ((UInt64, String, UInt64) -> Void)?
@@ -76,6 +80,7 @@ class MockCommandQueue: CommandQueueProtocol {
     private(set) var stopCalls: [StopCall] = []
     private(set) var disconnectCalls: [DisconnectCall] = []
     private(set) var deleteFileCalls: [DeleteFileCall] = []
+    private(set) var deleteFileListenerCalls: [DeleteFileListenerCall] = []
     private(set) var requestArtboardNamesCalls: [RequestArtboardNamesCall] = []
     private(set) var requestViewModelNamesCalls: [RequestViewModelNamesCall] = []
     private(set) var requestViewModelEnumsCalls: [RequestViewModelEnumsCall] = []
@@ -87,9 +92,13 @@ class MockCommandQueue: CommandQueueProtocol {
     private(set) var requestDefaultViewModelInfoCalls: [RequestDefaultViewModelInfoCall] = []
     private(set) var createDefaultStateMachineCalls: [CreateDefaultStateMachineCall] = []
     private(set) var createStateMachineNamedCalls: [CreateStateMachineNamedCall] = []
+    private(set) var deleteViewModelInstanceCalls: [DeleteViewModelInstanceCall] = []
+    private(set) var deleteViewModelInstanceListenerCalls: [DeleteViewModelInstanceListenerCall] = []
 
-    private var deleteArtboardStub: ((UInt64) -> Void)?
+    private var deleteArtboardStub: ((UInt64, UInt64) -> Void)?
+    private var deleteArtboardListenerStub: ((UInt64) -> Void)?
     private(set) var deleteArtboardCalls: [DeleteArtboardCall] = []
+    private(set) var deleteArtboardListenerCalls: [DeleteArtboardListenerCall] = []
     private var setArtboardSizeStub: ((UInt64, Float, Float, Float, UInt64) -> Void)?
     private(set) var setArtboardSizeCalls: [SetArtboardSizeCall] = []
     private var resetArtboardSizeStub: ((UInt64, UInt64) -> Void)?
@@ -98,22 +107,26 @@ class MockCommandQueue: CommandQueueProtocol {
     private(set) var advanceStateMachineCalls: [AdvanceStateMachineCall] = []
     private var deleteStateMachineStub: ((UInt64) -> Void)?
     private(set) var deleteStateMachineCalls: [DeleteStateMachineCall] = []
+    private var deleteStateMachineListenerStub: ((UInt64) -> Void)?
+    private(set) var deleteStateMachineListenerCalls: [DeleteStateMachineListenerCall] = []
     private var bindViewModelInstanceStub: ((UInt64, UInt64, UInt64) -> Void)?
     private(set) var bindViewModelInstanceCalls: [BindViewModelInstanceCall] = []
     
-    private var pointerMoveStub: ((UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
+    private var pointerMoveStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerMoveCalls: [PointerMoveCall] = []
-    private var pointerDownStub: ((UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
+    private var pointerDownStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerDownCalls: [PointerDownCall] = []
-    private var pointerUpStub: ((UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
+    private var pointerUpStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerUpCalls: [PointerUpCall] = []
-    private var pointerExitStub: ((UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
+    private var pointerExitStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerExitCalls: [PointerExitCall] = []
     
     private var decodeImageStub: ((Data, any RenderImageListener, UInt64) -> UInt64)?
     private(set) var decodeImageCalls: [DecodeImageCall] = []
     private var deleteImageStub: ((UInt64) -> Void)?
+    private var deleteImageListenerStub: ((UInt64) -> Void)?
     private(set) var deleteImageCalls: [DeleteImageCall] = []
+    private(set) var deleteImageListenerCalls: [DeleteImageListenerCall] = []
     private(set) var addGlobalImageAssetCalls: [AddGlobalImageAssetCall] = []
     private(set) var removeGlobalImageAssetCalls: [RemoveGlobalImageAssetCall] = []
     private var renderImageHandle: UInt64 = 0
@@ -122,7 +135,9 @@ class MockCommandQueue: CommandQueueProtocol {
     private var decodeFontStub: ((Data, any FontListener, UInt64) -> UInt64)?
     private(set) var decodeFontCalls: [DecodeFontCall] = []
     private var deleteFontStub: ((UInt64) -> Void)?
+    private var deleteFontListenerStub: ((UInt64) -> Void)?
     private(set) var deleteFontCalls: [DeleteFontCall] = []
+    private(set) var deleteFontListenerCalls: [DeleteFontListenerCall] = []
     private(set) var addGlobalFontAssetCalls: [AddGlobalFontAssetCall] = []
     private(set) var removeGlobalFontAssetCalls: [RemoveGlobalFontAssetCall] = []
     private var fontHandle: UInt64 = 0
@@ -131,7 +146,9 @@ class MockCommandQueue: CommandQueueProtocol {
     private var decodeAudioStub: ((Data, any AudioListener, UInt64) -> UInt64)?
     private(set) var decodeAudioCalls: [DecodeAudioCall] = []
     private var deleteAudioStub: ((UInt64) -> Void)?
+    private var deleteAudioListenerStub: ((UInt64) -> Void)?
     private(set) var deleteAudioCalls: [DeleteAudioCall] = []
+    private(set) var deleteAudioListenerCalls: [DeleteAudioListenerCall] = []
     private(set) var addGlobalAudioAssetCalls: [AddGlobalAudioAssetCall] = []
     private(set) var removeGlobalAudioAssetCalls: [RemoveGlobalAudioAssetCall] = []
     private var audioHandle: UInt64 = 0
@@ -166,6 +183,14 @@ class MockCommandQueue: CommandQueueProtocol {
 
     func stubLoadFile(_ stub: @escaping (Data, any FileListener, UInt64) -> UInt64) {
         loadFileStub = stub
+    }
+
+    func stubDeleteFile(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        deleteFileStub = stub
+    }
+
+    func stubDeleteFileListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteFileListenerStub = stub
     }
 
     func stubRequestArtboardNames(_ stub: @escaping (UInt64, UInt64) -> Void) {
@@ -204,11 +229,11 @@ class MockCommandQueue: CommandQueueProtocol {
         requestDefaultViewModelInfoStub = stub
     }
     
-    func stubCreateDefaultStateMachine(_ stub: @escaping (UInt64) -> UInt64) {
+    func stubCreateDefaultStateMachine(_ stub: @escaping (UInt64, any StateMachineListener) -> UInt64) {
         createDefaultStateMachineStub = stub
     }
     
-    func stubCreateStateMachineNamed(_ stub: @escaping (String, UInt64) -> UInt64) {
+    func stubCreateStateMachineNamed(_ stub: @escaping (String, UInt64, any StateMachineListener) -> UInt64) {
         createStateMachineNamedStub = stub
     }
     
@@ -235,6 +260,14 @@ class MockCommandQueue: CommandQueueProtocol {
     func stubCreateViewModelInstanceNamed(_ stub: @escaping (String, String, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64) {
         createViewModelInstanceNamedStub = stub
     }
+
+    func stubDeleteViewModelInstance(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        deleteViewModelInstanceStub = stub
+    }
+
+    func stubDeleteViewModelInstanceListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteViewModelInstanceListenerStub = stub
+    }
     
     func stubRequestViewModelInstanceString(_ stub: @escaping (UInt64, String, UInt64) -> Void) {
         requestViewModelInstanceStringStub = stub
@@ -260,8 +293,12 @@ class MockCommandQueue: CommandQueueProtocol {
         unsubscribeStub = stub
     }
 
-    func stubDeleteArtboard(_ stub: @escaping (UInt64) -> Void) {
+    func stubDeleteArtboard(_ stub: @escaping (UInt64, UInt64) -> Void) {
         deleteArtboardStub = stub
+    }
+
+    func stubDeleteArtboardListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteArtboardListenerStub = stub
     }
 
     func stubSetArtboardSize(_ stub: @escaping (UInt64, Float, Float, Float, UInt64) -> Void) {
@@ -280,23 +317,27 @@ class MockCommandQueue: CommandQueueProtocol {
         deleteStateMachineStub = stub
     }
 
+    func stubDeleteStateMachineListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteStateMachineListenerStub = stub
+    }
+
     func stubBindViewModelInstance(_ stub: @escaping (UInt64, UInt64, UInt64) -> Void) {
         bindViewModelInstanceStub = stub
     }
     
-    func stubPointerMove(_ stub: @escaping (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
+    func stubPointerMove(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerMoveStub = stub
     }
     
-    func stubPointerDown(_ stub: @escaping (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
+    func stubPointerDown(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerDownStub = stub
     }
     
-    func stubPointerUp(_ stub: @escaping (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
+    func stubPointerUp(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerUpStub = stub
     }
     
-    func stubPointerExit(_ stub: @escaping (UInt64, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
+    func stubPointerExit(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerExitStub = stub
     }
     
@@ -307,6 +348,10 @@ class MockCommandQueue: CommandQueueProtocol {
     func stubDeleteImage(_ stub: @escaping (UInt64) -> Void) {
         deleteImageStub = stub
     }
+
+    func stubDeleteImageListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteImageListenerStub = stub
+    }
     
     func stubDecodeFont(_ stub: @escaping (Data, any FontListener, UInt64) -> UInt64) {
         decodeFontStub = stub
@@ -315,6 +360,10 @@ class MockCommandQueue: CommandQueueProtocol {
     func stubDeleteFont(_ stub: @escaping (UInt64) -> Void) {
         deleteFontStub = stub
     }
+
+    func stubDeleteFontListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteFontListenerStub = stub
+    }
     
     func stubDecodeAudio(_ stub: @escaping (Data, any AudioListener, UInt64) -> UInt64) {
         decodeAudioStub = stub
@@ -322,6 +371,10 @@ class MockCommandQueue: CommandQueueProtocol {
     
     func stubDeleteAudio(_ stub: @escaping (UInt64) -> Void) {
         deleteAudioStub = stub
+    }
+
+    func stubDeleteAudioListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteAudioListenerStub = stub
     }
 
     func loadFile(_ data: Data, observer: any FileListener, requestID: UInt64) -> UInt64 {
@@ -377,11 +430,22 @@ class MockCommandQueue: CommandQueueProtocol {
     
     func deleteFile(_ file: UInt64, requestID: UInt64) {
         deleteFileCalls.append(DeleteFileCall(fileHandle: file, requestID: requestID))
+        deleteFileStub?(file, requestID)
+    }
+
+    func deleteFileListener(_ file: UInt64) {
+        deleteFileListenerCalls.append(DeleteFileListenerCall(fileHandle: file))
+        deleteFileListenerStub?(file)
     }
 
     func deleteArtboard(_ artboard: UInt64, requestID: UInt64) {
         deleteArtboardCalls.append(DeleteArtboardCall(artboardHandle: artboard, requestID: requestID))
-        deleteArtboardStub?(artboard)
+        deleteArtboardStub?(artboard, requestID)
+    }
+
+    func deleteArtboardListener(_ artboard: UInt64) {
+        deleteArtboardListenerCalls.append(DeleteArtboardListenerCall(artboardHandle: artboard))
+        deleteArtboardListenerStub?(artboard)
     }
 
     func setArtboardSize(_ artboardHandle: UInt64, width: Float, height: Float, scale: Float, requestID: UInt64) {
@@ -404,19 +468,30 @@ class MockCommandQueue: CommandQueueProtocol {
         requestDefaultViewModelInfoStub?(artboardHandle, fileHandle, requestID)
     }
 
-    func createDefaultStateMachine(fromArtboard artboardHandle: UInt64, requestID: UInt64) -> UInt64 {
-        createDefaultStateMachineCalls.append(CreateDefaultStateMachineCall(artboardHandle: artboardHandle))
+    func createDefaultStateMachine(fromArtboard artboardHandle: UInt64, observer: any StateMachineListener, requestID: UInt64) -> UInt64 {
+        createDefaultStateMachineCalls.append(
+            CreateDefaultStateMachineCall(
+                artboardHandle: artboardHandle,
+                observer: observer
+            )
+        )
         if let stub = createDefaultStateMachineStub {
-            return stub(artboardHandle)
+            return stub(artboardHandle, observer)
         }
         stateMachineHandle += 1
         return stateMachineHandle
     }
 
-    func createStateMachineNamed(_ name: String, fromArtboard artboardHandle: UInt64, requestID: UInt64) -> UInt64 {
-        createStateMachineNamedCalls.append(CreateStateMachineNamedCall(name: name, artboardHandle: artboardHandle))
+    func createStateMachineNamed(_ name: String, fromArtboard artboardHandle: UInt64, observer: any StateMachineListener, requestID: UInt64) -> UInt64 {
+        createStateMachineNamedCalls.append(
+            CreateStateMachineNamedCall(
+                name: name,
+                artboardHandle: artboardHandle,
+                observer: observer
+            )
+        )
         if let stub = createStateMachineNamedStub {
-            return stub(name, artboardHandle)
+            return stub(name, artboardHandle, observer)
         }
         stateMachineHandle += 1
         return stateMachineHandle
@@ -432,6 +507,13 @@ class MockCommandQueue: CommandQueueProtocol {
         deleteStateMachineStub?(stateMachineHandle)
     }
 
+    func deleteStateMachineListener(_ stateMachineHandle: UInt64) {
+        deleteStateMachineListenerCalls.append(
+            DeleteStateMachineListenerCall(stateMachineHandle: stateMachineHandle)
+        )
+        deleteStateMachineListenerStub?(stateMachineHandle)
+    }
+
     func bindViewModelInstance(_ stateMachineHandle: UInt64, toViewModelInstance viewModelInstanceHandle: UInt64, requestID: UInt64) {
         bindViewModelInstanceCalls.append(BindViewModelInstanceCall(
             stateMachineHandle: stateMachineHandle,
@@ -441,9 +523,10 @@ class MockCommandQueue: CommandQueueProtocol {
         bindViewModelInstanceStub?(stateMachineHandle, viewModelInstanceHandle, requestID)
     }
     
-    func pointerMove(_ stateMachineHandle: UInt64, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
+    func pointerMove(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerMoveCalls.append(PointerMoveCall(
             stateMachineHandle: stateMachineHandle,
+            id: id,
             position: position,
             screenBounds: screenBounds,
             fit: fit,
@@ -451,12 +534,13 @@ class MockCommandQueue: CommandQueueProtocol {
             scaleFactor: scaleFactor,
             requestID: requestID
         ))
-        pointerMoveStub?(stateMachineHandle, position, screenBounds, fit, alignment, scaleFactor, requestID)
+        pointerMoveStub?(stateMachineHandle, id, position, screenBounds, fit, alignment, scaleFactor, requestID)
     }
     
-    func pointerDown(_ stateMachineHandle: UInt64, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
+    func pointerDown(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerDownCalls.append(PointerDownCall(
             stateMachineHandle: stateMachineHandle,
+            id: id,
             position: position,
             screenBounds: screenBounds,
             fit: fit,
@@ -464,12 +548,13 @@ class MockCommandQueue: CommandQueueProtocol {
             scaleFactor: scaleFactor,
             requestID: requestID
         ))
-        pointerDownStub?(stateMachineHandle, position, screenBounds, fit, alignment, scaleFactor, requestID)
+        pointerDownStub?(stateMachineHandle, id, position, screenBounds, fit, alignment, scaleFactor, requestID)
     }
     
-    func pointerUp(_ stateMachineHandle: UInt64, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
+    func pointerUp(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerUpCalls.append(PointerUpCall(
             stateMachineHandle: stateMachineHandle,
+            id: id,
             position: position,
             screenBounds: screenBounds,
             fit: fit,
@@ -477,12 +562,13 @@ class MockCommandQueue: CommandQueueProtocol {
             scaleFactor: scaleFactor,
             requestID: requestID
         ))
-        pointerUpStub?(stateMachineHandle, position, screenBounds, fit, alignment, scaleFactor, requestID)
+        pointerUpStub?(stateMachineHandle, id, position, screenBounds, fit, alignment, scaleFactor, requestID)
     }
     
-    func pointerExit(_ stateMachineHandle: UInt64, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
+    func pointerExit(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerExitCalls.append(PointerExitCall(
             stateMachineHandle: stateMachineHandle,
+            id: id,
             position: position,
             screenBounds: screenBounds,
             fit: fit,
@@ -490,7 +576,7 @@ class MockCommandQueue: CommandQueueProtocol {
             scaleFactor: scaleFactor,
             requestID: requestID
         ))
-        pointerExitStub?(stateMachineHandle, position, screenBounds, fit, alignment, scaleFactor, requestID)
+        pointerExitStub?(stateMachineHandle, id, position, screenBounds, fit, alignment, scaleFactor, requestID)
     }
 
     func createDrawKey() -> UInt64 {
@@ -704,7 +790,22 @@ class MockCommandQueue: CommandQueueProtocol {
     }
 
     func deleteViewModelInstance(_ viewModelInstance: UInt64, requestID: UInt64) {
+        deleteViewModelInstanceCalls.append(
+            DeleteViewModelInstanceCall(
+                viewModelInstanceHandle: viewModelInstance,
+                requestID: requestID
+            )
+        )
+        deleteViewModelInstanceStub?(viewModelInstance, requestID)
+    }
 
+    func deleteViewModelInstanceListener(_ viewModelInstance: UInt64) {
+        deleteViewModelInstanceListenerCalls.append(
+            DeleteViewModelInstanceListenerCall(
+                viewModelInstanceHandle: viewModelInstance
+            )
+        )
+        deleteViewModelInstanceListenerStub?(viewModelInstance)
     }
     
     func subscribe(toViewModelProperty viewModelInstance: UInt64, path: String, type: RiveViewModelInstanceDataType, requestID: UInt64) {
@@ -746,6 +847,11 @@ class MockCommandQueue: CommandQueueProtocol {
         deleteImageCalls.append(DeleteImageCall(renderImageHandle: renderImage, requestID: requestID))
         deleteImageStub?(renderImage)
     }
+
+    func deleteImageListener(_ renderImage: UInt64) {
+        deleteImageListenerCalls.append(DeleteImageListenerCall(renderImageHandle: renderImage))
+        deleteImageListenerStub?(renderImage)
+    }
     
     func addGlobalImageAsset(_ name: String, imageHandle: UInt64, requestID: UInt64) {
         addGlobalImageAssetCalls.append(AddGlobalImageAssetCall(name: name, imageHandle: imageHandle, requestID: requestID))
@@ -771,6 +877,11 @@ class MockCommandQueue: CommandQueueProtocol {
         deleteFontCalls.append(DeleteFontCall(fontHandle: font, requestID: requestID))
         deleteFontStub?(font)
     }
+
+    func deleteFontListener(_ font: UInt64) {
+        deleteFontListenerCalls.append(DeleteFontListenerCall(fontHandle: font))
+        deleteFontListenerStub?(font)
+    }
     
     func addGlobalFontAsset(_ name: String, fontHandle: UInt64, requestID: UInt64) {
         addGlobalFontAssetCalls.append(AddGlobalFontAssetCall(name: name, fontHandle: fontHandle, requestID: requestID))
@@ -795,6 +906,11 @@ class MockCommandQueue: CommandQueueProtocol {
     func deleteAudio(_ audio: UInt64, requestID: UInt64) {
         deleteAudioCalls.append(DeleteAudioCall(audioHandle: audio, requestID: requestID))
         deleteAudioStub?(audio)
+    }
+
+    func deleteAudioListener(_ audio: UInt64) {
+        deleteAudioListenerCalls.append(DeleteAudioListenerCall(audioHandle: audio))
+        deleteAudioListenerStub?(audio)
     }
     
     func addGlobalAudioAsset(_ name: String, audioHandle: UInt64, requestID: UInt64) {
@@ -881,6 +997,10 @@ extension MockCommandQueue {
         let requestID: UInt64
     }
 
+    struct DeleteFileListenerCall {
+        let fileHandle: UInt64
+    }
+
     struct RequestArtboardNamesCall {
         let fileHandle: UInt64
         let requestID: UInt64
@@ -924,6 +1044,10 @@ extension MockCommandQueue {
         let requestID: UInt64
     }
 
+    struct DeleteArtboardListenerCall {
+        let artboardHandle: UInt64
+    }
+
     struct SetArtboardSizeCall {
         let artboardHandle: UInt64
         let width: Float
@@ -950,11 +1074,13 @@ extension MockCommandQueue {
     
     struct CreateDefaultStateMachineCall {
         let artboardHandle: UInt64
+        let observer: any StateMachineListener
     }
     
     struct CreateStateMachineNamedCall {
         let name: String
         let artboardHandle: UInt64
+        let observer: any StateMachineListener
     }
 
     struct AdvanceStateMachineCall {
@@ -968,6 +1094,19 @@ extension MockCommandQueue {
         let requestID: UInt64
     }
 
+    struct DeleteStateMachineListenerCall {
+        let stateMachineHandle: UInt64
+    }
+
+    struct DeleteViewModelInstanceCall {
+        let viewModelInstanceHandle: UInt64
+        let requestID: UInt64
+    }
+
+    struct DeleteViewModelInstanceListenerCall {
+        let viewModelInstanceHandle: UInt64
+    }
+
     struct BindViewModelInstanceCall {
         let stateMachineHandle: UInt64
         let viewModelInstanceHandle: UInt64
@@ -976,6 +1115,7 @@ extension MockCommandQueue {
     
     struct PointerMoveCall {
         let stateMachineHandle: UInt64
+        let id: Int32
         let position: CGPoint
         let screenBounds: CGSize
         let fit: RiveConfigurationFit
@@ -986,6 +1126,7 @@ extension MockCommandQueue {
     
     struct PointerDownCall {
         let stateMachineHandle: UInt64
+        let id: Int32
         let position: CGPoint
         let screenBounds: CGSize
         let fit: RiveConfigurationFit
@@ -996,6 +1137,7 @@ extension MockCommandQueue {
     
     struct PointerUpCall {
         let stateMachineHandle: UInt64
+        let id: Int32
         let position: CGPoint
         let screenBounds: CGSize
         let fit: RiveConfigurationFit
@@ -1006,6 +1148,7 @@ extension MockCommandQueue {
     
     struct PointerExitCall {
         let stateMachineHandle: UInt64
+        let id: Int32
         let position: CGPoint
         let screenBounds: CGSize
         let fit: RiveConfigurationFit
@@ -1115,6 +1258,10 @@ extension MockCommandQueue {
         let renderImageHandle: UInt64
         let requestID: UInt64
     }
+
+    struct DeleteImageListenerCall {
+        let renderImageHandle: UInt64
+    }
     
     struct AppendViewModelInstanceListViewModelCall {
         let viewModelInstanceHandle: UInt64
@@ -1175,6 +1322,10 @@ extension MockCommandQueue {
         let fontHandle: UInt64
         let requestID: UInt64
     }
+
+    struct DeleteFontListenerCall {
+        let fontHandle: UInt64
+    }
     
     struct AddGlobalFontAssetCall {
         let name: String
@@ -1196,6 +1347,10 @@ extension MockCommandQueue {
     struct DeleteAudioCall {
         let audioHandle: UInt64
         let requestID: UInt64
+    }
+
+    struct DeleteAudioListenerCall {
+        let audioHandle: UInt64
     }
     
     struct AddGlobalAudioAssetCall {

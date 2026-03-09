@@ -10,6 +10,7 @@ import XCTest
 @_spi(RiveExperimental) @testable import RiveRuntime
 
 class FitTests: XCTestCase {
+    @MainActor
     struct MockScaleProvider: ScaleProvider {
         let nativeScale: CGFloat?
         let displayScale: CGFloat
@@ -36,7 +37,8 @@ class FitTests: XCTestCase {
             }
         }
     }
-    
+
+    @MainActor
     func test_fit_bridged() {
         let provider = MockScaleProvider()
         
@@ -77,7 +79,8 @@ class FitTests: XCTestCase {
             XCTAssertEqual(result.scaleFactor, 1.0)
         }
     }
-    
+
+    @MainActor
     func test_fit_bridged_layout() {
         let nativeScale: CGFloat = 2.5
         let displayScale: CGFloat = 3.0

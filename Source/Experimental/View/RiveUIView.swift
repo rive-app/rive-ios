@@ -9,7 +9,6 @@
 import Foundation
 import MetalKit
 import SwiftUI
-import Combine
 import os
 
 #if canImport(UIKit) || RIVE_MAC_CATALYST
@@ -27,56 +26,32 @@ public protocol RiveUIViewDelegate: AnyObject {
     func view(_ view: RiveUIView, didReceiveError: RiveUIViewError)
 }
 
-/// A UIView subclass that renders Rive animations using Metal.
+/// A UIView / NSView subclass that renders Rive animations using Metal.
 ///
-/// RiveUIView provides a UIKit view that can display Rive animations with automatic rendering,
-/// state machine advancement, and touch input handling. It uses Metal for high-performance
-/// rendering and integrates with SwiftUI through the `view()` method.
+/// RiveUIView provides a native view that can display Rive animations with automatic rendering,
+/// state machine advancement, and touch / pointer input handling. It uses Metal for high-performance
+/// rendering.
 @_spi(RiveExperimental)
-public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
-    var rive: Rive? {
+public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink {
+    public var rive: Rive? {
         didSet {
-            riveCancellables.removeAll()
-            if let rive {
-                renderer = Renderer(
-                    commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue,
-                    renderContext: rive.file.worker.dependencies.workerService.dependencies.renderContext
-                )
-                inputHandler = InputHandler(
-                    dependencies: .init(
-                        commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue
-                    )
-                )
-                rive
-                    .fitDidChange
-                    .removeDuplicates()
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] fit in
-                        guard let self else { return }
-                        if case .layout = fit {
-                            rive.artboard.setSize(CGSize(width: bounds.width, height: bounds.height))
-                        } else {
-                            rive.artboard.resetSize()
-                        }
-                    }.store(in: &riveCancellables)
-            } else {
-                renderer = nil
-                inputHandler = nil
+            // Treat identity changes as updates
+            guard rive !== oldValue else {
+                return
             }
-            mtkView?.isPaused = rive == nil
+
+            setupRive()
         }
     }
 
     private var mtkView: MTKView?
 
-    private var lastTimestamp: TimeInterval?
-
     private var renderer: Renderer?
 
-    private var inputHandler: InputHandler?
+    private var controller: RiveController?
+    private var setupTask: Task<Void, Never>?
 
-    weak var delegate: RiveUIViewDelegate?
-
+    // MARK: ScaleProvider
     var nativeScale: CGFloat? {
 #if canImport(UIKit) || RIVE_MAC_CATALYST
     #if os(visionOS)
@@ -90,7 +65,6 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
     }
 
     var displayScale: CGFloat {
-
 #if canImport(UIKit) || RIVE_MAC_CATALYST
         return traitCollection.displayScale
 #else
@@ -98,7 +72,104 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
 #endif
     }
 
-    private var riveCancellables = Set<AnyCancellable>()
+    // MARK: DisplayLink
+
+    private var displayLink: DisplayLink? {
+        didSet {
+            // This cannot be called in deinit (here or in a concrete implementation), as a DisplayLink is main-actor-isolated, 
+            // and deinit is nonisolated.
+            oldValue?.invalidate()
+        }
+    }
+
+    // Called when isPaused is set, since we need to maintain
+    // state independently from the display link and controller
+    private var _isPaused: Bool = true {
+        didSet {
+            let newValue = _isPaused
+            if newValue {
+                controller?.resetTiming()
+            }
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            displayLink?.isPaused = newValue
+            #else
+            if #unavailable(macOS 14) {
+                mtkView?.isPaused = newValue
+            } else {
+                displayLink?.isPaused = newValue
+            }
+            #endif
+        }
+    }
+
+    // Track the paused state independently of `self` being a DisplayLink (i.e macOS < 14)
+    // This is so that we can update any new display links to the correct starting state
+    // Satisfies the DisplayLink protocol
+    public var isPaused: Bool {
+        get {
+            return _isPaused
+        } set {
+            _isPaused = newValue
+        }
+    }
+
+    // Used when self.displayLink == self (i.e macOS < 14)
+    var timestamp: TimeInterval {
+        CACurrentMediaTime()
+    }
+
+    /// Initial `MTKView.preferredFramesPerSecond` captured during setup.
+    ///
+    /// Used to restore deterministic behavior when `frameRate` returns to `.default`.
+    private var defaultFramesPerSecond: Int?
+
+    // MARK: Helpers
+
+    // MARK: Public
+
+    // This is for implementing DisplayLink as well as the public view property
+    public var frameRate: FrameRate = .default {
+        didSet {
+            guard frameRate != oldValue else { return }
+            // Calling displayLink?.frameRate here would cause an infinite loop,
+            // so if we are the display link, we want to directly modify mtkView
+            // This will typically be encountered when macOS < 14
+            if displayLink === self {
+                // This fallback implementation only controls `MTKView` scalar FPS.
+                // `DefaultDisplayLink` owns full range support where available.
+                // However, we only want to modify MTKView when the display link is self
+                // (i.e macOS < 14)
+                switch frameRate {
+                case .default:
+                    // Restore the initial MTKView FPS captured in `setup()`.
+                    guard let fps = defaultFramesPerSecond else {
+                        return
+                    }
+                    mtkView?.preferredFramesPerSecond = fps
+                case .fps(let fps):
+                    mtkView?.preferredFramesPerSecond = fps
+                case .range(_, let maximum, _):
+                    // `MTKView` has no range API here, so collapse range to scalar FPS.
+                    mtkView?.preferredFramesPerSecond = Int(maximum)
+                }
+            } else {
+                // Otherwise, forward the frame rate to the display link (i.e DefaultDisplayLink)
+                displayLink?.frameRate = frameRate
+            }
+        }
+    }
+
+    public weak var delegate: RiveUIViewDelegate?
+
+    #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
+    public override var isMultipleTouchEnabled: Bool {
+        didSet {
+            mtkView?.isMultipleTouchEnabled = isMultipleTouchEnabled
+        }
+    }
+    #endif
+
+    // MARK: -
 
     /// Creates a new RiveUIView that asynchronously loads a Rive configuration.
     ///
@@ -107,11 +178,18 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
     ///
     /// - Parameter rive: An async closure that returns a `Rive` configuration
     @MainActor
-    public convenience init(rive: @MainActor @escaping () async throws -> Rive, delegate: RiveUIViewDelegate? = nil) {
-        self.init(rive: nil, delegate: delegate)
+    public convenience init(rive: @MainActor @escaping () async throws -> Rive, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = false) {
+        self.init(rive: nil, delegate: delegate, isPaused: isPaused)
 
         Task { @MainActor [weak self] in
-            self?.rive = try await rive()
+            guard let self else { return }
+            await setupTask?.value
+            do {
+                self.rive = try await rive()
+            } catch {
+                delegate?.view(self, didReceiveError: .failedToLoad(error))
+            }
+            self.isPaused = isPaused
         }
     }
 
@@ -122,16 +200,22 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
     ///
     /// - Parameter rive: An optional `Rive` configuration to display
     @MainActor
-    public init(rive: Rive?, delegate: RiveUIViewDelegate? = nil) {
-        defer {
-            self.rive = rive
-        }
-
+    public init(rive: Rive?, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = false) {
+        self.rive = rive
         self.delegate = delegate
         super.init(frame: .zero)
 
-        Task { @MainActor in
-            await setup()
+        #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
+        self.isMultipleTouchEnabled = true
+        #endif
+
+        self.isPaused = isPaused
+
+        setupTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            await setupView()
+            setupRive()
+            self.isPaused = isPaused
         }
     }
 
@@ -142,12 +226,31 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
         fatalError("init?(coder:) is not yet implemented")
     }
 
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    public override func didMoveToWindow() {
+        // This is also called when the view is removed (before deinit), which will
+        // implicitly invalidate the display link. 
+        updateDisplayLink()
+    }
+    #else
+    public override func viewDidMoveToWindow() {
+        // This is also called when the view is removed (before deinit), which will
+        // implicitly invalidate the display link.
+        updateDisplayLink()
+    }
+    #endif
+    
     @MainActor
-    private func setup() async {
-        guard mtkView == nil, let device = await MetalDevice.shared.defaultDevice() else { return }
+    private func setupView() async {
+        guard mtkView == nil, let device = await MetalDevice.shared.defaultDevice()?.value else { return }
         let mtkView = MTKView(frame: bounds, device: device)
         mtkView.delegate = self
+        mtkView.isPaused = true
+        mtkView.enableSetNeedsDisplay = true
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
+        #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
+        mtkView.isMultipleTouchEnabled = isMultipleTouchEnabled
+        #endif
         self.mtkView = mtkView
         addSubview(mtkView)
 
@@ -166,6 +269,55 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
         layer?.backgroundColor = NSColor.clear.cgColor
         mtkView.layer?.backgroundColor = NSColor.clear.cgColor
 #endif
+
+        // Capture defaults once so `.default` does not rely on undocumented resets.
+        defaultFramesPerSecond = mtkView.preferredFramesPerSecond
+    }
+
+    private func setupRive() {
+        if let rive {
+            renderer = Renderer(
+                commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue,
+                renderContext: rive.file.worker.dependencies.workerService.dependencies.renderContext
+            )
+
+            controller = RiveController(
+                rive: rive,
+                boundsProvider: { [weak self] in
+                    self?.bounds.size ?? .zero
+                }
+            )
+
+            if isPaused {
+                controller?.resetTiming()
+            }
+
+            // If we are paused, we want to draw at least one frame
+            // We'll leverage MTKView's (set)NeedsDisplay to draw once
+            // and return to the previous settings. This accounts for
+            // both iOS and macOS, on all OSes
+            if isPaused {
+                guard let mtkView else {
+                    return
+                }
+
+                let currentIsPaused = mtkView.isPaused
+                let currentEnableSetNeedsDisplay = mtkView.enableSetNeedsDisplay
+
+                mtkView.isPaused = true
+                mtkView.enableSetNeedsDisplay = true
+
+                tick()
+
+               mtkView.isPaused = currentIsPaused
+               mtkView.enableSetNeedsDisplay = currentEnableSetNeedsDisplay
+            }
+        } else {
+            renderer = nil
+            controller = nil
+        }
+
+        updateDisplayLink()
     }
 
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) { }
@@ -177,74 +329,62 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
     ///
     /// - Parameter view: The Metal view to render into
     public func draw(in view: MTKView) {
-        guard let rive else {
+        guard let controller else {
             return
         }
 
-        if let lastTimestamp {
-            let now = CACurrentMediaTime()
-            rive.stateMachine.advance(by: now - lastTimestamp)
-            self.lastTimestamp = now
-        } else {
-            rive.stateMachine.advance(by: 0)
-            lastTimestamp = CACurrentMediaTime()
+        let now = displayLink?.timestamp ?? CACurrentMediaTime()
+        let configuration = controller.advance(
+            now: now,
+            isPaused: isPaused,
+            isOnscreen: isOnscreen(),
+            drawableSize: view.drawableSize,
+            scaleProvider: self
+        )
+
+        guard let configuration else {
+            return
         }
 
-        if isOnscreen() {
-            autoreleasepool {
-                guard let device = view.device else {
-                    delegate?.view(self, didReceiveError: .noDevice)
-                    return
-                }
-
-                guard let currentDrawable = view.currentDrawable else {
-                    delegate?.view(self, didReceiveError: .noDrawable)
-                    return
-                }
-
-                guard let renderer else {
-                    delegate?.view(self, didReceiveError: .noRenderer)
-                    return
-                }
-
-                let fitBridge = rive.fit.bridged(from: self)
-                let configuration = RendererConfiguration(
-                    artboardHandle: rive.artboard.artboardHandle,
-                    stateMachineHandle: rive.stateMachine.stateMachineHandle,
-                    fit: fitBridge.fit,
-                    alignment: fitBridge.alignment,
-                    size: view.drawableSize,
-                    pixelFormat: MTLRiveColorPixelFormat(),
-                    layoutScale: fitBridge.scaleFactor,
-                    color: rive.backgroundColor.argbValue
-                )
-
-                renderer.draw(configuration, to: currentDrawable.texture, from: device) { commandBuffer in
-                    commandBuffer.present(currentDrawable)
-                    commandBuffer.commit()
-                } onError: { [weak self] error in
-                    guard let self else { return }
-                    self.delegate?.view(self, didReceiveError: RiveUIViewError.renderer(error.localizedDescription))
-                }
+        autoreleasepool {
+            guard let device = view.device else {
+                delegate?.view(self, didReceiveError: .noDevice)
+                return
             }
+
+            guard let currentDrawable = view.currentDrawable else {
+                delegate?.view(self, didReceiveError: .noDrawable)
+                return
+            }
+
+            guard let renderer else {
+                delegate?.view(self, didReceiveError: .noRenderer)
+                return
+            }
+
+            renderer.draw(configuration, to: currentDrawable.texture, from: device) { commandBuffer in
+                commandBuffer.present(currentDrawable)
+                commandBuffer.commit()
+            } onError: { [weak self] error in
+                guard let self else { return }
+                self.delegate?.view(self, didReceiveError: RiveUIViewError.renderer(error.localizedDescription))
+            }
+
         }
     }
 
-    /// Returns a SwiftUI view representation of this RiveUIView.
-    ///
-    /// This method allows the RiveUIView to be used within SwiftUI views using UIViewRepresentable.
-    ///
-    /// - Returns: A SwiftUI view that wraps this RiveUIView
-    @ViewBuilder
-    public func view() -> some View {
-        ConfigurationViewRepresentable(view: self)
+    // MARK: - DisplayLink
+    func invalidate() {
+        mtkView?.isPaused = true
     }
 
+    // MARK: - Input
 #if canImport(UIKit) || RIVE_MAC_CATALYST
     /// Handles touch events when touches begin.
     ///
     /// This method converts touch events into pointer down events for the state machine.
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
         handlePointerEvent(from: touches, with: { .pointerDown($0) })
     }
 
@@ -252,6 +392,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
     ///
     /// This method converts touch events into pointer up events for the state machine.
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
         handlePointerEvent(from: touches, with: { .pointerUp($0) })
     }
 
@@ -259,6 +400,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
     ///
     /// This method converts touch events into pointer move events for the state machine.
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
         handlePointerEvent(from: touches, with: { .pointerMove($0) })
     }
 
@@ -266,6 +408,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
     ///
     /// This method converts touch events into pointer exit events for the state machine.
     public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
         handlePointerEvent(from: touches, with: { .pointerExit($0) })
     }
 
@@ -274,35 +417,41 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
         with inputType: (PointerEvent) -> Input
     ) {
         guard let rive,
-              let inputHandler,
-              let touch = touches.first
+              let controller
         else { return }
 
-        let fitBridge = rive.fit.bridged(from: self)
+        for touch in touches {
+            let fitBridge = rive.fit.bridged(from: self)
 
-        let event = PointerEvent(
-            position: touch.location(in: self),
-            bounds: bounds.size,
-            fit: fitBridge.fit,
-            alignment: fitBridge.alignment,
-            scaleFactor: Float(fitBridge.scaleFactor)
-        )
-        inputHandler.handle(inputType(event), in: rive.stateMachine)
+            let event = PointerEvent(
+                id: AnyHashable(touch),
+                position: touch.location(in: self),
+                bounds: bounds.size,
+                fit: fitBridge.fit,
+                alignment: fitBridge.alignment,
+                scaleFactor: Float(fitBridge.scaleFactor)
+            )
+            controller.handleInput(inputType(event))
+        }
     }
 #else
     public override func mouseDown(with event: NSEvent) {
+        super.mouseDown(with: event)
         handlePointerEvent(from: event, with: { .pointerDown($0) })
     }
 
     public override func mouseUp(with event: NSEvent) {
+        super.mouseUp(with: event)
         handlePointerEvent(from: event, with: { .pointerUp($0) })
     }
 
     public override func mouseMoved(with event: NSEvent) {
+        super.mouseMoved(with: event)
         handlePointerEvent(from: event, with: { .pointerMove($0) })
     }
 
     public override func mouseExited(with event: NSEvent) {
+        super.mouseExited(with: event)
         handlePointerEvent(from: event, with: { .pointerExit($0) })
     }
 
@@ -311,55 +460,70 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider {
         with inputType: (PointerEvent) -> Input
     ) {
         guard let rive,
-              let inputHandler
+              let controller
         else { return }
 
         let fitBridge = rive.fit.bridged(from: self)
         let position = convert(event.locationInWindow, to: self)
 
         let event = PointerEvent(
+            id: AnyHashable(event.buttonNumber),
             position: position,
             bounds: bounds.size,
             fit: fitBridge.fit,
             alignment: fitBridge.alignment,
             scaleFactor: Float(fitBridge.scaleFactor)
         )
-        inputHandler.handle(inputType(event), in: rive.stateMachine)
+        controller.handleInput(inputType(event))
     }
 #endif
-}
 
-/// A SwiftUI view representable that wraps a `RiveUIView` for use in SwiftUI.
-///
-/// This struct enables `RiveUIView` to be used within SwiftUI views. It wraps
-/// the provided view and returns it in `makeUIView`, and syncs the view's current
-/// state in `updateUIView` whenever SwiftUI re-renders.
-struct ConfigurationViewRepresentable: NativeViewRepresentable {
-    private let view: RiveUIView
+    // MARK: - Private
 
-    init(view: RiveUIView) {
-        self.view = view
+    private func updateDisplayLink() {
+        guard window != nil else {
+            displayLink = nil
+            return
+        }
+
+        // Prefer a real CADisplayLink-backed implementation when available.
+        // On older macOS, fall back to this view as the display-link adapter.
+        let displayLink: DisplayLink
+        // All versions of !macOS or Catalyst have a CADisplayLink-backed display link.
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        displayLink = DefaultDisplayLink(host: self) { [weak self] in
+            self?.tick()
+        }
+        #else
+        // On macOS 14+, use the DefaultDisplayLink implementation (as CADisplayLink is available).
+        if #available(macOS 14, *) {
+            displayLink = DefaultDisplayLink(host: self) { [weak self] in
+                self?.tick()
+            }
+        } else {
+            // On macOS 13 or older, fall back to mtkView as the display-link adapter.
+            displayLink = self
+            // mtkView?.isPaused is implicitly set by displayLink.isPaused below
+            // enableSetNeedsDisplay is set to false since this "display link" needs to
+            // tick and draw based on mtkView's isPaused state, contrary to a CADisplayLink-backed
+            // display link that controls ticking and requesting to draw (via setNeedsDisplay)
+            // This overrides the setting in setup()
+            mtkView?.enableSetNeedsDisplay = false
+        }
+        #endif
+
+        // Re-apply current configuration whenever the display-link instance changes.
+        displayLink.frameRate = frameRate
+        displayLink.isPaused = isPaused
+        self.displayLink = displayLink
     }
 
-#if canImport(UIKit) || RIVE_MAC_CATALYST
-    func makeUIView(context: Context) -> RiveUIView {
-        return view
+    private func tick() {
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        mtkView?.setNeedsDisplay()
+        #else
+        mtkView?.needsDisplay = true
+        #endif
     }
 
-    func updateUIView(_ uiView: RiveUIView, context: Context) {
-        // Read current values from the view to ensure we're always in sync
-        uiView.rive = view.rive
-        uiView.delegate = view.delegate
-    }
-#else
-    func makeNSView(context: Context) -> RiveUIView {
-        return RiveUIView(rive: view.rive, delegate: view.delegate)
-    }
-
-    func updateNSView(_ nsView: RiveUIView, context: Context) {
-        // Read current values from the view to ensure we're always in sync
-        nsView.rive = view.rive
-        nsView.delegate = view.delegate
-    }
-#endif
 }

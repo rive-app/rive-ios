@@ -114,15 +114,12 @@ class FileService: NSObject, FileListener {
     @MainActor
     func getProperties(of viewModelName: String, from fileHandle: File.FileHandle) async throws -> [ViewModelProperty] {
         let commandQueue = dependencies.commandQueue
-        let dictionaries: [[String: Any]] = try await withCheckedThrowingContinuation { continuation in
+        let properties: [ViewModelProperty] = try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
             commandQueue.requestViewModelPropertyDefinitions(fileHandle, viewModelName: viewModelName, requestID: requestID)
         }
-        
-        return try dictionaries.map { dictionary in
-            try ViewModelProperty(from: dictionary)
-        }
+        return properties
     }
 
     /// Requests enum definitions for a file asynchronously.
@@ -135,15 +132,12 @@ class FileService: NSObject, FileListener {
     @MainActor
     func getViewModelEnums(from fileHandle: File.FileHandle) async throws -> [ViewModelEnum] {
         let commandQueue = dependencies.commandQueue
-        let dictionaries: [[String: Any]] = try await withCheckedThrowingContinuation { continuation in
+        let enums: [ViewModelEnum] = try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
             commandQueue.requestViewModelEnums(fileHandle, requestID: requestID)
         }
-        
-        return try dictionaries.map { dictionary in
-            try ViewModelEnum(from: dictionary)
-        }
+        return enums
     }
 
     /// Called when a file loading operation completes successfully.
@@ -163,9 +157,14 @@ class FileService: NSObject, FileListener {
 
     /// Called when a file deletion operation completes.
     ///
-    /// Listener callback invoked by the command server. File deletions are fire-and-forget
-    /// operations that don't require continuation handling.
-    nonisolated func onFileDeleted(_ handle: UInt64, requestID: UInt64) { }
+    /// Listener callback invoked by the command server. Dispatches to main actor to
+    /// resume the continuation associated with the delete request.
+    nonisolated func onFileDeleted(_ handle: UInt64, requestID: UInt64) {
+        Task { @MainActor in
+            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            try continuation.resume(with: .success(handle))
+        }
+    }
 
     /// Called when a file loading operation encounters an error.
     ///
@@ -221,6 +220,9 @@ class FileService: NSObject, FileListener {
     /// Listener callback invoked by the command server. Dispatches to main actor to resume
     /// the continuation with property dictionaries that are parsed into `ViewModelProperty` instances.
     nonisolated func onViewModelPropertiesListed(_ fileHandle: UInt64, requestID: UInt64, viewModelName: String, properties: [[String: Any]]) {
+        let properties = (try? properties.map { dictionary in
+            try ViewModelProperty(from: dictionary)
+        }) ?? []
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             try continuation.resume(with: .success(properties))
@@ -232,6 +234,10 @@ class FileService: NSObject, FileListener {
     /// Listener callback invoked by the command server. Dispatches to main actor to resume
     /// the continuation with enum dictionaries that are parsed into `ViewModelEnum` instances.
     nonisolated func onViewModelEnumsListed(_ fileHandle: UInt64, requestID: UInt64, enums: [[String: Any]]) {
+        let enums = (try? enums.map { dictionary in
+            try ViewModelEnum(from: dictionary)
+        }) ?? []
+
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             try continuation.resume(with: .success(enums))
@@ -240,13 +246,26 @@ class FileService: NSObject, FileListener {
 
     /// Deletes a file via the command queue.
     ///
-    /// The `onFileDeleted` callback is invoked when the deletion completes, but no continuation
-    /// handling is required for this fire-and-forget operation. After deletion, the file handle
-    /// becomes invalid. This operation is irreversible.
+    /// The continuation is resumed when `onFileDeleted` is called.
+    ///
+    /// - Parameter file: The file handle to delete
+    /// - Returns: The file handle that was deleted
     @MainActor
-    func deleteFile(_ file: File.FileHandle) {
-        let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.deleteFile(file, requestID: requestID)
+    func deleteFile(_ file: File.FileHandle) async throws -> File.FileHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = AnyContinuation(continuation)
+            commandQueue.deleteFile(file, requestID: requestID)
+        }
+    }
+
+    /// Deletes a file listener via the command queue.
+    ///
+    /// - Parameter file: The file handle whose listener should be removed
+    @MainActor
+    func deleteFileListener(_ file: File.FileHandle) {
+        dependencies.commandQueue.deleteFileListener(file)
     }
 }
 

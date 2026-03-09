@@ -13,7 +13,7 @@ import Foundation
 /// Enums define named sets of string values that can be used as property types in view models.
 /// Each enum has a name and a list of possible string values.
 @_spi(RiveExperimental)
-public struct ViewModelEnum: Equatable {
+public struct ViewModelEnum: Sendable, Equatable {
     /// The name of the enum.
     public let name: String
     /// The list of possible string values for this enum.

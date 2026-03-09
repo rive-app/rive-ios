@@ -20,7 +20,7 @@ class MockURLSessionDataTask: URLSessionDataTaskProtocol, @unchecked Sendable {
     }
 }
 
-class MockURLSession: URLSessionProtocol {
+final class MockURLSession: URLSessionProtocol, @unchecked Sendable {
     typealias CompletionHandler = (Data?, URLResponse?, (any Error)?) -> Void
     private var _get: ((URL, CompletionHandler) -> Void)?
 

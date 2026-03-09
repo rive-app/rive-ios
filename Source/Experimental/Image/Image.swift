@@ -50,7 +50,8 @@ public class Image: Equatable {
         let service = dependencies.imageService
         let handle = self.handle
         Task { @MainActor in
-            service.deleteImage(handle)
+            guard let deletedHandle = try? await service.deleteImage(handle) else { return }
+            service.deleteImageListener(deletedHandle)
         }
     }
 

@@ -11,8 +11,6 @@ import SwiftUI
 @_spi(RiveExperimental) import RiveRuntime
 
 private class QuickStartViewModel: ObservableObject {
-    private let worker: Worker
-
     @Published private(set) var rive: Rive?
 
     @Published private var healthValue: Float = 100 {
@@ -31,11 +29,6 @@ private class QuickStartViewModel: ObservableObject {
         }
     }
 
-    @MainActor
-    init() {
-        self.worker = Worker()
-    }
-
     func reload() {
         Task { @MainActor in
             defer {
@@ -43,6 +36,7 @@ private class QuickStartViewModel: ObservableObject {
             }
 
             do {
+                let worker = try await Worker()
                 let file = try await File(source: .local("quick_start", Bundle.main), worker: worker)
                 self.rive = try await Rive(file: file)
             } catch {
@@ -67,7 +61,7 @@ struct QuickStartView: View {
     var body: some View {
         VStack {
             if let rive = viewModel.rive {
-                RiveUIView(rive: rive).view()
+                RiveUIViewRepresentable(rive: rive)
 
                 Form {
                     Button("Game Over") {

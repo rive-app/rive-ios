@@ -27,9 +27,38 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// Stream continuations for property subscriptions (e.g., `stringValueStream`, `numberValueStream`).
     /// Yielded values when `onViewModelDataReceived` is called. Cleaned up when streams terminate.
     private var streamContinuations: [UInt64: AnyAsyncThrowingStreamContinuation] = [:]
+    /// Continuations for per-instance dirty streams.
+    private var dirtyStreamContinuations: [ViewModelInstance.ViewModelInstanceHandle: [UUID: AsyncStream<Void>.Continuation]] = [:]
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
+    }
+
+    @MainActor
+    func dirtyStream(for instance: ViewModelInstance.ViewModelInstanceHandle) -> AsyncStream<Void> {
+        return AsyncStream<Void> { continuation in
+            let continuationID = UUID()
+            var continuationsForInstance = dirtyStreamContinuations[instance] ?? [:]
+            continuationsForInstance[continuationID] = continuation
+            dirtyStreamContinuations[instance] = continuationsForInstance
+            continuation.onTermination = { [weak self] _ in
+                Task { @MainActor in
+                    guard let self else { return }
+                    guard var continuations = self.dirtyStreamContinuations[instance] else { return }
+                    continuations.removeValue(forKey: continuationID)
+                    if continuations.isEmpty {
+                        self.dirtyStreamContinuations.removeValue(forKey: instance)
+                    } else {
+                        self.dirtyStreamContinuations[instance] = continuations
+                    }
+                }
+            }
+        }
+    }
+
+    @MainActor
+    private func emitDirty(for instance: ViewModelInstance.ViewModelInstanceHandle) {
+        dirtyStreamContinuations[instance]?.values.forEach { $0.yield(()) }
     }
 
     /// Creates a blank view model instance from an artboard.
@@ -152,12 +181,27 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
 
     /// Deletes a view model instance via the command queue.
     ///
-    /// After deletion, the instance handle becomes invalid. This operation is irreversible.
-    /// No listener callback is invoked for this operation.
+    /// The continuation is resumed when `onViewModelDeleted` is called.
+    ///
+    /// - Parameter instance: The view model instance handle to delete
+    /// - Returns: The view model instance handle that was deleted
     @MainActor
-    func deleteViewModelInstance(_ instance: ViewModelInstance.ViewModelInstanceHandle) {
-        let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.deleteViewModelInstance(instance, requestID: requestID)
+    func deleteViewModelInstance(_ instance: ViewModelInstance.ViewModelInstanceHandle) async throws -> ViewModelInstance.ViewModelInstanceHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = AnyContinuation(continuation)
+            commandQueue.deleteViewModelInstance(instance, requestID: requestID)
+        }
+    }
+
+    /// Deletes a view model instance listener via the command queue.
+    ///
+    /// - Parameter instance: The view model instance handle whose listener should be removed
+    @MainActor
+    func deleteViewModelInstanceListener(_ instance: ViewModelInstance.ViewModelInstanceHandle) {
+        dependencies.commandQueue.deleteViewModelInstanceListener(instance)
+        dirtyStreamContinuations.removeValue(forKey: instance)
     }
 
     // MARK: - StringProperty
@@ -209,6 +253,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func setStringValue(_ value: String, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.setViewModelInstanceString(instance, path: path, value: value, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     // MARK: - NumberProperty
@@ -260,6 +305,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func setNumberValue(_ value: Float, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.setViewModelInstanceNumber(instance, path: path, value: value, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     // MARK: - BoolProperty
@@ -311,6 +357,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func setBoolValue(_ value: Bool, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.setViewModelInstanceBool(instance, path: path, value: value, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     // MARK: - ColorProperty
@@ -362,6 +409,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func setColorValue(_ value: Color, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.setViewModelInstanceColor(instance, path: path, value: value.argbValue, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     // MARK: - EnumProperty
@@ -413,6 +461,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func setEnumValue(_ value: String, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.setViewModelInstanceEnum(instance, path: path, value: value, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     // MARK: - TriggerProperty
@@ -424,6 +473,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func fireTrigger(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.fireViewModelTrigger(instance, path: path, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     /// Creates a stream that emits events when a trigger property is fired.
@@ -456,6 +506,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func setImageValue(_ value: Image.ImageHandle, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.setViewModelInstanceImage(instance, path: path, value: value, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     // MARK: - ArtboardProperty
@@ -467,6 +518,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func setArtboardValue(_ value: Artboard, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.setViewModelInstanceArtboard(instance, path: path, value: value.artboardHandle, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     // MARK: - ViewModelInstanceProperty
@@ -491,6 +543,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func setViewModelInstanceValue(_ value: ViewModelInstance.ViewModelInstanceHandle, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.setViewModelInstanceNestedViewModel(instance, path: path, value: value, requestID: requestID)
+        emitDirty(for: instance)
     }
 
     // MARK: - ListProperty
@@ -551,6 +604,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             value: value,
             requestID: requestID
         )
+        emitDirty(for: base)
     }
 
     /// Inserts a view model instance into a list property at the specified index.
@@ -571,6 +625,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             index: index,
             requestID: requestID
         )
+        emitDirty(for: base)
     }
 
     /// Removes a view model instance from a list property at the specified index.
@@ -591,6 +646,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             value: value,
             requestID: requestID
         )
+        emitDirty(for: base)
     }
 
     /// Removes a view model instance from a list property by value.
@@ -609,6 +665,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             value: value,
             requestID: requestID
         )
+        emitDirty(for: base)
     }
 
     /// Swaps two view model instances in a list property at the specified indices.
@@ -629,6 +686,24 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             withIndex: withIndex,
             requestID: requestID
         )
+        emitDirty(for: base)
+    }
+
+    /// Called when a view model instance operation encounters an error.
+    ///
+    /// Listener callback invoked by the command server when an operation fails.
+    nonisolated public func onViewModelInstanceError(
+        _ viewModelInstanceHandle: UInt64,
+        requestID: UInt64,
+        message: String
+    ) {
+        Task { @MainActor in
+            if let continuation = continuations.removeValue(forKey: requestID) {
+                try continuation.resume(
+                    with: .failure(ViewModelInstanceError.message(message))
+                )
+            }
+        }
     }
 
     /// Called when view model data is received.
@@ -639,22 +714,28 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     nonisolated public func onViewModelDataReceived(
         _ viewModelInstanceHandle: UInt64,
         requestID: UInt64,
-        data: RiveViewModelInstanceData
+        data: [String: Any]
     ) {
+        let viewModelInstanceData = ViewModelInstanceData(from: data)
         Task { @MainActor in
             if let continuation = continuations.removeValue(forKey: requestID) {
                 do {
-                    if let stringValue = data.stringValue {
-                        try continuation.resume(with: .success(stringValue))
-                    } else if let numberValue = data.numberValue {
-                        try continuation.resume(with: .success(numberValue.floatValue))
-                    } else if let boolValue = data.boolValue {
-                        try continuation.resume(with: .success(boolValue.boolValue))
-                    } else if let colorValue = data.colorValue {
-                        let argbValue = colorValue.uint32Value
-                        try continuation.resume(with: .success(Color(argbValue)))
-                    } else {
+                    switch viewModelInstanceData.type {
+                    case .trigger:
                         try continuation.resume(with: .failure(ViewModelInstanceError.missingData))
+                    case .value(let value):
+                        switch value {
+                        case .string(let stringValue):
+                            try continuation.resume(with: .success(stringValue))
+                        case .number(let numberValue):
+                            try continuation.resume(with: .success(numberValue))
+                        case .boolean(let booleanValue):
+                            try continuation.resume(with: .success(booleanValue))
+                        case .color(let argbValue):
+                            try continuation.resume(with: .success(Color(argbValue)))
+                        case .none:
+                            try continuation.resume(with: .failure(ViewModelInstanceError.missingData))
+                        }
                     }
                 } catch AnyContinuationError.typeMismatch(expected: let expected, actual: let actual) {
                     try continuation.resume(with: .failure(ViewModelInstanceError.valueMismatch(expected, actual)))
@@ -664,21 +745,20 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             
             if let streamContinuation = streamContinuations[requestID] {
                 do {
-                    // Trigger is a special case where we want to yield ()
-                    // and ignore any data values
-                    if case .trigger = data.type {
+                    switch viewModelInstanceData.type {
+                    case .trigger:
                         try streamContinuation.yield(())
-                    } else {
-                        if let stringValue = data.stringValue {
+                    case .value(let value):
+                        switch value {
+                        case .string(let stringValue):
                             try streamContinuation.yield(stringValue)
-                        } else if let numberValue = data.numberValue {
-                            try streamContinuation.yield(numberValue.floatValue)
-                        } else if let boolValue = data.boolValue {
-                            try streamContinuation.yield(boolValue.boolValue)
-                        } else if let colorValue = data.colorValue {
-                            let argbValue = colorValue.uint32Value
+                        case .number(let numberValue):
+                            try streamContinuation.yield(numberValue)
+                        case .boolean(let booleanValue):
+                            try streamContinuation.yield(booleanValue)
+                        case .color(let argbValue):
                             try streamContinuation.yield(Color(argbValue))
-                        } else {
+                        case .none:
                             streamContinuation.finish(throwing: ViewModelInstanceError.missingData)
                             streamContinuations.removeValue(forKey: requestID)
                         }
@@ -707,6 +787,21 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         Task { @MainActor in
             if let continuation = continuations.removeValue(forKey: requestID) {
                 try continuation.resume(with: .success(size))
+            }
+        }
+    }
+
+    /// Called when a view model instance deletion operation completes.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the deleted handle.
+    nonisolated public func onViewModelDeleted(
+        _ viewModelInstanceHandle: UInt64,
+        requestID: UInt64
+    ) {
+        Task { @MainActor in
+            if let continuation = continuations.removeValue(forKey: requestID) {
+                try continuation.resume(with: .success(viewModelInstanceHandle))
             }
         }
     }

@@ -48,13 +48,26 @@ class AudioService: NSObject, AudioListener {
 
     /// Deletes an audio source via the command queue.
     ///
-    /// After deletion, the audio handle becomes invalid. This operation is irreversible.
-    /// The `onAudioSourceDeleted` callback is invoked when the deletion completes, but no
-    /// continuation handling is required for this fire-and-forget operation.
+    /// The continuation is resumed when `onAudioSourceDeleted` is called.
+    ///
+    /// - Parameter audioHandle: The audio handle to delete
+    /// - Returns: The audio handle that was deleted
     @MainActor
-    func deleteAudio(_ audioHandle: Audio.AudioHandle) {
-        let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.deleteAudio(audioHandle, requestID: requestID)
+    func deleteAudio(_ audioHandle: Audio.AudioHandle) async throws -> Audio.AudioHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = continuation
+            commandQueue.deleteAudio(audioHandle, requestID: requestID)
+        }
+    }
+
+    /// Deletes an audio listener via the command queue.
+    ///
+    /// - Parameter audioHandle: The audio handle whose listener should be removed
+    @MainActor
+    func deleteAudioListener(_ audioHandle: Audio.AudioHandle) {
+        dependencies.commandQueue.deleteAudioListener(audioHandle)
     }
 
     /// Called when audio decoding completes successfully.
@@ -85,10 +98,15 @@ class AudioService: NSObject, AudioListener {
 
     /// Called when an audio source is deleted.
     ///
-    /// Listener callback invoked by the command server. Audio deletions are fire-and-forget
-    /// operations that don't require continuation handling.
+    /// Listener callback invoked by the command server. Resumes the continuation with the audio handle.
     nonisolated func onAudioSourceDeleted(_ audioHandle: UInt64, requestID: UInt64) {
+        Task { @MainActor in
+            guard let continuation = continuations.removeValue(forKey: requestID) else {
+                return
+            }
 
+            continuation.resume(returning: audioHandle)
+        }
     }
 }
 

@@ -105,7 +105,8 @@ public class ViewModelInstance: Equatable {
         let service = dependencies.viewModelInstanceService
         let handle = viewModelInstanceHandle
         Task { @MainActor in
-            service.deleteViewModelInstance(handle)
+            guard let deletedHandle = try? await service.deleteViewModelInstance(handle) else { return }
+            service.deleteViewModelInstanceListener(deletedHandle)
         }
     }
 
@@ -120,6 +121,14 @@ public class ViewModelInstance: Equatable {
     /// - Returns: `true` if both view model instances reference the same underlying view model instance handle.
     public static func ==(lhs: ViewModelInstance, rhs: ViewModelInstance) -> Bool {
         return lhs.viewModelInstanceHandle == rhs.viewModelInstanceHandle
+    }
+
+    /// Creates a stream that emits whenever this instance is mutated.
+    ///
+    /// The stream yields `Void` to indicate a dirty event with no payload.
+    @MainActor
+    public func dirtyStream() -> AsyncStream<Void> {
+        return dependencies.viewModelInstanceService.dirtyStream(for: viewModelInstanceHandle)
     }
 
     // MARK: - StringProperty

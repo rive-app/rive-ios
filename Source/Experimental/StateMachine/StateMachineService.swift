@@ -12,9 +12,12 @@ import Foundation
 ///
 /// Handles state machine creation, advancement, deletion, and view model binding. All operations
 /// are fire-and-forget (no listener callbacks). All command queue operations must be performed
-/// on the main thread (either marked `@MainActor` or dispatched to the main queue).
-class StateMachineService: NSObject {
+/// on the main thread (either marked `@MainActor` or dispatched to the main queue)
+@MainActor
+class StateMachineService: NSObject, StateMachineListener {
     private let dependencies: Dependencies
+    private var continuations: [UInt64: CheckedContinuation<UInt64, Error>] = [:]
+    private var settledContinuations: [UInt64: [UUID: AsyncStream<Void>.Continuation]] = [:]
 
     @MainActor
     init(dependencies: Dependencies) {
@@ -35,9 +38,9 @@ class StateMachineService: NSObject {
     func createStateMachine(name: String? = nil, from artboard: Artboard.ArtboardHandle) -> StateMachine.StateMachineHandle {
         let requestID = dependencies.commandQueue.nextRequestID
         if let name = name {
-            return dependencies.commandQueue.createStateMachineNamed(name, fromArtboard: artboard, requestID: requestID)
+            return dependencies.commandQueue.createStateMachineNamed(name, fromArtboard: artboard, observer: self, requestID: requestID)
         } else {
-            return dependencies.commandQueue.createDefaultStateMachine(fromArtboard: artboard, requestID: requestID)
+            return dependencies.commandQueue.createDefaultStateMachine(fromArtboard: artboard, observer: self, requestID: requestID)
         }
     }
 
@@ -54,14 +57,44 @@ class StateMachineService: NSObject {
         dependencies.commandQueue.advanceStateMachine(stateMachine, by: time, requestID: requestID)
     }
 
+    @MainActor
+    func settledStream(for stateMachine: StateMachine.StateMachineHandle) -> AsyncStream<Void> {
+        return AsyncStream { continuation in
+            let continuationID = UUID()
+            var continuationsForStateMachine = settledContinuations[stateMachine] ?? [:]
+            continuationsForStateMachine[continuationID] = continuation
+            settledContinuations[stateMachine] = continuationsForStateMachine
+            continuation.onTermination = { [weak self] _ in
+                Task { @MainActor in
+                    guard let self else { return }
+                    guard var continuations = self.settledContinuations[stateMachine] else { return }
+                    continuations.removeValue(forKey: continuationID)
+                    if continuations.isEmpty {
+                        self.settledContinuations.removeValue(forKey: stateMachine)
+                    } else {
+                        self.settledContinuations[stateMachine] = continuations
+                    }
+                }
+            }
+        }
+    }
+
     /// Deletes a state machine via the command queue.
     ///
-    /// After deletion, the state machine handle becomes invalid. This operation is irreversible.
-    /// No listener callback is invoked for this operation.
+    /// The continuation is resumed when `onStateMachineDeleted` is called.
     @MainActor
-    func deleteStateMachine(_ stateMachine: StateMachine.StateMachineHandle) {
-        let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.deleteStateMachine(stateMachine, requestID: requestID)
+    func deleteStateMachine(_ stateMachine: StateMachine.StateMachineHandle) async throws -> StateMachine.StateMachineHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = continuation
+            commandQueue.deleteStateMachine(stateMachine, requestID: requestID)
+        }
+    }
+
+    @MainActor
+    func deleteStateMachineListener(_ stateMachine: StateMachine.StateMachineHandle) {
+        dependencies.commandQueue.deleteStateMachineListener(stateMachine)
     }
 
     /// Binds a view model instance to a state machine.
@@ -75,6 +108,43 @@ class StateMachineService: NSObject {
     func bindViewModelInstance(_ stateMachine: StateMachine.StateMachineHandle, to viewModelInstance: ViewModelInstance.ViewModelInstanceHandle) {
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.bindViewModelInstance(stateMachine, toViewModelInstance: viewModelInstance, requestID: requestID)
+    }
+
+    nonisolated func onStateMachineError(_ stateMachineHandle: UInt64, requestID: UInt64, message: String) {
+        Task { @MainActor in
+            guard let continuation = continuations.removeValue(forKey: requestID) else {
+                return
+            }
+
+            continuation.resume(throwing: StateMachineServiceError.error(message))
+        }
+    }
+
+    nonisolated func onStateMachineDeleted(_ stateMachineHandle: UInt64, requestID: UInt64) {
+        Task { @MainActor in
+            guard let continuation = continuations.removeValue(forKey: requestID) else {
+                return
+            }
+
+            continuation.resume(returning: stateMachineHandle)
+        }
+    }
+
+    nonisolated func onStateMachineSettled(_ stateMachineHandle: UInt64, requestID: UInt64) {
+        Task { @MainActor in
+            settledContinuations[stateMachineHandle]?.values.forEach { $0.yield(()) }
+        }
+    }
+}
+
+private enum StateMachineServiceError: LocalizedError {
+    case error(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .error(let message):
+            return message
+        }
     }
 }
 

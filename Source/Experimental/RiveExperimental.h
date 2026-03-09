@@ -57,12 +57,12 @@ extern "C"
 #import <RiveRuntime/RiveCommandServer.h>
 #import <RiveRuntime/RiveFileListener.h>
 #import <RiveRuntime/RiveArtboardListener.h>
+#import <RiveRuntime/RiveStateMachineListener.h>
 #import <RiveRuntime/RiveRenderImageListener.h>
 #import <RiveRuntime/RiveFontListener.h>
 #import <RiveRuntime/RiveAudioListener.h>
 #import <RiveRuntime/Renderer.h>
 #import <RiveRuntime/RiveViewModelInstanceListener.h>
-#import <RiveRuntime/RiveViewModelInstanceData.h>
 #import <RiveRuntime/RiveRenderContext.h>
 
 #endif /* RiveUI_h */

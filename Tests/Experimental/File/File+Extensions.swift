@@ -16,14 +16,15 @@ extension File {
     ///   - commandServer: Optional existing mock command server to reuse. If nil, a new one will be created.
     /// - Returns: A labeled tuple containing the File instance, mock commandQueue, and commandServer
     @MainActor
-    static func mock(fileHandle: FileHandle, commandQueue: MockCommandQueue? = nil, commandServer: MockCommandServer? = nil) -> (file: File, commandQueue: MockCommandQueue, commandServer: MockCommandServer, fileLoader: MockFileLoader) {
+    static func mock(fileHandle: FileHandle, commandQueue: MockCommandQueue? = nil, commandServer: MockCommandServer? = nil) async -> (file: File, commandQueue: MockCommandQueue, commandServer: MockCommandServer, fileLoader: MockFileLoader) {
         let mockCommandQueue = commandQueue ?? MockCommandQueue()
         let mockCommandServer = commandServer ?? MockCommandServer()
+        let device = await MetalDevice.shared.defaultDevice()!.value
         let workerService = WorkerService(
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: MetalDevice.shared.defaultDevice()!)
+                renderContext: RiveRenderContext(device: device)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)

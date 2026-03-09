@@ -17,7 +17,7 @@ import Foundation
 struct AnyContinuation {
     private let resume: (Result<Any, Error>) throws -> Void
 
-    init<T>(_ continuation: CheckedContinuation<T, Error>) {
+    init<T: Sendable>(_ continuation: CheckedContinuation<T, Error>) {
         resume = { result in
             switch result {
             case .success(let value):

@@ -9,7 +9,7 @@
 import Foundation
 @testable import RiveRuntime
 
-class MockFileLoader: FileLoaderProtocol {
+final class MockFileLoader: FileLoaderProtocol, @unchecked Sendable {
     private var _load: (() async throws -> Data)?
 
     func stubLoad(_ load: @escaping () async throws -> Data) {
