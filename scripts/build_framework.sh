@@ -33,7 +33,7 @@ xcodebuild archive \
   -destination generic/platform=iOS \
   -archivePath ".build/archives/RiveRuntime_iOS" \
   SKIP_INSTALL=NO \
-  BUILD_LIBRARY_FOR_DISTRIBUTION=YES 
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
 xcodebuild archive \
   -configuration ${CONFIGURATION} \
@@ -122,4 +122,19 @@ xcodebuild \
     -archive .build/archives/RiveRuntime_macOS_Catalyst.xcarchive \
     -framework RiveRuntime.framework \
     -output archive/RiveRuntime.xcframework
+
+# Post-process: strip the auto-appended `module RiveRuntime.Swift { ... }` block
+# from every modulemap in the XCFramework. The Swift build phase unconditionally
+# appends this block even when MODULEMAP_FILE is set, re-introducing the stale
+# Swift C++ interop header that causes ODR violations in consumers using a different
+# Xcode/Swift version. Stripping it here prevents Clang from ever loading the header.
+echo "Stripping RiveRuntime.Swift submodule from XCFramework modulemaps..."
+find archive/RiveRuntime.xcframework -name "module.modulemap" | while read -r map; do
+  # The Swift build phase unconditionally appends `module RiveRuntime.Swift { ... }`
+  # to the modulemap even when MODULEMAP_FILE is set. Strip it so Clang never loads
+  # the stale C++ interop header (which causes ODR errors across Swift versions).
+  perl -0777 -i -pe 's/\n*^module RiveRuntime\.Swift \{[^}]*\}\n?//mg' "$map"
+  echo "  Patched: $map"
+done
+echo "Done."
 
