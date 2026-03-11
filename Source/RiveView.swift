@@ -59,6 +59,7 @@ open class RiveView: RiveRendererView {
     /// if the artboard is unchanged.
     public var drawOptimization: DrawOptimization = .drawOnChanged
     private var forceDraw: Bool = false
+    private var wasOnscreen: Bool = false
 
     // MARK: Render Loop
     internal private(set) var isPlaying: Bool = false
@@ -421,7 +422,14 @@ open class RiveView: RiveRendererView {
         
         RiveLogger.log(view: self, event: .advance(delta))
         playerDelegate?.player(didAdvanceby: delta, riveModel: riveModel)
-        
+
+        // If the animation stopped playing, but we are offscreen,
+        // force a draw so that the animation is in the correct state
+        // when it appears onscreen again
+        if (isPlaying == false && isOnscreen() == false) {
+            forceDraw = true
+        }
+
         // Trigger a redraw
         needsDisplay()
     }
@@ -451,8 +459,17 @@ open class RiveView: RiveRendererView {
     }
 
     open override func draw(_ rect: CGRect) {
+        let isOnscreen = isOnscreen()
+        // If we were previously offscreen and we just moved onscreen
+        // make sure we force a draw. In the case where a data binding
+        // property, for example, was set while offscreen, this will
+        // force the view to draw the latest state.
+        if wasOnscreen == false && isOnscreen {
+            forceDraw = true
+        }
+
         // First check whether we should draw and we're on-screen
-        if offscreenBehavior == .playAndDraw || isOnscreen() {
+        if offscreenBehavior == .playAndDraw || isOnscreen || forceDraw {
             // Then check our optimization. Draw if:
             // 1. We always draw, or
             // 2. If we don't, if the artboard changed
@@ -464,6 +481,7 @@ open class RiveView: RiveRendererView {
             super.draw(rect)
             forceDraw = false
         }
+        wasOnscreen = isOnscreen
     }
 
     open override func drawableSizeDidChange(_ drawableSize: CGSize) {
