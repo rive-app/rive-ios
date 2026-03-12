@@ -143,6 +143,10 @@ extension RiveFallbackFontDescriptor: RiveFallbackFontProvider {
     public var allowsSuggestedFonts: Bool {
         return false
     }
+
+    public var languageHint: LanguageHint? {
+        return nil
+    }
 }
 
 /// An enumeration of all possible usages of fonts within UI elements. They mirror the various available native font weights.

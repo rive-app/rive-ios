@@ -162,13 +162,20 @@ static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
 
             if (string)
             {
+                NSString* languageHint = nil;
+                if (provider.languageHint)
+                {
+                    languageHint = provider.languageHint();
+                }
+                CFStringRef cfLanguageHint = (__bridge CFStringRef)languageHint;
                 CTFontRef baseCTFont = (__bridge CTFontRef)fallbackFont;
 
                 // Get Core Text's suggestion for a fallback font
-                CTFontRef ctSuggestedFont = CTFontCreateForString(
+                CTFontRef ctSuggestedFont = CTFontCreateForStringWithLanguage(
                     baseCTFont,
                     string,
-                    CFRangeMake(0, CFStringGetLength(string)));
+                    CFRangeMake(0, CFStringGetLength(string)),
+                    cfLanguageHint);
                 if (ctSuggestedFont)
                 {
                     // Convert CTFontRef to the native font (UIFont / NSFont)
@@ -233,7 +240,8 @@ static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
                   initWithDesign:RiveFallbackFontDescriptorDesignDefault
                           weight:RiveFallbackFontDescriptorWeightRegular
                            width:RiveFallbackFontDescriptorWidthStandard
-            allowsSuggestedFonts:YES] ];
+            allowsSuggestedFonts:YES
+                    languageHint:nil] ];
     }
 
     return _fallbackFonts;

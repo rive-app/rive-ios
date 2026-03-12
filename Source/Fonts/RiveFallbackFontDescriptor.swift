@@ -73,23 +73,28 @@ import SwiftUI
     let weight: RiveFallbackFontDescriptorWeight
     /// The width of the font. This value is not guaranteed to be available for all fonts.
     let width: RiveFallbackFontDescriptorWidth
-    // Whether or not the descriptor can use suggested fonts if necessary
+    /// Whether or not the descriptor can use suggested fonts if necessary
     public let allowsSuggestedFonts: Bool
+    /// When using suggested fonts, hint at the language to prioritize.
+    public let languageHint: LanguageHint?
 
     /// Initializes a new font descriptor, used to generate a font based on a system font.
     /// - Parameters:
     ///   - design: The design of the font.
     ///   - weight: The weight of the font.
     ///   - width: The width of the font. This value is not guaranteed to be available for all fonts.
+    ///   - languageHint: // When using suggested fonts, hint at the language to prioritize.
     @objc public init(
         design: RiveFallbackFontDescriptorDesign = .default,
         weight: RiveFallbackFontDescriptorWeight = .regular,
         width: RiveFallbackFontDescriptorWidth = .standard,
-        allowsSuggestedFonts: Bool = true
+        allowsSuggestedFonts: Bool = true,
+        languageHint: LanguageHint? = nil
     ) {
         self.design = design
         self.weight = weight
         self.width = width
         self.allowsSuggestedFonts = allowsSuggestedFonts
+        self.languageHint = languageHint
     }
 }
