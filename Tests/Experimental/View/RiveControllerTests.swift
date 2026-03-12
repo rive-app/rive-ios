@@ -70,7 +70,7 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
-    func test_advance_whenSettled_returnsNil_andDoesNotAdvance() async throws {
+    func test_advance_whenSettledAndFirstDraw_returnsConfiguration_andDoesNotAdvance() async throws {
         let fixture = try await makeController(dataBind: .none)
         await expectSettled(within: fixture)
 
@@ -82,12 +82,63 @@ final class RiveControllerTests: XCTestCase {
             scaleProvider: MockScaleProvider()
         )
 
-        XCTAssertNil(configuration)
+        XCTAssertNotNil(configuration)
         XCTAssertTrue(fixture.commandQueue.advanceStateMachineCalls.isEmpty)
     }
 
     @MainActor
-    func test_advance_whenUnsettledAndOffscreen_advances_andReturnsNil() async throws {
+    func test_advance_whenSettledAfterFirstDraw_returnsNil_andDoesNotAdvance() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+
+        let firstConfiguration = fixture.controller.advance(
+            now: 10,
+            isPaused: false,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let secondConfiguration = fixture.controller.advance(
+            now: 10.5,
+            isPaused: false,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNotNil(firstConfiguration)
+        XCTAssertNil(secondConfiguration)
+        XCTAssertTrue(fixture.commandQueue.advanceStateMachineCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_advance_whenSettledAndTransitionsOffscreenToOnscreen_returnsConfiguration_andDoesNotAdvance() async throws {
+        let fixture = try await makeController(dataBind: .none)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isPaused: false,
+            isOnscreen: false,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        await expectSettled(within: fixture)
+
+        let configuration = fixture.controller.advance(
+            now: 10.5,
+            isPaused: false,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNotNil(configuration)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+    }
+
+    @MainActor
+    func test_advance_whenUnsettledAndOffscreenFirstFrame_returnsConfiguration_andAdvances() async throws {
         let fixture = try await makeController(dataBind: .none)
 
         let configuration = fixture.controller.advance(
@@ -98,9 +149,61 @@ final class RiveControllerTests: XCTestCase {
             scaleProvider: MockScaleProvider()
         )
 
-        XCTAssertNil(configuration)
+        XCTAssertNotNil(configuration)
         XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 1)
         XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+    }
+
+    @MainActor
+    func test_advance_whenUnsettledAndOffscreenConsecutiveFrames_skipsSecondDraw_andStillAdvances() async throws {
+        let fixture = try await makeController(dataBind: .none)
+
+        let firstConfiguration = fixture.controller.advance(
+            now: 10,
+            isPaused: false,
+            isOnscreen: false,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let secondConfiguration = fixture.controller.advance(
+            now: 10.5,
+            isPaused: false,
+            isOnscreen: false,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNotNil(firstConfiguration)
+        XCTAssertNil(secondConfiguration)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 2)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[1].time, 0.5, accuracy: 0.0001)
+    }
+
+    @MainActor
+    func test_advance_whenUnsettledAndTransitionsOnscreenToOffscreen_skipsDrawAfterFirstFrame_andStillAdvances() async throws {
+        let fixture = try await makeController(dataBind: .none)
+
+        let firstConfiguration = fixture.controller.advance(
+            now: 10,
+            isPaused: false,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let secondConfiguration = fixture.controller.advance(
+            now: 10.5,
+            isPaused: false,
+            isOnscreen: false,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNotNil(firstConfiguration)
+        XCTAssertNil(secondConfiguration)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 2)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[1].time, 0.5, accuracy: 0.0001)
     }
 
     @MainActor

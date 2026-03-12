@@ -30,6 +30,7 @@ final class RiveController {
     private let boundsProvider: () -> CGSize
     private var lastTimestamp: TimeInterval?
     private var hasProcessedFirstDraw = false
+    private var wasOnscreen = false
 
     // MARK: Testing
     #if TESTING
@@ -70,6 +71,21 @@ final class RiveController {
         drawableSize: CGSize,
         scaleProvider: ScaleProvider
     ) -> RendererConfiguration? {
+        /*
+         | Condition                                             | Advance?                                | Draw? |
+         |-------------------------------------------------------|-----------------------------------------|-------|
+         | Paused && hasProcessedFirstDraw                       | No                                      | No    |
+         | First frame (hasProcessedFirstDraw == false)          | Settled: No, Unsettled: Yes (delta 0)  | Yes   |
+         | Settled && !becameOnscreen && !first frame            | No                                      | No    |
+         | Unsettled && offscreen && !first frame                | Yes                                     | No    |
+         | Unsettled && onscreen                                 | Yes                                     | Yes   |
+         | Settled && becameOnscreen                             | No                                      | Yes   |
+         */
+        // Track visibility transitions so settled views can redraw once when they return onscreen.
+        let becameOnscreen = wasOnscreen == false && isOnscreen
+        defer { wasOnscreen = isOnscreen }
+
+        // Once paused and already drawn, we can stop producing render work.
         if isPaused, hasProcessedFirstDraw {
             return nil
         }
@@ -79,6 +95,7 @@ final class RiveController {
             // Paused bootstrap draws should render a frame, but not advance time.
             delta = 0
         } else {
+            // Unpaused timing: first frame advances by 0, subsequent frames use timestamp delta.
             if let lastTimestamp {
                 delta = now - lastTimestamp
             } else {
@@ -87,16 +104,24 @@ final class RiveController {
             lastTimestamp = now
         }
 
-        guard isSettled == false else {
+        if isSettled {
+            // Settled views do not animate, but we still allow:
+            // 1) one bootstrap draw, and
+            // 2) one redraw when transitioning back onscreen.
+            if hasProcessedFirstDraw, becameOnscreen == false {
+                return nil
+            }
+        } else {
+            // Unsettled views always advance, even if we may skip drawing this frame.
+            rive.stateMachine.advance(by: delta)
+        }
+
+        // After the first draw, offscreen frames skip render output.
+        if isOnscreen == false, hasProcessedFirstDraw {
             return nil
         }
 
-        rive.stateMachine.advance(by: delta)
-
-        guard isOnscreen else {
-            return nil
-        }
-
+        // Build renderer configuration only when this frame should be drawn.
         let fitBridge = rive.fit.bridged(from: scaleProvider)
         let configuration = RendererConfiguration(
             artboardHandle: rive.artboard.artboardHandle,
