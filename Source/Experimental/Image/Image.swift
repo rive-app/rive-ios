@@ -27,7 +27,7 @@ public class Image: Equatable {
 
     let handle: ImageHandle
     private let dependencies: Dependencies
-
+    
     /// Creates an image by decoding the provided image data.
     ///
     /// - Parameters:
@@ -36,7 +36,9 @@ public class Image: Equatable {
     /// - Throws: `ImageError.failedDecoding` if the image data cannot be decoded
     @MainActor
     convenience init(data: Data, dependencies: Dependencies) async throws {
+        RiveLog.debug(tag: .image, "[Image] Initializing image from data (\(data.count) bytes)")
         let handle = try await dependencies.imageService.decodeImage(from: data)
+        RiveLog.debug(tag: .image, "[Image (\(handle))] Initialized image")
         self.init(handle: handle, dependencies: dependencies)
     }
 
@@ -49,6 +51,7 @@ public class Image: Equatable {
     deinit {
         let service = dependencies.imageService
         let handle = self.handle
+        RiveLog.debug(tag: .image, "[Image (\(handle))] Deinitializing image; scheduling cleanup")
         Task { @MainActor in
             guard let deletedHandle = try? await service.deleteImage(handle) else { return }
             service.deleteImageListener(deletedHandle)

@@ -19,7 +19,7 @@ public enum RiveUIViewError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .renderer(let message):
-            return "Renderer error: \(message)"
+            return "Error rendering: \(message)"
         case .noDrawable:
             return "Could not retrieve drawable for drawing"
         case .noDevice:

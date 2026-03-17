@@ -93,10 +93,13 @@ final class FileLoader: FileLoaderProtocol {
     func load() async throws -> Data {
         switch source {
         case .local(let filename, let bundle):
+            RiveLog.debug(tag: .file, "[File] Loading local file '\(filename)'")
             return try await load(filename: filename, in: bundle)
         case .url(let url):
+            RiveLog.debug(tag: .file, "[File] Loading file from URL: \(url.absoluteString)")
             return try await load(url: url)
         case .data(let data):
+            RiveLog.debug(tag: .file, "[File] Loading file from data (\(data.count) bytes)")
             return data
         }
     }
@@ -113,14 +116,19 @@ final class FileLoader: FileLoaderProtocol {
         return try await Task.detached(priority: .userInitiated) {
             let bundle = bundle ?? Bundle.main
             guard let url = bundle.url(forResource: filename, withExtension: "riv") else {
-                throw FileError.missingFile(filename)
+                let error = FileError.missingFile(filename)
+                RiveLog.error(tag: .file, error: error, "[File] Failed to load local file")
+                throw error
             }
 
             do {
                 let data = try Data(contentsOf: url)
+                RiveLog.debug(tag: .file, "[File] Loaded local file '\(filename).riv' (\(data.count) bytes)")
                 return data
             } catch {
-                throw FileError.invalidFile(url.absoluteString)
+                let fileError = FileError.invalidFile(url.absoluteString)
+                RiveLog.error(tag: .file, error: fileError, "[File] Failed to read local file")
+                throw fileError
             }
         }.value
     }
@@ -140,12 +148,15 @@ final class FileLoader: FileLoaderProtocol {
             let task = urlSession.get(url: url) { data, response, error in
                 guard error == nil, let data, data.isEmpty == false else {
                     Task { @MainActor in
-                        continuation.resume(throwing: FileError.missingData(url.absoluteString))
+                        let fileError = FileError.missingData(url.absoluteString)
+                        RiveLog.error(tag: .file, error: fileError, "[File] Failed to load file from URL")
+                        continuation.resume(throwing: fileError)
                     }
                     return
                 }
 
                 Task { @MainActor in
+                    RiveLog.debug(tag: .file, "[File] Loaded file from URL (\(data.count) bytes)")
                     continuation.resume(returning: data)
                 }
             }

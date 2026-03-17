@@ -42,6 +42,7 @@ struct ViewModelInstanceData: Sendable {
         } else if let colorValue = data["colorValue"] as? NSNumber {
             type = .value(.color(colorValue.uint32Value))
         } else {
+            RiveLog.error(tag: .viewModelInstance, "[ViewModelInstance] Received data with no supported value keys")
             type = .value(.none)
         }
     }

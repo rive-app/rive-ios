@@ -27,7 +27,7 @@ public class Font: Equatable {
 
     let handle: FontHandle
     private let dependencies: Dependencies
-
+    
     /// Creates a font by decoding the provided font data.
     ///
     /// - Parameters:
@@ -36,7 +36,9 @@ public class Font: Equatable {
     /// - Throws: `FontError.failedDecoding` if the font data cannot be decoded
     @MainActor
     convenience init(data: Data, dependencies: Dependencies) async throws {
+        RiveLog.debug(tag: .font, "[Font] Initializing font from data (\(data.count) bytes)")
         let handle = try await dependencies.fontService.decodeFont(from: data)
+        RiveLog.debug(tag: .font, "[Font (\(handle))] Initialized font")
         self.init(handle: handle, dependencies: dependencies)
     }
 
@@ -49,6 +51,7 @@ public class Font: Equatable {
     deinit {
         let service = dependencies.fontService
         let handle = self.handle
+        RiveLog.debug(tag: .font, "[Font (\(handle))] Deinitializing font; scheduling cleanup")
         Task { @MainActor in
             guard let deletedHandle = try? await service.deleteFont(handle) else { return }
             service.deleteFontListener(deletedHandle)

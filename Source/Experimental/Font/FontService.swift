@@ -37,6 +37,7 @@ class FontService: NSObject, FontListener {
     /// - Returns: A font handle that can be used to reference the decoded font
     /// - Throws: `FontError.failedDecoding` if the font data cannot be decoded
     func decodeFont(from data: Data) async throws -> Font.FontHandle {
+        RiveLog.debug(tag: .font, "[Font] Decoding font data (\(data.count) bytes)")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -53,6 +54,7 @@ class FontService: NSObject, FontListener {
     /// - Returns: The font handle that was deleted
     @MainActor
     func deleteFont(_ fontHandle: Font.FontHandle) async throws -> Font.FontHandle {
+        RiveLog.debug(tag: .font, "[Font] Deleting font")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -78,6 +80,7 @@ class FontService: NSObject, FontListener {
                 return
             }
 
+            RiveLog.debug(tag: .font, "[Font] Decoded font")
             continuation.resume(returning: fontHandle)
         }
     }
@@ -91,6 +94,7 @@ class FontService: NSObject, FontListener {
                 return
             }
 
+            RiveLog.error(tag: .font, "[Font] Failed to decode font: \(message)")
             continuation.resume(throwing: FontError.failedDecoding(message))
         }
     }
@@ -104,6 +108,7 @@ class FontService: NSObject, FontListener {
                 return
             }
 
+            RiveLog.debug(tag: .font, "[Font] Deleted font")
             continuation.resume(returning: fontHandle)
         }
     }

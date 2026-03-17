@@ -70,16 +70,22 @@ public class Rive: ObservableObject, Equatable {
 
         switch dataBind {
         case .auto:
+            RiveLog.debug(tag: .rive, "[Rive] Resolving data binding mode: auto")
             if let instance = try? await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(self.artboard))) {
+                RiveLog.debug(tag: .rive, "[Rive] Binding auto-resolved view model instance")
                 self.viewModelInstance = instance
                 self.stateMachine.bindViewModelInstance(instance)
             } else {
+                RiveLog.warning(tag: .rive, "[Rive] Auto data binding did not resolve a default view model instance")
                 self.viewModelInstance = nil
             }
         case .instance(let instance):
+            RiveLog.debug(tag: .rive, "[Rive] Resolving data binding mode: instance")
+            RiveLog.debug(tag: .rive, "[Rive] Binding provided view model instance")
             self.viewModelInstance = instance
             self.stateMachine.bindViewModelInstance(instance)
         case .none:
+            RiveLog.debug(tag: .rive, "[Rive] Resolving data binding mode: none")
             self.viewModelInstance = nil
             break
         }

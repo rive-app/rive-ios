@@ -180,13 +180,16 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     @MainActor
     public convenience init(rive: @MainActor @escaping () async throws -> Rive, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = false) {
         self.init(rive: nil, delegate: delegate, isPaused: isPaused)
+        RiveLog.debug(tag: .view, "[RiveUIView] Initializing with async Rive loader")
 
         Task { @MainActor [weak self] in
             guard let self else { return }
             await setupTask?.value
             do {
                 self.rive = try await rive()
+                RiveLog.debug(tag: .view, "[RiveUIView] Loaded Rive configuration from async loader")
             } catch {
+                RiveLog.error(tag: .view, error: error, "[RiveUIView] Failed to load Rive configuration")
                 delegate?.view(self, didReceiveError: .failedToLoad(error))
             }
             self.isPaused = isPaused
@@ -201,6 +204,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     /// - Parameter rive: An optional `Rive` configuration to display
     @MainActor
     public init(rive: Rive?, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = false) {
+        RiveLog.debug(tag: .view, "[RiveUIView] Initializing view")
         self.rive = rive
         self.delegate = delegate
         super.init(frame: .zero)
@@ -242,7 +246,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     
     @MainActor
     private func setupView() async {
-        guard mtkView == nil, let device = await MetalDevice.shared.defaultDevice()?.value else { return }
+        guard mtkView == nil else { return }
+        guard let device = await MetalDevice.shared.defaultDevice()?.value else {
+            RiveLog.error(tag: .view, "[RiveUIView] Failed to set up MTKView: missing Metal device")
+            return
+        }
         let mtkView = MTKView(frame: bounds, device: device)
         mtkView.delegate = self
         mtkView.isPaused = true
@@ -276,6 +284,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
     private func setupRive() {
         if let rive {
+            RiveLog.debug(tag: .view, "[RiveUIView] Setting up Rive renderer and controller")
             renderer = Renderer(
                 commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue,
                 renderContext: rive.file.worker.dependencies.workerService.dependencies.renderContext
@@ -313,6 +322,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                mtkView.enableSetNeedsDisplay = currentEnableSetNeedsDisplay
             }
         } else {
+            RiveLog.debug(tag: .view, "[RiveUIView] Clearing Rive renderer and controller")
             renderer = nil
             controller = nil
         }
@@ -348,16 +358,19 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
         autoreleasepool {
             guard let device = view.device else {
+                RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing device")
                 delegate?.view(self, didReceiveError: .noDevice)
                 return
             }
 
             guard let currentDrawable = view.currentDrawable else {
+                RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing drawable")
                 delegate?.view(self, didReceiveError: .noDrawable)
                 return
             }
 
             guard let renderer else {
+                RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing renderer")
                 delegate?.view(self, didReceiveError: .noRenderer)
                 return
             }
@@ -367,6 +380,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 commandBuffer.commit()
             } onError: { [weak self] error in
                 guard let self else { return }
+                RiveLog.error(tag: .view, error: error, "[RiveUIView] Error rendering")
                 self.delegate?.view(self, didReceiveError: RiveUIViewError.renderer(error.localizedDescription))
             }
 
@@ -482,6 +496,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
     private func updateDisplayLink() {
         guard window != nil else {
+            RiveLog.debug(tag: .view, "[RiveUIView] Clearing display link; view is off-window")
             displayLink = nil
             return
         }
@@ -491,16 +506,19 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         let displayLink: DisplayLink
         // All versions of !macOS or Catalyst have a CADisplayLink-backed display link.
         #if !os(macOS) || RIVE_MAC_CATALYST
+        RiveLog.debug(tag: .view, "[RiveUIView] Configuring CADisplayLink-backed display link")
         displayLink = DefaultDisplayLink(host: self) { [weak self] in
             self?.tick()
         }
         #else
         // On macOS 14+, use the DefaultDisplayLink implementation (as CADisplayLink is available).
         if #available(macOS 14, *) {
+            RiveLog.debug(tag: .view, "[RiveUIView] Configuring CADisplayLink-backed display link")
             displayLink = DefaultDisplayLink(host: self) { [weak self] in
                 self?.tick()
             }
         } else {
+            RiveLog.debug(tag: .view, "[RiveUIView] Configuring MTKView-backed display link fallback")
             // On macOS 13 or older, fall back to mtkView as the display-link adapter.
             displayLink = self
             // mtkView?.isPaused is implicitly set by displayLink.isPaused below

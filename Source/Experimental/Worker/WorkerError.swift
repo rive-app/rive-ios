@@ -15,7 +15,7 @@ public enum WorkerError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .missingDevice:
-            return "No device found for drawing"
+            return "No Metal device available for rendering"
         }
     }
 }

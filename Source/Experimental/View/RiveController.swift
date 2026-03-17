@@ -43,6 +43,7 @@ final class RiveController {
         rive: Rive,
         boundsProvider: @escaping () -> CGSize,
     ) {
+        RiveLog.debug(tag: .view, "[RiveUIView] Initializing controller")
         self.rive = rive
         self.boundsProvider = boundsProvider
         self.inputHandler = InputHandler(
@@ -55,11 +56,13 @@ final class RiveController {
     }
 
     func handleInput(_ input: Input) {
+        RiveLog.trace(tag: .view, "[RiveUIView] Handling input event")
         inputHandler.handle(input, in: rive.stateMachine)
         isSettled = false
     }
 
     func resetTiming() {
+        RiveLog.trace(tag: .view, "[RiveUIView] Resetting frame timing")
         // This will cause the initial advance on next play to be 0.
         lastTimestamp = nil
     }
@@ -87,6 +90,7 @@ final class RiveController {
 
         // Once paused and already drawn, we can stop producing render work.
         if isPaused, hasProcessedFirstDraw {
+            RiveLog.trace(tag: .view, "[RiveUIView] Skipping frame: paused after first draw")
             return nil
         }
 
@@ -109,10 +113,12 @@ final class RiveController {
             // 1) one bootstrap draw, and
             // 2) one redraw when transitioning back onscreen.
             if hasProcessedFirstDraw, becameOnscreen == false {
+                RiveLog.trace(tag: .view, "[RiveUIView] Skipping frame: settled with no onscreen transition")
                 return nil
             }
         } else {
             // Unsettled views always advance, even if we may skip drawing this frame.
+            RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
             rive.stateMachine.advance(by: delta)
         }
 
@@ -142,6 +148,7 @@ final class RiveController {
     // MARK: - Private
 
     private func setupSubscriptions() {
+        RiveLog.debug(tag: .view, "[RiveUIView] Setting up subscriptions")
         rive
             .fitDidChange
             .removeDuplicates()
@@ -149,9 +156,11 @@ final class RiveController {
             .sink { [weak self] fit in
                 guard let self else { return }
                 if case .layout = fit {
+                    RiveLog.debug(tag: .view, "[RiveUIView] Applying layout fit to artboard size")
                     let bounds = boundsProvider()
                     rive.artboard.setSize(bounds)
                 } else {
+                    RiveLog.debug(tag: .view, "[RiveUIView] Resetting artboard size for non-layout fit")
                     rive.artboard.resetSize()
                 }
             }
@@ -177,6 +186,7 @@ final class RiveController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isSettled in
                 guard let self else { return }
+                RiveLog.trace(tag: .view, "[RiveUIView] Settled state changed: \(isSettled)")
                 self.isSettled = isSettled
             }
             .store(in: &cancellables)

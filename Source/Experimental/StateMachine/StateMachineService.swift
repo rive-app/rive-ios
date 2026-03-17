@@ -18,6 +18,10 @@ class StateMachineService: NSObject, StateMachineListener {
     private let dependencies: Dependencies
     private var continuations: [UInt64: CheckedContinuation<UInt64, Error>] = [:]
     private var settledContinuations: [UInt64: [UUID: AsyncStream<Void>.Continuation]] = [:]
+    
+    private static func context(_ stateMachine: StateMachine.StateMachineHandle) -> String {
+        "[StateMachine (\(stateMachine))]"
+    }
 
     @MainActor
     init(dependencies: Dependencies) {
@@ -38,9 +42,13 @@ class StateMachineService: NSObject, StateMachineListener {
     func createStateMachine(name: String? = nil, from artboard: Artboard.ArtboardHandle) -> StateMachine.StateMachineHandle {
         let requestID = dependencies.commandQueue.nextRequestID
         if let name = name {
-            return dependencies.commandQueue.createStateMachineNamed(name, fromArtboard: artboard, observer: self, requestID: requestID)
+            let stateMachine = dependencies.commandQueue.createStateMachineNamed(name, fromArtboard: artboard, observer: self, requestID: requestID)
+            RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Created named state machine '\(name)'")
+            return stateMachine
         } else {
-            return dependencies.commandQueue.createDefaultStateMachine(fromArtboard: artboard, observer: self, requestID: requestID)
+            let stateMachine = dependencies.commandQueue.createDefaultStateMachine(fromArtboard: artboard, observer: self, requestID: requestID)
+            RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Created default state machine")
+            return stateMachine
         }
     }
 
@@ -53,6 +61,7 @@ class StateMachineService: NSObject, StateMachineListener {
     ///   - time: The time interval to advance the state machine by.
     @MainActor
     func advanceStateMachine(_ stateMachine: StateMachine.StateMachineHandle, by time: TimeInterval) {
+        RiveLog.trace(tag: .stateMachine, "\(Self.context(stateMachine)) Advancing state machine (dt=\(time))")
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.advanceStateMachine(stateMachine, by: time, requestID: requestID)
     }
@@ -84,6 +93,7 @@ class StateMachineService: NSObject, StateMachineListener {
     /// The continuation is resumed when `onStateMachineDeleted` is called.
     @MainActor
     func deleteStateMachine(_ stateMachine: StateMachine.StateMachineHandle) async throws -> StateMachine.StateMachineHandle {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Deleting state machine")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -106,6 +116,7 @@ class StateMachineService: NSObject, StateMachineListener {
     ///   - viewModelInstance: The handle of the view model instance to bind.
     @MainActor
     func bindViewModelInstance(_ stateMachine: StateMachine.StateMachineHandle, to viewModelInstance: ViewModelInstance.ViewModelInstanceHandle) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Binding view model instance")
         let requestID = dependencies.commandQueue.nextRequestID
         dependencies.commandQueue.bindViewModelInstance(stateMachine, toViewModelInstance: viewModelInstance, requestID: requestID)
     }
@@ -116,6 +127,7 @@ class StateMachineService: NSObject, StateMachineListener {
                 return
             }
 
+            RiveLog.error(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Operation failed: \(message)")
             continuation.resume(throwing: StateMachineServiceError.error(message))
         }
     }
@@ -126,12 +138,14 @@ class StateMachineService: NSObject, StateMachineListener {
                 return
             }
 
+            RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Deleted state machine")
             continuation.resume(returning: stateMachineHandle)
         }
     }
 
     nonisolated func onStateMachineSettled(_ stateMachineHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            RiveLog.trace(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Settled state machine")
             settledContinuations[stateMachineHandle]?.values.forEach { $0.yield(()) }
         }
     }

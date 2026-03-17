@@ -25,6 +25,10 @@ class FileService: NSObject, FileListener {
     /// Continuations are stored when command queue functions are called and resumed when
     /// listener callbacks are invoked. Access must be on the main thread.
     private var continuations: [UInt64: AnyContinuation] = [:]
+    
+    private static func context(_ file: File.FileHandle) -> String {
+        "[File (\(file))]"
+    }
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -41,6 +45,7 @@ class FileService: NSObject, FileListener {
     /// - Throws: `FileError.invalidFile` if the file cannot be loaded or parsed
     @MainActor
     func loadFile(data: Data) async throws -> File.FileHandle {
+        RiveLog.debug(tag: .file, "[File] Loading file (\(data.count) bytes)")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -58,6 +63,7 @@ class FileService: NSObject, FileListener {
     /// - Throws: `FileError` if the request fails
     @MainActor
     func getArtboardNames(fileHandle: File.FileHandle) async throws -> [String] {
+        RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting artboard names")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -75,6 +81,7 @@ class FileService: NSObject, FileListener {
     /// - Throws: `FileError` if the request fails
     @MainActor
     func getViewModelNames(fileHandle: File.FileHandle) async throws -> [String] {
+        RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting view model names")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -94,6 +101,7 @@ class FileService: NSObject, FileListener {
     /// - Throws: `FileError` if the request fails
     @MainActor
     func getInstanceNames(of viewModelName: String, from fileHandle: File.FileHandle) async throws -> [String] {
+        RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting instance names for view model '\(viewModelName)'")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -113,6 +121,7 @@ class FileService: NSObject, FileListener {
     /// - Throws: `FileError` if the request fails, `ViewModelPropertyError` if property parsing fails
     @MainActor
     func getProperties(of viewModelName: String, from fileHandle: File.FileHandle) async throws -> [ViewModelProperty] {
+        RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting property definitions for view model '\(viewModelName)'")
         let commandQueue = dependencies.commandQueue
         let properties: [ViewModelProperty] = try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -131,6 +140,7 @@ class FileService: NSObject, FileListener {
     /// - Throws: `FileError` if the request fails, `ViewModelEnumError` if enum parsing fails
     @MainActor
     func getViewModelEnums(from fileHandle: File.FileHandle) async throws -> [ViewModelEnum] {
+        RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting view model enums")
         let commandQueue = dependencies.commandQueue
         let enums: [ViewModelEnum] = try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -151,6 +161,7 @@ class FileService: NSObject, FileListener {
     nonisolated func onFileLoaded(_ handle: UInt64, requestID: UInt64) {
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(handle)) Loaded file")
             try continuation.resume(with: .success(handle))
         }
     }
@@ -162,6 +173,7 @@ class FileService: NSObject, FileListener {
     nonisolated func onFileDeleted(_ handle: UInt64, requestID: UInt64) {
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(handle)) Deleted file")
             try continuation.resume(with: .success(handle))
         }
     }
@@ -178,6 +190,7 @@ class FileService: NSObject, FileListener {
     nonisolated func onFileError(_ fileHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.error(tag: .file, "\(Self.context(fileHandle)) Operation failed: \(message)")
             try continuation.resume(with: .failure(FileError.invalidFile(message)))
         }
     }
@@ -189,6 +202,7 @@ class FileService: NSObject, FileListener {
     nonisolated func onArtboardsListed(_ fileHandle: UInt64, requestID: UInt64, names: [String]) {
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) artboard names")
             try continuation.resume(with: .success(names))
         }
     }
@@ -200,6 +214,7 @@ class FileService: NSObject, FileListener {
     nonisolated func onViewModelsListed(_ fileHandle: UInt64, requestID: UInt64, names: [String]) {
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) view model names")
             try continuation.resume(with: .success(names))
         }
     }
@@ -211,6 +226,7 @@ class FileService: NSObject, FileListener {
     nonisolated func onViewModelInstanceNamesListed(_ fileHandle: UInt64, requestID: UInt64, viewModelName: String, names: [String]) {
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) instance names for view model '\(viewModelName)'")
             try continuation.resume(with: .success(names))
         }
     }
@@ -225,6 +241,7 @@ class FileService: NSObject, FileListener {
         }) ?? []
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(properties.count) property definitions for view model '\(viewModelName)'")
             try continuation.resume(with: .success(properties))
         }
     }
@@ -240,6 +257,7 @@ class FileService: NSObject, FileListener {
 
         Task { @MainActor in
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(enums.count) view model enums")
             try continuation.resume(with: .success(enums))
         }
     }
@@ -252,6 +270,7 @@ class FileService: NSObject, FileListener {
     /// - Returns: The file handle that was deleted
     @MainActor
     func deleteFile(_ file: File.FileHandle) async throws -> File.FileHandle {
+        RiveLog.debug(tag: .file, "\(Self.context(file)) Deleting file")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID

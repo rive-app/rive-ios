@@ -24,10 +24,16 @@ struct AnyAsyncThrowingStreamContinuation {
             if let typedValue = value as? T {
                 continuation.yield(typedValue)
             } else {
-                throw AnyAsyncThrowingStreamContinuationError.typeMismatch(
+                let error = AnyAsyncThrowingStreamContinuationError.typeMismatch(
                     expected: String(describing: T.self),
                     actual: String(describing: type(of: value))
                 )
+                RiveLog.error(
+                    tag: .rive,
+                    error: error,
+                    "[Rive] Failed to yield stream value"
+                )
+                throw error
             }
         }
         finishStream = {

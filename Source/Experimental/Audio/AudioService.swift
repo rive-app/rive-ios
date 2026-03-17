@@ -38,6 +38,7 @@ class AudioService: NSObject, AudioListener {
     /// - Throws: `AudioError.failedDecoding` if the audio data cannot be decoded
     @MainActor
     func decodeAudio(from data: Data) async throws -> Audio.AudioHandle {
+        RiveLog.debug(tag: .audio, "[Audio] Decoding audio data (\(data.count) bytes)")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -54,6 +55,7 @@ class AudioService: NSObject, AudioListener {
     /// - Returns: The audio handle that was deleted
     @MainActor
     func deleteAudio(_ audioHandle: Audio.AudioHandle) async throws -> Audio.AudioHandle {
+        RiveLog.debug(tag: .audio, "[Audio] Deleting audio")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -79,6 +81,7 @@ class AudioService: NSObject, AudioListener {
                 return
             }
 
+            RiveLog.debug(tag: .audio, "[Audio] Decoded audio")
             continuation.resume(returning: audioHandle)
         }
     }
@@ -92,6 +95,7 @@ class AudioService: NSObject, AudioListener {
                 return
             }
 
+            RiveLog.error(tag: .audio, "[Audio] Failed to decode audio: \(message)")
             continuation.resume(throwing: AudioError.failedDecoding(message))
         }
     }
@@ -105,6 +109,7 @@ class AudioService: NSObject, AudioListener {
                 return
             }
 
+            RiveLog.debug(tag: .audio, "[Audio] Deleted audio")
             continuation.resume(returning: audioHandle)
         }
     }

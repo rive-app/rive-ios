@@ -60,6 +60,10 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     private func emitDirty(for instance: ViewModelInstance.ViewModelInstanceHandle) {
         dirtyStreamContinuations[instance]?.values.forEach { $0.yield(()) }
     }
+    
+    private static func context(_ instance: ViewModelInstance.ViewModelInstanceHandle) -> String {
+        "[ViewModelInstance (\(instance))]"
+    }
 
     /// Creates a blank view model instance from an artboard.
     ///
@@ -77,6 +81,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             observer: self,
             requestID: requestID
         )
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.context(handle)) Created blank instance")
         return handle
     }
 
@@ -96,6 +101,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             observer: self,
             requestID: requestID
         )
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.context(handle)) Created blank instance for view model '\(viewModelName)'")
         return handle
     }
 
@@ -115,6 +121,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             observer: self,
             requestID: requestID
         )
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.context(handle)) Created default instance")
         return handle
     }
 
@@ -134,6 +141,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             observer: self,
             requestID: requestID
         )
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.context(handle)) Created default instance for view model '\(viewModelName)'")
         return handle
     }
 
@@ -155,6 +163,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             observer: self,
             requestID: requestID
         )
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.context(handle)) Created named instance '\(instanceName)'")
         return handle
     }
 
@@ -176,6 +185,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             observer: self,
             requestID: requestID
         )
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.context(handle)) Created named instance '\(instanceName)' for view model '\(viewModelName)'")
         return handle
     }
 
@@ -187,6 +197,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// - Returns: The view model instance handle that was deleted
     @MainActor
     func deleteViewModelInstance(_ instance: ViewModelInstance.ViewModelInstanceHandle) async throws -> ViewModelInstance.ViewModelInstanceHandle {
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.context(instance)) Deleting instance")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -698,6 +709,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         message: String
     ) {
         Task { @MainActor in
+            RiveLog.error(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Operation failed: \(message)")
             if let continuation = continuations.removeValue(forKey: requestID) {
                 try continuation.resume(
                     with: .failure(ViewModelInstanceError.message(message))
@@ -786,6 +798,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     ) {
         Task { @MainActor in
             if let continuation = continuations.removeValue(forKey: requestID) {
+                RiveLog.trace(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Received list size \(size) for path '\(path)'")
                 try continuation.resume(with: .success(size))
             }
         }
@@ -801,6 +814,7 @@ class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     ) {
         Task { @MainActor in
             if let continuation = continuations.removeValue(forKey: requestID) {
+                RiveLog.debug(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Deleted instance")
                 try continuation.resume(with: .success(viewModelInstanceHandle))
             }
         }

@@ -114,6 +114,7 @@ final class DefaultDisplayLink: DisplayLink {
     init(host: Host, tick: @escaping Tick) {
         defer {
             self.displayLink.add(to: .main, forMode: .common)
+            RiveLog.debug(tag: .view, "[RiveUIView] Registered display link with main run loop")
         }
 
         self.host = host
@@ -124,14 +125,18 @@ final class DefaultDisplayLink: DisplayLink {
         let displayLink: CADisplayLink
         #if !os(visionOS)
         if let link = host.window?.windowScene?.screen.displayLink(withTarget: self, selector: #selector(_tick)) {
+            RiveLog.debug(tag: .view, "[RiveUIView] Creating display link from host")
             displayLink = link
         } else {
+            RiveLog.debug(tag: .view, "[RiveUIView] Creating display link fallback")
             displayLink = CADisplayLink(target: self, selector: #selector(_tick))
         }
         #else
+        RiveLog.debug(tag: .view, "[RiveUIView] Creating display link")
         displayLink = CADisplayLink(target: self, selector: #selector(_tick))
         #endif
         #else
+        RiveLog.debug(tag: .view, "[RiveUIView] Creating display link")
         var displayLink = host.displayLink(target: self, selector: #selector(_tick))
         #endif
 
@@ -152,6 +157,7 @@ final class DefaultDisplayLink: DisplayLink {
     }
 
     func invalidate() {
+        RiveLog.debug(tag: .view, "[RiveUIView] Invalidating display link")
         displayLink.invalidate()
     }
 

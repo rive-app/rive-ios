@@ -15,7 +15,7 @@ public enum ArtboardError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidStateMachine(let message):
-            return "State machine does not exist: \(message)"
+            return "State machine not found: \(message)"
         }
     }
 }

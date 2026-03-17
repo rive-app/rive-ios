@@ -29,10 +29,14 @@ public struct ViewModelEnum: Sendable, Equatable {
     /// - Throws: An error if the dictionary is missing required keys or has invalid values
     init(from dictionary: [String: Any]) throws {
         guard let nameValue = dictionary["name"] as? String else {
-            throw ViewModelEnumError.missingName
+            let error = ViewModelEnumError.missingName
+            RiveLog.error(tag: .viewModelInstance, error: error, "[ViewModelInstance] Failed parsing view model enum")
+            throw error
         }
         guard let valuesArray = dictionary["values"] as? [String] else {
-            throw ViewModelEnumError.missingValues
+            let error = ViewModelEnumError.missingValues
+            RiveLog.error(tag: .viewModelInstance, error: error, "[ViewModelInstance] Failed parsing view model enum")
+            throw error
         }
         
         self.name = nameValue
@@ -51,9 +55,9 @@ enum ViewModelEnumError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingName:
-            return "Enum is missing a name"
+            return "View model enum is missing 'name'"
         case .missingValues:
-            return "Enum is missing values"
+            return "View model enum is missing 'values'"
         }
     }
 }

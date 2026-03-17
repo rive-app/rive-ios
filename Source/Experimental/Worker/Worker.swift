@@ -27,8 +27,11 @@ public class Worker {
 
     @MainActor
     public convenience init() async throws {
+        RiveLog.debug(tag: .worker, "[Worker] Initializing worker")
         guard let device = await MetalDevice.shared.defaultDevice() else {
-            throw WorkerError.missingDevice
+            let error = WorkerError.missingDevice
+            RiveLog.error(tag: .worker, error: error, "[Worker] Failed to initialize worker")
+            throw error
         }
 
         let renderContext = await Task.detached(priority: .userInitiated) { () -> UncheckedSendable<RiveRenderContext> in
@@ -53,6 +56,7 @@ public class Worker {
 
     @MainActor
     public convenience init(device: any MTLDevice) {
+        RiveLog.debug(tag: .worker, "[Worker] Initializing worker with provided Metal device")
         let renderContext = RiveRenderContext(device: device)
         let commandQueue = CommandQueue()
         let commandServer = CommandServer(commandQueue: commandQueue, renderContext: renderContext)
@@ -67,6 +71,7 @@ public class Worker {
                 )
             )
         )
+        RiveLog.debug(tag: .worker, "[Worker] Initialized worker with provided Metal device")
     }
 
     @MainActor
@@ -95,7 +100,8 @@ public class Worker {
     /// - Throws: An error if the image data cannot be decoded
     @MainActor
     public func decodeImage(from data: Data) async throws -> Image {
-        return try await Image(
+        RiveLog.debug(tag: .worker, "[Worker] Decoding image data (\(data.count) bytes)")
+        let image = try await Image(
             data: data,
             dependencies: .init(
                 imageService: .init(
@@ -105,6 +111,8 @@ public class Worker {
                 )
             )
         )
+        RiveLog.debug(tag: .worker, "[Worker] Decoded image")
+        return image
     }
 
     /// Registers an image as a global asset that can be referenced by name.
@@ -118,6 +126,7 @@ public class Worker {
     ///   - name: The name to associate with the image asset
     @MainActor
     public func addGlobalImageAsset(_ image: Image, name: String) {
+        RiveLog.debug(tag: .worker, "[Worker] Adding global image asset '\(name)'")
         dependencies.workerService.set(image: image.handle, name: name)
         images[name] = image
     }
@@ -131,6 +140,7 @@ public class Worker {
     /// - Parameter name: The name of the image asset to remove
     @MainActor
     public func removeGlobalImageAsset(name: String) {
+        RiveLog.debug(tag: .worker, "[Worker] Removing global image asset '\(name)'")
         dependencies.workerService.remove(image: name)
         images.removeValue(forKey: name)
     }
@@ -143,7 +153,8 @@ public class Worker {
     /// - Throws: An error if the font data cannot be decoded
     @MainActor
     public func decodeFont(from data: Data) async throws -> Font {
-        return try await Font(
+        RiveLog.debug(tag: .worker, "[Worker] Decoding font data (\(data.count) bytes)")
+        let font = try await Font(
             data: data,
             dependencies: .init(
                 fontService: .init(
@@ -153,6 +164,8 @@ public class Worker {
                 )
             )
         )
+        RiveLog.debug(tag: .worker, "[Worker] Decoded font")
+        return font
     }
 
     /// Registers a font as a global asset that can be referenced by name.
@@ -166,6 +179,7 @@ public class Worker {
     ///   - name: The name to associate with the font asset
     @MainActor
     public func addGlobalFontAsset(_ font: Font, name: String) {
+        RiveLog.debug(tag: .worker, "[Worker] Adding global font asset '\(name)'")
         dependencies.workerService.set(font: font.handle, name: name)
         fonts[name] = font
     }
@@ -179,6 +193,7 @@ public class Worker {
     /// - Parameter name: The name of the font asset to remove
     @MainActor
     public func removeGlobalFontAsset(_ name: String) {
+        RiveLog.debug(tag: .worker, "[Worker] Removing global font asset '\(name)'")
         dependencies.workerService.remove(font: name)
         fonts.removeValue(forKey: name)
     }
@@ -191,7 +206,8 @@ public class Worker {
     /// - Throws: An error if the audio data cannot be decoded
     @MainActor
     public func decodeAudio(from data: Data) async throws -> Audio {
-        return try await Audio(
+        RiveLog.debug(tag: .worker, "[Worker] Decoding audio data (\(data.count) bytes)")
+        let audio = try await Audio(
             data: data,
             dependencies: .init(
                 audioService: .init(
@@ -201,6 +217,8 @@ public class Worker {
                 )
             )
         )
+        RiveLog.debug(tag: .worker, "[Worker] Decoded audio")
+        return audio
     }
 
     /// Registers an audio source as a global asset that can be referenced by name.
@@ -214,6 +232,7 @@ public class Worker {
     ///   - name: The name to associate with the audio asset
     @MainActor
     public func addGlobalAudioAsset(_ audio: Audio, name: String) {
+        RiveLog.debug(tag: .worker, "[Worker] Adding global audio asset '\(name)'")
         dependencies.workerService.set(audio: audio.handle, name: name)
         audios[name] = audio
     }
@@ -227,6 +246,7 @@ public class Worker {
     /// - Parameter name: The name of the audio asset to remove
     @MainActor
     public func removeGlobalAudioAsset(name: String) {
+        RiveLog.debug(tag: .worker, "[Worker] Removing global audio asset '\(name)'")
         dependencies.workerService.remove(audio: name)
         audios.removeValue(forKey: name)
     }

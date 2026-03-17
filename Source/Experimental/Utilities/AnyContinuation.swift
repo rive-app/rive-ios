@@ -24,10 +24,16 @@ struct AnyContinuation {
                 if let typedValue = value as? T {
                     continuation.resume(returning: typedValue)
                 } else {
-                    throw AnyContinuationError.typeMismatch(
+                    let error = AnyContinuationError.typeMismatch(
                         expected: String(describing: T.self),
                         actual: String(describing: type(of: value))
                     )
+                    RiveLog.error(
+                        tag: .rive,
+                        error: error,
+                        "[Rive] Failed to resume continuation"
+                    )
+                    throw error
                 }
             case .failure(let error):
                 continuation.resume(throwing: error)

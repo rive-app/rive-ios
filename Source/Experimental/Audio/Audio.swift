@@ -27,7 +27,7 @@ public class Audio: Equatable {
 
     let handle: AudioHandle
     private let dependencies: Dependencies
-
+    
     /// Creates an audio source by decoding the provided audio data.
     ///
     /// - Parameters:
@@ -36,7 +36,9 @@ public class Audio: Equatable {
     /// - Throws: `AudioError.failedDecoding` if the audio data cannot be decoded
     @MainActor
     convenience init(data: Data, dependencies: Dependencies) async throws {
+        RiveLog.debug(tag: .audio, "[Audio] Initializing audio from data (\(data.count) bytes)")
         let handle = try await dependencies.audioService.decodeAudio(from: data)
+        RiveLog.debug(tag: .audio, "[Audio (\(handle))] Initialized audio")
         self.init(handle: handle, dependencies: dependencies)
     }
 
@@ -49,6 +51,7 @@ public class Audio: Equatable {
     deinit {
         let service = dependencies.audioService
         let handle = self.handle
+        RiveLog.debug(tag: .audio, "[Audio (\(handle))] Deinitializing audio; scheduling cleanup")
         Task { @MainActor in
             guard let deletedHandle = try? await service.deleteAudio(handle) else { return }
             service.deleteAudioListener(deletedHandle)

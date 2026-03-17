@@ -46,6 +46,10 @@ public class ViewModelInstance: Equatable {
     private let dependencies: Dependencies
     let viewModelInstanceHandle: ViewModelInstanceHandle
 
+    private static func logContext(for handle: ViewModelInstanceHandle) -> String {
+        "[ViewModelInstance (\(handle))]"
+    }
+
     @MainActor
     init(for artboard: Artboard, from file: File, dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -53,6 +57,8 @@ public class ViewModelInstance: Equatable {
             for: artboard,
             from: file
         )
+        let handle = viewModelInstanceHandle
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Initialized blank instance from artboard")
     }
 
     @MainActor
@@ -93,6 +99,8 @@ public class ViewModelInstance: Equatable {
                 self.viewModelInstanceHandle = dependencies.viewModelInstanceService.createViewModelInstanceNamed(instanceName, viewModelName: viewModelName, from: file)
             }
         }
+        let handle = viewModelInstanceHandle
+        RiveLog.debug(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Initialized instance from source")
     }
 
     @MainActor
@@ -104,6 +112,7 @@ public class ViewModelInstance: Equatable {
     deinit {
         let service = dependencies.viewModelInstanceService
         let handle = viewModelInstanceHandle
+        RiveLog.debug(tag: .viewModelInstance, "[ViewModelInstance (\(handle))] Deinitializing instance; scheduling cleanup")
         Task { @MainActor in
             guard let deletedHandle = try? await service.deleteViewModelInstance(handle) else { return }
             service.deleteViewModelInstanceListener(deletedHandle)
@@ -162,6 +171,8 @@ public class ViewModelInstance: Equatable {
     ///   - value: The new string value to assign
     @MainActor
     public func setValue(of property: StringProperty, to value: StringProperty.Value) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting string property '\(property.path)' to '\(value)'")
         dependencies.viewModelInstanceService.setStringValue(value, for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -196,6 +207,8 @@ public class ViewModelInstance: Equatable {
     ///   - value: The new float value to assign
     @MainActor
     public func setValue(of property: NumberProperty, to value: NumberProperty.Value) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting number property '\(property.path)' to \(value)")
         dependencies.viewModelInstanceService.setNumberValue(value, for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -230,6 +243,8 @@ public class ViewModelInstance: Equatable {
     ///   - value: The new boolean value to assign
     @MainActor
     public func setValue(of property: BoolProperty, to value: BoolProperty.Value) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting bool property '\(property.path)' to \(value)")
         dependencies.viewModelInstanceService.setBoolValue(value, for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -264,6 +279,8 @@ public class ViewModelInstance: Equatable {
     ///   - value: The new color value to assign
     @MainActor
     public func setValue(of property: ColorProperty, to value: ColorProperty.Value) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting color property '\(property.path)' to \(value)")
         dependencies.viewModelInstanceService.setColorValue(value, for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -298,6 +315,8 @@ public class ViewModelInstance: Equatable {
     ///   - value: The new string value (enum case name) to assign
     @MainActor
     public func setValue(of property: EnumProperty, to value: EnumProperty.Value) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting enum property '\(property.path)' to '\(value)'")
         dependencies.viewModelInstanceService.setEnumValue(value, for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -311,6 +330,8 @@ public class ViewModelInstance: Equatable {
     /// - Parameter trigger: The trigger property to fire
     @MainActor
     public func fire(trigger property: TriggerProperty) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Firing trigger property '\(property.path)'")
         dependencies.viewModelInstanceService.fireTrigger(for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -335,6 +356,8 @@ public class ViewModelInstance: Equatable {
     ///   - image: The image to assign to the property
     @MainActor
     public func setValue(of property: ImageProperty, to image: Image) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting image property '\(property.path)'")
         dependencies.viewModelInstanceService.setImageValue(image.handle, for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -347,6 +370,8 @@ public class ViewModelInstance: Equatable {
     ///   - artboard: The artboard to assign to the property
     @MainActor
     public func setValue(of property: ArtboardProperty, to artboard: Artboard) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting artboard property '\(property.path)'")
         dependencies.viewModelInstanceService.setArtboardValue(artboard, for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -379,6 +404,8 @@ public class ViewModelInstance: Equatable {
     ///   - instance: The view model instance to assign to the property
     @MainActor
     public func setValue(of property: ViewModelInstanceProperty, to instance: ViewModelInstance) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting view model instance property '\(property.path)'")
         dependencies.viewModelInstanceService.setViewModelInstanceValue(instance.viewModelInstanceHandle, for: viewModelInstanceHandle, path: property.path)
     }
 
@@ -401,6 +428,8 @@ public class ViewModelInstance: Equatable {
     ///   - list: The list property to modify
     @MainActor
     public func appendInstance(_ instance: ViewModelInstance, to list: ListProperty) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Appending list item to '\(list.path)'")
         dependencies.viewModelInstanceService.appendViewModelInstance(
             viewModelInstanceHandle,
             path: list.path,
@@ -416,6 +445,8 @@ public class ViewModelInstance: Equatable {
     ///   - index: The index at which to insert the instance
     @MainActor
     public func insertInstance(_ instance: ViewModelInstance, to list: ListProperty, at index: Int32) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Inserting list item to '\(list.path)' at index \(index)")
         dependencies.viewModelInstanceService.insertViewModelInstance(
             viewModelInstanceHandle,
             path: list.path,
@@ -431,6 +462,8 @@ public class ViewModelInstance: Equatable {
     ///   - list: The list property to modify
     @MainActor
     public func removeInstance(at index: Int32, from list: ListProperty) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Removing list item from '\(list.path)' at index \(index)")
         dependencies.viewModelInstanceService.removeViewModelInstanceListViewModelAtIndex(
             viewModelInstanceHandle,
             path: list.path,
@@ -446,6 +479,8 @@ public class ViewModelInstance: Equatable {
     ///   - list: The list property to modify
     @MainActor
     public func removeInstance(_ instance: ViewModelInstance, from list: ListProperty) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Removing list item by value from '\(list.path)'")
         dependencies.viewModelInstanceService.removeViewModelInstanceListViewModelByValue(
             viewModelInstanceHandle,
             path: list.path,
@@ -461,6 +496,8 @@ public class ViewModelInstance: Equatable {
     ///   - list: The list property to modify
     @MainActor
     public func swapInstance(atIndex: Int32, withIndex: Int32, in list: ListProperty) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Swapping list items in '\(list.path)' at indices \(atIndex) and \(withIndex)")
         dependencies.viewModelInstanceService.swapViewModelInstanceListValues(
             viewModelInstanceHandle,
             path: list.path,

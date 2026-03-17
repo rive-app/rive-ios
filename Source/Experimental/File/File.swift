@@ -33,6 +33,10 @@ public class File: Equatable {
 
     let worker: Worker
 
+    private static func logContext(for handle: FileHandle) -> String {
+        "[File (\(handle))]"
+    }
+
     /// Creates a new File instance by loading Rive file data from the specified source.
     ///
     /// The file data is loaded asynchronously in a background thread from either a local bundle or remote URL,
@@ -63,8 +67,10 @@ public class File: Equatable {
     /// - Note: This initializer is not public, and should only be used by public initializers or in tests
     @MainActor
     convenience init(dependencies: Dependencies, worker: Worker) async throws {
+        RiveLog.debug(tag: .file, "[File] Initializing file")
         let data = try await dependencies.fileLoader.load()
         let handle = try await dependencies.fileService.loadFile(data: data)
+        RiveLog.debug(tag: .file, "[File (\(handle))] Initialized file")
         self.init(dependencies: dependencies, fileHandle: handle, worker: worker)
     }
 
@@ -83,6 +89,7 @@ public class File: Equatable {
     deinit {
         let service = dependencies.fileService
         let handle = fileHandle
+        RiveLog.debug(tag: .file, "[File (\(handle))] Deinitializing file; scheduling cleanup")
         Task { @MainActor in
             guard let deletedHandle = try? await service.deleteFile(handle) else { return }
             service.deleteFileListener(deletedHandle)
@@ -121,10 +128,18 @@ public class File: Equatable {
     /// - Throws: `FileError.invalidArtboard` if the specified artboard name does not exist
     @MainActor
     public func createArtboard(_ name: String? = nil) async throws -> Artboard {
+        let logContext = Self.logContext(for: fileHandle)
+        if let name {
+            RiveLog.debug(tag: .file, "\(logContext) Creating artboard '\(name)'")
+        } else {
+            RiveLog.debug(tag: .file, "\(logContext) Creating default artboard")
+        }
         if let name {
             let artboardNames = try await getArtboardNames()
             guard artboardNames.contains(name) else {
-                throw FileError.invalidArtboard(name)
+                let error = FileError.invalidArtboard(name)
+                RiveLog.error(tag: .file, error: error, "\(logContext) Failed to create artboard")
+                throw error
             }
         }
 
@@ -153,17 +168,23 @@ public class File: Equatable {
     ///           `FileError.invalidViewModelInstance` if the specified instance name does not exist
     @MainActor
     public func createViewModelInstance(_ source: ViewModelInstanceSource) async throws -> ViewModelInstance {
+        let logContext = Self.logContext(for: fileHandle)
+        RiveLog.debug(tag: .file, "\(logContext) Creating view model instance")
         switch source {
         case .name(let instanceName, from: let source):
             switch source {
             case .name(let viewModelName):
                 let viewModelNames = try await getViewModelNames()
                 guard viewModelNames.contains(viewModelName) else {
-                    throw FileError.invalidViewModel(viewModelName)
+                    let error = FileError.invalidViewModel(viewModelName)
+                    RiveLog.error(tag: .file, error: error, "\(logContext) Failed to create view model instance")
+                    throw error
                 }
                 let instanceNames = try await getInstanceNames(of: viewModelName)
                 guard instanceNames.contains(instanceName) else {
-                    throw FileError.invalidViewModelInstance(instanceName)
+                    let error = FileError.invalidViewModelInstance(instanceName)
+                    RiveLog.error(tag: .file, error: error, "\(logContext) Failed to create view model instance")
+                    throw error
                 }
             case .artboardDefault:
                 break

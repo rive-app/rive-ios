@@ -25,9 +25,14 @@ public class StateMachine: Equatable {
 
     let stateMachineHandle: StateMachineHandle
     private let dependencies: Dependencies
-
+    
     @MainActor
     convenience init(name: String? = nil, from artboard: Artboard.ArtboardHandle, dependencies: Dependencies) {
+        if let name {
+            RiveLog.debug(tag: .stateMachine, "[StateMachine] Initializing state machine '\(name)'")
+        } else {
+            RiveLog.debug(tag: .stateMachine, "[StateMachine] Initializing default state machine")
+        }
         let handle = dependencies.stateMachineService.createStateMachine(name: name, from: artboard)
         self.init(
             dependencies: dependencies,
@@ -44,6 +49,7 @@ public class StateMachine: Equatable {
     deinit {
         let service = dependencies.stateMachineService
         let handle = stateMachineHandle
+        RiveLog.debug(tag: .stateMachine, "[StateMachine (\(handle))] Deinitializing state machine; scheduling cleanup")
         Task { @MainActor in
             guard let deletedHandle = try? await service.deleteStateMachine(handle) else { return }
             service.deleteStateMachineListener(deletedHandle)

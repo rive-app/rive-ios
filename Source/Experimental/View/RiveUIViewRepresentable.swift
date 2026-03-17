@@ -30,20 +30,24 @@ public struct RiveUIViewRepresentable: NativeViewRepresentable, Equatable {
 
 #if canImport(UIKit) || RIVE_MAC_CATALYST
     public func makeUIView(context: Context) -> RiveUIView {
-        RiveUIView(rive: rive, delegate: delegate, isPaused: isPaused)
+        RiveLog.debug(tag: .view, "[RiveUIView] Creating SwiftUI-backed view")
+        return RiveUIView(rive: rive, delegate: delegate, isPaused: isPaused)
     }
 
     public func updateUIView(_ uiView: RiveUIView, context: Context) {
+        RiveLog.trace(tag: .view, "[RiveUIView] Updating SwiftUI-backed view")
         uiView.rive = rive
         uiView.frameRate = frameRate
         uiView.isPaused = isPaused
     }
 #else
     public func makeNSView(context: Context) -> RiveUIView {
-        RiveUIView(rive: rive, delegate: delegate, isPaused: isPaused)
+        RiveLog.debug(tag: .view, "[RiveUIView] Creating SwiftUI-backed view")
+        return RiveUIView(rive: rive, delegate: delegate, isPaused: isPaused)
     }
 
     public func updateNSView(_ nsView: RiveUIView, context: Context) {
+        RiveLog.trace(tag: .view, "[RiveUIView] Updating SwiftUI-backed view")
         nsView.rive = rive
         nsView.frameRate = frameRate
         nsView.isPaused = isPaused
@@ -102,19 +106,23 @@ public struct AsyncRiveUIViewRepresentable: NativeViewRepresentable, Equatable {
 
 #if canImport(UIKit) || RIVE_MAC_CATALYST
     public func makeUIView(context: Context) -> RiveUIView {
-        RiveUIView(rive: riveLoader, delegate: delegate, isPaused: isPaused)
+        RiveLog.debug(tag: .view, "[RiveUIView] Creating async SwiftUI-backed view")
+        return RiveUIView(rive: riveLoader, delegate: delegate, isPaused: isPaused)
     }
 
     public func updateUIView(_ uiView: RiveUIView, context: Context) {
+        RiveLog.trace(tag: .view, "[RiveUIView] Updating async SwiftUI-backed view")
         uiView.frameRate = frameRate
         uiView.isPaused = isPaused
     }
 #else
     public func makeNSView(context: Context) -> RiveUIView {
-        RiveUIView(rive: riveLoader, delegate: delegate, isPaused: isPaused)
+        RiveLog.debug(tag: .view, "[RiveUIView] Creating async SwiftUI-backed view")
+        return RiveUIView(rive: riveLoader, delegate: delegate, isPaused: isPaused)
     }
 
     public func updateNSView(_ nsView: RiveUIView, context: Context) {
+        RiveLog.trace(tag: .view, "[RiveUIView] Updating async SwiftUI-backed view")
         nsView.frameRate = frameRate
         nsView.isPaused = isPaused
     }

@@ -57,17 +57,33 @@ class InputHandler {
     func handle(_ input: Input, in stateMachine: StateMachine) -> Bool {
         switch input {
         case .pointerUp(let event):
-            guard let id = idPool.add(event.id) else { return false }
+            guard let id = idPool.add(event.id) else {
+                RiveLog.warning(tag: .view, "[RiveUIView] Dropping pointer up event: no available pointer IDs")
+                return false
+            }
+            RiveLog.trace(tag: .view, "[RiveUIView] Handling pointer up event")
             send(dependencies.commandQueue.pointerUp, id: id, with: event, in: stateMachine)
             idPool.remove(event.id)
         case .pointerDown(let event):
-            guard let id = idPool.add(event.id) else { return false }
+            guard let id = idPool.add(event.id) else {
+                RiveLog.warning(tag: .view, "[RiveUIView] Dropping pointer down event: no available pointer IDs")
+                return false
+            }
+            RiveLog.trace(tag: .view, "[RiveUIView] Handling pointer down event")
             send(dependencies.commandQueue.pointerDown, id: id, with: event, in: stateMachine)
         case .pointerMove(let event):
-            guard let id = idPool.add(event.id) else { return false }
+            guard let id = idPool.add(event.id) else {
+                RiveLog.warning(tag: .view, "[RiveUIView] Dropping pointer move event: no available pointer IDs")
+                return false
+            }
+            RiveLog.trace(tag: .view, "[RiveUIView] Handling pointer move event")
             send(dependencies.commandQueue.pointerMove, id: id, with: event, in: stateMachine)
         case .pointerExit(let event):
-            guard let id = idPool.add(event.id) else { return false }
+            guard let id = idPool.add(event.id) else {
+                RiveLog.warning(tag: .view, "[RiveUIView] Dropping pointer exit event: no available pointer IDs")
+                return false
+            }
+            RiveLog.trace(tag: .view, "[RiveUIView] Handling pointer exit event")
             send(dependencies.commandQueue.pointerExit, id: id, with: event, in: stateMachine)
             idPool.remove(event.id)
         }

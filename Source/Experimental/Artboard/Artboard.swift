@@ -29,6 +29,10 @@ public class Artboard: Equatable {
     /// The dependencies required for artboard operations.
     let dependencies: Dependencies
 
+    private static func logContext(for handle: ArtboardHandle) -> String {
+        "[Artboard (\(handle))]"
+    }
+
     /// Creates a new Artboard instance from a file with an optional name.
     ///
     /// This convenience initializer creates an artboard either with a specific name
@@ -40,6 +44,11 @@ public class Artboard: Equatable {
     ///   - dependencies: The dependencies required for artboard operations.
     @MainActor
     convenience init(name: String? = nil, from file: File.FileHandle, dependencies: Dependencies) {
+        if let name {
+            RiveLog.debug(tag: .artboard, "[Artboard] Initializing artboard '\(name)'")
+        } else {
+            RiveLog.debug(tag: .artboard, "[Artboard] Initializing default artboard")
+        }
         let handle = dependencies.artboardService.createArtboard(name: name, from: file)
         self.init(
             dependencies: dependencies,
@@ -66,6 +75,7 @@ public class Artboard: Equatable {
     deinit {
         let service = dependencies.artboardService
         let handle = artboardHandle
+        RiveLog.debug(tag: .artboard, "\(Self.logContext(for: handle)) Deinitializing artboard; scheduling cleanup")
         Task { @MainActor in
             guard let deletedHandle = try? await service.deleteArtboard(handle) else { return }
             service.deleteArtboardListener(deletedHandle)
@@ -107,10 +117,18 @@ public class Artboard: Equatable {
     /// - Throws: `ArtboardError.invalidStateMachine` if the specified state machine name does not exist
     @MainActor
     public func createStateMachine(_ name: String? = nil) async throws -> StateMachine {
+        let logContext = Self.logContext(for: artboardHandle)
+        if let name {
+            RiveLog.debug(tag: .artboard, "\(logContext) Creating state machine '\(name)'")
+        } else {
+            RiveLog.debug(tag: .artboard, "\(logContext) Creating default state machine")
+        }
         if let name {
             let names = try await getStateMachineNames()
             guard names.contains(name) else {
-                throw ArtboardError.invalidStateMachine(name)
+                let error = ArtboardError.invalidStateMachine(name)
+                RiveLog.error(tag: .artboard, error: error, "\(logContext) Failed to create state machine")
+                throw error
             }
         }
         return StateMachine(

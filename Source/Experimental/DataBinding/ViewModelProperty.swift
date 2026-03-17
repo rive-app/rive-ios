@@ -40,17 +40,23 @@ public struct ViewModelProperty: Sendable, Equatable {
     /// - Throws: An error if the dictionary is missing required keys or has invalid values
     init(from dictionary: [String: Any]) throws {
         guard let typeValue = dictionary["type"] as? NSNumber else {
-            throw ViewModelPropertyError.missingType
+            let error = ViewModelPropertyError.missingType
+            RiveLog.error(tag: .viewModelInstance, error: error, "[ViewModelInstance] Failed parsing view model property")
+            throw error
         }
         guard let nameValue = dictionary["name"] as? String else {
-            throw ViewModelPropertyError.missingName
+            let error = ViewModelPropertyError.missingName
+            RiveLog.error(tag: .viewModelInstance, error: error, "[ViewModelInstance] Failed parsing view model property")
+            throw error
         }
         let metaDataValue = dictionary["metaData"] as? String ?? ""
 
         guard let objcValue = RiveViewModelInstanceDataType(rawValue: typeValue.intValue),
         let type = DataType(objcValue: objcValue)
         else {
-            throw ViewModelPropertyError.invalidType(typeValue.intValue)
+            let error = ViewModelPropertyError.invalidType(typeValue.intValue)
+            RiveLog.error(tag: .viewModelInstance, error: error, "[ViewModelInstance] Failed parsing view model property")
+            throw error
         }
         self.type = type
         self.name = nameValue
@@ -154,9 +160,9 @@ public enum ViewModelPropertyError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .missingType:
-            return "Property is missing a type"
+            return "View model property is missing 'type'"
         case .missingName:
-            return "Property is missing a name"
+            return "View model property is missing 'name'"
         case .invalidType(let value):
             return "Invalid property type: \(value)"
         }

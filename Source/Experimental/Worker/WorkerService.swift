@@ -29,6 +29,7 @@ class WorkerService {
     /// on a background thread.
     @MainActor
     func start() {
+        RiveLog.debug(tag: .worker, "[Worker] Starting worker")
         dependencies.commandQueue.start()
         dependencies.commandServer.serveUntilDisconnect()
     }
@@ -38,6 +39,7 @@ class WorkerService {
     /// Disconnects the command server and stops the command queue, shutting down the worker.
     @MainActor
     func stop() {
+        RiveLog.debug(tag: .worker, "[Worker] Stopping worker")
         dependencies.commandQueue.disconnect()
         dependencies.commandQueue.stop()
     }
@@ -48,6 +50,7 @@ class WorkerService {
     @MainActor
     func set(image: Image.ImageHandle, name: String) {
         let requestID = dependencies.commandQueue.nextRequestID
+        RiveLog.debug(tag: .worker, "[Worker] Registering global image asset '\(name)'")
         dependencies.commandQueue.addGlobalImageAsset(name, imageHandle: image, requestID: requestID)
     }
 
@@ -57,6 +60,7 @@ class WorkerService {
     @MainActor
     func remove(image: String) {
         let requestID = dependencies.commandQueue.nextRequestID
+        RiveLog.debug(tag: .worker, "[Worker] Removing global image asset '\(image)'")
         dependencies.commandQueue.removeGlobalImageAsset(image, requestID: requestID)
     }
 
@@ -66,6 +70,7 @@ class WorkerService {
     @MainActor
     func set(font: Font.FontHandle, name: String) {
         let requestID = dependencies.commandQueue.nextRequestID
+        RiveLog.debug(tag: .worker, "[Worker] Registering global font asset '\(name)'")
         dependencies.commandQueue.addGlobalFontAsset(name, fontHandle: font, requestID: requestID)
     }
 
@@ -75,6 +80,7 @@ class WorkerService {
     @MainActor
     func remove(font: String) {
         let requestID = dependencies.commandQueue.nextRequestID
+        RiveLog.debug(tag: .worker, "[Worker] Removing global font asset '\(font)'")
         dependencies.commandQueue.removeGlobalFontAsset(font, requestID: requestID)
     }
 
@@ -84,6 +90,7 @@ class WorkerService {
     @MainActor
     func set(audio: Audio.AudioHandle, name: String) {
         let requestID = dependencies.commandQueue.nextRequestID
+        RiveLog.debug(tag: .worker, "[Worker] Registering global audio asset '\(name)'")
         dependencies.commandQueue.addGlobalAudioAsset(name, audioHandle: audio, requestID: requestID)
     }
 
@@ -93,6 +100,7 @@ class WorkerService {
     @MainActor
     func remove(audio: String) {
         let requestID = dependencies.commandQueue.nextRequestID
+        RiveLog.debug(tag: .worker, "[Worker] Removing global audio asset '\(audio)'")
         dependencies.commandQueue.removeGlobalAudioAsset(audio, requestID: requestID)
     }
 }

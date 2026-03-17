@@ -21,9 +21,9 @@ public enum ViewModelInstanceError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .missingData:
-            "Property is missing value data."
+            "View model property is missing value data."
         case .valueMismatch(let expected, let actual):
-            "Expected value of type \(expected), received value of type \(actual)"
+            "Expected value of type \(expected), received value of type \(actual)."
         case .error(let error):
             error.localizedDescription
         case .message(let message):

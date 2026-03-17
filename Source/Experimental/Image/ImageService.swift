@@ -37,6 +37,7 @@ class ImageService: NSObject, RenderImageListener {
     /// - Returns: An image handle that can be used to reference the decoded image
     /// - Throws: `ImageError.failedDecoding` if the image data cannot be decoded
     func decodeImage(from data: Data) async throws -> Image.ImageHandle {
+        RiveLog.debug(tag: .image, "[Image] Decoding image data (\(data.count) bytes)")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -53,6 +54,7 @@ class ImageService: NSObject, RenderImageListener {
     /// - Returns: The image handle that was deleted
     @MainActor
     func deleteImage(_ renderImage: Image.ImageHandle) async throws -> Image.ImageHandle {
+        RiveLog.debug(tag: .image, "[Image] Deleting image")
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
@@ -78,6 +80,7 @@ class ImageService: NSObject, RenderImageListener {
                 return
             }
 
+            RiveLog.debug(tag: .image, "[Image] Decoded image")
             continuation.resume(returning: renderImageHandle)
         }
     }
@@ -91,6 +94,7 @@ class ImageService: NSObject, RenderImageListener {
                 return
             }
 
+            RiveLog.error(tag: .image, "[Image] Failed to decode image: \(message)")
             continuation.resume(throwing: ImageError.failedDecoding(message))
         }
     }
@@ -104,6 +108,7 @@ class ImageService: NSObject, RenderImageListener {
                 return
             }
 
+            RiveLog.debug(tag: .image, "[Image] Deleted image")
             continuation.resume(returning: renderImageHandle)
         }
     }
