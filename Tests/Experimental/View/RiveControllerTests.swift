@@ -70,37 +70,35 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
-    func test_advance_whenSettledAndFirstDraw_returnsConfiguration_andDoesNotAdvance() async throws {
+    func test_advance_whenSettledAndFirstDraw_returnsConfiguration_andAdvances() async throws {
         let fixture = try await makeController(dataBind: .none)
         await expectSettled(within: fixture)
 
         let configuration = fixture.controller.advance(
             now: 10,
-            isPaused: false,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )
 
         XCTAssertNotNil(configuration)
-        XCTAssertTrue(fixture.commandQueue.advanceStateMachineCalls.isEmpty)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
     }
 
     @MainActor
-    func test_advance_whenSettledAfterFirstDraw_returnsNil_andDoesNotAdvance() async throws {
+    func test_advance_whenSettledAfterFirstDraw_skipsSecondFrame_andOnlyFirstFrameAdvances() async throws {
         let fixture = try await makeController(dataBind: .none)
         await expectSettled(within: fixture)
 
         let firstConfiguration = fixture.controller.advance(
             now: 10,
-            isPaused: false,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )
         let secondConfiguration = fixture.controller.advance(
             now: 10.5,
-            isPaused: false,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
@@ -108,7 +106,8 @@ final class RiveControllerTests: XCTestCase {
 
         XCTAssertNotNil(firstConfiguration)
         XCTAssertNil(secondConfiguration)
-        XCTAssertTrue(fixture.commandQueue.advanceStateMachineCalls.isEmpty)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
     }
 
     @MainActor
@@ -117,7 +116,6 @@ final class RiveControllerTests: XCTestCase {
 
         _ = fixture.controller.advance(
             now: 10,
-            isPaused: false,
             isOnscreen: false,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
@@ -126,7 +124,6 @@ final class RiveControllerTests: XCTestCase {
 
         let configuration = fixture.controller.advance(
             now: 10.5,
-            isPaused: false,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
@@ -143,7 +140,6 @@ final class RiveControllerTests: XCTestCase {
 
         let configuration = fixture.controller.advance(
             now: 10,
-            isPaused: false,
             isOnscreen: false,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
@@ -160,14 +156,12 @@ final class RiveControllerTests: XCTestCase {
 
         let firstConfiguration = fixture.controller.advance(
             now: 10,
-            isPaused: false,
             isOnscreen: false,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )
         let secondConfiguration = fixture.controller.advance(
             now: 10.5,
-            isPaused: false,
             isOnscreen: false,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
@@ -186,14 +180,12 @@ final class RiveControllerTests: XCTestCase {
 
         let firstConfiguration = fixture.controller.advance(
             now: 10,
-            isPaused: false,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )
         let secondConfiguration = fixture.controller.advance(
             now: 10.5,
-            isPaused: false,
             isOnscreen: false,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
@@ -212,7 +204,6 @@ final class RiveControllerTests: XCTestCase {
 
         let configuration = fixture.controller.advance(
             now: 10,
-            isPaused: false,
             isOnscreen: true,
             drawableSize: CGSize(width: 640, height: 480),
             scaleProvider: MockScaleProvider()
@@ -229,14 +220,12 @@ final class RiveControllerTests: XCTestCase {
 
         _ = fixture.controller.advance(
             now: 10,
-            isPaused: false,
             isOnscreen: false,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )
         _ = fixture.controller.advance(
             now: 10.5,
-            isPaused: false,
             isOnscreen: false,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
@@ -250,17 +239,16 @@ final class RiveControllerTests: XCTestCase {
     @MainActor
     func test_advance_whenPaused_allowsFirstDraw_thenBlocksSubsequentDraws() async throws {
         let fixture = try await makeController(dataBind: .none)
+        fixture.controller.isPaused = true
 
         let firstConfiguration = fixture.controller.advance(
             now: 10,
-            isPaused: true,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )
         let secondConfiguration = fixture.controller.advance(
             now: 10.5,
-            isPaused: true,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
@@ -275,26 +263,81 @@ final class RiveControllerTests: XCTestCase {
     @MainActor
     func test_advance_whenResumedAfterPausedBlock_usesZeroDeltaFirstFrame_withoutResetTiming() async throws {
         let fixture = try await makeController(dataBind: .none)
+        fixture.controller.isPaused = true
 
         _ = fixture.controller.advance(
             now: 10,
-            isPaused: true,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )
         _ = fixture.controller.advance(
             now: 10.5,
-            isPaused: true,
             isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )
 
+        fixture.controller.isPaused = false
         _ = fixture.controller.advance(
             now: 11,
-            isPaused: false,
             isOnscreen: false,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 2)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[1].time, 0)
+    }
+
+    @MainActor
+    func test_advance_whenResumedAfterPauseTransition_usesZeroDeltaEvenIfTimestampWasSet() async throws {
+        let fixture = try await makeController(dataBind: .none)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        fixture.controller.isPaused = true
+        _ = fixture.controller.advance(
+            now: 20,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        fixture.controller.isPaused = false
+        _ = fixture.controller.advance(
+            now: 30,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 2)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[1].time, 0)
+    }
+
+    @MainActor
+    func test_settingIsPausedTrue_resetsTimingForNextUnpausedAdvance() async throws {
+        let fixture = try await makeController(dataBind: .none)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        fixture.controller.isPaused = true
+        fixture.controller.isPaused = false
+
+        _ = fixture.controller.advance(
+            now: 30,
+            isOnscreen: true,
             drawableSize: CGSize(width: 100, height: 200),
             scaleProvider: MockScaleProvider()
         )

@@ -87,9 +87,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     private var _isPaused: Bool = true {
         didSet {
             let newValue = _isPaused
-            if newValue {
-                controller?.resetTiming()
-            }
+            controller?.isPaused = newValue
             #if !os(macOS) || RIVE_MAC_CATALYST
             displayLink?.isPaused = newValue
             #else
@@ -296,10 +294,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                     self?.bounds.size ?? .zero
                 }
             )
-
-            if isPaused {
-                controller?.resetTiming()
-            }
+            controller?.isPaused = isPaused
 
             // If we are paused, we want to draw at least one frame
             // We'll leverage MTKView's (set)NeedsDisplay to draw once
@@ -346,7 +341,6 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         let now = displayLink?.timestamp ?? CACurrentMediaTime()
         let configuration = controller.advance(
             now: now,
-            isPaused: isPaused,
             isOnscreen: isOnscreen(),
             drawableSize: view.drawableSize,
             scaleProvider: self

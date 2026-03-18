@@ -11,6 +11,14 @@ import Combine
 @MainActor
 final class RiveController {
     let rive: Rive
+    var isPaused = false {
+        didSet {
+            guard oldValue != isPaused else { return }
+            if isPaused {
+                resetTiming()
+            }
+        }
+    }
 
     private(set) var isSettled = false {
         didSet {
@@ -69,20 +77,19 @@ final class RiveController {
 
     func advance(
         now: TimeInterval,
-        isPaused: Bool,
         isOnscreen: Bool,
         drawableSize: CGSize,
         scaleProvider: ScaleProvider
     ) -> RendererConfiguration? {
         /*
-         | Condition                                             | Advance?                                | Draw? |
-         |-------------------------------------------------------|-----------------------------------------|-------|
-         | Paused && hasProcessedFirstDraw                       | No                                      | No    |
-         | First frame (hasProcessedFirstDraw == false)          | Settled: No, Unsettled: Yes (delta 0)  | Yes   |
-         | Settled && !becameOnscreen && !first frame            | No                                      | No    |
-         | Unsettled && offscreen && !first frame                | Yes                                     | No    |
-         | Unsettled && onscreen                                 | Yes                                     | Yes   |
-         | Settled && becameOnscreen                             | No                                      | Yes   |
+         | Condition                                             | Advance?                         | Draw? |
+         |-------------------------------------------------------|----------------------------------|-------|
+         | First frame (hasProcessedFirstDraw == false)          | Yes (always, delta 0)           | Yes   |
+         | Paused && hasProcessedFirstDraw                       | No                               | No    |
+         | Settled && !becameOnscreen && !first frame            | No                               | No    |
+         | Unsettled && offscreen && !first frame                | Yes                              | No    |
+         | Unsettled && onscreen                                 | Yes                              | Yes   |
+         | Settled && becameOnscreen                             | No                               | Yes   |
          */
         // Track visibility transitions so settled views can redraw once when they return onscreen.
         let becameOnscreen = wasOnscreen == false && isOnscreen
@@ -108,6 +115,12 @@ final class RiveController {
             lastTimestamp = now
         }
 
+        let shouldAdvance = hasProcessedFirstDraw == false || isSettled == false
+        if shouldAdvance {
+            RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
+            rive.stateMachine.advance(by: delta)
+        }
+
         if isSettled {
             // Settled views do not animate, but we still allow:
             // 1) one bootstrap draw, and
@@ -116,10 +129,6 @@ final class RiveController {
                 RiveLog.trace(tag: .view, "[RiveUIView] Skipping frame: settled with no onscreen transition")
                 return nil
             }
-        } else {
-            // Unsettled views always advance, even if we may skip drawing this frame.
-            RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
-            rive.stateMachine.advance(by: delta)
         }
 
         // After the first draw, offscreen frames skip render output.
