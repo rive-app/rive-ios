@@ -14,7 +14,7 @@ import Foundation
 /// are fire-and-forget (no listener callbacks). All command queue operations must be performed
 /// on the main thread (either marked `@MainActor` or dispatched to the main queue)
 @MainActor
-class StateMachineService: NSObject, StateMachineListener {
+final class StateMachineService: NSObject, StateMachineListener {
     private let dependencies: Dependencies
     private var continuations: [UInt64: CheckedContinuation<UInt64, Error>] = [:]
     private var settledContinuations: [UInt64: [UUID: AsyncStream<Void>.Continuation]] = [:]

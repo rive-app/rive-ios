@@ -34,7 +34,7 @@ public enum ViewModelInstanceSource {
 /// defined in a Rive file's view model. Properties can be read, written, and observed through streams.
 /// View model instances can be bound to state machines to enable data-driven animations.
 @_spi(RiveExperimental)
-public class ViewModelInstance: Equatable {
+public final class ViewModelInstance: Equatable {
     /// The underlying type for the view model instance handle identifier.
     ///
     /// Handle to a view model instance in the C++ runtime. Obtained from the command queue

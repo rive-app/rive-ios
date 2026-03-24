@@ -19,7 +19,7 @@ import Foundation
 /// The service handles property subscriptions via `subscribe`/`unsubscribe` commands. When a stream
 /// is terminated, the `onTermination` handler automatically unsubscribes and cleans up the stream continuation.
 @MainActor
-class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
+final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     let dependencies: Dependencies
     /// Regular continuations for one-time value requests (e.g., `stringValue`, `numberValue`).
     /// Resumed when `onViewModelDataReceived` is called.

@@ -16,7 +16,7 @@ import Foundation
 /// `@MainActor` or dispatched to the main queue). Listener callbacks are dispatched to the
 /// main actor to safely access continuations.
 @MainActor
-class ArtboardService: NSObject, ArtboardListener {
+final class ArtboardService: NSObject, ArtboardListener {
     let dependencies: Dependencies
     
     private static func context(_ artboard: Artboard.ArtboardHandle) -> String {

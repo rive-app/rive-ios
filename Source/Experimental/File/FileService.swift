@@ -16,7 +16,7 @@ import Foundation
 /// `@MainActor` or dispatched to the main queue). Listener callbacks are dispatched to the
 /// main actor to safely access continuations.
 @MainActor
-class FileService: NSObject, FileListener {
+final class FileService: NSObject, FileListener {
     /// The dependencies required for file service operations.
     private let dependencies: Dependencies
 

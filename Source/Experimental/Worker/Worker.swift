@@ -18,7 +18,7 @@ import Foundation
 /// multiple Rive files and artboards. These assets are registered by name and can be referenced
 /// by Rive files during rendering.
 @_spi(RiveExperimental)
-public class Worker {
+public final class Worker {
     let dependencies: Dependencies
 
     private var images: [String: Image] = [:]

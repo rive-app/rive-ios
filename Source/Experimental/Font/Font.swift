@@ -16,7 +16,7 @@ import Foundation
 /// Lifetime: Font instances are guaranteed to exist while registered as a global asset with a worker.
 /// When not used as a global asset, you must maintain a strong reference to the instance to keep it alive.
 @_spi(RiveExperimental)
-public class Font: Equatable {
+public final class Font: Equatable {
     /// The underlying type for the font handle identifier.
     ///
     /// Handle to a font in the C++ runtime. Obtained from the command queue

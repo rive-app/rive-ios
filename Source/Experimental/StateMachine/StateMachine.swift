@@ -14,7 +14,7 @@ import Foundation
 /// inputs, and animation playback. They can be bound to view model instances to enable
 /// data-driven animations.
 @_spi(RiveExperimental)
-public class StateMachine: Equatable {
+public final class StateMachine: Equatable {
     /// The underlying type for the state machine handle identifier.
     ///
     /// Handle to a state machine instance in the C++ runtime. Obtained from the command queue

@@ -16,7 +16,7 @@ import Foundation
 /// `@MainActor` or dispatched to the main queue). Listener callbacks are dispatched to the
 /// main actor to safely access continuations.
 @MainActor
-class ImageService: NSObject, RenderImageListener {
+final class ImageService: NSObject, RenderImageListener {
     private let dependencies: Dependencies
 
     /// A dictionary mapping request IDs to continuations for async operations.

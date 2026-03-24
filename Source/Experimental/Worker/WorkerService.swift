@@ -15,7 +15,7 @@ import Foundation
 /// fire-and-forget (no listener callbacks). All command queue operations must be performed on
 /// the main thread (either marked `@MainActor` or dispatched to the main queue).
 @MainActor
-class WorkerService {
+final class WorkerService {
     let dependencies: Dependencies
 
     @MainActor

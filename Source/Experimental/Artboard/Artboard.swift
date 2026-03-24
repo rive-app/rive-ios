@@ -14,7 +14,7 @@ import Foundation
 /// and state machines. Each artboard can have multiple state machines and can be rendered
 /// independently.
 @_spi(RiveExperimental)
-public class Artboard: Equatable {
+public final class Artboard: Equatable {
     /// The underlying type for the artboard handle identifier.
     ///
     /// Handle to an artboard instance in the C++ runtime. Obtained from the command queue

@@ -13,7 +13,7 @@ import Foundation
 /// Files can be loaded from local bundles or remote URLs, and provide access to artboards,
 /// state machines, and view models contained within the Rive file.
 @_spi(RiveExperimental)
-public class File: Equatable {
+public final class File: Equatable {
     /// The underlying type for the file handle identifier.
     ///
     /// Handle to a file instance in the C++ runtime. Obtained from the command queue

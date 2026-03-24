@@ -37,7 +37,7 @@ struct PointerEvent {
 /// Converts input events into command queue calls. All operations are fire-and-forget
 /// (no listener callbacks). All command queue operations must be performed on the main
 /// thread (either marked `@MainActor` or dispatched to the main queue).
-class InputHandler {
+final class InputHandler {
     private let idPool = IDPool<AnyHashable>(range: 0..<10)
     private let dependencies: Dependencies
 

@@ -16,7 +16,7 @@ import Combine
 /// properties for controlling how the artboard is displayed, including fit mode and background color.
 @_spi(RiveExperimental)
 @MainActor
-public class Rive: ObservableObject, Equatable {
+public final class Rive: ObservableObject, Equatable {
     /// The Rive file containing the artboard and state machine.
     public let file: File
     /// The artboard to render.

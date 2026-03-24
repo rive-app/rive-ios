@@ -16,7 +16,7 @@ import Foundation
 /// Lifetime: Image instances are guaranteed to exist while registered as a global asset with a worker.
 /// When not used as a global asset, you must maintain a strong reference to the instance to keep it alive.
 @_spi(RiveExperimental)
-public class Image: Equatable {
+public final class Image: Equatable {
     /// The underlying type for the image handle identifier.
     ///
     /// Handle to an image in the C++ runtime. Obtained from the command queue
