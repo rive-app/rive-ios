@@ -171,22 +171,14 @@
 - (void)didEnterBackground:(NSNotification*)notification
 {
 #ifdef WITH_RIVE_AUDIO
-    auto engine = rive::AudioEngine::RuntimeEngine(false);
-    if (engine != nil)
-    {
-        engine->stop();
-    }
+    [RiveAudioEngine stop];
 #endif
 }
 
 - (void)didEnterForeground:(NSNotification*)notification
 {
 #ifdef WITH_RIVE_AUDIO
-    auto engine = rive::AudioEngine::RuntimeEngine(false);
-    if (engine != nil)
-    {
-        engine->start();
-    }
+    [RiveAudioEngine start];
 #endif
 }
 

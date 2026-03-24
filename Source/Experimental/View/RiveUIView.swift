@@ -203,6 +203,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     @MainActor
     public init(rive: Rive?, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = false) {
         RiveLog.debug(tag: .view, "[RiveUIView] Initializing view")
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        defer { Notifications.observe() }
+        #endif
+
         self.rive = rive
         self.delegate = delegate
         super.init(frame: .zero)
@@ -227,6 +231,12 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     public required init?(coder: NSCoder) {
         fatalError("init?(coder:) is not yet implemented")
     }
+
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    deinit {
+        Notifications.unobserve()
+    }
+    #endif
 
     #if !os(macOS) || RIVE_MAC_CATALYST
     public override func didMoveToWindow() {
