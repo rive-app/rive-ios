@@ -23,18 +23,18 @@ class RiveButton: RiveViewModel {
             .frame(width: 100, height: 30)
     }
     
-    func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
+    @objc func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
         stop()
         setInput(input, value: true)
     }
     
-    func touchEnded(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
+    @objc func touchEnded(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
         stop()
         action?()
         touchCancelled(onArtboard: artboard, atLocation: location)
     }
     
-    func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
+    @objc func touchCancelled(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
         setInput(input, value: false)
     }
 }
