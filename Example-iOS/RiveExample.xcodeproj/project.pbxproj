@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 73;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -275,6 +275,10 @@
 		83C89ACF2988709400044C17 /* marty.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89ACE2988709400044C17 /* marty.riv */; };
 		83C89AD1298870A700044C17 /* paper.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83C89AD0298870A700044C17 /* paper.riv */; };
 		83DE4CB52AB397A800B88B72 /* Bear.riv in Resources */ = {isa = PBXBuildFile; fileRef = 83DE4CB42AB3974300B88B72 /* Bear.riv */; };
+		A61908432F87F8DD0049CF8D /* logpanel.riv in Resources */ = {isa = PBXBuildFile; fileRef = A61908422F87F8DD0049CF8D /* logpanel.riv */; };
+		A61908442F87F8DD0049CF8D /* logpanel.riv in Resources */ = {isa = PBXBuildFile; fileRef = A61908422F87F8DD0049CF8D /* logpanel.riv */; };
+		A61908452F87F8DD0049CF8D /* logpanel.riv in Resources */ = {isa = PBXBuildFile; fileRef = A61908422F87F8DD0049CF8D /* logpanel.riv */; };
+		A61908462F87F8DD0049CF8D /* logpanel.riv in Resources */ = {isa = PBXBuildFile; fileRef = A61908422F87F8DD0049CF8D /* logpanel.riv */; };
 		C324DB5B2807216B0060589F /* RiveSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5A2807216B0060589F /* RiveSlider.swift */; };
 		C324DB5D280728690060589F /* RiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C324DB5C280728690060589F /* RiveButton.swift */; };
 		C324DB5F280740FB0060589F /* rbutton.riv in Resources */ = {isa = PBXBuildFile; fileRef = C324DB5E280740FB0060589F /* rbutton.riv */; };
@@ -509,6 +513,7 @@
 		83C89ACE2988709400044C17 /* marty.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = marty.riv; sourceTree = "<group>"; };
 		83C89AD0298870A700044C17 /* paper.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = paper.riv; sourceTree = "<group>"; };
 		83DE4CB42AB3974300B88B72 /* Bear.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bear.riv; sourceTree = "<group>"; };
+		A61908422F87F8DD0049CF8D /* logpanel.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = logpanel.riv; sourceTree = "<group>"; };
 		C324DB5A2807216B0060589F /* RiveSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveSlider.swift; sourceTree = "<group>"; };
 		C324DB5C280728690060589F /* RiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveButton.swift; sourceTree = "<group>"; };
 		C324DB5E280740FB0060589F /* rbutton.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rbutton.riv; sourceTree = "<group>"; };
@@ -577,8 +582,46 @@
 		F8DA7B442AF523A800FF3CBF /* DismissableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A61908322F87ECA40049CF8D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				VideoEncoder.swift.bk,
+				VideoEncoderView.swift.bk,
+			);
+			target = 040553CF2B7A2858008F076A /* Preview (iOS) */;
+		};
+		A61908342F87ECA40049CF8D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				VideoEncoder.swift.bk,
+				VideoEncoderView.swift.bk,
+			);
+			target = C9C73E9324FC471E00EF9516 /* Example (iOS) */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		A61908332F87ECA40049CF8D /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 040553D22B7A2858008F076A /* Sources */;
+			membershipExceptions = (
+				VideoEncoder.swift.bk,
+				VideoEncoderView.swift.bk,
+			);
+		};
+		A61908352F87ECA40049CF8D /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = C9C73E9024FC471E00EF9516 /* Sources */;
+			membershipExceptions = (
+				VideoEncoder.swift.bk,
+				VideoEncoderView.swift.bk,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F23255D52EF5C09C0096E26F /* Experimental */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Experimental; sourceTree = "<group>"; };
+		F23255D52EF5C09C0096E26F /* Experimental */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A61908322F87ECA40049CF8D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, A61908332F87ECA40049CF8D /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, A61908342F87ECA40049CF8D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, A61908352F87ECA40049CF8D /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Experimental; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -722,6 +765,7 @@
 				049091522BC832AF00F2C12B /* ping_pong_audio_demo.riv */,
 				049091502BC832AE00F2C12B /* racket1-59343.wav */,
 				049091512BC832AF00F2C12B /* racket2-59344.wav */,
+				A61908422F87F8DD0049CF8D /* logpanel.riv */,
 				049091532BC832B000F2C12B /* table-59328.wav */,
 				E5B5C2172B238829006E57C8 /* asset_load_check.riv */,
 				043026052B012C5000320F2E /* simple_assets.riv */,
@@ -1064,7 +1108,6 @@
 				};
 			};
 			buildConfigurationList = C9C73E8F24FC471E00EF9516 /* Build configuration list for PBXProject "RiveExample" */;
-			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1075,6 +1118,7 @@
 			packageReferences = (
 				F8772AD82AD9483800AB5920 /* XCRemoteSwiftPackageReference "rive-ios" */,
 			);
+			preferredProjectObjectVersion = 50;
 			productRefGroup = C9C73E9524FC471E00EF9516 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -1170,6 +1214,7 @@
 				040553B82B7A274B008F076A /* ui_swipe_left_to_delete.riv in Resources */,
 				040553B92B7A274B008F076A /* vader.riv in Resources */,
 				040553BA2B7A274B008F076A /* wacky.riv in Resources */,
+				A61908442F87F8DD0049CF8D /* logpanel.riv in Resources */,
 				040553BB2B7A274B008F076A /* truck.riv in Resources */,
 				040553BC2B7A274B008F076A /* truck_v7.riv in Resources */,
 				040553BD2B7A274B008F076A /* paper.riv in Resources */,
@@ -1233,6 +1278,7 @@
 				040554172B7A2858008F076A /* Preview Assets.xcassets in Resources */,
 				040554182B7A2858008F076A /* bullet_man_game.riv in Resources */,
 				040554192B7A2858008F076A /* ui_swipe_left_to_delete.riv in Resources */,
+				A61908432F87F8DD0049CF8D /* logpanel.riv in Resources */,
 				0405541A2B7A2858008F076A /* explorer.riv in Resources */,
 				0405541B2B7A2858008F076A /* f22.riv in Resources */,
 				0405541C2B7A2858008F076A /* blendmodes.riv in Resources */,
@@ -1313,6 +1359,7 @@
 				04E51C6B2A151C230075E473 /* ui_swipe_left_to_delete.riv in Resources */,
 				04E51C6C2A151C230075E473 /* vader.riv in Resources */,
 				04E51C6D2A151C230075E473 /* wacky.riv in Resources */,
+				A61908462F87F8DD0049CF8D /* logpanel.riv in Resources */,
 				04E51C6E2A151C230075E473 /* truck.riv in Resources */,
 				04E51C6F2A151C230075E473 /* truck_v7.riv in Resources */,
 				F8772AF12AD94A4400AB5920 /* paper.riv in Resources */,
@@ -1376,6 +1423,7 @@
 				C3E2B58A2833ECB500A8651B /* bullet_man_game.riv in Resources */,
 				042C88DD2644447500E7DBB2 /* ui_swipe_left_to_delete.riv in Resources */,
 				042C88E52644447500E7DBB2 /* explorer.riv in Resources */,
+				A61908452F87F8DD0049CF8D /* logpanel.riv in Resources */,
 				042C88E22644447500E7DBB2 /* f22.riv in Resources */,
 				046AFA712673AF04004ED497 /* blendmodes.riv in Resources */,
 				042C88EC2644447500E7DBB2 /* vader.riv in Resources */,

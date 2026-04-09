@@ -65,7 +65,8 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("Quick Start - Data Binding", AnyView(QuickStartView())),
         ("Animation Player", AnyView(PlayerView())),
         ("Shared Worker", AnyView(SharedWorkerView())),
-//      ("Video Encoder", AnyView(VideoEncoderView()))
+//      ("Video Encoder", AnyView(VideoEncoderView())),
+        ("Custom Logger", AnyView(CustomLoggerView()))
     ]
 }
 
