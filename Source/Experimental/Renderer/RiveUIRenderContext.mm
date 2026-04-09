@@ -6,7 +6,7 @@
 //  Copyright © 2025 Rive. All rights reserved.
 //
 
-#import "RiveRenderContext.h"
+#import "RiveUIRenderContext.h"
 #import <RiveRuntime/RiveExperimental.h>
 
 #import <CoreGraphics/CoreGraphics.h>
@@ -20,7 +20,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation RiveRenderContext
+@implementation RiveUIRenderContext
 {
     std::unique_ptr<rive::gpu::RenderContext> _renderContext;
     id<MTLCommandQueue> _metalQueue;
@@ -42,12 +42,12 @@ NS_ASSUME_NONNULL_BEGIN
     _renderContext->releaseResources();
 }
 
-+ (RiveRenderContext*)sharedContext
++ (RiveUIRenderContext*)sharedContext
 {
     static dispatch_once_t onceToken;
-    static RiveRenderContext* renderContext;
+    static RiveUIRenderContext* renderContext;
     dispatch_once(&onceToken, ^{
-      renderContext = [[RiveRenderContext alloc] init];
+      renderContext = [[RiveUIRenderContext alloc] init];
     });
     return renderContext;
 }

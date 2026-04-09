@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RiveCommandQueue;
 @class RiveFactory;
-@class RiveRenderContext;
+@class RiveUIRenderContext;
 
 /**
  * @protocol RiveCommandServerProtocol
@@ -84,7 +84,7 @@ NS_SWIFT_NAME(CommandServer)
  *       before creating the command server.
  */
 - (instancetype)initWithCommandQueue:(RiveCommandQueue*)commandQueue
-                       renderContext:(RiveRenderContext*)renderContext;
+                       renderContext:(RiveUIRenderContext*)renderContext;
 
 @end
 

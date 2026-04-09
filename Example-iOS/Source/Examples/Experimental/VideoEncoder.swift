@@ -44,7 +44,7 @@ final class VideoEncoder {
     /// functions don't need long parameter lists.
     private struct Resources {
         let rive: Rive
-        let renderer: Renderer
+        let renderer: RiveUIRenderer
         let device: any MTLDevice
         let texture: any MTLTexture
         let writer: AVAssetWriter
@@ -88,7 +88,7 @@ final class VideoEncoder {
         // Step 3: Build immutable resources once before running the frame loop.
         let resources = try Self.makeResources(
             rive: rive,
-            renderer: Renderer(rive: rive),
+            renderer: RiveUIRenderer(rive: rive),
             device: device,
             size: size,
             frameRate: frameRate,
@@ -166,9 +166,9 @@ final class VideoEncoder {
         with resources: Resources
     ) async throws {
         // Step 1: Fixed-step advancement gives deterministic output independent of wall-clock time.
-        let configuration = await MainActor.run { () -> RendererConfiguration in
+        let configuration = await MainActor.run { () -> RiveUIRendererConfiguration in
             resources.rive.stateMachine.advance(by: resources.frameDuration)
-            return RendererConfiguration(rive: resources.rive, drawableSize: resources.size)
+            return RiveUIRendererConfiguration(rive: resources.rive, drawableSize: resources.size)
         }
 
         // Step 2: Draw submission must happen on main; completion fires on the GPU timeline.
@@ -217,7 +217,7 @@ final class VideoEncoder {
     /// Submits a draw call to `Renderer` and resumes when the command buffer completes.
     @MainActor
     private static func submitDraw(
-        _ configuration: RendererConfiguration,
+        _ configuration: RiveUIRendererConfiguration,
         with resources: Resources
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
@@ -256,7 +256,7 @@ final class VideoEncoder {
     /// 3) Start writer session and return a fully populated `Resources`.
     private static func makeResources(
         rive: Rive,
-        renderer: Renderer,
+        renderer: RiveUIRenderer,
         device: any MTLDevice,
         size: CGSize,
         frameRate: Int,

@@ -6,11 +6,11 @@
 //  Copyright © 2025 Rive. All rights reserved.
 //
 
-#import "Renderer.h"
+#import "RiveUIRenderer.h"
 #import <RiveRuntime/RiveExperimental.h>
 #import <RiveRuntime/RiveCommandQueue.h>
 #import <RiveRuntime/RiveRuntime-Swift.h>
-#import <RiveRuntime/RiveRenderContext.h>
+#import <RiveRuntime/RiveUIRenderContext.h>
 #include "rive/command_server.hpp"
 #include "rive/renderer/metal/render_context_metal_impl.h"
 #include "rive/renderer/rive_renderer.hpp"
@@ -67,15 +67,15 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
     }
 }
 
-@implementation Renderer
+@implementation RiveUIRenderer
 {
     id<RiveCommandQueueProtocol> _commandQueue;
     rive::rcp<rive::gpu::RenderTargetMetal> _renderTarget;
-    RiveRenderContext* _renderContext;
+    RiveUIRenderContext* _renderContext;
 }
 
 - (instancetype)initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
-                       renderContext:(nonnull RiveRenderContext*)renderContext
+                       renderContext:(nonnull RiveUIRenderContext*)renderContext
 {
     if (self = [super init])
     {
@@ -102,12 +102,12 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
     _renderTarget = renderTarget;
 }
 
-- (RiveRenderContext*)renderContext
+- (RiveUIRenderContext*)renderContext
 {
     return _renderContext;
 }
 
-- (void)drawConfiguration:(RendererConfiguration)configuration
+- (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
                 toTexture:(id<MTLTexture>)texture
                fromDevice:(id<MTLDevice>)device
                  finalize:(nullable void (^)(id<MTLCommandBuffer>))finalize
@@ -141,11 +141,11 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
         }
     }
 
-    __weak Renderer* weakSelf = self;
+    __weak RiveUIRenderer* weakSelf = self;
     [_commandQueue
             draw:[_commandQueue createDrawKey]
         callback:^(void* cppServer) {
-          __strong Renderer* strongSelf = weakSelf;
+          __strong RiveUIRenderer* strongSelf = weakSelf;
           if (!strongSelf)
           {
               NSError* invalidRenderer =

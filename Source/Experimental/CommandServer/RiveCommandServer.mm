@@ -11,7 +11,7 @@
 #import <RiveRuntime/RiveFactory.h>
 #import <RiveRuntime/RiveCommandQueue.h>
 #import <RiveRuntime/RenderContext.h>
-#import <RiveRuntime/RiveRenderContext.h>
+#import <RiveRuntime/RiveUIRenderContext.h>
 #import "RivePrivateHeaders.h"
 #import "RiveExperimental_Private.hh"
 
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     /** The command queue from which commands are processed */
     RiveCommandQueue* _commandQueue;
     /** The render context used for drawing Rive graphics */
-    RiveRenderContext* _renderContext;
+    RiveUIRenderContext* _renderContext;
     /** Flag indicating whether the server is currently connected and serving */
     BOOL _isConnected;
     /** Lock object for thread-safe access to the connection state */
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @return An initialized RiveCommandServer instance
  */
 - (instancetype)initWithCommandQueue:(RiveCommandQueue*)commandQueue
-                       renderContext:(RiveRenderContext*)renderContext
+                       renderContext:(RiveUIRenderContext*)renderContext
 {
     if (self = [super init])
     {

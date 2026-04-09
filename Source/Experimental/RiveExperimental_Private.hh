@@ -17,7 +17,7 @@
 @property(nonatomic, readonly) rive::rcp<rive::CommandQueue> commandQueue;
 @end
 
-@interface RiveRenderContext ()
+@interface RiveUIRenderContext ()
 - (rive::Factory*)factory;
 @end
 

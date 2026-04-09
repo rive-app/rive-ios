@@ -1,5 +1,5 @@
 //
-//  RendererConfiguration+Rive.swift
+//  RiveUIRendererConfiguration+Rive.swift
 //  RiveRuntime
 //
 //  Created by Cursor Assistant on 4/6/26.
@@ -7,13 +7,13 @@
 
 import Foundation
 
-private struct RendererConfigurationScaleProvider: ScaleProvider {
+private struct RiveUIRendererConfigurationScaleProvider: ScaleProvider {
     let nativeScale: CGFloat?
     let displayScale: CGFloat
 }
 
 @_spi(RiveExperimental)
-public extension RendererConfiguration {
+public extension RiveUIRendererConfiguration {
     /// Builds a renderer configuration from a `Rive` instance,
     /// resolving fit, alignment, and scale factor internally.
     @MainActor
@@ -23,7 +23,7 @@ public extension RendererConfiguration {
         nativeScale: CGFloat? = nil,
         displayScale: CGFloat = 1
     ) {
-        let scaleProvider = RendererConfigurationScaleProvider(
+        let scaleProvider = RiveUIRendererConfigurationScaleProvider(
             nativeScale: nativeScale,
             displayScale: displayScale
         )

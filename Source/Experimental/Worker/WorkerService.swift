@@ -114,6 +114,6 @@ extension WorkerService {
         /// The command server that processes commands from the command queue on a background thread.
         let commandServer: CommandServerProtocol
         /// The render context used for rendering operations.
-        let renderContext: RiveRenderContext
+        let renderContext: RiveUIRenderContext
     }
 }

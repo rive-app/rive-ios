@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol MTLTexture;
 @protocol MTLCommandBuffer;
 @protocol MTLDevice;
-@class RiveRenderContext;
+@class RiveUIRenderContext;
 
 /// Configuration structure for rendering a Rive artboard to a Metal texture.
 ///
@@ -63,7 +63,7 @@ typedef struct
 
     /// The background color in ARGB format (32-bit unsigned integer).
     uint32_t color;
-} RendererConfiguration;
+} RiveUIRendererConfiguration;
 
 /// A renderer that draws Rive artboards to Metal textures.
 ///
@@ -79,8 +79,7 @@ typedef struct
 /// - Drawing operations are queued on the main thread
 /// - Actual rendering happens on a background thread (via command server)
 /// - Error and finalize callbacks are called on the background thread
-NS_SWIFT_NAME(Renderer)
-@interface Renderer : NSObject
+@interface RiveUIRenderer : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -94,7 +93,8 @@ NS_SWIFT_NAME(Renderer)
  *       context must be valid and associated with a Metal device.
  */
 - (instancetype)initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
-                       renderContext:(nonnull RiveRenderContext*)renderContext;
+                       renderContext:
+                           (nonnull RiveUIRenderContext*)renderContext;
 
 /**
  * Draws an artboard configuration to a Metal texture.
@@ -121,7 +121,7 @@ NS_SWIFT_NAME(Renderer)
  * format. The drawing operation is queued and executes asynchronously. The
  * finalize and onError blocks are called on the background thread.
  */
-- (void)drawConfiguration:(RendererConfiguration)configuration
+- (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
                 toTexture:(id<MTLTexture>)texture
                fromDevice:(id<MTLDevice>)device
                  finalize:(nullable void (^)(id<MTLCommandBuffer>))finalize

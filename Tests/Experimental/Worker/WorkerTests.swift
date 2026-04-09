@@ -31,7 +31,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device)
             )
         )
         
@@ -77,7 +77,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
@@ -115,7 +115,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
@@ -153,7 +153,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device)
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)

@@ -8,7 +8,7 @@
 import Foundation
 
 @_spi(RiveExperimental)
-public extension Renderer {
+public extension RiveUIRenderer {
     /// Creates a renderer backed by the given worker's rendering pipeline.
     @MainActor
     convenience init(worker: Worker) {

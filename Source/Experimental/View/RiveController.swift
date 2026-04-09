@@ -80,7 +80,7 @@ final class RiveController {
         isOnscreen: Bool,
         drawableSize: CGSize,
         scaleProvider: ScaleProvider
-    ) -> RendererConfiguration? {
+    ) -> RiveUIRendererConfiguration? {
         /*
          | Condition                                             | Advance?                         | Draw? |
          |-------------------------------------------------------|----------------------------------|-------|
@@ -138,7 +138,7 @@ final class RiveController {
 
         // Build renderer configuration only when this frame should be drawn.
         let fitBridge = rive.fit.bridged(from: scaleProvider)
-        let configuration = RendererConfiguration(
+        let configuration = RiveUIRendererConfiguration(
             artboardHandle: rive.artboard.artboardHandle,
             stateMachineHandle: rive.stateMachine.stateMachineHandle,
             fit: fitBridge.fit,

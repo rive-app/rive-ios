@@ -34,8 +34,8 @@ public final class Worker {
             throw error
         }
 
-        let renderContext = await Task.detached(priority: .userInitiated) { () -> UncheckedSendable<RiveRenderContext> in
-            UncheckedSendable(value: RiveRenderContext(device: device.value))
+        let renderContext = await Task.detached(priority: .userInitiated) { () -> UncheckedSendable<RiveUIRenderContext> in
+            UncheckedSendable(value: RiveUIRenderContext(device: device.value))
         }.value
 
         let commandQueue = CommandQueue()
@@ -57,7 +57,7 @@ public final class Worker {
     @MainActor
     public convenience init(device: any MTLDevice) {
         RiveLog.debug(tag: .worker, "[Worker] Initializing worker with provided Metal device")
-        let renderContext = RiveRenderContext(device: device)
+        let renderContext = RiveUIRenderContext(device: device)
         let commandQueue = CommandQueue()
         let commandServer = CommandServer(commandQueue: commandQueue, renderContext: renderContext)
         self.init(

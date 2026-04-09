@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Threading:
 /// - Command buffers should be created on the thread where they'll be used
 /// - Typically, this is the background thread where the command server runs
-@interface RiveRenderContext : NSObject
+@interface RiveUIRenderContext : NSObject
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device;
 

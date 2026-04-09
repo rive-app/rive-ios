@@ -46,7 +46,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
     private var mtkView: MTKView?
 
-    private var renderer: Renderer?
+    private var renderer: RiveUIRenderer?
 
     private var controller: RiveController?
     private var setupTask: Task<Void, Never>?
@@ -293,7 +293,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     private func setupRive() {
         if let rive {
             RiveLog.debug(tag: .view, "[RiveUIView] Setting up Rive renderer and controller")
-            renderer = Renderer(
+            renderer = RiveUIRenderer(
                 commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue,
                 renderContext: rive.file.worker.dependencies.workerService.dependencies.renderContext
             )
