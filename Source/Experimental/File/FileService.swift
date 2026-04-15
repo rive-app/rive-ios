@@ -35,6 +35,14 @@ final class FileService: NSObject, FileListener {
         super.init()
     }
 
+    private func beginImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.processMessagesImmediately(requestID: requestID)
+    }
+
+    private func finishImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.callbackProcessed(requestID: requestID)
+    }
+
     /// Loads a Rive file asynchronously from the provided data.
     ///
     /// Creates a request ID, stores the continuation, and delegates to the command queue.
@@ -50,6 +58,7 @@ final class FileService: NSObject, FileListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.loadFile(data, observer: self, requestID: requestID)
         }
     }
@@ -68,6 +77,7 @@ final class FileService: NSObject, FileListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestArtboardNames(fileHandle, requestID: requestID)
         }
     }
@@ -86,6 +96,7 @@ final class FileService: NSObject, FileListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelNames(fileHandle, requestID: requestID)
         }
     }
@@ -106,6 +117,7 @@ final class FileService: NSObject, FileListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelInstanceNames(fileHandle, viewModelName: viewModelName, requestID: requestID)
         }
     }
@@ -126,6 +138,7 @@ final class FileService: NSObject, FileListener {
         let properties: [ViewModelProperty] = try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelPropertyDefinitions(fileHandle, viewModelName: viewModelName, requestID: requestID)
         }
         return properties
@@ -145,6 +158,7 @@ final class FileService: NSObject, FileListener {
         let enums: [ViewModelEnum] = try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelEnums(fileHandle, requestID: requestID)
         }
         return enums
@@ -160,6 +174,7 @@ final class FileService: NSObject, FileListener {
     ///   - requestID: The request ID matching the one used when calling `commandQueue.loadFile`
     nonisolated func onFileLoaded(_ handle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(handle)) Loaded file")
             try continuation.resume(with: .success(handle))
@@ -172,6 +187,7 @@ final class FileService: NSObject, FileListener {
     /// resume the continuation associated with the delete request.
     nonisolated func onFileDeleted(_ handle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(handle)) Deleted file")
             try continuation.resume(with: .success(handle))
@@ -189,6 +205,7 @@ final class FileService: NSObject, FileListener {
     ///   - message: Error message from the C++ runtime
     nonisolated func onFileError(_ fileHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.error(tag: .file, "\(Self.context(fileHandle)) Operation failed: \(message)")
             try continuation.resume(with: .failure(FileError.invalidFile(message)))
@@ -201,6 +218,7 @@ final class FileService: NSObject, FileListener {
     /// the continuation with the artboard names.
     nonisolated func onArtboardsListed(_ fileHandle: UInt64, requestID: UInt64, names: [String]) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) artboard names")
             try continuation.resume(with: .success(names))
@@ -213,6 +231,7 @@ final class FileService: NSObject, FileListener {
     /// the continuation with the view model names.
     nonisolated func onViewModelsListed(_ fileHandle: UInt64, requestID: UInt64, names: [String]) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) view model names")
             try continuation.resume(with: .success(names))
@@ -225,6 +244,7 @@ final class FileService: NSObject, FileListener {
     /// the continuation with the instance names.
     nonisolated func onViewModelInstanceNamesListed(_ fileHandle: UInt64, requestID: UInt64, viewModelName: String, names: [String]) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) instance names for view model '\(viewModelName)'")
             try continuation.resume(with: .success(names))
@@ -240,6 +260,7 @@ final class FileService: NSObject, FileListener {
             try ViewModelProperty(from: dictionary)
         }) ?? []
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(properties.count) property definitions for view model '\(viewModelName)'")
             try continuation.resume(with: .success(properties))
@@ -256,6 +277,7 @@ final class FileService: NSObject, FileListener {
         }) ?? []
 
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(enums.count) view model enums")
             try continuation.resume(with: .success(enums))
@@ -275,6 +297,7 @@ final class FileService: NSObject, FileListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.deleteFile(file, requestID: requestID)
         }
     }
@@ -295,5 +318,11 @@ extension FileService {
         /// The service registers itself as a `FileListener` observer when calling command
         /// queue methods. All operations must be performed on the main thread.
         let commandQueue: CommandQueueProtocol
+        let messageGate: CommandQueueMessageGate
+
+        init(commandQueue: CommandQueueProtocol, messageGate: CommandQueueMessageGate) {
+            self.commandQueue = commandQueue
+            self.messageGate = messageGate
+        }
     }
 }

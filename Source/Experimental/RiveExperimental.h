@@ -64,5 +64,6 @@ extern "C"
 #import <RiveRuntime/RiveUIRenderer.h>
 #import <RiveRuntime/RiveViewModelInstanceListener.h>
 #import <RiveRuntime/RiveUIRenderContext.h>
+#import <RiveRuntime/_RiveCommandQueueMessagePumpDriver.h>
 
 #endif /* RiveUI_h */

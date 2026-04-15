@@ -111,6 +111,7 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
                 toTexture:(id<MTLTexture>)texture
                fromDevice:(id<MTLDevice>)device
                  finalize:(nullable void (^)(id<MTLCommandBuffer>))finalize
+                onSkipped:(nullable void (^)(void))onSkipped
                   onError:(nullable void (^)(NSError* _Nonnull))onError
 {
     BOOL (^CGSizeWithinRange)(CGSize, CGSize) =
@@ -184,6 +185,10 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
 
           if (artboard->didChange() == false)
           {
+              if (onSkipped)
+              {
+                  onSkipped();
+              }
               return;
           }
 

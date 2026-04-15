@@ -24,14 +24,15 @@ extension File {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveUIRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device),
+                messagePumpDriver: mockCommandQueue
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
         let worker = Worker(dependencies: dependencies)
         
         let mockFileLoader = MockFileLoader()
-        let fileService = FileService(dependencies: .init(commandQueue: mockCommandQueue))
+        let fileService = FileService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let fileDependencies = Dependencies(
             fileLoader: mockFileLoader,
             fileService: fileService

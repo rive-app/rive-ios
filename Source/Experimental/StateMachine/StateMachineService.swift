@@ -29,6 +29,14 @@ final class StateMachineService: NSObject, StateMachineListener {
         super.init()
     }
 
+    private func beginImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.processMessagesImmediately(requestID: requestID)
+    }
+
+    private func finishImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.callbackProcessed(requestID: requestID)
+    }
+
     /// Creates a state machine from an artboard.
     ///
     /// Delegates to the command queue. Returns immediately with the state machine handle.
@@ -88,6 +96,11 @@ final class StateMachineService: NSObject, StateMachineListener {
         }
     }
 
+    @MainActor
+    func hasActiveListeners() -> Bool {
+        return !settledContinuations.isEmpty
+    }
+
     /// Deletes a state machine via the command queue.
     ///
     /// The continuation is resumed when `onStateMachineDeleted` is called.
@@ -98,6 +111,7 @@ final class StateMachineService: NSObject, StateMachineListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = continuation
+            beginImmediateRequest(requestID)
             commandQueue.deleteStateMachine(stateMachine, requestID: requestID)
         }
     }
@@ -123,6 +137,7 @@ final class StateMachineService: NSObject, StateMachineListener {
 
     nonisolated func onStateMachineError(_ stateMachineHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -134,6 +149,7 @@ final class StateMachineService: NSObject, StateMachineListener {
 
     nonisolated func onStateMachineDeleted(_ stateMachineHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -168,6 +184,12 @@ extension StateMachineService {
         /// The command queue used to send state machine-related commands to the C++ runtime.
         /// All operations must be performed on the main thread.
         let commandQueue: CommandQueueProtocol
+        let messageGate: CommandQueueMessageGate
+
+        init(commandQueue: CommandQueueProtocol, messageGate: CommandQueueMessageGate) {
+            self.commandQueue = commandQueue
+            self.messageGate = messageGate
+        }
     }
 }
 

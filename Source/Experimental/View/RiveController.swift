@@ -34,7 +34,10 @@ final class RiveController {
     }
 
     private var cancellables = Set<AnyCancellable>()
+    private var settledStreamTask: Task<Void, Never>?
+    private var dirtyStreamTask: Task<Void, Never>?
     private let inputHandler: InputHandler
+    private let messageGate: CommandQueueMessageGate
     private let boundsProvider: () -> CGSize
     private var lastTimestamp: TimeInterval?
     private var hasProcessedFirstDraw = false
@@ -54,6 +57,7 @@ final class RiveController {
         RiveLog.debug(tag: .view, "[RiveUIView] Initializing controller")
         self.rive = rive
         self.boundsProvider = boundsProvider
+        self.messageGate = rive.file.worker.dependencies.workerService.messageGate
         self.inputHandler = InputHandler(
             dependencies: .init(
                 commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue
@@ -61,6 +65,11 @@ final class RiveController {
         )
 
         setupSubscriptions()
+    }
+
+    deinit {
+        settledStreamTask?.cancel()
+        dirtyStreamTask?.cancel()
     }
 
     func handleInput(_ input: Input) {
@@ -119,6 +128,9 @@ final class RiveController {
         if shouldAdvance {
             RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
             rive.stateMachine.advance(by: delta)
+            let hasActiveListeners = rive.stateMachine.hasActiveListeners
+                || (rive.viewModelInstance?.hasActiveListeners ?? false)
+            messageGate.processMessagesForFrame(hasActiveListeners: hasActiveListeners)
         }
 
         if isSettled {
@@ -203,8 +215,10 @@ final class RiveController {
 
     private func settledPublisher(for stateMachine: StateMachine) -> AnyPublisher<Void, Never> {
         let subject = PassthroughSubject<Void, Never>()
-        Task { @MainActor in
+        settledStreamTask?.cancel()
+        settledStreamTask = Task { @MainActor in
             for await _ in stateMachine.settledStream() {
+                if Task.isCancelled { break }
                 subject.send(())
             }
             subject.send(completion: .finished)
@@ -214,8 +228,10 @@ final class RiveController {
 
     private func dirtyPublisher(for instance: ViewModelInstance) -> AnyPublisher<Void, Never> {
         let subject = PassthroughSubject<Void, Never>()
-        Task { @MainActor in
+        dirtyStreamTask?.cancel()
+        dirtyStreamTask = Task { @MainActor in
             for await _ in instance.dirtyStream() {
+                if Task.isCancelled { break }
                 subject.send(())
             }
             subject.send(completion: .finished)

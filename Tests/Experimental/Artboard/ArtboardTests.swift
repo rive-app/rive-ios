@@ -25,7 +25,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_equality_withSameArtboardHandle_returnsTrue() {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -40,7 +40,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_equality_withDifferentArtboardHandles_returnsFalse() {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -56,7 +56,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_getStateMachineNames_withValidArtboardHandle_returnsStateMachineNames() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -81,7 +81,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_getStateMachineNames_withEmptyStateMachineList_returnsEmptyArray() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -106,7 +106,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_getStateMachineNames_passesCorrectArtboardHandle() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -131,7 +131,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_getDefaultViewModelInfo_withValidArtboardAndFile_returnsViewModelInfo() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -166,7 +166,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_getDefaultViewModelInfo_passesCorrectArtboardAndFileHandles() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -194,7 +194,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_createDefaultStateMachine_returnsStateMachineWithCorrectHandle() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -218,7 +218,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_createStateMachineNamed_returnsStateMachineWithCorrectHandle() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -255,7 +255,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_createStateMachineNamed_withInvalidName_throwsError() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -287,7 +287,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_artboard_onDeinit_callsDelete() {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -324,7 +324,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_setSize_withDefaultScale_callsSetArtboardSize() {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -345,7 +345,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_setSize_withCustomScale_callsSetArtboardSize() {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService
@@ -367,7 +367,7 @@ class ArtboardTests: XCTestCase {
     @MainActor
     func test_resetSize_callsResetArtboardSize() {
         let mockCommandQueue = MockCommandQueue()
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = Artboard.Dependencies(
             artboardService: artboardService

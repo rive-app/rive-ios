@@ -34,6 +34,14 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         self.dependencies = dependencies
     }
 
+    private func beginImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.processMessagesImmediately(requestID: requestID)
+    }
+
+    private func finishImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.callbackProcessed(requestID: requestID)
+    }
+
     @MainActor
     func dirtyStream(for instance: ViewModelInstance.ViewModelInstanceHandle) -> AsyncStream<Void> {
         return AsyncStream<Void> { continuation in
@@ -54,6 +62,11 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
                 }
             }
         }
+    }
+
+    @MainActor
+    func hasActiveListeners() -> Bool {
+        return !streamContinuations.isEmpty
     }
 
     @MainActor
@@ -202,6 +215,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.deleteViewModelInstance(instance, requestID: requestID)
         }
     }
@@ -232,6 +246,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelInstanceString(instance, path: path, requestID: requestID)
         }
     }
@@ -284,6 +299,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelInstanceNumber(instance, path: path, requestID: requestID)
         }
     }
@@ -336,6 +352,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelInstanceBool(instance, path: path, requestID: requestID)
         }
     }
@@ -388,6 +405,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelInstanceColor(instance, path: path, requestID: requestID)
         }
     }
@@ -440,6 +458,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelInstanceEnum(instance, path: path, requestID: requestID)
         }
     }
@@ -574,6 +593,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
             commandQueue.requestViewModelInstanceListSize(instance, path: path, requestID: requestID)
         }
     }
@@ -709,6 +729,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         message: String
     ) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             RiveLog.error(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Operation failed: \(message)")
             if let continuation = continuations.removeValue(forKey: requestID) {
                 try continuation.resume(
@@ -730,6 +751,9 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     ) {
         let viewModelInstanceData = ViewModelInstanceData(from: data)
         Task { @MainActor in
+            if streamContinuations[requestID] == nil {
+                finishImmediateRequest(requestID)
+            }
             if let continuation = continuations.removeValue(forKey: requestID) {
                 do {
                     switch viewModelInstanceData.type {
@@ -797,6 +821,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         size: Int
     ) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             if let continuation = continuations.removeValue(forKey: requestID) {
                 RiveLog.trace(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Received list size \(size) for path '\(path)'")
                 try continuation.resume(with: .success(size))
@@ -813,6 +838,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         requestID: UInt64
     ) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             if let continuation = continuations.removeValue(forKey: requestID) {
                 RiveLog.debug(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Deleted instance")
                 try continuation.resume(with: .success(viewModelInstanceHandle))
@@ -828,5 +854,11 @@ extension ViewModelInstanceService {
         /// The service registers itself as a `ViewModelInstanceListener` observer when calling command
         /// queue methods. All operations must be performed on the main thread.
         let commandQueue: any CommandQueueProtocol
+        let messageGate: CommandQueueMessageGate
+
+        init(commandQueue: any CommandQueueProtocol, messageGate: CommandQueueMessageGate) {
+            self.commandQueue = commandQueue
+            self.messageGate = messageGate
+        }
     }
 }

@@ -53,7 +53,8 @@ public final class File: Equatable {
                 fileLoader: FileLoader(source: source),
                 fileService: FileService(
                     dependencies: .init(
-                        commandQueue: worker.dependencies.workerService.dependencies.commandQueue
+                        commandQueue: worker.dependencies.workerService.dependencies.commandQueue,
+                        messageGate: worker.dependencies.workerService.messageGate
                     )
                 ),
             ),
@@ -144,13 +145,15 @@ public final class File: Equatable {
         }
 
         let commandQueue = worker.dependencies.workerService.dependencies.commandQueue
+        let messageGate = worker.dependencies.workerService.messageGate
         return Artboard(
             name: name,
             from: fileHandle,
             dependencies: .init(
                 artboardService: ArtboardService(
                     dependencies: .init(
-                        commandQueue: commandQueue
+                        commandQueue: commandQueue,
+                        messageGate: messageGate
                     )
                 )
             )
@@ -194,13 +197,15 @@ public final class File: Equatable {
             break
         }
         let commandQueue = worker.dependencies.workerService.dependencies.commandQueue
+        let messageGate = worker.dependencies.workerService.messageGate
         return ViewModelInstance(
             source: source,
             from: self,
             dependencies: .init(
                 viewModelInstanceService: .init(
                     dependencies: .init(
-                        commandQueue: commandQueue
+                        commandQueue: commandQueue,
+                        messageGate: messageGate
                     )
                 )
             )

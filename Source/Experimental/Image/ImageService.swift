@@ -29,6 +29,14 @@ final class ImageService: NSObject, RenderImageListener {
         self.dependencies = dependencies
     }
 
+    private func beginImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.processMessagesImmediately(requestID: requestID)
+    }
+
+    private func finishImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.callbackProcessed(requestID: requestID)
+    }
+
     /// Decodes image data into an image handle.
     ///
     /// The continuation is resumed when `onRenderImageDecoded` or `onRenderImageError` is called.
@@ -42,6 +50,7 @@ final class ImageService: NSObject, RenderImageListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = continuation
+            beginImmediateRequest(requestID)
             commandQueue.decodeImage(data, listener: self, requestID: requestID)
         }
     }
@@ -59,6 +68,7 @@ final class ImageService: NSObject, RenderImageListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = continuation
+            beginImmediateRequest(requestID)
             commandQueue.deleteImage(renderImage, requestID: requestID)
         }
     }
@@ -76,6 +86,7 @@ final class ImageService: NSObject, RenderImageListener {
     /// Listener callback invoked by the command server. Resumes the continuation with the image handle.
     nonisolated func onRenderImageDecoded(_ renderImageHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -90,6 +101,7 @@ final class ImageService: NSObject, RenderImageListener {
     /// Listener callback invoked by the command server. Resumes the continuation with an `ImageError`.
     nonisolated func onRenderImageError(_ renderImageHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -104,6 +116,7 @@ final class ImageService: NSObject, RenderImageListener {
     /// Listener callback invoked by the command server. Resumes the continuation with the image handle.
     nonisolated func onRenderImageDeleted(_ renderImageHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -121,5 +134,11 @@ extension ImageService {
         /// The service registers itself as a `RenderImageListener` observer when calling command
         /// queue methods. All operations must be performed on the main thread.
         let commandQueue: CommandQueueProtocol
+        let messageGate: CommandQueueMessageGate
+
+        init(commandQueue: CommandQueueProtocol, messageGate: CommandQueueMessageGate) {
+            self.commandQueue = commandQueue
+            self.messageGate = messageGate
+        }
     }
 }

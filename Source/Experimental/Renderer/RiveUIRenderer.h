@@ -115,16 +115,19 @@ typedef struct
  * cleanup. Can be nil. Any objects captured by this block (e.g.,
  * CAMetalDrawable) will be automatically retained by ARC until the block is
  * released.
+ * @param onSkipped A block called when a frame is intentionally skipped
+ *                  (for example, unchanged artboard content). Can be nil.
  * @param onError A block called if drawing fails, receiving an NSError
- * describing the failure. Can be nil.
+ *                describing the failure. Can be nil.
  * @note The texture must be a valid Metal texture with the correct pixel
  * format. The drawing operation is queued and executes asynchronously. The
- * finalize and onError blocks are called on the background thread.
+ * finalize, onSkipped, and onError blocks are called on the background thread.
  */
 - (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
                 toTexture:(id<MTLTexture>)texture
                fromDevice:(id<MTLDevice>)device
                  finalize:(nullable void (^)(id<MTLCommandBuffer>))finalize
+                onSkipped:(nullable void (^)(void))onSkipped
                   onError:(nullable void (^)(NSError*))onError;
 
 @end

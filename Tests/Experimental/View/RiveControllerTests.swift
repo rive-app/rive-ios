@@ -355,13 +355,13 @@ final class RiveControllerTests: XCTestCase {
     ) async throws -> ControllerFixture {
         let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
 
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let artboard = Artboard(
             dependencies: .init(artboardService: artboardService),
             artboardHandle: 42
         )
 
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: commandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let stateMachine = StateMachine(
             dependencies: .init(stateMachineService: stateMachineService),
             stateMachineHandle: 123

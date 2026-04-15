@@ -11,16 +11,11 @@ import XCTest
 
 class WorkerTests: XCTestCase {
     @MainActor
-    func test_worker_startsOnInitAndStopsOnDeinit() async {
+    func test_workerStartsServerOnInitAndDisconnectsQueueOnDeinit() async {
         let mockCommandQueue = MockCommandQueue()
         let mockCommandServer = MockCommandServer()
         
-        let startExpectation = expectation(description: "start() should be called when Worker is initialized")
         let serveUntilDisconnectExpectation = expectation(description: "serveUntilDisconnect() should be called when Worker is initialized")
-        
-        mockCommandQueue.stubStart {
-            startExpectation.fulfill()
-        }
         
         mockCommandServer.stubServeUntilDisconnect {
             serveUntilDisconnectExpectation.fulfill()
@@ -31,7 +26,8 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveUIRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device),
+                messagePumpDriver: mockCommandQueue
             )
         )
         
@@ -42,30 +38,21 @@ class WorkerTests: XCTestCase {
         )
         _ = worker
 
-        await fulfillment(of: [startExpectation, serveUntilDisconnectExpectation], timeout: 1.0)
-        
-        XCTAssertEqual(mockCommandQueue.startCalls.count, 1, "start() should be called when Worker is initialized")
+        await fulfillment(of: [serveUntilDisconnectExpectation], timeout: 1.0)
         
         XCTAssertEqual(mockCommandServer.serveUntilDisconnectCalls.count, 1, "serveUntilDisconnect() should be called when Worker is initialized")
         
         let disconnectExpectation = expectation(description: "disconnect() should be called when Worker is deinitialized")
-        let stopExpectation = expectation(description: "stop() should be called when Worker is deinitialized")
         
         mockCommandQueue.stubDisconnect {
             disconnectExpectation.fulfill()
         }
         
-        mockCommandQueue.stubStop {
-            stopExpectation.fulfill()
-        }
-        
         worker = nil
         
-        await fulfillment(of: [disconnectExpectation, stopExpectation], timeout: 1.0)
+        await fulfillment(of: [disconnectExpectation], timeout: 1.0)
         
         XCTAssertEqual(mockCommandQueue.disconnectCalls.count, 1, "disconnect() should be called when Worker is deinitialized")
-        
-        XCTAssertEqual(mockCommandQueue.stopCalls.count, 1, "stop() should be called when Worker is deinitialized")
     }
 
     @MainActor
@@ -77,13 +64,14 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveUIRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device),
+                messagePumpDriver: mockCommandQueue
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
         let worker = Worker(dependencies: dependencies)
         
-        let mockRenderImageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue))
+        let mockRenderImageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let renderImageDependencies = Image.Dependencies(imageService: mockRenderImageService)
         let imageHandle: UInt64 = 123
         let renderImage = Image(handle: imageHandle, dependencies: renderImageDependencies)
@@ -115,13 +103,14 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveUIRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device),
+                messagePumpDriver: mockCommandQueue
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
         let worker = Worker(dependencies: dependencies)
 
-        let mockFontService = FontService(dependencies: .init(commandQueue: mockCommandQueue))
+        let mockFontService = FontService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let fontDependencies = Font.Dependencies(fontService: mockFontService)
         let fontHandle: UInt64 = 456
         let font = Font(handle: fontHandle, dependencies: fontDependencies)
@@ -153,13 +142,14 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveUIRenderContext(device: device)
+                renderContext: RiveUIRenderContext(device: device),
+                messagePumpDriver: mockCommandQueue
             )
         )
         let dependencies = Worker.Dependencies(workerService: workerService)
         let worker = Worker(dependencies: dependencies)
 
-        let mockAudioService = AudioService(dependencies: .init(commandQueue: mockCommandQueue))
+        let mockAudioService = AudioService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let audioDependencies = Audio.Dependencies(audioService: mockAudioService)
         let audioHandle: UInt64 = 789
         let audio = Audio(handle: audioHandle, dependencies: audioDependencies)

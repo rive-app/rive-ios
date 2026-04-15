@@ -12,6 +12,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <RiveRuntime/RiveEnums.h>
+#import <RiveRuntime/_RiveCommandQueueMessagePumpDriver.h>
 
 @protocol RiveCommandServerProtocol;
 @protocol RiveFileListener;
@@ -44,10 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
  * 1. Create a RiveCommandQueue instance
  * 2. Create a RiveCommandServer with the queue and start it on a background
  * thread via serveUntilDisconnect.
- * 3. Call start() to begin accepting commands
- * 4. Submit commands using the protocol methods
- * 5. Receive responses via listener protocol callbacks
- * 6. Call disconnect() and stop() when done
+ * 3. Submit commands using the protocol methods
+ * 4. Receive responses via listener protocol callbacks
+ * 5. Call disconnect() when done
  */
 NS_SWIFT_UI_ACTOR
 NS_SWIFT_NAME(CommandQueueProtocol)
@@ -64,9 +64,6 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @return A unique request ID
  */
 @property(nonatomic, readonly) uint64_t nextRequestID;
-
-- (void)start;
-- (void)stop;
 
 #pragma mark - Server
 
@@ -1195,7 +1192,8 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  */
 NS_SWIFT_UI_ACTOR
 NS_SWIFT_NAME(CommandQueue)
-@interface RiveCommandQueue : NSObject <RiveCommandQueueProtocol>
+@interface RiveCommandQueue
+    : NSObject <RiveCommandQueueProtocol, _RiveCommandQueueMessagePumpDriver>
 
 @end
 

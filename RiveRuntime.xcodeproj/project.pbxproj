@@ -296,6 +296,7 @@
 			publicHeaders = (
 				Artboard/RiveArtboardListener.h,
 				Audio/RiveAudioListener.h,
+				CommandQueue/_RiveCommandQueueMessagePumpDriver.h,
 				CommandQueue/RiveCommandQueue.h,
 				CommandServer/RiveCommandServer.h,
 				DataBinding/RiveViewModelInstanceListener.h,

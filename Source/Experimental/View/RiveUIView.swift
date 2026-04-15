@@ -9,7 +9,6 @@
 import Foundation
 import MetalKit
 import SwiftUI
-import os
 
 #if canImport(UIKit) || RIVE_MAC_CATALYST
 import UIKit
@@ -45,6 +44,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
 
     private var mtkView: MTKView?
+    private var drawableSemaphore: DispatchSemaphore?
 
     private var renderer: RiveUIRenderer?
 
@@ -82,8 +82,13 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         }
     }
 
-    // Called when isPaused is set, since we need to maintain
-    // state independently from the display link and controller
+    // Backing store for `isPaused`. Propagates changes to the controller and
+    // display link so all rendering subsystems stay in sync.
+    //
+    // This is the source of truth for pause state. Async setup tasks must
+    // never overwrite it from a captured init parameter — they should read
+    // `self.isPaused` instead, so post-init mutations by the caller are
+    // respected.
     private var _isPaused: Bool = true {
         didSet {
             let newValue = _isPaused
@@ -100,9 +105,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         }
     }
 
-    // Track the paused state independently of `self` being a DisplayLink (i.e macOS < 14)
-    // This is so that we can update any new display links to the correct starting state
-    // Satisfies the DisplayLink protocol
+    // Public accessor for `_isPaused`. Tracks pause state independently of
+    // `self` acting as its own DisplayLink (macOS < 14) so that newly created
+    // display links inherit the correct starting state.
+    // Satisfies the DisplayLink protocol.
     public var isPaused: Bool {
         get {
             return _isPaused
@@ -190,7 +196,6 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 RiveLog.error(tag: .view, error: error, "[RiveUIView] Failed to load Rive configuration")
                 delegate?.view(self, didReceiveError: .failedToLoad(error))
             }
-            self.isPaused = isPaused
         }
     }
 
@@ -221,7 +226,6 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             guard let self else { return }
             await setupView()
             setupRive()
-            self.isPaused = isPaused
         }
     }
 
@@ -288,6 +292,15 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
         // Capture defaults once so `.default` does not rely on undocumented resets.
         defaultFramesPerSecond = mtkView.preferredFramesPerSecond
+
+        // Limit per-view in-flight rendering to the layer drawable budget.
+        let maxDrawableCount: Int
+        if let metalLayer = mtkView.layer as? CAMetalLayer {
+            maxDrawableCount = metalLayer.maximumDrawableCount
+        } else {
+            maxDrawableCount = 1
+        }
+        drawableSemaphore = DispatchSemaphore(value: maxDrawableCount)
     }
 
     private func setupRive() {
@@ -349,9 +362,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         }
 
         let now = displayLink?.timestamp ?? CACurrentMediaTime()
+        let isOnscreenValue = isOnscreen()
         let configuration = controller.advance(
             now: now,
-            isOnscreen: isOnscreen(),
+            isOnscreen: isOnscreenValue,
             drawableSize: view.drawableSize,
             scaleProvider: self
         )
@@ -367,22 +381,39 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 return
             }
 
+            guard let drawableSemaphore else {
+                return
+            }
+
+            guard drawableSemaphore.wait(timeout: .now()) == .success else {
+                return
+            }
+
             guard let currentDrawable = view.currentDrawable else {
+                drawableSemaphore.signal()
                 RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing drawable")
                 delegate?.view(self, didReceiveError: .noDrawable)
                 return
             }
 
             guard let renderer else {
+                drawableSemaphore.signal()
                 RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing renderer")
                 delegate?.view(self, didReceiveError: .noRenderer)
                 return
             }
 
-            renderer.draw(configuration, to: currentDrawable.texture, from: device) { commandBuffer in
+            renderer.draw(configuration, to: currentDrawable.texture, from: device) { [drawableSemaphore] commandBuffer in
+                commandBuffer.addCompletedHandler { _ in
+                    drawableSemaphore.signal()
+                }
                 commandBuffer.present(currentDrawable)
                 commandBuffer.commit()
-            } onError: { [weak self] error in
+            } onSkipped: { [drawableSemaphore] in
+                // Skipping a frame is valid (e.g. unchanged artboard); still release wait().
+                drawableSemaphore.signal()
+            } onError: { [weak self, drawableSemaphore] error in
+                drawableSemaphore.signal()
                 guard let self else { return }
                 RiveLog.error(tag: .view, error: error, "[RiveUIView] Error rendering")
                 self.delegate?.view(self, didReceiveError: RiveUIViewError.renderer(error.localizedDescription))

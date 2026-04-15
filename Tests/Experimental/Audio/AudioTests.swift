@@ -14,7 +14,7 @@ class AudioTests: XCTestCase {
     @MainActor
     func test_init_withValidData_succeeds() async throws {
         let commandQueue = MockCommandQueue()
-        let audioService = AudioService(dependencies: .init(commandQueue: commandQueue))
+        let audioService = AudioService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Audio.Dependencies(audioService: audioService)
         
         let testData = Data([0x00, 0x01, 0x02, 0x03])
@@ -42,7 +42,7 @@ class AudioTests: XCTestCase {
     @MainActor
     func test_init_withInvalidData_throwsError() async {
         let commandQueue = MockCommandQueue()
-        let audioService = AudioService(dependencies: .init(commandQueue: commandQueue))
+        let audioService = AudioService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Audio.Dependencies(audioService: audioService)
         
         let testData = Data([0x00, 0x01, 0x02, 0x03])
@@ -77,7 +77,7 @@ class AudioTests: XCTestCase {
     @MainActor
     func test_deinit_callsDeleteAudio() async throws {
         let commandQueue = MockCommandQueue()
-        let audioService = AudioService(dependencies: .init(commandQueue: commandQueue))
+        let audioService = AudioService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Audio.Dependencies(audioService: audioService)
         
         let testData = Data([0x00, 0x01, 0x02, 0x03])

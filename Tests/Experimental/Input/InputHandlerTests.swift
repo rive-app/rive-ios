@@ -25,7 +25,7 @@ class InputHandlerTests: XCTestCase {
     @MainActor
     func test_handle_pointerMove_callsCommandQueueWithCorrectArguments() {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachineDependencies = StateMachine.Dependencies(
             stateMachineService: stateMachineService
         )
@@ -91,7 +91,7 @@ class InputHandlerTests: XCTestCase {
     @MainActor
     func test_handle_pointerDown_callsCommandQueueWithCorrectArguments() {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachineDependencies = StateMachine.Dependencies(
             stateMachineService: stateMachineService
         )
@@ -157,7 +157,7 @@ class InputHandlerTests: XCTestCase {
     @MainActor
     func test_handle_pointerUp_callsCommandQueueWithCorrectArguments() {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachineDependencies = StateMachine.Dependencies(
             stateMachineService: stateMachineService
         )
@@ -223,7 +223,7 @@ class InputHandlerTests: XCTestCase {
     @MainActor
     func test_handle_pointerExit_callsCommandQueueWithCorrectArguments() {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachineDependencies = StateMachine.Dependencies(
             stateMachineService: stateMachineService
         )
@@ -289,7 +289,7 @@ class InputHandlerTests: XCTestCase {
     @MainActor
     func test_handle_multipleEvents_usesDifferentRequestIDs() {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachineDependencies = StateMachine.Dependencies(
             stateMachineService: stateMachineService
         )
@@ -499,7 +499,7 @@ class InputHandlerTests: XCTestCase {
     @MainActor
     private func makeFixture(stateMachineHandle: UInt64 = 1) -> (InputHandler, MockCommandQueue, StateMachine) {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachine = StateMachine(
             dependencies: .init(stateMachineService: stateMachineService),
             stateMachineHandle: stateMachineHandle

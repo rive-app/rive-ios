@@ -16,7 +16,7 @@ class FileTests: XCTestCase {
         let mockFileLoader = MockFileLoader()
         let mockCommandServer = MockCommandServer()
         
-        let fileService = FileService(dependencies: .init(commandQueue: mockCommandQueue))
+        let fileService = FileService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         
         let dependencies = File.Dependencies(
             fileLoader: mockFileLoader,
@@ -44,7 +44,8 @@ class FileTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveUIRenderContext(device: MetalDevice.shared.defaultDevice()!.value)
+                renderContext: RiveUIRenderContext(device: MetalDevice.shared.defaultDevice()!.value),
+                messagePumpDriver: mockCommandQueue
             )
         )
         let workerDependencies = Worker.Dependencies(workerService: workerService)
@@ -194,7 +195,7 @@ class FileTests: XCTestCase {
     func test_createViewModelInstance_returnsViewModelInstanceWithCorrectHandles() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
 
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService
         )
@@ -423,7 +424,7 @@ class FileTests: XCTestCase {
     func test_getDefaultViewModelInfo_withValidArtboard_returnsViewModelInfo() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
 
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService
         )
@@ -454,7 +455,7 @@ class FileTests: XCTestCase {
     func test_getDefaultViewModelInfo_passesCorrectArtboardAndFileHandles() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 456)
 
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService
         )

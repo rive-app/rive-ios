@@ -14,7 +14,7 @@ class FontTests: XCTestCase {
     @MainActor
     func test_init_withValidData_succeeds() async throws {
         let commandQueue = MockCommandQueue()
-        let fontService = FontService(dependencies: .init(commandQueue: commandQueue))
+        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Font.Dependencies(fontService: fontService)
         
         let testData = Data([0x00, 0x01, 0x02, 0x03])
@@ -42,7 +42,7 @@ class FontTests: XCTestCase {
     @MainActor
     func test_init_withInvalidData_throwsError() async {
         let commandQueue = MockCommandQueue()
-        let fontService = FontService(dependencies: .init(commandQueue: commandQueue))
+        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Font.Dependencies(fontService: fontService)
         
         let testData = Data([0x00, 0x01, 0x02, 0x03])
@@ -76,7 +76,7 @@ class FontTests: XCTestCase {
     @MainActor
     func test_deinit_callsDeleteFont() async throws {
         let commandQueue = MockCommandQueue()
-        let fontService = FontService(dependencies: .init(commandQueue: commandQueue))
+        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Font.Dependencies(fontService: fontService)
         
         let testData = Data([0x00, 0x01, 0x02, 0x03])

@@ -25,7 +25,7 @@ class StateMachineTests: XCTestCase {
     @MainActor
     func test_advance_callsServiceWithCorrectParameters() {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = StateMachine.Dependencies(
             stateMachineService: stateMachineService
@@ -57,8 +57,8 @@ class StateMachineTests: XCTestCase {
     @MainActor
     func test_bindViewModelInstance_callsServiceWithCorrectParameters() async {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let stateMachineDependencies = StateMachine.Dependencies(
             stateMachineService: stateMachineService
@@ -77,7 +77,7 @@ class StateMachineTests: XCTestCase {
 
         let (file, _, _, _) = await File.mock(fileHandle: 1)
 
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService
         )
@@ -110,7 +110,7 @@ class StateMachineTests: XCTestCase {
     @MainActor
     func test_stateMachine_onDeinit_callsDelete() {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
         let dependencies = StateMachine.Dependencies(
             stateMachineService: stateMachineService
@@ -151,7 +151,7 @@ class StateMachineTests: XCTestCase {
     @MainActor
     func test_settledStream_emitsVoid_whenStateMachineSettles() async {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let dependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
         let stateMachine = StateMachine(dependencies: dependencies, stateMachineHandle: 123)
 
@@ -174,7 +174,7 @@ class StateMachineTests: XCTestCase {
     @MainActor
     func test_settledStream_withMultipleSubscribers_emitsToAll() async {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue))
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let dependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
         let stateMachine = StateMachine(dependencies: dependencies, stateMachineHandle: 123)
 

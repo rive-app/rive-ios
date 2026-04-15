@@ -89,6 +89,11 @@ public final class StateMachine: Equatable {
         return dependencies.stateMachineService.settledStream(for: stateMachineHandle)
     }
 
+    @MainActor
+    var hasActiveListeners: Bool {
+        return dependencies.stateMachineService.hasActiveListeners()
+    }
+
     /// Binds a view model instance to this state machine.
     ///
     /// Binding a view model instance allows the state machine to access and modify view model

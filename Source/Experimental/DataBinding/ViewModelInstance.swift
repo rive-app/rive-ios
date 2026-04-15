@@ -140,6 +140,11 @@ public final class ViewModelInstance: Equatable {
         return dependencies.viewModelInstanceService.dirtyStream(for: viewModelInstanceHandle)
     }
 
+    @MainActor
+    var hasActiveListeners: Bool {
+        return dependencies.viewModelInstanceService.hasActiveListeners()
+    }
+
     // MARK: - StringProperty
     
     /// Retrieves the current value of a string property.

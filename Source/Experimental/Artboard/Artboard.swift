@@ -136,7 +136,10 @@ public final class Artboard: Equatable {
             from: artboardHandle,
             dependencies: .init(
                 stateMachineService: StateMachineService(
-                    dependencies: .init(commandQueue: dependencies.artboardService.dependencies.commandQueue)
+                    dependencies: .init(
+                        commandQueue: dependencies.artboardService.dependencies.commandQueue,
+                        messageGate: dependencies.artboardService.dependencies.messageGate
+                    )
                 )
             )
         )

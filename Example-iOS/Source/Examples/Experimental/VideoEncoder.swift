@@ -224,6 +224,9 @@ final class VideoEncoder {
             resources.renderer.draw(configuration, to: resources.texture, from: resources.device) { commandBuffer in
                 commandBuffer.addCompletedHandler { _ in continuation.resume() }
                 commandBuffer.commit()
+            }
+            onSkipped: {
+                continuation.resume()
             } onError: { error in
                 continuation.resume(throwing: VideoEncoderError.renderFailed(error.localizedDescription))
             }

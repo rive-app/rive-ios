@@ -20,7 +20,7 @@ class ViewModelInstanceTests: XCTestCase {
     ) async -> ViewModelInstance {
         let (file, _, _, _) = await File.mock(fileHandle: 123, commandQueue: mockCommandQueue)
 
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService
         )
@@ -31,7 +31,7 @@ class ViewModelInstanceTests: XCTestCase {
             return 99
         }
         
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let viewModelInstance = ViewModelInstance(
             for: artboard,
             from: file,
@@ -55,7 +55,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_deinit_deletesViewModelInstanceAndThenDeletesListener() async {
         let mockCommandQueue = MockCommandQueue()
         let viewModelInstanceService = ViewModelInstanceService(
-            dependencies: .init(commandQueue: mockCommandQueue)
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue))
         )
         let dependencies = ViewModelInstance.Dependencies(
             viewModelInstanceService: viewModelInstanceService
@@ -857,7 +857,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_setValue_withImageProperty_sendsCorrectValuesToCommandQueue() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let imageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue))
+        let imageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let renderImageDependencies = Image.Dependencies(imageService: imageService)
         
         let testData = Data([0x89, 0x50, 0x4E, 0x47])
@@ -898,7 +898,8 @@ class ViewModelInstanceTests: XCTestCase {
             dependencies: .init(
                 artboardService: .init(
                     dependencies: .init(
-                        commandQueue: mockCommandQueue
+                        commandQueue: mockCommandQueue,
+                        messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
                     )
                 )
             ),
@@ -960,7 +961,7 @@ class ViewModelInstanceTests: XCTestCase {
         viewModelInstance.setValue(of: EnumProperty(path: "test.enum"), to: "enum_value")
 
         // Image + artboard mutations
-        let imageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue))
+        let imageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let imageDependencies = Image.Dependencies(imageService: imageService)
         let imageDecodeExpectation = expectation(description: "Image decoded")
         mockCommandQueue.stubDecodeImage { _, listener, requestID in
@@ -975,7 +976,7 @@ class ViewModelInstanceTests: XCTestCase {
         let artboard = Artboard(
             dependencies: .init(
                 artboardService: .init(
-                    dependencies: .init(commandQueue: mockCommandQueue)
+                    dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue))
                 )
             ),
             artboardHandle: 42
@@ -983,7 +984,7 @@ class ViewModelInstanceTests: XCTestCase {
         viewModelInstance.setValue(of: ArtboardProperty(path: "test.artboard"), to: artboard)
 
         // Nested-view-model mutation
-        let nestedService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let nestedService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let nestedInstance = ViewModelInstance(
             handle: 200,
             dependencies: .init(viewModelInstanceService: nestedService)
@@ -1164,7 +1165,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let nestedInstanceHandle: UInt64 = 200
         let nestedInstance = ViewModelInstance(
             handle: nestedInstanceHandle,
@@ -1273,7 +1274,7 @@ class ViewModelInstanceTests: XCTestCase {
         let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let instanceToAppendHandle: UInt64 = 200
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let instanceToAppend = ViewModelInstance(
             handle: instanceToAppendHandle,
             dependencies: .init(
@@ -1298,7 +1299,7 @@ class ViewModelInstanceTests: XCTestCase {
         let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let instanceToInsertHandle: UInt64 = 200
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let instanceToInsert = ViewModelInstance(
             handle: instanceToInsertHandle,
             dependencies: .init(
@@ -1343,7 +1344,7 @@ class ViewModelInstanceTests: XCTestCase {
         let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let instanceToRemoveHandle: UInt64 = 200
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let instanceToRemove = ViewModelInstance(
             handle: instanceToRemoveHandle,
             dependencies: .init(
@@ -1419,7 +1420,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         let (file, _, _, _) = await File.mock(fileHandle: 123, commandQueue: mockCommandQueue)
 
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue))
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(
             artboardService: artboardService
         )
@@ -1438,7 +1439,7 @@ class ViewModelInstanceTests: XCTestCase {
             return 200
         }
         
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let viewModelInstance = ViewModelInstance(
             source: .name("TestInstance", from: .artboardDefault(artboard)),
             from: file,
@@ -1473,7 +1474,7 @@ class ViewModelInstanceTests: XCTestCase {
             return 201
         }
         
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue))
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let viewModelInstance = ViewModelInstance(
             source: .name("MyInstance", from: .name("MyViewModel")),
             from: file,

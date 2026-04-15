@@ -29,6 +29,14 @@ final class AudioService: NSObject, AudioListener {
         self.dependencies = dependencies
     }
 
+    private func beginImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.processMessagesImmediately(requestID: requestID)
+    }
+
+    private func finishImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.callbackProcessed(requestID: requestID)
+    }
+
     /// Decodes audio data into an audio handle.
     ///
     /// The continuation is resumed when `onAudioSourceDecoded` or `onAudioSourceError` is called.
@@ -43,6 +51,7 @@ final class AudioService: NSObject, AudioListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = continuation
+            beginImmediateRequest(requestID)
             commandQueue.decodeAudio(data, listener: self, requestID: requestID)
         }
     }
@@ -60,6 +69,7 @@ final class AudioService: NSObject, AudioListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = continuation
+            beginImmediateRequest(requestID)
             commandQueue.deleteAudio(audioHandle, requestID: requestID)
         }
     }
@@ -77,6 +87,7 @@ final class AudioService: NSObject, AudioListener {
     /// Listener callback invoked by the command server. Resumes the continuation with the audio handle.
     nonisolated func onAudioSourceDecoded(_ audioHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -91,6 +102,7 @@ final class AudioService: NSObject, AudioListener {
     /// Listener callback invoked by the command server. Resumes the continuation with an `AudioError`.
     nonisolated func onAudioSourceError(_ audioHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -105,6 +117,7 @@ final class AudioService: NSObject, AudioListener {
     /// Listener callback invoked by the command server. Resumes the continuation with the audio handle.
     nonisolated func onAudioSourceDeleted(_ audioHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -122,6 +135,12 @@ extension AudioService {
         /// The service registers itself as an `AudioListener` observer when calling command
         /// queue methods. All operations must be performed on the main thread.
         let commandQueue: CommandQueueProtocol
+        let messageGate: CommandQueueMessageGate
+
+        init(commandQueue: CommandQueueProtocol, messageGate: CommandQueueMessageGate) {
+            self.commandQueue = commandQueue
+            self.messageGate = messageGate
+        }
     }
 }
 

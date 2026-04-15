@@ -10,20 +10,15 @@
 #import <RivePrivateHeaders.h>
 #import <rive/command_queue.hpp>
 #import <rive/command_server.hpp>
-#import <QuartzCore/CoreAnimation.h>
+#import <dispatch/dispatch.h>
 #import "RiveArtboardListener.h"
 #import "RiveStateMachineListener.h"
 #import "RiveRenderImageListener.h"
 #import "RiveFontListener.h"
 #import "RiveAudioListener.h"
+#import "_RiveCommandQueueMessagePumpDriver.h"
 #import "RivePrivateHeaders.h"
 #import "RiveExperimental_Private.hh"
-
-#if TARGET_OS_OSX && !RIVE_MAC_CATALYST
-#define RIVE_USE_CVDISPLAYLINK 1
-#else
-#define RIVE_USE_CVDISPLAYLINK 0
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1043,13 +1038,10 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     NSMutableDictionary<NSNumber*, NSValue*>* _audioListeners;
     /** The next request ID to use when making a request via command queue */
     uint64_t _nextRequestID;
-    /** The display link used for processing messages synchronized with display
-     * refresh */
-#if RIVE_USE_CVDISPLAYLINK
-    CVDisplayLinkRef _processDisplayLink;
-#else
-    CADisplayLink* _processDisplayLink;
-#endif
+    /** High-frequency polling source used for processing queued messages */
+    dispatch_source_t _processTimer;
+    /** Whether the process timer is currently armed and ticking */
+    BOOL _isProcessTimerArmed;
 }
 
 /**
@@ -1076,6 +1068,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         _fontListeners = [[NSMutableDictionary alloc] init];
         _audioListeners = [[NSMutableDictionary alloc] init];
         _nextRequestID = 0;
+        _isProcessTimerArmed = NO;
     }
     return self;
 }
@@ -1085,11 +1078,12 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (void)dealloc
 {
-#if RIVE_USE_CVDISPLAYLINK
-    CVDisplayLinkStop(_processDisplayLink);
-#else
-    [_processDisplayLink invalidate];
-#endif
+    if (_processTimer != nil)
+    {
+        dispatch_source_cancel(_processTimer);
+        _processTimer = nil;
+        _isProcessTimerArmed = NO;
+    }
 
     // Clean up all file listeners
     for (NSValue* listenerValue in _fileListeners.allValues)
@@ -1156,7 +1150,8 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     _renderImageListeners = nil;
     _fontListeners = nil;
     _audioListeners = nil;
-    _processDisplayLink = nil;
+    _processTimer = nil;
+    _isProcessTimerArmed = NO;
 }
 
 - (uint64_t)nextRequestID
@@ -1182,65 +1177,50 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     _commandQueue->disconnect();
 }
 
-- (void)start
+- (void)startMessageProcessing
 {
     assert([NSThread isMainThread]);
 
-#if RIVE_USE_CVDISPLAYLINK
-    // Only start if not already running
-    if (_processDisplayLink == nil)
+    // Create once; this source is armed/disarmed as demand changes.
+    if (_processTimer == nil)
     {
-        CVDisplayLinkRef displayLink = nil;
-        CVReturn result = CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
-        if (result == kCVReturnSuccess && displayLink != nil)
-        {
-            __weak RiveCommandQueue* weakSelf = self;
-            CVDisplayLinkSetOutputHandler(
-                displayLink,
-                ^CVReturn(CVDisplayLinkRef displayLink,
-                          const CVTimeStamp* inNow,
-                          const CVTimeStamp* inOutputTime,
-                          CVOptionFlags flagsIn,
-                          CVOptionFlags* flagsOut) {
-                  __strong RiveCommandQueue* strongSelf = weakSelf;
-                  if (strongSelf)
-                  {
-                      dispatch_async(dispatch_get_main_queue(), ^{
-                        [strongSelf processMessages];
-                      });
-                  }
-                  return kCVReturnSuccess;
-                });
-            _processDisplayLink = displayLink;
-            CVDisplayLinkStart(_processDisplayLink);
-        }
+        __weak RiveCommandQueue* weakSelf = self;
+        _processTimer = dispatch_source_create(
+            DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+        dispatch_source_set_event_handler(_processTimer, ^{
+          __strong RiveCommandQueue* strongSelf = weakSelf;
+          if (strongSelf)
+          {
+              [strongSelf processMessages];
+          }
+        });
+
+        // Start in a disarmed state. We arm below when needed.
+        dispatch_source_set_timer(
+            _processTimer, DISPATCH_TIME_FOREVER, DISPATCH_TIME_FOREVER, 0);
+        dispatch_resume(_processTimer);
     }
-#else
-    // Only start if not already running
-    if (_processDisplayLink == nil)
+
+    if (_isProcessTimerArmed == NO)
     {
-        _processDisplayLink =
-            [CADisplayLink displayLinkWithTarget:self
-                                        selector:@selector(processMessages)];
-        [_processDisplayLink addToRunLoop:[NSRunLoop mainRunLoop]
-                                  forMode:NSRunLoopCommonModes];
+        dispatch_source_set_timer(_processTimer,
+                                  dispatch_time(DISPATCH_TIME_NOW, 0),
+                                  NSEC_PER_MSEC,
+                                  0);
+        _isProcessTimerArmed = YES;
     }
-#endif
 }
 
-- (void)stop
+- (void)stopMessageProcessing
 {
     assert([NSThread isMainThread]);
 
-    // Stop the display link
-    if (_processDisplayLink)
+    // Disarm but keep the source alive to avoid recreate/cancel churn.
+    if (_processTimer && _isProcessTimerArmed)
     {
-#if RIVE_USE_CVDISPLAYLINK
-        CVDisplayLinkStop(_processDisplayLink);
-#else
-        [_processDisplayLink invalidate];
-#endif
-        _processDisplayLink = nil;
+        dispatch_source_set_timer(
+            _processTimer, DISPATCH_TIME_FOREVER, DISPATCH_TIME_FOREVER, 0);
+        _isProcessTimerArmed = NO;
     }
 }
 
@@ -2504,8 +2484,8 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  * C++ command queue. It ensures that file loading, artboard instantiation,
  * and other operations are completed in a timely manner.
  *
- * The method dispatches the processing to the main queue to ensure thread
- * safety and proper integration with the UI system.
+ * The method is invoked by the polling timer on the main queue to ensure
+ * thread safety and proper integration with the UI system.
  */
 - (void)processMessages
 {

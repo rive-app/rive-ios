@@ -9,7 +9,7 @@
 import Foundation
 @testable import RiveRuntime
 
-class MockCommandQueue: CommandQueueProtocol {
+class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var fileHandle: UInt64 = 0
     private(set) var artboardHandle: UInt64 = 0
     private(set) var stateMachineHandle: UInt64 = 0
@@ -170,6 +170,14 @@ class MockCommandQueue: CommandQueueProtocol {
     func stop() {
         stopCalls.append(StopCall())
         stopStub?()
+    }
+
+    func startMessageProcessing() {
+        start()
+    }
+
+    func stopMessageProcessing() {
+        stop()
     }
     
     func stubDisconnect(_ stub: @escaping () -> Void) {

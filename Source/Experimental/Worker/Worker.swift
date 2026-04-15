@@ -47,7 +47,8 @@ public final class Worker {
                     dependencies: .init(
                         commandQueue: commandQueue,
                         commandServer: commandServer,
-                        renderContext: renderContext.value
+                        renderContext: renderContext.value,
+                        messagePumpDriver: commandQueue
                     )
                 )
             )
@@ -66,7 +67,8 @@ public final class Worker {
                     dependencies: .init(
                         commandQueue: commandQueue,
                         commandServer: commandServer,
-                        renderContext: renderContext
+                        renderContext: renderContext,
+                        messagePumpDriver: commandQueue
                     )
                 )
             )
@@ -106,7 +108,8 @@ public final class Worker {
             dependencies: .init(
                 imageService: .init(
                     dependencies: .init(
-                        commandQueue: dependencies.workerService.dependencies.commandQueue
+                        commandQueue: dependencies.workerService.dependencies.commandQueue,
+                        messageGate: dependencies.workerService.messageGate
                     )
                 )
             )
@@ -159,7 +162,8 @@ public final class Worker {
             dependencies: .init(
                 fontService: .init(
                     dependencies: .init(
-                        commandQueue: dependencies.workerService.dependencies.commandQueue
+                        commandQueue: dependencies.workerService.dependencies.commandQueue,
+                        messageGate: dependencies.workerService.messageGate
                     )
                 )
             )
@@ -212,7 +216,8 @@ public final class Worker {
             dependencies: .init(
                 audioService: .init(
                     dependencies: .init(
-                        commandQueue: dependencies.workerService.dependencies.commandQueue
+                        commandQueue: dependencies.workerService.dependencies.commandQueue,
+                        messageGate: dependencies.workerService.messageGate
                     )
                 )
             )

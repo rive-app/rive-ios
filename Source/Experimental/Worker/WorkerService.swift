@@ -17,6 +17,9 @@ import Foundation
 @MainActor
 final class WorkerService {
     let dependencies: Dependencies
+    lazy var messageGate = CommandQueueMessageGate(
+        driver: dependencies.messagePumpDriver
+    )
 
     @MainActor
     init(dependencies: Dependencies) {
@@ -30,7 +33,6 @@ final class WorkerService {
     @MainActor
     func start() {
         RiveLog.debug(tag: .worker, "[Worker] Starting worker")
-        dependencies.commandQueue.start()
         dependencies.commandServer.serveUntilDisconnect()
     }
 
@@ -40,8 +42,8 @@ final class WorkerService {
     @MainActor
     func stop() {
         RiveLog.debug(tag: .worker, "[Worker] Stopping worker")
+        messageGate.stop()
         dependencies.commandQueue.disconnect()
-        dependencies.commandQueue.stop()
     }
 
     /// Registers an image as a global asset.
@@ -115,5 +117,19 @@ extension WorkerService {
         let commandServer: CommandServerProtocol
         /// The render context used for rendering operations.
         let renderContext: RiveUIRenderContext
+        /// Internal queue lifecycle driver used by the message gate.
+        let messagePumpDriver: any _CommandQueueMessagePumpDriver
+
+        init(
+            commandQueue: CommandQueueProtocol,
+            commandServer: CommandServerProtocol,
+            renderContext: RiveUIRenderContext,
+            messagePumpDriver: any _CommandQueueMessagePumpDriver
+        ) {
+            self.commandQueue = commandQueue
+            self.commandServer = commandServer
+            self.renderContext = renderContext
+            self.messagePumpDriver = messagePumpDriver
+        }
     }
 }

@@ -29,6 +29,14 @@ final class FontService: NSObject, FontListener {
         self.dependencies = dependencies
     }
 
+    private func beginImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.processMessagesImmediately(requestID: requestID)
+    }
+
+    private func finishImmediateRequest(_ requestID: UInt64) {
+        dependencies.messageGate.callbackProcessed(requestID: requestID)
+    }
+
     /// Decodes font data into a font handle.
     ///
     /// The continuation is resumed when `onFontDecoded` or `onFontError` is called.
@@ -42,6 +50,7 @@ final class FontService: NSObject, FontListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = continuation
+            beginImmediateRequest(requestID)
             commandQueue.decodeFont(data, listener: self, requestID: requestID)
         }
     }
@@ -59,6 +68,7 @@ final class FontService: NSObject, FontListener {
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
             continuations[requestID] = continuation
+            beginImmediateRequest(requestID)
             commandQueue.deleteFont(fontHandle, requestID: requestID)
         }
     }
@@ -76,6 +86,7 @@ final class FontService: NSObject, FontListener {
     /// Listener callback invoked by the command server. Resumes the continuation with the font handle.
     nonisolated func onFontDecoded(_ fontHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -90,6 +101,7 @@ final class FontService: NSObject, FontListener {
     /// Listener callback invoked by the command server. Resumes the continuation with a `FontError`.
     nonisolated func onFontError(_ fontHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -104,6 +116,7 @@ final class FontService: NSObject, FontListener {
     /// Listener callback invoked by the command server. Resumes the continuation with the font handle.
     nonisolated func onFontDeleted(_ fontHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
+            finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else {
                 return
             }
@@ -121,6 +134,12 @@ extension FontService {
         /// The service registers itself as a `FontListener` observer when calling command
         /// queue methods. All operations must be performed on the main thread.
         let commandQueue: CommandQueueProtocol
+        let messageGate: CommandQueueMessageGate
+
+        init(commandQueue: CommandQueueProtocol, messageGate: CommandQueueMessageGate) {
+            self.commandQueue = commandQueue
+            self.messageGate = messageGate
+        }
     }
 }
 

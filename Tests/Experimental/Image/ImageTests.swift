@@ -14,7 +14,7 @@ class ImageTests: XCTestCase {
     @MainActor
     func test_init_withValidData_succeeds() async throws {
         let commandQueue = MockCommandQueue()
-        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue))
+        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Image.Dependencies(imageService: imageService)
         
         let testData = Data([0x89, 0x50, 0x4E, 0x47])
@@ -42,7 +42,7 @@ class ImageTests: XCTestCase {
     @MainActor
     func test_init_withInvalidData_throwsError() async {
         let commandQueue = MockCommandQueue()
-        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue))
+        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Image.Dependencies(imageService: imageService)
         
         let testData = Data([0x00, 0x01, 0x02, 0x03])
@@ -76,7 +76,7 @@ class ImageTests: XCTestCase {
     @MainActor
     func test_deinit_callsDeleteImage() async throws {
         let commandQueue = MockCommandQueue()
-        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue))
+        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Image.Dependencies(imageService: imageService)
         
         let testData = Data([0x89, 0x50, 0x4E, 0x47])
