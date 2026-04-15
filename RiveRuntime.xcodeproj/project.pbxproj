@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 73;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -291,7 +291,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F2C675412ECE33F500CAAEFD /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		F2D1D5282F6B1B6E00DF0B68 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
 				Artboard/RiveArtboardListener.h,
@@ -305,27 +305,17 @@
 				Image/RiveRenderImageListener.h,
 				Renderer/RiveUIRenderContext.h,
 				Renderer/RiveUIRenderer.h,
+				RiveConcurrency.h,
 				RiveEnums.h,
-				RiveExperimental.h,
 				StateMachine/RiveStateMachineListener.h,
 			);
 			target = C9C73ED024FC478800EF9516 /* RiveRuntime */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		F2C675422ECE33F500CAAEFD /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = C9C73ECD24FC478800EF9516 /* Sources */;
-			membershipExceptions = (
-				RiveEnums.h,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F2C675292ECE33F500CAAEFD /* Experimental */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F2C675412ECE33F500CAAEFD /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F2C675422ECE33F500CAAEFD /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Experimental; sourceTree = "<group>"; };
-		F2C814C82ED4F64400C96BAC /* Experimental */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Experimental; sourceTree = "<group>"; };
+		F2C675292ECE33F500CAAEFD /* Concurrency */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F2D1D5282F6B1B6E00DF0B68 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Concurrency; sourceTree = "<group>"; };
+		F2C814C82ED4F64400C96BAC /* Concurrency */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Concurrency; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -501,7 +491,7 @@
 			isa = PBXGroup;
 			children = (
 				F24FC6502DD3CF6700DEE8C5 /* Extensions */,
-				F2C675292ECE33F500CAAEFD /* Experimental */,
+				F2C675292ECE33F500CAAEFD /* Concurrency */,
 				F259E5842D35B87800B78FEF /* DataBinding */,
 				F2CCA9C02C9E13B2007DC0D2 /* Logging */,
 				C3468E5727EB9887008652FD /* RiveView.swift */,
@@ -519,7 +509,7 @@
 		C9C73EDE24FC478900EF9516 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				F2C814C82ED4F64400C96BAC /* Experimental */,
+				F2C814C82ED4F64400C96BAC /* Concurrency */,
 				04BE53F726493FE600427B39 /* Assets */,
 				C9C73EDF24FC478900EF9516 /* RiveRuntimeTests.mm */,
 				C9C73EE124FC478900EF9516 /* Info.plist */,
@@ -673,7 +663,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F2C675292ECE33F500CAAEFD /* Experimental */,
+				F2C675292ECE33F500CAAEFD /* Concurrency */,
 			);
 			name = RiveRuntime;
 			productName = RiveRuntime;
@@ -695,7 +685,7 @@
 				C9C73EDD24FC478900EF9516 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				F2C814C82ED4F64400C96BAC /* Experimental */,
+				F2C814C82ED4F64400C96BAC /* Concurrency */,
 			);
 			name = RiveRuntimeTests;
 			productName = RiveRuntimeTests;
@@ -722,6 +712,7 @@
 				};
 			};
 			buildConfigurationList = C9C73ECB24FC478800EF9516 /* Build configuration list for PBXProject "RiveRuntime" */;
+			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -729,7 +720,6 @@
 				Base,
 			);
 			mainGroup = C9C73EC724FC478800EF9516;
-			preferredProjectObjectVersion = 50;
 			productRefGroup = C9C73ED224FC478800EF9516 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";

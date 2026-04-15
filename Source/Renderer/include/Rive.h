@@ -36,7 +36,7 @@
 
 #import <RiveRuntime/RiveAudioEngine.h>
 
-#import <RiveRuntime/RiveExperimental.h>
+#import <RiveRuntime/RiveConcurrency.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

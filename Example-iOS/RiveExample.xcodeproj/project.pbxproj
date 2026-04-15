@@ -578,7 +578,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F23255D52EF5C09C0096E26F /* Experimental */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Experimental; sourceTree = "<group>"; };
+		F23255D52EF5C09C0096E26F /* Concurrency */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Concurrency; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -690,7 +690,7 @@
 		C3ECAC322818608B00A81123 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
-				F23255D52EF5C09C0096E26F /* Experimental */,
+				F23255D52EF5C09C0096E26F /* Concurrency */,
 				C3ECAC33281860E900A81123 /* ViewModel */,
 				042C88862643DB2200E7DBB2 /* Storyboard */,
 				C9A84F342644931E0014D8E0 /* SwiftUI */,
@@ -952,7 +952,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F23255D52EF5C09C0096E26F /* Experimental */,
+				F23255D52EF5C09C0096E26F /* Concurrency */,
 			);
 			name = "Preview (iOS)";
 			packageProductDependencies = (
@@ -994,7 +994,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F23255D52EF5C09C0096E26F /* Experimental */,
+				F23255D52EF5C09C0096E26F /* Concurrency */,
 			);
 			name = "Example (iOS)";
 			productName = RiveExample;

@@ -60,7 +60,7 @@ class ExamplesMasterTableViewController: UITableViewController {
        ("Slider",  RiveSlider())
     ]
 
-    private let experimental: [(String, AnyView)] = [
+    private let concurrency: [(String, AnyView)] = [
         ("Simple - Marty", AnyView(MartyView())),
         ("Quick Start - Data Binding", AnyView(QuickStartView())),
         ("Animation Player", AnyView(PlayerView())),
@@ -73,23 +73,24 @@ extension ExamplesMasterTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         
-        // ViewControllers made from Storyboard IDs
+        // Views made by concurrency examples
         if indexPath.section == 0 {
+            cell.textLabel?.text = concurrency[indexPath.row].0
+        }
+        
+        // ViewControllers made from Storyboard IDs
+        else if indexPath.section == 1 {
             cell.textLabel?.text = storyboardIDs[indexPath.row]
         }
         
         // Views made by custom SwiftUI Views
-        else if indexPath.section == 1 {
+        else if indexPath.section == 2 {
             cell.textLabel?.text = swiftViews[indexPath.row].0
         }
-        
-        // Views made by the ViewModels
-        else if indexPath.section == 2 {
-            cell.textLabel?.text = viewModels[indexPath.row].0
-        }
 
+        // Views made by the ViewModels
         else if indexPath.section == 3 {
-            cell.textLabel?.text = experimental[indexPath.row].0
+            cell.textLabel?.text = viewModels[indexPath.row].0
         }
 
         return cell
@@ -98,24 +99,25 @@ extension ExamplesMasterTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var controller: UIViewController
         
-        // ViewControllers made from Storyboard IDs
+        // Views made by concurrency examples
         if indexPath.section == 0 {
+            controller = UIHostingController(rootView: concurrency[indexPath.row].1)
+        }
+        
+        // ViewControllers made from Storyboard IDs
+        else if indexPath.section == 1 {
             controller = storyboard!.instantiateViewController(withIdentifier: storyboardIDs[indexPath.row])
         }
         
         // Views made by custom SwiftUI Views
-        else if indexPath.section == 1 {
+        else if indexPath.section == 2 {
             controller = UIHostingController(rootView: swiftViews[indexPath.row].1)
         }
-        
+
         // Views made by the ViewModels
-        else if indexPath.section == 2 {
+        else if indexPath.section == 3 {
             let anyView = viewModels[indexPath.row].1.view()
             controller = UIHostingController(rootView: anyView)
-        }
-
-        else if indexPath.section == 3 {
-            controller = UIHostingController(rootView: experimental[indexPath.row].1)
         }
 
         // Too many sections
@@ -126,20 +128,20 @@ extension ExamplesMasterTableViewController {
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 0: return "Storyboard Examples"
-        case 1: return "SwiftUI Examples"
-        case 2: return "ViewModel Examples"
-        case 3: return "Experimental"
+        case 0: return "Concurrency"
+        case 1: return "Storyboard Examples"
+        case 2: return "SwiftUI Examples"
+        case 3: return "ViewModel Examples"
         default: fatalError()
         }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return storyboardIDs.count
-        case 1: return swiftViews.count
-        case 2: return viewModels.count
-        case 3: return experimental.count
+        case 0: return concurrency.count
+        case 1: return storyboardIDs.count
+        case 2: return swiftViews.count
+        case 3: return viewModels.count
         default: fatalError()
         }
     }
