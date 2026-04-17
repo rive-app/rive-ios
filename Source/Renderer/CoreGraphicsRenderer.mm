@@ -229,12 +229,12 @@ void CoreGraphicsRenderPath::addRawPath(const RawPath& rawPath)
     assert(p == pts.end());
 }
 
-void CoreGraphicsRenderPath::addRenderPath(RenderPath* path,
+void CoreGraphicsRenderPath::addRenderPath(const RenderPath* path,
                                            const Mat2D& transform)
 {
     //    NSLog(@" --- RenderPath::addPath");
     CGMutablePathRef pathToAdd =
-        reinterpret_cast<CoreGraphicsRenderPath*>(path)->getPath();
+        static_cast<const CoreGraphicsRenderPath*>(path)->getPath();
     CGAffineTransform affineTransform = CGAffineTransformMake(transform.xx(),
                                                               transform.xy(),
                                                               transform.yx(),

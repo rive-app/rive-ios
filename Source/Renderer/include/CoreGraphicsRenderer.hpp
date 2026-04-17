@@ -136,12 +136,12 @@ public:
     CoreGraphicsRenderPath();
     ~CoreGraphicsRenderPath();
 
-    CGMutablePathRef getPath() { return path; }
-    FillRule getFillRule() { return m_FillRule; }
+    CGMutablePathRef getPath() const { return path; }
+    FillRule getFillRule() const { return m_FillRule; }
 
     void rewind() override;
     void addRawPath(const RawPath& path) override;
-    void addRenderPath(RenderPath* path, const Mat2D& transform) override;
+    void addRenderPath(const RenderPath* path, const Mat2D& transform) override;
     void fillRule(FillRule value) override;
     void moveTo(float x, float y) override;
     void lineTo(float x, float y) override;
