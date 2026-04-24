@@ -183,7 +183,20 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
               return;
           }
 
-          if (artboard->didChange() == false)
+          // When the render target is missing or stale (first draw, or the
+          // viewport resized) we must still render so the newly-sized
+          // drawable gets populated and presented. Otherwise MTKView keeps
+          // presenting the previous drawable stretched to its new bounds —
+          // which is what happens for non-layout fits, where the artboard's
+          // own state doesn't change on resize and `didChange()` returns
+          // false.
+          auto renderTarget = strongSelf.renderTarget;
+          BOOL renderTargetNeedsResize =
+              renderTarget == nullptr ||
+              renderTarget->width() != configuration.size.width ||
+              renderTarget->height() != configuration.size.height;
+
+          if (renderTargetNeedsResize == NO && artboard->didChange() == false)
           {
               if (onSkipped)
               {
@@ -220,10 +233,7 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
           auto metalContext =
               riveContext
                   ->static_impl_cast<rive::gpu::RenderContextMetalImpl>();
-          auto renderTarget = strongSelf.renderTarget;
-          if (renderTarget == nullptr ||
-              (renderTarget->width() != configuration.size.width ||
-               renderTarget->height() != configuration.size.height))
+          if (renderTargetNeedsResize)
           {
               renderTarget = metalContext->makeRenderTarget(
                   MTLRiveColorPixelFormat(),

@@ -37,29 +37,6 @@ final class StateMachineService: NSObject, StateMachineListener {
         dependencies.messageGate.callbackProcessed(requestID: requestID)
     }
 
-    /// Creates a state machine from an artboard.
-    ///
-    /// Delegates to the command queue. Returns immediately with the state machine handle.
-    /// No listener callback is invoked for this operation.
-    ///
-    /// - Parameters:
-    ///   - name: The name of the state machine to create. If `nil`, the default state machine is created.
-    ///   - artboard: The handle of the artboard containing the state machine.
-    /// - Returns: A handle that uniquely identifies the created state machine.
-    @MainActor
-    func createStateMachine(name: String? = nil, from artboard: Artboard.ArtboardHandle) -> StateMachine.StateMachineHandle {
-        let requestID = dependencies.commandQueue.nextRequestID
-        if let name = name {
-            let stateMachine = dependencies.commandQueue.createStateMachineNamed(name, fromArtboard: artboard, observer: self, requestID: requestID)
-            RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Created named state machine '\(name)'")
-            return stateMachine
-        } else {
-            let stateMachine = dependencies.commandQueue.createDefaultStateMachine(fromArtboard: artboard, observer: self, requestID: requestID)
-            RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Created default state machine")
-            return stateMachine
-        }
-    }
-
     /// Advances a state machine by the specified time interval.
     ///
     /// Delegates to the command queue. No listener callback is invoked for this operation.

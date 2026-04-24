@@ -192,7 +192,7 @@ class ArtboardTests: XCTestCase {
     }
 
     @MainActor
-    func test_createDefaultStateMachine_returnsStateMachineWithCorrectHandle() async throws {
+    func test_createDefaultStateMachine_resumesOnInstantiatedCallback() async throws {
         let mockCommandQueue = MockCommandQueue()
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
@@ -202,21 +202,24 @@ class ArtboardTests: XCTestCase {
 
         let artboard = Artboard(dependencies: dependencies, artboardHandle: 123)
 
-        // Mock the command queue to return a specific state machine handle and capture the artboard handle
+        let expectation = expectation(description: "default state machine instantiated")
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _ in
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _, requestID in
             capturedArtboardHandle = artboardHandle
-            return 42 // Return a specific state machine handle
+            artboardService.onStateMachineInstantiated(artboardHandle, requestID: requestID, stateMachineHandle: 42)
+            expectation.fulfill()
+            return 42
         }
 
         let stateMachine = try await artboard.createStateMachine()
-        XCTAssertNotNil(stateMachine)
+        await fulfillment(of: [expectation], timeout: 1)
         XCTAssertEqual(capturedArtboardHandle, 123)
         XCTAssertEqual(stateMachine.stateMachineHandle, 42)
+        XCTAssertTrue(mockCommandQueue.requestStateMachineNamesCalls.isEmpty)
     }
 
     @MainActor
-    func test_createStateMachineNamed_returnsStateMachineWithCorrectHandle() async throws {
+    func test_createStateMachineNamed_resumesOnInstantiatedCallback() async throws {
         let mockCommandQueue = MockCommandQueue()
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
@@ -226,34 +229,27 @@ class ArtboardTests: XCTestCase {
 
         let artboard = Artboard(dependencies: dependencies, artboardHandle: 123)
 
-        // Mock the command queue to return state machine names for validation
-        let expectation = expectation(description: "state machine names received")
-        mockCommandQueue.stubRequestStateMachineNames { artboardHandle, requestID in
-            XCTAssertEqual(artboardHandle, 123)
-            // Simulate the callback from the command queue
-            artboardService.onStateMachineNamesListed(123, names: ["Test State Machine", "Another State Machine"], requestID: requestID)
-            expectation.fulfill()
-        }
-
-        // Mock the command queue to return a specific state machine handle and capture parameters
-        var capturedName: String = ""
+        let expectation = expectation(description: "named state machine instantiated")
+        var capturedName = ""
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateStateMachineNamed { name, artboardHandle, _ in
+        mockCommandQueue.stubCreateStateMachineNamed { name, artboardHandle, _, requestID in
             capturedName = name
             capturedArtboardHandle = artboardHandle
-            return 42 // Return a specific state machine handle
+            artboardService.onStateMachineInstantiated(artboardHandle, requestID: requestID, stateMachineHandle: 42)
+            expectation.fulfill()
+            return 42
         }
 
         let stateMachine = try await artboard.createStateMachine("Test State Machine")
         await fulfillment(of: [expectation], timeout: 1)
-        XCTAssertNotNil(stateMachine)
         XCTAssertEqual(capturedName, "Test State Machine")
         XCTAssertEqual(capturedArtboardHandle, 123)
         XCTAssertEqual(stateMachine.stateMachineHandle, 42)
+        XCTAssertTrue(mockCommandQueue.requestStateMachineNamesCalls.isEmpty)
     }
 
     @MainActor
-    func test_createStateMachineNamed_withInvalidName_throwsError() async throws {
+    func test_createDefaultStateMachine_whenServerReportsError_throws() async throws {
         let mockCommandQueue = MockCommandQueue()
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
 
@@ -263,20 +259,48 @@ class ArtboardTests: XCTestCase {
 
         let artboard = Artboard(dependencies: dependencies, artboardHandle: 123)
 
-        // Mock the command queue to return state machine names that don't include the requested name
-        let expectation = expectation(description: "state machine names received")
-        mockCommandQueue.stubRequestStateMachineNames { artboardHandle, requestID in
-            XCTAssertEqual(artboardHandle, 123)
-            // Simulate the callback from the command queue with names that don't include "Invalid Name"
-            artboardService.onStateMachineNamesListed(123, names: ["Valid State Machine 1", "Valid State Machine 2"], requestID: requestID)
+        let expectation = expectation(description: "default state machine error")
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _, requestID in
+            artboardService.onArtboardError(artboardHandle, requestID: requestID, message: "no default state machine")
             expectation.fulfill()
+            return 0
+        }
+
+        do {
+            _ = try await artboard.createStateMachine()
+            XCTFail("Expected ArtboardError.invalidStateMachine to be thrown")
+        } catch ArtboardError.invalidStateMachine(let message) {
+            XCTAssertEqual(message, "no default state machine")
+        } catch {
+            XCTFail("Expected ArtboardError.invalidStateMachine, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_createStateMachineNamed_whenServerReportsError_throws() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+
+        let dependencies = Artboard.Dependencies(
+            artboardService: artboardService
+        )
+
+        let artboard = Artboard(dependencies: dependencies, artboardHandle: 123)
+
+        let expectation = expectation(description: "named state machine error")
+        mockCommandQueue.stubCreateStateMachineNamed { _, artboardHandle, _, requestID in
+            artboardService.onArtboardError(artboardHandle, requestID: requestID, message: "state machine \"Invalid Name\" not found.")
+            expectation.fulfill()
+            return 0
         }
 
         do {
             _ = try await artboard.createStateMachine("Invalid Name")
             XCTFail("Expected ArtboardError.invalidStateMachine to be thrown")
-        } catch ArtboardError.invalidStateMachine(let name) {
-            XCTAssertEqual(name, "Invalid Name")
+        } catch ArtboardError.invalidStateMachine(let message) {
+            XCTAssertEqual(message, "state machine \"Invalid Name\" not found.")
         } catch {
             XCTFail("Expected ArtboardError.invalidStateMachine, got \(type(of: error)): \(error)")
         }

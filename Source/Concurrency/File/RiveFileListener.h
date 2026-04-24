@@ -78,6 +78,32 @@ NS_SWIFT_NAME(FileListener)
             message:(NSString*)message;
 
 /**
+ * Called when an artboard has been successfully instantiated from a file.
+ *
+ * @param fileHandle The unique identifier of the file the artboard was
+ *                   instantiated from.
+ * @param requestID The identifier of the instantiation request.
+ * @param artboardHandle The handle of the newly instantiated artboard.
+ */
+- (void)onArtboardInstantiated:(uint64_t)fileHandle
+                     requestID:(uint64_t)requestID
+                artboardHandle:(uint64_t)artboardHandle;
+
+/**
+ * Called when a view model instance has been successfully instantiated from a
+ * file.
+ *
+ * @param fileHandle The unique identifier of the file the instance was
+ *                   instantiated from.
+ * @param requestID The identifier of the instantiation request.
+ * @param viewModelInstanceHandle The handle of the newly instantiated view
+ *                                model instance.
+ */
+- (void)onViewModelInstanceInstantiated:(uint64_t)fileHandle
+                              requestID:(uint64_t)requestID
+                viewModelInstanceHandle:(uint64_t)viewModelInstanceHandle;
+
+/**
  * Called when artboard names are listed for a file.
  *
  * @param fileHandle The unique identifier of the file

@@ -47,11 +47,13 @@ class RiveTests: XCTestCase {
     @MainActor
     func test_init_withOptionalArtboard_createsDefaultArtboard() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
 
         let artboardExpectation = expectation(description: "artboard created")
         var capturedFileHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _ in
+        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _, requestID in
             capturedFileHandle = fileHandle
+            fileService.onArtboardInstantiated(fileHandle, requestID: requestID, artboardHandle: 42)
             artboardExpectation.fulfill()
             return 42
         }
@@ -83,19 +85,20 @@ class RiveTests: XCTestCase {
         
         let stateMachineExpectation = expectation(description: "state machine created")
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _  in
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _, requestID in
             capturedArtboardHandle = artboardHandle
+            artboardService.onStateMachineInstantiated(artboardHandle, requestID: requestID, stateMachineHandle: 99)
             stateMachineExpectation.fulfill()
             return 99
         }
-        
+
         let rive = try await Rive(
             file: file,
             artboard: artboard,
             stateMachine: nil,
             dataBind: .none
         )
-        
+
         await fulfillment(of: [stateMachineExpectation], timeout: 1)
         XCTAssertEqual(capturedArtboardHandle, 42)
         XCTAssertEqual(rive.artboard.artboardHandle, 42)
@@ -105,19 +108,24 @@ class RiveTests: XCTestCase {
     @MainActor
     func test_init_withBothOptional_createsBothDefaults() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
 
         let artboardExpectation = expectation(description: "artboard created")
         var capturedFileHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _ in
+        var capturedArtboardObserver: (any ArtboardListener)?
+        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, observer, requestID in
             capturedFileHandle = fileHandle
+            capturedArtboardObserver = observer
+            fileService.onArtboardInstantiated(fileHandle, requestID: requestID, artboardHandle: 42)
             artboardExpectation.fulfill()
             return 42
         }
-        
+
         let stateMachineExpectation = expectation(description: "state machine created")
         var capturedArtboardHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _ in
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _, requestID in
             capturedArtboardHandle = artboardHandle
+            capturedArtboardObserver?.onStateMachineInstantiated(artboardHandle, requestID: requestID, stateMachineHandle: 99)
             stateMachineExpectation.fulfill()
             return 99
         }
@@ -143,24 +151,17 @@ class RiveTests: XCTestCase {
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)
         let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
-        
+
         let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachineDependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
         let stateMachine = StateMachine(dependencies: stateMachineDependencies, stateMachineHandle: 99)
-        
+
         let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let viewModelInstanceExpectation = expectation(description: "view model instance created")
-        mockCommandQueue.stubCreateBlankViewModelInstance { _, _, _, _ in
-            viewModelInstanceExpectation.fulfill()
-            return 200
-        }
         let viewModelInstance = ViewModelInstance(
-            for: artboard,
-            from: file,
+            handle: 200,
             dependencies: .init(viewModelInstanceService: viewModelInstanceService)
         )
-        await fulfillment(of: [viewModelInstanceExpectation], timeout: 1)
-        
+
         let bindExpectation = expectation(description: "bindViewModelInstance called")
         var capturedStateMachineHandle: UInt64 = 0
         var capturedViewModelInstanceHandle: UInt64 = 0
@@ -188,21 +189,23 @@ class RiveTests: XCTestCase {
     @MainActor
     func test_init_withDataBindAuto_whenViewModelInstanceCreated_bindsToStateMachine() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
 
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)
         let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
-        
+
         let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachineDependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
         let stateMachine = StateMachine(dependencies: stateMachineDependencies, stateMachineHandle: 99)
-        
+
         let createViewModelInstanceExpectation = expectation(description: "view model instance created")
         var capturedArtboardHandle: UInt64 = 0
         var capturedFileHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultViewModelInstance { artboardHandle, fileHandle, _, _ in
+        mockCommandQueue.stubCreateDefaultViewModelInstance { artboardHandle, fileHandle, _, requestID in
             capturedArtboardHandle = artboardHandle
             capturedFileHandle = fileHandle
+            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 200)
             createViewModelInstanceExpectation.fulfill()
             return 200
         }
@@ -270,17 +273,19 @@ class RiveTests: XCTestCase {
     @MainActor
     func test_init_withDefaultDataBind_usesAuto() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
-        
+        let fileService = file.dependencies.fileService
+
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let artboardDependencies = Artboard.Dependencies(artboardService: artboardService)
         let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
-        
+
         let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let stateMachineDependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
         let stateMachine = StateMachine(dependencies: stateMachineDependencies, stateMachineHandle: 99)
-        
+
         let createViewModelInstanceExpectation = expectation(description: "view model instance created")
-        mockCommandQueue.stubCreateDefaultViewModelInstance { _, _, _, _ in
+        mockCommandQueue.stubCreateDefaultViewModelInstance { _, fileHandle, _, requestID in
+            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 200)
             createViewModelInstanceExpectation.fulfill()
             return 200
         }

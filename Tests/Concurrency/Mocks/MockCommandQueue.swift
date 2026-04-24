@@ -33,12 +33,12 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private var requestViewModelEnumsStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelInstanceNamesStub: ((UInt64, String, UInt64) -> Void)?
     private var requestViewModelPropertyDefinitionsStub: ((UInt64, String, UInt64) -> Void)?
-    private var createDefaultArtboardStub: ((UInt64, any ArtboardListener) -> UInt64)?
-    private var createArtboardNamedStub: ((String, UInt64, any ArtboardListener) -> UInt64)?
+    private var createDefaultArtboardStub: ((UInt64, any ArtboardListener, UInt64) -> UInt64)?
+    private var createArtboardNamedStub: ((String, UInt64, any ArtboardListener, UInt64) -> UInt64)?
     private var requestStateMachineNamesStub: ((UInt64, UInt64) -> Void)?
     private var requestDefaultViewModelInfoStub: ((UInt64, UInt64, UInt64) -> Void)?
-    private var createDefaultStateMachineStub: ((UInt64, any StateMachineListener) -> UInt64)?
-    private var createStateMachineNamedStub: ((String, UInt64, any StateMachineListener) -> UInt64)?
+    private var createDefaultStateMachineStub: ((UInt64, any StateMachineListener, UInt64) -> UInt64)?
+    private var createStateMachineNamedStub: ((String, UInt64, any StateMachineListener, UInt64) -> UInt64)?
     private var createBlankViewModelInstanceStub: ((UInt64, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
     private var createBlankViewModelInstanceNamedStub: ((String, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
     private var createDefaultViewModelInstanceStub: ((UInt64, UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
@@ -221,11 +221,11 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         requestViewModelPropertyDefinitionsStub = stub
     }
     
-    func stubCreateDefaultArtboard(_ stub: @escaping (UInt64, any ArtboardListener) -> UInt64) {
+    func stubCreateDefaultArtboard(_ stub: @escaping (UInt64, any ArtboardListener, UInt64) -> UInt64) {
         createDefaultArtboardStub = stub
     }
-    
-    func stubCreateArtboardNamed(_ stub: @escaping (String, UInt64, any ArtboardListener) -> UInt64) {
+
+    func stubCreateArtboardNamed(_ stub: @escaping (String, UInt64, any ArtboardListener, UInt64) -> UInt64) {
         createArtboardNamedStub = stub
     }
 
@@ -237,11 +237,11 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         requestDefaultViewModelInfoStub = stub
     }
     
-    func stubCreateDefaultStateMachine(_ stub: @escaping (UInt64, any StateMachineListener) -> UInt64) {
+    func stubCreateDefaultStateMachine(_ stub: @escaping (UInt64, any StateMachineListener, UInt64) -> UInt64) {
         createDefaultStateMachineStub = stub
     }
-    
-    func stubCreateStateMachineNamed(_ stub: @escaping (String, UInt64, any StateMachineListener) -> UInt64) {
+
+    func stubCreateStateMachineNamed(_ stub: @escaping (String, UInt64, any StateMachineListener, UInt64) -> UInt64) {
         createStateMachineNamedStub = stub
     }
     
@@ -421,7 +421,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     func createDefaultArtboard(fromFile fileHandle: UInt64, observer: any ArtboardListener, requestID: UInt64) -> UInt64 {
         createDefaultArtboardCalls.append(CreateDefaultArtboardCall(fileHandle: fileHandle, observer: observer))
         if let stub = createDefaultArtboardStub {
-            return stub(fileHandle, observer)
+            return stub(fileHandle, observer, requestID)
         }
         artboardHandle += 1
         return artboardHandle
@@ -430,7 +430,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     func createArtboardNamed(_ name: String, fromFile fileHandle: UInt64, observer: any ArtboardListener, requestID: UInt64) -> UInt64 {
         createArtboardNamedCalls.append(CreateArtboardNamedCall(name: name, fileHandle: fileHandle, observer: observer))
         if let stub = createArtboardNamedStub {
-            return stub(name, fileHandle, observer)
+            return stub(name, fileHandle, observer, requestID)
         }
         artboardHandle += 1
         return artboardHandle
@@ -484,7 +484,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
             )
         )
         if let stub = createDefaultStateMachineStub {
-            return stub(artboardHandle, observer)
+            return stub(artboardHandle, observer, requestID)
         }
         stateMachineHandle += 1
         return stateMachineHandle
@@ -499,7 +499,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
             )
         )
         if let stub = createStateMachineNamedStub {
-            return stub(name, artboardHandle, observer)
+            return stub(name, artboardHandle, observer, requestID)
         }
         stateMachineHandle += 1
         return stateMachineHandle
@@ -835,6 +835,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         unsubscribeStub?(viewModelInstance, path, type, requestID)
     }
     
+    func setObserver(_ observer: ViewModelInstanceListener, for viewModelInstanceHandle: UInt64) {
+        viewModelInstanceObservers[viewModelInstanceHandle] = observer
+    }
+
     func getObserver(for viewModelInstanceHandle: UInt64) -> ViewModelInstanceListener? {
         return viewModelInstanceObservers[viewModelInstanceHandle]
     }

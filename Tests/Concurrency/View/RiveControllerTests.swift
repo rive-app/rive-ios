@@ -32,6 +32,90 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
+    func test_fitChangedToLayoutWithExplicitScale_setsArtboardSizeWithScale() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+
+        await expectIsSettled(false, within: fixture) {
+            fixture.rive.fit = .layout(scaleFactor: .explicit(2))
+        }
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.width, 320)
+        XCTAssertEqual(call.height, 240)
+        XCTAssertEqual(call.scale, 2)
+    }
+
+    @MainActor
+    func test_fitChangedToLayoutWithAutomaticScale_setsArtboardSizeUsingScaleProvider() async throws {
+        let fixture = try await makeController(
+            dataBind: .none,
+            scaleProvider: MockScaleProvider(nativeScale: 3, displayScale: 1)
+        )
+        await expectSettled(within: fixture)
+
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+
+        await expectIsSettled(false, within: fixture) {
+            fixture.rive.fit = .layout(scaleFactor: .automatic)
+        }
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.width, 320)
+        XCTAssertEqual(call.height, 240)
+        XCTAssertEqual(call.scale, 3)
+    }
+
+    @MainActor
+    func test_fitChangedToLayout_withNilDrawableSizeProvider_fallsBackToZeroSize() async throws {
+        // A `[weak self]` drawable-size provider that returns nil (e.g. the
+        // owning view has deallocated) must not crash; the controller
+        // resolves the fallback to `.zero`.
+        let fixture = try await makeController(
+            dataBind: .none,
+            drawableSize: nil,
+            scaleProvider: MockScaleProvider()
+        )
+        await expectSettled(within: fixture)
+
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+
+        await expectIsSettled(false, within: fixture) {
+            fixture.rive.fit = .layout(scaleFactor: .explicit(1))
+        }
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.width, 0)
+        XCTAssertEqual(call.height, 0)
+    }
+
+    @MainActor
+    func test_fitChangedToLayout_withNilScaleProvider_fallsBackToUnitScale() async throws {
+        // A `[weak self]` scale provider that returns nil must not crash; the
+        // controller resolves the fallback to scale factor 1.
+        let fixture = try await makeController(
+            dataBind: .none,
+            scaleProvider: nil
+        )
+        await expectSettled(within: fixture)
+
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+
+        await expectIsSettled(false, within: fixture) {
+            fixture.rive.fit = .layout(scaleFactor: .automatic)
+        }
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.scale, 1)
+    }
+
+    @MainActor
     func test_backgroundColorChange_setsIsSettledFalse() async throws {
         let fixture = try await makeController(dataBind: .none)
         await expectSettled(within: fixture)
@@ -132,6 +216,271 @@ final class RiveControllerTests: XCTestCase {
         XCTAssertNotNil(configuration)
         XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 1)
         XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+    }
+
+    @MainActor
+    func test_advance_whenSettledAndDrawableSizeChanges_returnsConfiguration_andDoesNotAdvance() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+
+        let firstConfiguration = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let secondConfiguration = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNotNil(firstConfiguration)
+        XCTAssertNotNil(secondConfiguration)
+        XCTAssertEqual(secondConfiguration?.size, CGSize(width: 300, height: 400))
+        // Only the bootstrap frame advances the state machine; the resize-triggered
+        // draw must not advance (settled views do not animate).
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+    }
+
+    @MainActor
+    func test_advance_whenSettledAndDrawableSizeUnchangedAfterResize_skipsFrame() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        _ = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+        let thirdConfiguration = fixture.controller.advance(
+            now: 11,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNil(thirdConfiguration)
+    }
+
+    @MainActor
+    func test_advance_whenLayoutFitAndDrawableSizeChanges_reappliesArtboardSize() async throws {
+        let fixture = try await makeController(
+            dataBind: .none,
+            fit: .layout(scaleFactor: .explicit(1))
+        )
+        await expectSettled(within: fixture)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+
+        _ = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.width, 300)
+        XCTAssertEqual(call.height, 400)
+        XCTAssertEqual(call.scale, 1)
+    }
+
+    @MainActor
+    func test_advance_whenLayoutFitWithExplicitScale_reappliesArtboardSizeWithScale() async throws {
+        let fixture = try await makeController(
+            dataBind: .none,
+            fit: .layout(scaleFactor: .explicit(2))
+        )
+        await expectSettled(within: fixture)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+
+        _ = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.width, 300)
+        XCTAssertEqual(call.height, 400)
+        XCTAssertEqual(call.scale, 2)
+    }
+
+    @MainActor
+    func test_advance_whenLayoutFitWithAutomaticScale_usesScaleProvider() async throws {
+        let fixture = try await makeController(
+            dataBind: .none,
+            fit: .layout(scaleFactor: .automatic)
+        )
+        await expectSettled(within: fixture)
+
+        let scaleProvider = MockScaleProvider(nativeScale: 3, displayScale: 1)
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: scaleProvider
+        )
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+
+        _ = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: scaleProvider
+        )
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.width, 300)
+        XCTAssertEqual(call.height, 400)
+        XCTAssertEqual(call.scale, 3)
+    }
+
+    @MainActor
+    func test_advance_whenNonLayoutFitAndDrawableSizeChanges_doesNotReapplyArtboardSize() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+
+        _ = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline)
+    }
+
+    @MainActor
+    func test_advance_whenSettledAndOffscreenAndDrawableSizeChanges_skipsDraw() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        let configuration = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: false,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        // Offscreen views must not draw after the first frame, even if the
+        // drawable size changed — the redraw-on-resize allowance only applies
+        // when the view is visible.
+        XCTAssertNil(configuration)
+    }
+
+    @MainActor
+    func test_advance_whenSettledAndBecameOnscreenAndDrawableSizeChanges_returnsConfiguration() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        _ = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: false,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let returningConfiguration = fixture.controller.advance(
+            now: 11,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        // Settled views should still redraw when returning onscreen, with the
+        // new drawable size reflected in the configuration.
+        XCTAssertNotNil(returningConfiguration)
+        XCTAssertEqual(returningConfiguration?.size, CGSize(width: 300, height: 400))
+    }
+
+    @MainActor
+    func test_advance_firstFrame_withLayoutFit_setsArtboardSize() async throws {
+        let fixture = try await makeController(
+            dataBind: .none,
+            fit: .layout(scaleFactor: .explicit(2))
+        )
+        await expectSettled(within: fixture)
+
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.width, 100)
+        XCTAssertEqual(call.height, 200)
+        XCTAssertEqual(call.scale, 2)
+    }
+
+    @MainActor
+    func test_advance_firstFrame_withNonLayoutFit_doesNotSetArtboardSize() async throws {
+        let fixture = try await makeController(
+            dataBind: .none,
+            fit: .contain(alignment: .center)
+        )
+        await expectSettled(within: fixture)
+
+        let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline)
     }
 
     @MainActor
@@ -261,6 +610,34 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
+    func test_advance_whenPausedAndDrawableSizeChanges_returnsConfiguration_andDoesNotAdvance() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+        fixture.controller.isPaused = true
+
+        let firstConfiguration = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let secondConfiguration = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNotNil(firstConfiguration)
+        XCTAssertNotNil(secondConfiguration)
+        XCTAssertEqual(secondConfiguration?.size, CGSize(width: 300, height: 400))
+        // Paused + settled views do not advance time; the resize-triggered draw
+        // is bootstrap-only (delta 0) and produces no additional advance.
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+    }
+
+    @MainActor
     func test_advance_whenResumedAfterPausedBlock_usesZeroDeltaFirstFrame_withoutResetTiming() async throws {
         let fixture = try await makeController(dataBind: .none)
         fixture.controller.isPaused = true
@@ -351,7 +728,10 @@ final class RiveControllerTests: XCTestCase {
 
     @MainActor
     private func makeController(
-        dataBind: DataBind = .none
+        dataBind: DataBind = .none,
+        fit: Fit = .contain(alignment: .center),
+        drawableSize: CGSize? = CGSize(width: 320, height: 240),
+        scaleProvider: ScaleProvider? = nil
     ) async throws -> ControllerFixture {
         let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
 
@@ -368,7 +748,9 @@ final class RiveControllerTests: XCTestCase {
         )
 
         if case .auto = dataBind {
-            commandQueue.stubCreateDefaultViewModelInstance { _, _, _, _ in
+            let fileService = file.dependencies.fileService
+            commandQueue.stubCreateDefaultViewModelInstance { _, fileHandle, _, requestID in
+                fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 456)
                 return 456
             }
         }
@@ -377,12 +759,14 @@ final class RiveControllerTests: XCTestCase {
             file: file,
             artboard: artboard,
             stateMachine: stateMachine,
-            dataBind: dataBind
+            dataBind: dataBind,
+            fit: fit
         )
 
         let controller = RiveController(
             rive: rive,
-            boundsProvider: { CGSize(width: 320, height: 240) }
+            drawableSizeProvider: { drawableSize },
+            scaleProvider: { scaleProvider }
         )
 
         return ControllerFixture(
@@ -461,6 +845,11 @@ private struct ControllerFixture {
 }
 
 private struct MockScaleProvider: ScaleProvider {
-    var nativeScale: CGFloat? { nil }
-    var displayScale: CGFloat { 1 }
+    var nativeScale: CGFloat?
+    var displayScale: CGFloat
+
+    init(nativeScale: CGFloat? = nil, displayScale: CGFloat = 1) {
+        self.nativeScale = nativeScale
+        self.displayScale = displayScale
+    }
 }

@@ -229,6 +229,21 @@ public:
         std::vector<std::string> stateMachineNames) override;
 
     /**
+     * Called when a state machine has been successfully instantiated from an
+     * artboard.
+     *
+     * @param handle The artboard handle the state machine was instantiated
+     *               from.
+     * @param requestId The identifier of the instantiation request.
+     * @param stateMachineHandle The handle of the newly instantiated state
+     *                           machine.
+     */
+    virtual void onStateMachineInstantiated(
+        const rive::ArtboardHandle handle,
+        uint64_t requestId,
+        rive::StateMachineHandle stateMachineHandle) override;
+
+    /**
      * Called when default view model information is received for an artboard.
      *
      * This method is invoked by the C++ command queue when a default view model
@@ -292,6 +307,20 @@ void _ArtboardListener::onStateMachinesListed(
         [_observer onStateMachineNamesListed:reinterpret_cast<uint64_t>(handle)
                                        names:names
                                    requestID:requestId];
+    }
+}
+
+void _ArtboardListener::onStateMachineInstantiated(
+    const rive::ArtboardHandle handle,
+    uint64_t requestId,
+    rive::StateMachineHandle stateMachineHandle)
+{
+    if (_observer)
+    {
+        [_observer onStateMachineInstantiated:reinterpret_cast<uint64_t>(handle)
+                                    requestID:requestId
+                           stateMachineHandle:reinterpret_cast<uint64_t>(
+                                                  stateMachineHandle)];
     }
 }
 
@@ -429,6 +458,32 @@ public:
                                uint64_t requestId) override;
 
     /**
+     * Called when an artboard has been successfully instantiated from a file.
+     *
+     * @param handle The file handle the artboard was instantiated from
+     * @param requestId The identifier of the instantiation request
+     * @param artboardHandle The handle of the newly instantiated artboard
+     */
+    virtual void onArtboardInstantiated(
+        const rive::FileHandle handle,
+        uint64_t requestId,
+        rive::ArtboardHandle artboardHandle) override;
+
+    /**
+     * Called when a view model instance has been successfully instantiated
+     * from a file.
+     *
+     * @param handle The file handle the instance was instantiated from
+     * @param requestId The identifier of the instantiation request
+     * @param viewModelInstanceHandle The handle of the newly instantiated view
+     *                                model instance
+     */
+    virtual void onViewModelInstanceInstantiated(
+        const rive::FileHandle handle,
+        uint64_t requestId,
+        rive::ViewModelInstanceHandle viewModelInstanceHandle) override;
+
+    /**
      * Called when artboard names are listed for a file.
      *
      * @param handle The unique identifier of the file
@@ -527,6 +582,34 @@ void _FileListener::onFileDeleted(const rive::FileHandle handle,
     {
         [_observer onFileDeleted:reinterpret_cast<uint64_t>(handle)
                        requestID:reinterpret_cast<uint64_t>(requestId)];
+    }
+}
+
+void _FileListener::onArtboardInstantiated(const rive::FileHandle handle,
+                                           uint64_t requestId,
+                                           rive::ArtboardHandle artboardHandle)
+{
+    if (_observer)
+    {
+        [_observer
+            onArtboardInstantiated:reinterpret_cast<uint64_t>(handle)
+                         requestID:requestId
+                    artboardHandle:reinterpret_cast<uint64_t>(artboardHandle)];
+    }
+}
+
+void _FileListener::onViewModelInstanceInstantiated(
+    const rive::FileHandle handle,
+    uint64_t requestId,
+    rive::ViewModelInstanceHandle viewModelInstanceHandle)
+{
+    if (_observer)
+    {
+        [_observer
+            onViewModelInstanceInstantiated:reinterpret_cast<uint64_t>(handle)
+                                  requestID:requestId
+                    viewModelInstanceHandle:reinterpret_cast<uint64_t>(
+                                                viewModelInstanceHandle)];
     }
 }
 

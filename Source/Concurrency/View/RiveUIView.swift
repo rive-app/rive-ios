@@ -311,8 +311,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
             controller = RiveController(
                 rive: rive,
-                boundsProvider: { [weak self] in
-                    self?.bounds.size ?? .zero
+                drawableSizeProvider: { [weak self] in
+                    self?.mtkView?.drawableSize
+                },
+                scaleProvider: { [weak self] in
+                    self
                 }
             )
             controller?.isPaused = isPaused
@@ -346,7 +349,18 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         updateDisplayLink()
     }
 
-    public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) { }
+    public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        // Drawable size changes (window resize, backing scale factor change) do
+        // not otherwise trigger a draw when the MTKView is paused + uses
+        // enableSetNeedsDisplay. Request a single redraw; the controller will
+        // detect the new drawableSize and emit a fresh configuration even if
+        // the state machine has settled.
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        view.setNeedsDisplay()
+        #else
+        view.needsDisplay = true
+        #endif
+    }
 
     /// Renders the Rive animation to the Metal view.
     ///
@@ -464,16 +478,21 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         with inputType: (PointerEvent) -> Input
     ) {
         guard let rive,
-              let controller
+              let controller,
+              let mtkView
         else { return }
+
+        let drawableSize = mtkView.drawableSize
+        let scale = CGFloat(mtkView.contentScaleFactor)
 
         for touch in touches {
             let fitBridge = rive.fit.bridged(from: self)
+            let location = touch.location(in: self)
 
             let event = PointerEvent(
                 id: AnyHashable(touch),
-                position: touch.location(in: self),
-                bounds: bounds.size,
+                position: CGPoint(x: location.x * scale, y: location.y * scale),
+                bounds: drawableSize,
                 fit: fitBridge.fit,
                 alignment: fitBridge.alignment,
                 scaleFactor: Float(fitBridge.scaleFactor)
@@ -502,21 +521,54 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         handlePointerEvent(from: event, with: { .pointerExit($0) })
     }
 
+    public override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+
+        // AppKit only delivers mouseMoved / mouseEntered / mouseExited events
+        // to views that own a tracking area configured for them. `.inVisibleRect`
+        // keeps the tracked rect in sync with the view's bounds automatically,
+        // so we only need to install the tracking area once.
+        let alreadyInstalled = trackingAreas.contains { area in
+            area.owner as? RiveUIView === self
+                && area.options.contains(.inVisibleRect)
+        }
+        guard !alreadyInstalled else { return }
+
+        let area = NSTrackingArea(
+            rect: .zero, // ignored when .inVisibleRect is set
+            options: [.inVisibleRect, .mouseEnteredAndExited, .mouseMoved, .activeInKeyWindow],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(area)
+    }
+
     private func handlePointerEvent(
         from event: NSEvent,
         with inputType: (PointerEvent) -> Input
     ) {
         guard let rive,
-              let controller
+              let controller,
+              let mtkView
         else { return }
 
         let fitBridge = rive.fit.bridged(from: self)
-        let position = convert(event.locationInWindow, to: self)
+        let drawableSize = mtkView.drawableSize
+        let scale = mtkView.layer?.contentsScale ?? 1
+
+        // AppKit's default NSView coordinate system is bottom-left origin,
+        // but the state machine / renderer expect top-left (matching UIKit),
+        // so flip Y to match the `RiveView` behavior.
+        let location = convert(event.locationInWindow, from: nil)
+        let position = CGPoint(
+            x: location.x * scale,
+            y: (bounds.height - location.y) * scale
+        )
 
         let event = PointerEvent(
             id: AnyHashable(event.buttonNumber),
             position: position,
-            bounds: bounds.size,
+            bounds: drawableSize,
             fit: fitBridge.fit,
             alignment: fitBridge.alignment,
             scaleFactor: Float(fitBridge.scaleFactor)

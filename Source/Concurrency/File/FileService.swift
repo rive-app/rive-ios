@@ -24,7 +24,12 @@ final class FileService: NSObject, FileListener {
     ///
     /// Continuations are stored when command queue functions are called and resumed when
     /// listener callbacks are invoked. Access must be on the main thread.
-    private var continuations: [UInt64: AnyContinuation] = [:]
+    private struct PendingRequest {
+        let continuation: AnyContinuation
+        let mapError: (String) -> Error
+    }
+
+    private var continuations: [UInt64: PendingRequest] = [:]
     
     private static func context(_ file: File.FileHandle) -> String {
         "[File (\(file))]"
@@ -57,9 +62,79 @@ final class FileService: NSObject, FileListener {
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
             beginImmediateRequest(requestID)
             commandQueue.loadFile(data, observer: self, requestID: requestID)
+        }
+    }
+
+    /// Instantiates an artboard from a loaded file asynchronously.
+    ///
+    /// The continuation is resumed when `onArtboardInstantiated` is called, or fails
+    /// via `onFileError` if the server could not instantiate the artboard.
+    ///
+    /// - Parameters:
+    ///   - name: The name of the artboard to instantiate. If `nil`, the default artboard is instantiated.
+    ///   - fileHandle: The file handle for the loaded file.
+    ///   - observer: The observer to register for subsequent artboard-level callbacks.
+    /// - Returns: The handle of the instantiated artboard.
+    /// - Throws: `FileError.invalidArtboard` if the server reports an error.
+    @MainActor
+    func instantiateArtboard(name: String?, fileHandle: File.FileHandle, observer: ArtboardListener) async throws -> Artboard.ArtboardHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidArtboard)
+            beginImmediateRequest(requestID)
+            if let name {
+                _ = commandQueue.createArtboardNamed(name, fromFile: fileHandle, observer: observer, requestID: requestID)
+            } else {
+                _ = commandQueue.createDefaultArtboard(fromFile: fileHandle, observer: observer, requestID: requestID)
+            }
+        }
+    }
+
+    /// Instantiates a view model instance from a loaded file asynchronously.
+    ///
+    /// The continuation is resumed when `onViewModelInstanceInstantiated` is called, or fails
+    /// via `onFileError` if the server could not instantiate the view model instance.
+    ///
+    /// - Parameters:
+    ///   - source: The source specifying which view model instance to create.
+    ///   - fileHandle: The file handle for the loaded file.
+    ///   - observer: The observer to register for subsequent view-model-instance-level callbacks.
+    /// - Returns: The handle of the instantiated view model instance.
+    /// - Throws: `FileError.invalidViewModelInstance` if the server reports an error.
+    @MainActor
+    func instantiateViewModelInstance(source: ViewModelInstanceSource, fileHandle: File.FileHandle, observer: ViewModelInstanceListener) async throws -> ViewModelInstance.ViewModelInstanceHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidViewModelInstance)
+            beginImmediateRequest(requestID)
+            switch source {
+            case .blank(let viewModelSource):
+                switch viewModelSource {
+                case .artboardDefault(let artboard):
+                    _ = commandQueue.createBlankViewModelInstance(forArtboard: artboard.artboardHandle, fromFile: fileHandle, observer: observer, requestID: requestID)
+                case .name(let viewModelName):
+                    _ = commandQueue.createBlankViewModelInstanceNamed(viewModelName, fromFile: fileHandle, observer: observer, requestID: requestID)
+                }
+            case .viewModelDefault(let viewModelSource):
+                switch viewModelSource {
+                case .artboardDefault(let artboard):
+                    _ = commandQueue.createDefaultViewModelInstance(forArtboard: artboard.artboardHandle, fromFile: fileHandle, observer: observer, requestID: requestID)
+                case .name(let viewModelName):
+                    _ = commandQueue.createDefaultViewModelInstanceNamed(viewModelName, fromFile: fileHandle, observer: observer, requestID: requestID)
+                }
+            case .name(let instanceName, let viewModelSource):
+                switch viewModelSource {
+                case .artboardDefault(let artboard):
+                    _ = commandQueue.createViewModelInstanceNamed(instanceName, forArtboard: artboard.artboardHandle, fromFile: fileHandle, observer: observer, requestID: requestID)
+                case .name(let viewModelName):
+                    _ = commandQueue.createViewModelInstanceNamed(instanceName, viewModelName: viewModelName, fromFile: fileHandle, observer: observer, requestID: requestID)
+                }
+            }
         }
     }
 
@@ -76,7 +151,7 @@ final class FileService: NSObject, FileListener {
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
             beginImmediateRequest(requestID)
             commandQueue.requestArtboardNames(fileHandle, requestID: requestID)
         }
@@ -95,7 +170,7 @@ final class FileService: NSObject, FileListener {
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
             beginImmediateRequest(requestID)
             commandQueue.requestViewModelNames(fileHandle, requestID: requestID)
         }
@@ -116,7 +191,7 @@ final class FileService: NSObject, FileListener {
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
             beginImmediateRequest(requestID)
             commandQueue.requestViewModelInstanceNames(fileHandle, viewModelName: viewModelName, requestID: requestID)
         }
@@ -137,7 +212,7 @@ final class FileService: NSObject, FileListener {
         let commandQueue = dependencies.commandQueue
         let properties: [ViewModelProperty] = try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
             beginImmediateRequest(requestID)
             commandQueue.requestViewModelPropertyDefinitions(fileHandle, viewModelName: viewModelName, requestID: requestID)
         }
@@ -157,7 +232,7 @@ final class FileService: NSObject, FileListener {
         let commandQueue = dependencies.commandQueue
         let enums: [ViewModelEnum] = try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
             beginImmediateRequest(requestID)
             commandQueue.requestViewModelEnums(fileHandle, requestID: requestID)
         }
@@ -175,9 +250,9 @@ final class FileService: NSObject, FileListener {
     nonisolated func onFileLoaded(_ handle: UInt64, requestID: UInt64) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(handle)) Loaded file")
-            try continuation.resume(with: .success(handle))
+            try request.continuation.resume(with: .success(handle))
         }
     }
 
@@ -188,27 +263,54 @@ final class FileService: NSObject, FileListener {
     nonisolated func onFileDeleted(_ handle: UInt64, requestID: UInt64) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(handle)) Deleted file")
-            try continuation.resume(with: .success(handle))
+            try request.continuation.resume(with: .success(handle))
         }
     }
 
-    /// Called when a file loading operation encounters an error.
+    /// Called when a file operation encounters an error.
     ///
     /// Listener callback invoked by the command server. Dispatches to main actor to access
-    /// continuations dictionary and resume the continuation with a `FileError.invalidFile` error.
+    /// continuations dictionary and resume the continuation with the error type appropriate
+    /// for the operation that was attempted.
     ///
     /// - Parameters:
-    ///   - fileHandle: The file handle that was being loaded when the error occurred
-    ///   - requestID: The request ID matching the one used when calling `commandQueue.loadFile`
+    ///   - fileHandle: The file handle associated with the failed operation
+    ///   - requestID: The request ID matching the one used when initiating the operation
     ///   - message: Error message from the C++ runtime
     nonisolated func onFileError(_ fileHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.error(tag: .file, "\(Self.context(fileHandle)) Operation failed: \(message)")
-            try continuation.resume(with: .failure(FileError.invalidFile(message)))
+            try request.continuation.resume(with: .failure(request.mapError(message)))
+        }
+    }
+
+    /// Called when an artboard has been successfully instantiated from a file.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the new artboard handle.
+    nonisolated func onArtboardInstantiated(_ fileHandle: UInt64, requestID: UInt64, artboardHandle: UInt64) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Instantiated artboard (\(artboardHandle))")
+            try request.continuation.resume(with: .success(artboardHandle))
+        }
+    }
+
+    /// Called when a view model instance has been successfully instantiated from a file.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the new view model instance handle.
+    nonisolated func onViewModelInstanceInstantiated(_ fileHandle: UInt64, requestID: UInt64, viewModelInstanceHandle: UInt64) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Instantiated view model instance (\(viewModelInstanceHandle))")
+            try request.continuation.resume(with: .success(viewModelInstanceHandle))
         }
     }
 
@@ -219,9 +321,9 @@ final class FileService: NSObject, FileListener {
     nonisolated func onArtboardsListed(_ fileHandle: UInt64, requestID: UInt64, names: [String]) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) artboard names")
-            try continuation.resume(with: .success(names))
+            try request.continuation.resume(with: .success(names))
         }
     }
 
@@ -232,9 +334,9 @@ final class FileService: NSObject, FileListener {
     nonisolated func onViewModelsListed(_ fileHandle: UInt64, requestID: UInt64, names: [String]) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) view model names")
-            try continuation.resume(with: .success(names))
+            try request.continuation.resume(with: .success(names))
         }
     }
 
@@ -245,9 +347,9 @@ final class FileService: NSObject, FileListener {
     nonisolated func onViewModelInstanceNamesListed(_ fileHandle: UInt64, requestID: UInt64, viewModelName: String, names: [String]) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) instance names for view model '\(viewModelName)'")
-            try continuation.resume(with: .success(names))
+            try request.continuation.resume(with: .success(names))
         }
     }
 
@@ -261,9 +363,9 @@ final class FileService: NSObject, FileListener {
         }) ?? []
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(properties.count) property definitions for view model '\(viewModelName)'")
-            try continuation.resume(with: .success(properties))
+            try request.continuation.resume(with: .success(properties))
         }
     }
 
@@ -278,9 +380,9 @@ final class FileService: NSObject, FileListener {
 
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(enums.count) view model enums")
-            try continuation.resume(with: .success(enums))
+            try request.continuation.resume(with: .success(enums))
         }
     }
 
@@ -296,7 +398,7 @@ final class FileService: NSObject, FileListener {
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
+            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
             beginImmediateRequest(requestID)
             commandQueue.deleteFile(file, requestID: requestID)
         }

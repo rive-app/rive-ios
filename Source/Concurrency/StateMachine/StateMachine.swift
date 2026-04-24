@@ -17,7 +17,7 @@ public final class StateMachine: Equatable {
     /// The underlying type for the state machine handle identifier.
     ///
     /// Handle to a state machine instance in the C++ runtime. Obtained from the command queue
-    /// when a state machine is created via `StateMachineService.createStateMachine`, and used
+    /// when a state machine is created via `ArtboardService.instantiateStateMachine`, and used
     /// in all subsequent command queue operations. Automatically cleaned up when this
     /// `StateMachine` instance is deallocated via `StateMachineService.deleteStateMachine`.
     typealias StateMachineHandle = UInt64
@@ -25,20 +25,6 @@ public final class StateMachine: Equatable {
     let stateMachineHandle: StateMachineHandle
     private let dependencies: Dependencies
     
-    @MainActor
-    convenience init(name: String? = nil, from artboard: Artboard.ArtboardHandle, dependencies: Dependencies) {
-        if let name {
-            RiveLog.debug(tag: .stateMachine, "[StateMachine] Initializing state machine '\(name)'")
-        } else {
-            RiveLog.debug(tag: .stateMachine, "[StateMachine] Initializing default state machine")
-        }
-        let handle = dependencies.stateMachineService.createStateMachine(name: name, from: artboard)
-        self.init(
-            dependencies: dependencies,
-            stateMachineHandle: handle
-        )
-    }
-
     @MainActor
     init(dependencies: Dependencies, stateMachineHandle: StateMachineHandle) {
         self.dependencies = dependencies

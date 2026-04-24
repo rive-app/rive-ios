@@ -125,7 +125,7 @@ public final class File: Equatable {
     ///
     /// - Parameter name: The name of the artboard to create, or `nil` for the default artboard
     /// - Returns: A new `Artboard` instance
-    /// - Throws: `FileError.invalidArtboard` if the specified artboard name does not exist
+    /// - Throws: `FileError.invalidArtboard` if the server could not instantiate the artboard
     @MainActor
     public func createArtboard(_ name: String? = nil) async throws -> Artboard {
         let logContext = Self.logContext(for: fileHandle)
@@ -134,28 +134,22 @@ public final class File: Equatable {
         } else {
             RiveLog.debug(tag: .file, "\(logContext) Creating default artboard")
         }
-        if let name {
-            let artboardNames = try await getArtboardNames()
-            guard artboardNames.contains(name) else {
-                let error = FileError.invalidArtboard(name)
-                RiveLog.error(tag: .file, error: error, "\(logContext) Failed to create artboard")
-                throw error
-            }
-        }
-
         let commandQueue = worker.dependencies.workerService.dependencies.commandQueue
         let messageGate = worker.dependencies.workerService.messageGate
-        return Artboard(
-            name: name,
-            from: fileHandle,
+        let artboardService = ArtboardService(
             dependencies: .init(
-                artboardService: ArtboardService(
-                    dependencies: .init(
-                        commandQueue: commandQueue,
-                        messageGate: messageGate
-                    )
-                )
+                commandQueue: commandQueue,
+                messageGate: messageGate
             )
+        )
+        let handle = try await dependencies.fileService.instantiateArtboard(
+            name: name,
+            fileHandle: fileHandle,
+            observer: artboardService
+        )
+        return Artboard(
+            dependencies: .init(artboardService: artboardService),
+            artboardHandle: handle
         )
     }
 
@@ -166,48 +160,27 @@ public final class File: Equatable {
     ///
     /// - Parameter source: The source specifying which view model instance to create
     /// - Returns: A new `ViewModelInstance` instance
-    /// - Throws: `FileError.invalidViewModel` if the specified view model name does not exist,
-    ///           `FileError.invalidViewModelInstance` if the specified instance name does not exist
+    /// - Throws: `FileError.invalidViewModelInstance` if the server could not instantiate the view model instance
     @MainActor
     public func createViewModelInstance(_ source: ViewModelInstanceSource) async throws -> ViewModelInstance {
         let logContext = Self.logContext(for: fileHandle)
         RiveLog.debug(tag: .file, "\(logContext) Creating view model instance")
-        switch source {
-        case .name(let instanceName, from: let source):
-            switch source {
-            case .name(let viewModelName):
-                let viewModelNames = try await getViewModelNames()
-                guard viewModelNames.contains(viewModelName) else {
-                    let error = FileError.invalidViewModel(viewModelName)
-                    RiveLog.error(tag: .file, error: error, "\(logContext) Failed to create view model instance")
-                    throw error
-                }
-                let instanceNames = try await getInstanceNames(of: viewModelName)
-                guard instanceNames.contains(instanceName) else {
-                    let error = FileError.invalidViewModelInstance(instanceName)
-                    RiveLog.error(tag: .file, error: error, "\(logContext) Failed to create view model instance")
-                    throw error
-                }
-            case .artboardDefault:
-                break
-            }
-        case .blank,
-        .viewModelDefault:
-            break
-        }
         let commandQueue = worker.dependencies.workerService.dependencies.commandQueue
         let messageGate = worker.dependencies.workerService.messageGate
-        return ViewModelInstance(
-            source: source,
-            from: self,
+        let viewModelInstanceService = ViewModelInstanceService(
             dependencies: .init(
-                viewModelInstanceService: .init(
-                    dependencies: .init(
-                        commandQueue: commandQueue,
-                        messageGate: messageGate
-                    )
-                )
+                commandQueue: commandQueue,
+                messageGate: messageGate
             )
+        )
+        let handle = try await dependencies.fileService.instantiateViewModelInstance(
+            source: source,
+            fileHandle: fileHandle,
+            observer: viewModelInstanceService
+        )
+        return ViewModelInstance(
+            handle: handle,
+            dependencies: .init(viewModelInstanceService: viewModelInstanceService)
         )
     }
 

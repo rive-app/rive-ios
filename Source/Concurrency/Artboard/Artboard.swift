@@ -32,29 +32,6 @@ public final class Artboard: Equatable {
         "[Artboard (\(handle))]"
     }
 
-    /// Creates a new Artboard instance from a file with an optional name.
-    ///
-    /// This convenience initializer creates an artboard either with a specific name
-    /// or the default artboard from the given file.
-    /// - Parameters:
-    ///   - name: The name of the artboard to create. If `nil`, the default artboard
-    ///           from the file will be created.
-    ///   - file: The file handle containing the Rive file data.
-    ///   - dependencies: The dependencies required for artboard operations.
-    @MainActor
-    convenience init(name: String? = nil, from file: File.FileHandle, dependencies: Dependencies) {
-        if let name {
-            RiveLog.debug(tag: .artboard, "[Artboard] Initializing artboard '\(name)'")
-        } else {
-            RiveLog.debug(tag: .artboard, "[Artboard] Initializing default artboard")
-        }
-        let handle = dependencies.artboardService.createArtboard(name: name, from: file)
-        self.init(
-            dependencies: dependencies,
-            artboardHandle: handle
-        )
-    }
-
     /// Initializes an Artboard with an artboard handle
     ///
     /// This initializer is used internally when an artboard handle has already been
@@ -122,25 +99,20 @@ public final class Artboard: Equatable {
         } else {
             RiveLog.debug(tag: .artboard, "\(logContext) Creating default state machine")
         }
-        if let name {
-            let names = try await getStateMachineNames()
-            guard names.contains(name) else {
-                let error = ArtboardError.invalidStateMachine(name)
-                RiveLog.error(tag: .artboard, error: error, "\(logContext) Failed to create state machine")
-                throw error
-            }
-        }
-        return StateMachine(
-            name: name,
-            from: artboardHandle,
+        let stateMachineService = StateMachineService(
             dependencies: .init(
-                stateMachineService: StateMachineService(
-                    dependencies: .init(
-                        commandQueue: dependencies.artboardService.dependencies.commandQueue,
-                        messageGate: dependencies.artboardService.dependencies.messageGate
-                    )
-                )
+                commandQueue: dependencies.artboardService.dependencies.commandQueue,
+                messageGate: dependencies.artboardService.dependencies.messageGate
             )
+        )
+        let handle = try await dependencies.artboardService.instantiateStateMachine(
+            name: name,
+            artboardHandle: artboardHandle,
+            observer: stateMachineService
+        )
+        return StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: handle
         )
     }
 

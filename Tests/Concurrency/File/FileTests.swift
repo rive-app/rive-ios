@@ -114,254 +114,430 @@ class FileTests: XCTestCase {
     }
     
     @MainActor
-    func test_createDefaultArtboard_returnsArtboardWithCorrectHandle() async throws {
+    func test_createDefaultArtboard_resumesOnInstantiatedCallback() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
 
-        // Mock the command queue to return a specific artboard handle and capture the file handle
+        let expectation = expectation(description: "createDefaultArtboard called")
         var capturedFileHandle: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _ in
+        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _, requestID in
             capturedFileHandle = fileHandle
-            return 42 // Return a specific artboard handle
+            fileService.onArtboardInstantiated(fileHandle, requestID: requestID, artboardHandle: 42)
+            expectation.fulfill()
+            return 42
         }
-        
+
         let artboard = try await file.createArtboard()
-        XCTAssertNotNil(artboard)
+        await fulfillment(of: [expectation], timeout: 1)
         XCTAssertEqual(capturedFileHandle, 123)
         XCTAssertEqual(artboard.artboardHandle, 42)
     }
 
     @MainActor
-    func test_createArtboardNamed_returnsArtboardWithCorrectName() async throws {
+    func test_createArtboardNamed_resumesOnInstantiatedCallback() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
-        
-        // Mock the command queue to return artboard names for validation
-        let expectation = expectation(description: "artboard names received")
-        mockCommandQueue.stubRequestArtboardNames { fileHandle, requestID in
-            XCTAssertEqual(fileHandle, 123)
-            // Simulate the callback from the command queue
-            fileService.onArtboardsListed(123, requestID: requestID, names: ["Test Artboard", "Another Artboard"])
-            expectation.fulfill()
-        }
-        
-        // Mock the command queue to return a specific artboard handle and capture parameters
+
+        let expectation = expectation(description: "createArtboardNamed called")
         var capturedName: String = ""
         var capturedFileHandle: UInt64 = 0
-        mockCommandQueue.stubCreateArtboardNamed { name, fileHandle, _ in
+        mockCommandQueue.stubCreateArtboardNamed { name, fileHandle, _, requestID in
             capturedName = name
             capturedFileHandle = fileHandle
-            return 42 // Return a specific artboard handle
+            fileService.onArtboardInstantiated(fileHandle, requestID: requestID, artboardHandle: 42)
+            expectation.fulfill()
+            return 42
         }
-        
+
         let artboard = try await file.createArtboard("Test Artboard")
         await fulfillment(of: [expectation], timeout: 1)
-        XCTAssertNotNil(artboard)
         XCTAssertEqual(capturedName, "Test Artboard")
         XCTAssertEqual(capturedFileHandle, 123)
         XCTAssertEqual(artboard.artboardHandle, 42)
     }
-    
+
     @MainActor
-    func test_createArtboardNamed_withInvalidName_throwsError() async throws {
+    func test_createDefaultArtboard_whenServerReportsError_throws() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
-        
-        // Mock the command queue to return artboard names that don't include the requested name
-        let expectation = expectation(description: "artboard names received")
-        mockCommandQueue.stubRequestArtboardNames { fileHandle, requestID in
-            XCTAssertEqual(fileHandle, 123)
-            // Simulate the callback from the command queue with names that don't include "Invalid Artboard"
-            fileService.onArtboardsListed(123, requestID: requestID, names: ["Valid Artboard 1", "Valid Artboard 2"])
+
+        let expectation = expectation(description: "createDefaultArtboard called")
+        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "file 123 not found when trying to create artboard")
             expectation.fulfill()
+            return 0
         }
-        
+
+        do {
+            _ = try await file.createArtboard()
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidArtboard(let message) = error else {
+                XCTFail("Expected FileError.invalidArtboard, got \(error)")
+                return
+            }
+            XCTAssertTrue(message.contains("not found"))
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_createArtboardNamed_whenServerReportsError_throws() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "createArtboardNamed called")
+        mockCommandQueue.stubCreateArtboardNamed { _, fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "artboard \"Invalid Artboard\" not found.")
+            expectation.fulfill()
+            return 0
+        }
+
         do {
             _ = try await file.createArtboard("Invalid Artboard")
-            XCTFail("Expected FileError.invalidArtboard to be thrown")
+            XCTFail("Expected FileError to be thrown")
         } catch let error as FileError {
-            if case .invalidArtboard(let name) = error {
-                XCTAssertEqual(name, "Invalid Artboard")
-            } else {
-                XCTFail("Expected FileError.invalidArtboard(\"Invalid Artboard\"), got \(error)")
+            guard case .invalidArtboard(let message) = error else {
+                XCTFail("Expected FileError.invalidArtboard, got \(error)")
+                return
             }
+            XCTAssertTrue(message.contains("Invalid Artboard"))
         } catch {
-            XCTFail("Expected FileError.invalidArtboard, got \(type(of: error)): \(error)")
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
         }
-        
+
         await fulfillment(of: [expectation], timeout: 1)
     }
     
-    @MainActor
-    func test_createViewModelInstance_returnsViewModelInstanceWithCorrectHandles() async throws {
-        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+    // MARK: - createViewModelInstance success paths
 
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let artboardDependencies = Artboard.Dependencies(
-            artboardService: artboardService
-        )
-        let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
-        
-        // Mock the command queue to return a specific view model instance handle and capture parameters
-        var capturedArtboardHandle: UInt64 = 0
-        var capturedFileHandle: UInt64 = 0
-        mockCommandQueue.stubCreateBlankViewModelInstance { artboardHandle, fileHandle, _, _ in
-            capturedArtboardHandle = artboardHandle
-            capturedFileHandle = fileHandle
-            return 99 // Return a specific view model instance handle
-        }
-        
-        let viewModelInstance = try await file.createViewModelInstance(.blank(from: .artboardDefault(artboard)))
-        XCTAssertNotNil(viewModelInstance)
-        XCTAssertEqual(capturedArtboardHandle, 42)
-        XCTAssertEqual(capturedFileHandle, 123)
-        
-        // Test creating view model instance by name
-        var capturedViewModelName: String = ""
-        var capturedFileHandleForName: UInt64 = 0
-        mockCommandQueue.stubCreateBlankViewModelInstanceNamed { viewModelName, fileHandle, _, _ in
-            capturedViewModelName = viewModelName
-            capturedFileHandleForName = fileHandle
-            return 100 // Return a specific view model instance handle
-        }
-        
-        let viewModelInstanceByName = try await file.createViewModelInstance(.blank(from: .name("TestViewModel")))
-        XCTAssertNotNil(viewModelInstanceByName)
-        XCTAssertEqual(capturedViewModelName, "TestViewModel")
-        XCTAssertEqual(capturedFileHandleForName, 123)
-        
-        // Test creating default view model instance for artboard
-        var capturedArtboardHandleForDefault: UInt64 = 0
-        var capturedFileHandleForDefault: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultViewModelInstance { artboardHandle, fileHandle, _, _ in
-            capturedArtboardHandleForDefault = artboardHandle
-            capturedFileHandleForDefault = fileHandle
-            return 101 // Return a specific view model instance handle
-        }
-        
-        let defaultViewModelInstance = try await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(artboard)))
-        XCTAssertNotNil(defaultViewModelInstance)
-        XCTAssertEqual(capturedArtboardHandleForDefault, 42)
-        XCTAssertEqual(capturedFileHandleForDefault, 123)
-        
-        // Test creating default view model instance by name
-        var capturedViewModelNameForDefault: String = ""
-        var capturedFileHandleForDefaultName: UInt64 = 0
-        mockCommandQueue.stubCreateDefaultViewModelInstanceNamed { viewModelName, fileHandle, _, _ in
-            capturedViewModelNameForDefault = viewModelName
-            capturedFileHandleForDefaultName = fileHandle
-            return 102 // Return a specific view model instance handle
-        }
-        
-        let defaultViewModelInstanceByName = try await file.createViewModelInstance(.viewModelDefault(from: .name("TestDefaultViewModel")))
-        XCTAssertNotNil(defaultViewModelInstanceByName)
-        XCTAssertEqual(capturedViewModelNameForDefault, "TestDefaultViewModel")
-        XCTAssertEqual(capturedFileHandleForDefaultName, 123)
-    }
-    
     @MainActor
-    func test_createViewModelInstance_withNamedInstanceAndViewModel_returnsViewModelInstanceWithCorrectHandles() async throws {
+    func test_createBlankViewModelInstanceForArtboard_resumesOnInstantiatedCallback() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
-        
-        // Mock the command queue to return view model names for validation
-        let viewModelNamesExpectation = expectation(description: "view model names received")
-        mockCommandQueue.stubRequestViewModelNames { fileHandle, requestID in
-            XCTAssertEqual(fileHandle, 123)
-            // Simulate the callback from the command queue
-            fileService.onViewModelsListed(123, requestID: requestID, names: ["TestViewModel", "AnotherViewModel"])
-            viewModelNamesExpectation.fulfill()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        let expectation = expectation(description: "createBlankViewModelInstance called")
+        var capturedArtboardHandle: UInt64 = 0
+        var capturedFileHandle: UInt64 = 0
+        mockCommandQueue.stubCreateBlankViewModelInstance { artboardHandle, fileHandle, _, requestID in
+            capturedArtboardHandle = artboardHandle
+            capturedFileHandle = fileHandle
+            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 99)
+            expectation.fulfill()
+            return 99
         }
-        
-        // Mock the command queue to return instance names for validation
-        let instanceNamesExpectation = expectation(description: "instance names received")
-        mockCommandQueue.stubRequestViewModelInstanceNames { fileHandle, viewModelName, requestID in
-            XCTAssertEqual(fileHandle, 123)
-            XCTAssertEqual(viewModelName, "TestViewModel")
-            // Simulate the callback from the command queue
-            fileService.onViewModelInstanceNamesListed(123, requestID: requestID, viewModelName: "TestViewModel", names: ["TestInstance", "AnotherInstance"])
-            instanceNamesExpectation.fulfill()
+
+        let vmi = try await file.createViewModelInstance(.blank(from: .artboardDefault(artboard)))
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(capturedArtboardHandle, 42)
+        XCTAssertEqual(capturedFileHandle, 123)
+        XCTAssertEqual(vmi.viewModelInstanceHandle, 99)
+    }
+
+    @MainActor
+    func test_createBlankViewModelInstanceNamed_resumesOnInstantiatedCallback() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "createBlankViewModelInstanceNamed called")
+        var capturedViewModelName: String = ""
+        var capturedFileHandle: UInt64 = 0
+        mockCommandQueue.stubCreateBlankViewModelInstanceNamed { viewModelName, fileHandle, _, requestID in
+            capturedViewModelName = viewModelName
+            capturedFileHandle = fileHandle
+            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 100)
+            expectation.fulfill()
+            return 100
         }
-        
-        // Mock the command queue to return a specific view model instance handle and capture parameters
+
+        let vmi = try await file.createViewModelInstance(.blank(from: .name("TestViewModel")))
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(capturedViewModelName, "TestViewModel")
+        XCTAssertEqual(capturedFileHandle, 123)
+        XCTAssertEqual(vmi.viewModelInstanceHandle, 100)
+    }
+
+    @MainActor
+    func test_createDefaultViewModelInstanceForArtboard_resumesOnInstantiatedCallback() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        let expectation = expectation(description: "createDefaultViewModelInstance called")
+        var capturedArtboardHandle: UInt64 = 0
+        var capturedFileHandle: UInt64 = 0
+        mockCommandQueue.stubCreateDefaultViewModelInstance { artboardHandle, fileHandle, _, requestID in
+            capturedArtboardHandle = artboardHandle
+            capturedFileHandle = fileHandle
+            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 101)
+            expectation.fulfill()
+            return 101
+        }
+
+        let vmi = try await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(artboard)))
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(capturedArtboardHandle, 42)
+        XCTAssertEqual(capturedFileHandle, 123)
+        XCTAssertEqual(vmi.viewModelInstanceHandle, 101)
+    }
+
+    @MainActor
+    func test_createDefaultViewModelInstanceNamed_resumesOnInstantiatedCallback() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "createDefaultViewModelInstanceNamed called")
+        var capturedViewModelName: String = ""
+        var capturedFileHandle: UInt64 = 0
+        mockCommandQueue.stubCreateDefaultViewModelInstanceNamed { viewModelName, fileHandle, _, requestID in
+            capturedViewModelName = viewModelName
+            capturedFileHandle = fileHandle
+            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 102)
+            expectation.fulfill()
+            return 102
+        }
+
+        let vmi = try await file.createViewModelInstance(.viewModelDefault(from: .name("TestViewModel")))
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(capturedViewModelName, "TestViewModel")
+        XCTAssertEqual(capturedFileHandle, 123)
+        XCTAssertEqual(vmi.viewModelInstanceHandle, 102)
+    }
+
+    @MainActor
+    func test_createNamedViewModelInstanceForArtboard_resumesOnInstantiatedCallback() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        let expectation = expectation(description: "createViewModelInstanceNamedForArtboard called")
+        var capturedInstanceName: String = ""
+        var capturedArtboardHandle: UInt64 = 0
+        var capturedFileHandle: UInt64 = 0
+        mockCommandQueue.stubCreateViewModelInstanceNamedForArtboard { instanceName, artboardHandle, fileHandle, _, requestID in
+            capturedInstanceName = instanceName
+            capturedArtboardHandle = artboardHandle
+            capturedFileHandle = fileHandle
+            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 103)
+            expectation.fulfill()
+            return 103
+        }
+
+        let vmi = try await file.createViewModelInstance(.name("TestInstance", from: .artboardDefault(artboard)))
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(capturedInstanceName, "TestInstance")
+        XCTAssertEqual(capturedArtboardHandle, 42)
+        XCTAssertEqual(capturedFileHandle, 123)
+        XCTAssertEqual(vmi.viewModelInstanceHandle, 103)
+    }
+
+    @MainActor
+    func test_createNamedViewModelInstance_resumesOnInstantiatedCallback() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "createViewModelInstanceNamed called")
         var capturedInstanceName: String = ""
         var capturedViewModelName: String = ""
         var capturedFileHandle: UInt64 = 0
-        mockCommandQueue.stubCreateViewModelInstanceNamed { instanceName, viewModelName, fileHandle, _, _ in
+        mockCommandQueue.stubCreateViewModelInstanceNamed { instanceName, viewModelName, fileHandle, _, requestID in
             capturedInstanceName = instanceName
             capturedViewModelName = viewModelName
             capturedFileHandle = fileHandle
-            return 103 // Return a specific view model instance handle
+            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 104)
+            expectation.fulfill()
+            return 104
         }
-        
-        let viewModelInstance = try await file.createViewModelInstance(.name("TestInstance", from: .name("TestViewModel")))
-        await fulfillment(of: [viewModelNamesExpectation, instanceNamesExpectation], timeout: 1)
-        XCTAssertNotNil(viewModelInstance)
+
+        let vmi = try await file.createViewModelInstance(.name("TestInstance", from: .name("TestViewModel")))
+        await fulfillment(of: [expectation], timeout: 1)
         XCTAssertEqual(capturedInstanceName, "TestInstance")
         XCTAssertEqual(capturedViewModelName, "TestViewModel")
         XCTAssertEqual(capturedFileHandle, 123)
-        XCTAssertEqual(viewModelInstance.viewModelInstanceHandle, 103)
+        XCTAssertEqual(vmi.viewModelInstanceHandle, 104)
     }
-    
+
+    // MARK: - createViewModelInstance error paths
+
     @MainActor
-    func test_createViewModelInstance_withInvalidViewModelName_throwsError() async throws {
+    func test_createBlankViewModelInstanceForArtboard_whenServerReportsError_throws() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
-        
-        // Mock the command queue to return view model names that don't include the requested name
-        let expectation = expectation(description: "view model names received")
-        mockCommandQueue.stubRequestViewModelNames { fileHandle, requestID in
-            XCTAssertEqual(fileHandle, 123)
-            // Simulate the callback from the command queue with names that don't include "InvalidViewModel"
-            fileService.onViewModelsListed(123, requestID: requestID, names: ["ValidViewModel1", "ValidViewModel2"])
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        let expectation = expectation(description: "createBlankViewModelInstance called")
+        mockCommandQueue.stubCreateBlankViewModelInstance { _, fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "view model not found")
             expectation.fulfill()
+            return 0
         }
-        
+
         do {
-            _ = try await file.createViewModelInstance(.name("TestInstance", from: .name("InvalidViewModel")))
-            XCTFail("Expected FileError.invalidViewModel to be thrown")
-        } catch FileError.invalidViewModel(let name) {
-            XCTAssertEqual(name, "InvalidViewModel")
+            _ = try await file.createViewModelInstance(.blank(from: .artboardDefault(artboard)))
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidViewModelInstance(let message) = error else {
+                XCTFail("Expected FileError.invalidViewModelInstance, got \(error)")
+                return
+            }
+            XCTAssertTrue(message.contains("not found"))
         } catch {
-            XCTFail("Expected FileError.invalidViewModel, got \(type(of: error)): \(error)")
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
         }
-        
+
         await fulfillment(of: [expectation], timeout: 1)
     }
-    
+
     @MainActor
-    func test_createViewModelInstance_withInvalidInstanceName_throwsError() async throws {
+    func test_createBlankViewModelInstanceNamed_whenServerReportsError_throws() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
-        
-        // Mock the command queue to return view model names for validation
-        let viewModelNamesExpectation = expectation(description: "view model names received")
-        mockCommandQueue.stubRequestViewModelNames { fileHandle, requestID in
-            XCTAssertEqual(fileHandle, 123)
-            // Simulate the callback from the command queue
-            fileService.onViewModelsListed(123, requestID: requestID, names: ["TestViewModel"])
-            viewModelNamesExpectation.fulfill()
+
+        let expectation = expectation(description: "createBlankViewModelInstanceNamed called")
+        mockCommandQueue.stubCreateBlankViewModelInstanceNamed { _, fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "view model \"Invalid\" not found")
+            expectation.fulfill()
+            return 0
         }
-        
-        // Mock the command queue to return instance names that don't include the requested name
-        let instanceNamesExpectation = expectation(description: "instance names received")
-        mockCommandQueue.stubRequestViewModelInstanceNames { fileHandle, viewModelName, requestID in
-            XCTAssertEqual(fileHandle, 123)
-            XCTAssertEqual(viewModelName, "TestViewModel")
-            // Simulate the callback from the command queue with names that don't include "InvalidInstance"
-            fileService.onViewModelInstanceNamesListed(123, requestID: requestID, viewModelName: "TestViewModel", names: ["ValidInstance1", "ValidInstance2"])
-            instanceNamesExpectation.fulfill()
-        }
-        
+
         do {
-            _ = try await file.createViewModelInstance(.name("InvalidInstance", from: .name("TestViewModel")))
-            XCTFail("Expected FileError.invalidViewModelInstance to be thrown")
-        } catch FileError.invalidViewModelInstance(let name) {
-            XCTAssertEqual(name, "InvalidInstance")
+            _ = try await file.createViewModelInstance(.blank(from: .name("Invalid")))
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidViewModelInstance(let message) = error else {
+                XCTFail("Expected FileError.invalidViewModelInstance, got \(error)")
+                return
+            }
+            XCTAssertTrue(message.contains("Invalid"))
         } catch {
-            XCTFail("Expected FileError.invalidViewModelInstance, got \(type(of: error)): \(error)")
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
         }
-        
-        await fulfillment(of: [viewModelNamesExpectation, instanceNamesExpectation], timeout: 1)
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_createDefaultViewModelInstanceForArtboard_whenServerReportsError_throws() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        let expectation = expectation(description: "createDefaultViewModelInstance called")
+        mockCommandQueue.stubCreateDefaultViewModelInstance { _, fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "no default view model for artboard")
+            expectation.fulfill()
+            return 0
+        }
+
+        do {
+            _ = try await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(artboard)))
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidViewModelInstance(let message) = error else {
+                XCTFail("Expected FileError.invalidViewModelInstance, got \(error)")
+                return
+            }
+            XCTAssertTrue(message.contains("no default"))
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_createDefaultViewModelInstanceNamed_whenServerReportsError_throws() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "createDefaultViewModelInstanceNamed called")
+        mockCommandQueue.stubCreateDefaultViewModelInstanceNamed { _, fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "view model \"Missing\" not found")
+            expectation.fulfill()
+            return 0
+        }
+
+        do {
+            _ = try await file.createViewModelInstance(.viewModelDefault(from: .name("Missing")))
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidViewModelInstance(let message) = error else {
+                XCTFail("Expected FileError.invalidViewModelInstance, got \(error)")
+                return
+            }
+            XCTAssertTrue(message.contains("Missing"))
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_createNamedViewModelInstanceForArtboard_whenServerReportsError_throws() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        let expectation = expectation(description: "createViewModelInstanceNamedForArtboard called")
+        mockCommandQueue.stubCreateViewModelInstanceNamedForArtboard { _, _, fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "instance \"BadInstance\" not found")
+            expectation.fulfill()
+            return 0
+        }
+
+        do {
+            _ = try await file.createViewModelInstance(.name("BadInstance", from: .artboardDefault(artboard)))
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidViewModelInstance(let message) = error else {
+                XCTFail("Expected FileError.invalidViewModelInstance, got \(error)")
+                return
+            }
+            XCTAssertTrue(message.contains("BadInstance"))
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_createNamedViewModelInstance_whenServerReportsError_throws() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "createViewModelInstanceNamed called")
+        mockCommandQueue.stubCreateViewModelInstanceNamed { _, _, fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "instance \"BadInstance\" not found in \"TestVM\"")
+            expectation.fulfill()
+            return 0
+        }
+
+        do {
+            _ = try await file.createViewModelInstance(.name("BadInstance", from: .name("TestVM")))
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidViewModelInstance(let message) = error else {
+                XCTFail("Expected FileError.invalidViewModelInstance, got \(error)")
+                return
+            }
+            XCTAssertTrue(message.contains("BadInstance"))
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
     }
 
     @MainActor

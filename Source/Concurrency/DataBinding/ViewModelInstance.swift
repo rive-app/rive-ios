@@ -48,59 +48,6 @@ public final class ViewModelInstance: Equatable {
     }
 
     @MainActor
-    init(for artboard: Artboard, from file: File, dependencies: Dependencies) {
-        self.dependencies = dependencies
-        self.viewModelInstanceHandle = dependencies.viewModelInstanceService.createBlankViewModelInstance(
-            for: artboard,
-            from: file
-        )
-        let handle = viewModelInstanceHandle
-        RiveLog.debug(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Initialized blank instance from artboard")
-    }
-
-    @MainActor
-    init(source: ViewModelInstanceSource, from file: File, dependencies: Dependencies) {
-        self.dependencies = dependencies
-        switch source {
-        case .blank(let viewModelSource):
-            switch viewModelSource {
-            case .artboardDefault(let artboard):
-                self.viewModelInstanceHandle = dependencies.viewModelInstanceService.createBlankViewModelInstance(
-                    for: artboard,
-                    from: file
-                )
-            case .name(let viewModelName):
-                self.viewModelInstanceHandle = dependencies.viewModelInstanceService.createBlankViewModelInstance(
-                    named: viewModelName,
-                    from: file
-                )
-            }
-        case .viewModelDefault(let viewModelSource):
-            switch viewModelSource {
-            case .artboardDefault(let artboard):
-                self.viewModelInstanceHandle = dependencies.viewModelInstanceService.createDefaultViewModelInstance(
-                    for: artboard,
-                    from: file
-                )
-            case .name(let viewModelName):
-                self.viewModelInstanceHandle = dependencies.viewModelInstanceService.createDefaultViewModelInstance(
-                    named: viewModelName,
-                    from: file
-                )
-            }
-        case .name(let instanceName, let viewModelSource):
-            switch viewModelSource {
-            case .artboardDefault(let artboard):
-                self.viewModelInstanceHandle = dependencies.viewModelInstanceService.createViewModelInstanceNamed(instanceName, for: artboard, from: file)
-            case .name(let viewModelName):
-                self.viewModelInstanceHandle = dependencies.viewModelInstanceService.createViewModelInstanceNamed(instanceName, viewModelName: viewModelName, from: file)
-            }
-        }
-        let handle = viewModelInstanceHandle
-        RiveLog.debug(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Initialized instance from source")
-    }
-
-    @MainActor
     init(handle: ViewModelInstanceHandle, dependencies: Dependencies) {
         self.viewModelInstanceHandle = handle
         self.dependencies = dependencies

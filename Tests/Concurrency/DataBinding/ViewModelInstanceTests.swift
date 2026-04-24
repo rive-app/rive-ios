@@ -17,36 +17,20 @@ class ViewModelInstanceTests: XCTestCase {
     func makeViewModelInstance(
         mockCommandQueue: MockCommandQueue,
         captureObserver: ((ViewModelInstanceListener?) -> Void)? = nil
-    ) async -> ViewModelInstance {
-        let (file, _, _, _) = await File.mock(fileHandle: 123, commandQueue: mockCommandQueue)
-
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let artboardDependencies = Artboard.Dependencies(
-            artboardService: artboardService
-        )
-        let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
-        
-        mockCommandQueue.stubCreateBlankViewModelInstance { _, _, observer, _ in
-            captureObserver?(observer)
-            return 99
-        }
-        
+    ) -> ViewModelInstance {
         let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let viewModelInstance = ViewModelInstance(
-            for: artboard,
-            from: file,
-            dependencies: .init(
-                viewModelInstanceService: viewModelInstanceService
-            )
+        mockCommandQueue.setObserver(viewModelInstanceService, for: 99)
+        captureObserver?(viewModelInstanceService)
+        return ViewModelInstance(
+            handle: 99,
+            dependencies: .init(viewModelInstanceService: viewModelInstanceService)
         )
-        
-        return viewModelInstance
     }
     
     @MainActor
     func test_init_withValidArtboardAndFile_createsInstance() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         XCTAssertNotNil(viewModelInstance)
         XCTAssertEqual(viewModelInstance.viewModelInstanceHandle, 99)
     }
@@ -110,7 +94,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -128,7 +112,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_setValue_withStringProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = StringProperty(path: "test.property.path")
         let testValue = "test string value"
@@ -147,7 +131,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -172,7 +156,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withStringProperty_receivesUpdates() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = StringProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -208,7 +192,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withStringProperty_unsubscribesOnTermination() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = StringProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -245,7 +229,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
 
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
 
@@ -264,7 +248,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withEmptyStringProperty_yieldsEmptyString() async throws {
         let mockCommandQueue = MockCommandQueue()
 
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
 
         let property = StringProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -302,7 +286,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -320,7 +304,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_setValue_withNumberProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = NumberProperty(path: "test.property.path")
         let testValue: Float = 42.5
@@ -339,7 +323,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -369,7 +353,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withNumberProperty_receivesUpdates() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = NumberProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -405,7 +389,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withNumberProperty_unsubscribesOnTermination() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = NumberProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -444,7 +428,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -462,7 +446,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_setValue_withBoolProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = BoolProperty(path: "test.property.path")
         let testValue = true
@@ -481,7 +465,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -511,7 +495,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withBoolProperty_receivesUpdates() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = BoolProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -547,7 +531,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withBoolProperty_unsubscribesOnTermination() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = BoolProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -586,7 +570,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -609,7 +593,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_setValue_withColorProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = ColorProperty(path: "test.property.path")
         // ARGB: 0xFF00FF00 (alpha=255, red=0, green=255, blue=0) = bright green
@@ -629,7 +613,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -659,7 +643,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withColorProperty_receivesUpdates() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = ColorProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -700,7 +684,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withColorProperty_unsubscribesOnTermination() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = ColorProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -739,7 +723,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -759,7 +743,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -784,7 +768,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withEnumProperty_receivesUpdates() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = EnumProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -820,7 +804,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_valueStream_withEnumProperty_unsubscribesOnTermination() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = EnumProperty(path: "test.path")
         let stream = viewModelInstance.valueStream(of: property)
@@ -874,7 +858,7 @@ class ViewModelInstanceTests: XCTestCase {
         let renderImage = try await Image(data: testData, dependencies: renderImageDependencies)
         await fulfillment(of: [decodeExpectation], timeout: 1)
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         let property = ImageProperty(path: "test.image.property.path")
         
         viewModelInstance.setValue(of: property, to: renderImage)
@@ -891,7 +875,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_setValue_withArtboardProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let expectedArtboardHandle: UInt64 = 42
         let artboard = Artboard(
@@ -921,7 +905,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_fire_withTriggerProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let trigger = TriggerProperty(path: "test.trigger.path")
         
@@ -936,7 +920,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_dirtyStream_withSetValue_emitsEvent() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
 
         let stream = viewModelInstance.dirtyStream()
         let expectedDirtyEvents = 14
@@ -1009,7 +993,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_dirtyStream_withMultipleSubscribers_emitsToAll() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
 
         let streamA = viewModelInstance.dirtyStream()
         let streamB = viewModelInstance.dirtyStream()
@@ -1041,7 +1025,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_stream_withTriggerProperty_receivesEvents() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = TriggerProperty(path: "test.trigger.path")
         let stream = viewModelInstance.stream(of: property)
@@ -1086,7 +1070,7 @@ class ViewModelInstanceTests: XCTestCase {
     func test_stream_withTriggerProperty_unsubscribesOnTermination() async throws {
         let mockCommandQueue = MockCommandQueue()
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let property = TriggerProperty(path: "test.trigger.path")
         let stream = viewModelInstance.stream(of: property)
@@ -1123,7 +1107,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_value_withViewModelInstanceProperty_returnsNestedViewModelInstance() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let expectedNestedHandle: UInt64 = 200
         var capturedObserver: ViewModelInstanceListener?
@@ -1163,7 +1147,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_setValue_withViewModelInstanceProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
         let nestedInstanceHandle: UInt64 = 200
@@ -1192,7 +1176,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -1210,7 +1194,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_value_withListProperty_returnsNestedViewModelInstance() async throws {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         let property = ListProperty(path: "list")
         var capturedObserver: ViewModelInstanceListener?
         
@@ -1271,7 +1255,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_appendInstance_withListProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let instanceToAppendHandle: UInt64 = 200
         let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
@@ -1296,7 +1280,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_insertInstance_withListProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let instanceToInsertHandle: UInt64 = 200
         let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
@@ -1323,7 +1307,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_removeInstanceAtIndex_withListProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let listProperty = ListProperty(path: "test.list.path")
         let removeIndex: Int32 = 2
@@ -1341,7 +1325,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_removeInstanceByValue_withListProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let instanceToRemoveHandle: UInt64 = 200
         let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
@@ -1366,7 +1350,7 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func test_swapInstances_withListProperty_sendsCorrectValuesToCommandQueue() async {
         let mockCommandQueue = MockCommandQueue()
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
         
         let listProperty = ListProperty(path: "test.list.path")
         let atIndex: Int32 = 0
@@ -1389,7 +1373,7 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         var capturedObserver: ViewModelInstanceListener?
         
-        let viewModelInstance = await makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
             capturedObserver = observer
         }
         
@@ -1413,81 +1397,4 @@ class ViewModelInstanceTests: XCTestCase {
         }
     }
     
-    // MARK: - ViewModelInstanceSource Tests
-    
-    @MainActor
-    func test_init_withNamedInstanceSourceForArtboard_createsNamedInstance() async {
-        let mockCommandQueue = MockCommandQueue()
-        let (file, _, _, _) = await File.mock(fileHandle: 123, commandQueue: mockCommandQueue)
-
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let artboardDependencies = Artboard.Dependencies(
-            artboardService: artboardService
-        )
-        let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 42)
-        
-        var capturedInstanceName: String?
-        var capturedArtboardHandle: UInt64 = 0
-        var capturedFileHandle: UInt64 = 0
-        var capturedObserver: ViewModelInstanceListener?
-        
-        mockCommandQueue.stubCreateViewModelInstanceNamedForArtboard { instanceName, artboardHandle, fileHandle, observer, requestID in
-            capturedInstanceName = instanceName
-            capturedArtboardHandle = artboardHandle
-            capturedFileHandle = fileHandle
-            capturedObserver = observer
-            return 200
-        }
-        
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let viewModelInstance = ViewModelInstance(
-            source: .name("TestInstance", from: .artboardDefault(artboard)),
-            from: file,
-            dependencies: .init(
-                viewModelInstanceService: viewModelInstanceService
-            )
-        )
-        
-        XCTAssertNotNil(viewModelInstance)
-        XCTAssertEqual(viewModelInstance.viewModelInstanceHandle, 200)
-        XCTAssertEqual(capturedInstanceName, "TestInstance")
-        XCTAssertEqual(capturedArtboardHandle, 42)
-        XCTAssertEqual(capturedFileHandle, 123)
-        XCTAssertNotNil(capturedObserver)
-    }
-    
-    @MainActor
-    func test_init_withNamedInstanceSourceForViewModelName_createsNamedInstance() async {
-        let mockCommandQueue = MockCommandQueue()
-        let (file, _, _, _) = await File.mock(fileHandle: 456, commandQueue: mockCommandQueue)
-        
-        var capturedInstanceName: String?
-        var capturedViewModelName: String?
-        var capturedFileHandle: UInt64 = 0
-        var capturedObserver: ViewModelInstanceListener?
-        
-        mockCommandQueue.stubCreateViewModelInstanceNamed { instanceName, viewModelName, fileHandle, observer, requestID in
-            capturedInstanceName = instanceName
-            capturedViewModelName = viewModelName
-            capturedFileHandle = fileHandle
-            capturedObserver = observer
-            return 201
-        }
-        
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let viewModelInstance = ViewModelInstance(
-            source: .name("MyInstance", from: .name("MyViewModel")),
-            from: file,
-            dependencies: .init(
-                viewModelInstanceService: viewModelInstanceService
-            )
-        )
-        
-        XCTAssertNotNil(viewModelInstance)
-        XCTAssertEqual(viewModelInstance.viewModelInstanceHandle, 201)
-        XCTAssertEqual(capturedInstanceName, "MyInstance")
-        XCTAssertEqual(capturedViewModelName, "MyViewModel")
-        XCTAssertEqual(capturedFileHandle, 456)
-        XCTAssertNotNil(capturedObserver)
-    }
 }

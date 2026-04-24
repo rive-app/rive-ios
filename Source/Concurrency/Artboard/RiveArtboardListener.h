@@ -72,6 +72,19 @@ NS_SWIFT_NAME(ArtboardListener)
                 message:(NSString*)message;
 
 /**
+ * Called when a state machine has been successfully instantiated from an
+ * artboard.
+ *
+ * @param artboardHandle The handle of the artboard the state machine was
+ *                       instantiated from.
+ * @param requestID The identifier of the instantiation request.
+ * @param stateMachineHandle The handle of the newly instantiated state machine.
+ */
+- (void)onStateMachineInstantiated:(uint64_t)artboardHandle
+                         requestID:(uint64_t)requestID
+                stateMachineHandle:(uint64_t)stateMachineHandle;
+
+/**
  * Called when an artboard delete request completes.
  *
  * @param artboardHandle The handle of the artboard that was deleted.

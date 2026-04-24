@@ -18,7 +18,7 @@ import Foundation
 @MainActor
 final class ArtboardService: NSObject, ArtboardListener {
     let dependencies: Dependencies
-    
+
     private static func context(_ artboard: Artboard.ArtboardHandle) -> String {
         "[Artboard (\(artboard))]"
     }
@@ -28,7 +28,7 @@ final class ArtboardService: NSObject, ArtboardListener {
     /// Continuations are stored when command queue functions are called and resumed when
     /// listener callbacks are invoked. Access must be on the main thread.
     @MainActor
-    private var continuations: [UInt64: Any] = [:]
+    private var continuations: [UInt64: AnyContinuation] = [:]
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -42,26 +42,29 @@ final class ArtboardService: NSObject, ArtboardListener {
         dependencies.messageGate.callbackProcessed(requestID: requestID)
     }
 
-    /// Creates an artboard from a file.
+    /// Instantiates a state machine from an artboard asynchronously.
     ///
-    /// Delegates to the command queue. Returns immediately with the artboard handle.
-    /// No listener callback is invoked for this operation.
+    /// The continuation is resumed when `onStateMachineInstantiated` is called, or fails
+    /// via `onArtboardError` if the server could not instantiate the state machine.
     ///
     /// - Parameters:
-    ///   - name: The name of the artboard to create. If `nil`, the default artboard is created.
-    ///   - file: The file handle containing the Rive file data.
-    /// - Returns: A handle that uniquely identifies the created artboard.
+    ///   - name: The name of the state machine to instantiate. If `nil`, the default state machine is instantiated.
+    ///   - artboardHandle: The handle of the artboard the state machine belongs to.
+    ///   - observer: The observer to register for subsequent state-machine-level callbacks.
+    /// - Returns: The handle of the instantiated state machine.
+    /// - Throws: `ArtboardError.invalidStateMachine` if the server reports an error.
     @MainActor
-    func createArtboard(name: String? = nil, from file: File.FileHandle) -> Artboard.ArtboardHandle {
-        let requestID = dependencies.commandQueue.nextRequestID
-        if let name = name {
-            let artboard = dependencies.commandQueue.createArtboardNamed(name, fromFile: file, observer: self, requestID: requestID)
-            RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Created named artboard '\(name)'")
-            return artboard
-        } else {
-            let artboard = dependencies.commandQueue.createDefaultArtboard(fromFile: file, observer: self, requestID: requestID)
-            RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Created default artboard")
-            return artboard
+    func instantiateStateMachine(name: String?, artboardHandle: Artboard.ArtboardHandle, observer: StateMachineListener) async throws -> StateMachine.StateMachineHandle {
+        let commandQueue = dependencies.commandQueue
+        return try await withCheckedThrowingContinuation { continuation in
+            let requestID = commandQueue.nextRequestID
+            continuations[requestID] = AnyContinuation(continuation)
+            beginImmediateRequest(requestID)
+            if let name {
+                _ = commandQueue.createStateMachineNamed(name, fromArtboard: artboardHandle, observer: observer, requestID: requestID)
+            } else {
+                _ = commandQueue.createDefaultStateMachine(fromArtboard: artboardHandle, observer: observer, requestID: requestID)
+            }
         }
     }
 
@@ -78,7 +81,7 @@ final class ArtboardService: NSObject, ArtboardListener {
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = continuation
+            continuations[requestID] = AnyContinuation(continuation)
             beginImmediateRequest(requestID)
             commandQueue.requestStateMachineNames(artboard, requestID: requestID)
         }
@@ -99,7 +102,7 @@ final class ArtboardService: NSObject, ArtboardListener {
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = continuation
+            continuations[requestID] = AnyContinuation(continuation)
             beginImmediateRequest(requestID)
             commandQueue.requestDefaultViewModelInfo(artboard, fromFile: file, requestID: requestID)
         }
@@ -132,10 +135,9 @@ final class ArtboardService: NSObject, ArtboardListener {
     nonisolated func onStateMachineNamesListed(_ artboardHandle: UInt64, names: [String], requestID: UInt64) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations[requestID] as? CheckedContinuation<[String], any Error> else { return }
+            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Received \(names.count) state machine names")
-            continuation.resume(returning: names)
-            continuations[requestID] = nil
+            try continuation.resume(with: .success(names))
         }
     }
 
@@ -146,23 +148,36 @@ final class ArtboardService: NSObject, ArtboardListener {
     nonisolated func onDefaultViewModelInfoReceived(_ artboardHandle: UInt64, requestID: UInt64, viewModelName: String, instanceName: String) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations[requestID] as? CheckedContinuation<(viewModelName: String, instanceName: String), any Error> else { return }
+            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Received default view model info '\(viewModelName)' / '\(instanceName)'")
-            continuation.resume(returning: (viewModelName: viewModelName, instanceName: instanceName))
-            continuations[requestID] = nil
+            try continuation.resume(with: .success((viewModelName: viewModelName, instanceName: instanceName)))
+        }
+    }
+
+    /// Called when a state machine has been successfully instantiated from an artboard.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the new state machine handle.
+    nonisolated func onStateMachineInstantiated(_ artboardHandle: UInt64, requestID: UInt64, stateMachineHandle: UInt64) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Instantiated state machine (\(stateMachineHandle))")
+            try continuation.resume(with: .success(stateMachineHandle))
         }
     }
 
     /// Called when an artboard error occurs.
     ///
-    /// Listener callback invoked by the command server. Currently does nothing; error handling
-    /// could be extended if needed.
+    /// Listener callback invoked by the command server. Dispatches to main actor to resume
+    /// the pending continuation with an `ArtboardError.invalidStateMachine` error when a
+    /// state machine instantiation fails.
     nonisolated func onArtboardError(_ artboardHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
+            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.error(tag: .artboard, "\(Self.context(artboardHandle)) Operation failed: \(message)")
-            // For now, we don't have error continuations in the simplified version
-            // This could be extended if needed for specific error handling
+            try continuation.resume(with: .failure(ArtboardError.invalidStateMachine(message)))
         }
     }
 
@@ -178,7 +193,7 @@ final class ArtboardService: NSObject, ArtboardListener {
         let commandQueue = dependencies.commandQueue
         return try await withCheckedThrowingContinuation { continuation in
             let requestID = commandQueue.nextRequestID
-            continuations[requestID] = continuation
+            continuations[requestID] = AnyContinuation(continuation)
             beginImmediateRequest(requestID)
             commandQueue.deleteArtboard(artboard, requestID: requestID)
         }
@@ -199,10 +214,9 @@ final class ArtboardService: NSObject, ArtboardListener {
     nonisolated func onArtboardDeleted(_ artboardHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations[requestID] as? CheckedContinuation<UInt64, any Error> else { return }
+            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Deleted artboard")
-            continuation.resume(returning: artboardHandle)
-            continuations[requestID] = nil
+            try continuation.resume(with: .success(artboardHandle))
         }
     }
 }

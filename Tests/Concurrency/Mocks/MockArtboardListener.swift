@@ -14,7 +14,8 @@ class MockArtboardListener: NSObject, ArtboardListener {
     private(set) var capturedNames: [String]?
     private(set) var capturedViewModelName: String?
     private(set) var capturedInstanceName: String?
-    
+    private(set) var capturedStateMachineHandle: UInt64?
+
     func onStateMachineNamesListed(_ artboardHandle: UInt64, names: [String], requestID: UInt64) {
         capturedArtboardHandle = artboardHandle
         capturedNames = names
@@ -25,11 +26,17 @@ class MockArtboardListener: NSObject, ArtboardListener {
 
     }
 
+    func onStateMachineInstantiated(_ artboardHandle: UInt64, requestID: UInt64, stateMachineHandle: UInt64) {
+        capturedArtboardHandle = artboardHandle
+        capturedRequestID = requestID
+        capturedStateMachineHandle = stateMachineHandle
+    }
+
     func onArtboardDeleted(_ artboardHandle: UInt64, requestID: UInt64) {
         capturedArtboardHandle = artboardHandle
         capturedRequestID = requestID
     }
-    
+
     func onDefaultViewModelInfoReceived(_ artboardHandle: UInt64, requestID: UInt64, viewModelName: String, instanceName: String) {
         capturedArtboardHandle = artboardHandle
         capturedRequestID = requestID

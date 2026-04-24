@@ -70,19 +70,7 @@ class StateMachineTests: XCTestCase {
 
         let stateMachine = StateMachine(dependencies: stateMachineDependencies, stateMachineHandle: 123)
 
-        // Create a mock ViewModelInstance with a known handle
-        mockCommandQueue.stubCreateBlankViewModelInstance { _, _, _, _ in
-            return 456
-        }
-
-        let (file, _, _, _) = await File.mock(fileHandle: 1)
-
-        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let artboardDependencies = Artboard.Dependencies(
-            artboardService: artboardService
-        )
-        let artboard = Artboard(dependencies: artboardDependencies, artboardHandle: 789)
-        let viewModelInstance = ViewModelInstance(for: artboard, from: file, dependencies: viewModelInstanceDependencies)
+        let viewModelInstance = ViewModelInstance(handle: 456, dependencies: viewModelInstanceDependencies)
 
         let expectation = expectation(description: "bindViewModelInstance called")
         var capturedStateMachineHandle: UInt64 = 0
