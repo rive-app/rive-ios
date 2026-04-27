@@ -193,28 +193,35 @@ final class RiveController {
 
     // MARK: - Private
 
+    func applyCurrentFit() {
+        if case .layout = rive.fit {
+            // Use the drawable (pixel) size, matching the advance path.
+            // `CommandQueue::setArtboardSize` divides by scale on the C++ side,
+            // so the caller must provide pixels — not view points — for
+            // `.layout(.automatic)` and `.explicit(N)` to size correctly.
+            let drawableSize = drawableSizeProvider() ?? .zero
+            let provider = scaleProvider() ?? FallbackScaleProvider()
+            let scale = rive.fit.bridged(from: provider).scaleFactor
+            RiveLog.debug(tag: .view, "[RiveUIView] Applying layout fit to artboard size: \(drawableSize) scale: \(scale)")
+            rive.artboard.setSize(drawableSize, scale: Float(scale))
+        } else {
+            RiveLog.debug(tag: .view, "[RiveUIView] Resetting artboard size for non-layout fit")
+            rive.artboard.resetSize()
+        }
+    }
+
     private func setupSubscriptions() {
         RiveLog.debug(tag: .view, "[RiveUIView] Setting up subscriptions")
+
+        // Catch fit values set before the controller existed (missed by the PassthroughSubject).
+        applyCurrentFit()
+
         rive
             .fitDidChange
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] fit in
-                guard let self else { return }
-                if case .layout = fit {
-                    RiveLog.debug(tag: .view, "[RiveUIView] Applying layout fit to artboard size")
-                    // Use the drawable (pixel) size, matching the advance path.
-                    // `CommandQueue::setArtboardSize` divides by scale on the C++ side,
-                    // so the caller must provide pixels — not view points — for
-                    // `.layout(.automatic)` and `.explicit(N)` to size correctly.
-                    let drawableSize = drawableSizeProvider() ?? .zero
-                    let provider = scaleProvider() ?? FallbackScaleProvider()
-                    let scale = fit.bridged(from: provider).scaleFactor
-                    rive.artboard.setSize(drawableSize, scale: Float(scale))
-                } else {
-                    RiveLog.debug(tag: .view, "[RiveUIView] Resetting artboard size for non-layout fit")
-                    rive.artboard.resetSize()
-                }
+            .sink { [weak self] _ in
+                self?.applyCurrentFit()
             }
             .store(in: &cancellables)
 

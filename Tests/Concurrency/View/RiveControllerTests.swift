@@ -724,6 +724,129 @@ final class RiveControllerTests: XCTestCase {
         XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[1].time, 0)
     }
 
+    @MainActor
+    func test_init_appliesLayoutFitSetBeforeControllerCreated() async throws {
+        let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
+
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue))
+        let artboard = Artboard(
+            dependencies: .init(artboardService: artboardService),
+            artboardHandle: 42
+        )
+
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: commandQueue))
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 123
+        )
+
+        let rive = try await Rive(
+            file: file,
+            artboard: artboard,
+            stateMachine: stateMachine,
+            dataBind: .none
+        )
+
+        // Set layout fit BEFORE controller exists (simulates the bug scenario)
+        rive.fit = .layout(scaleFactor: .automatic)
+
+        let controller = RiveController(
+            rive: rive,
+            drawableSizeProvider: { CGSize(width: 320, height: 240) },
+            scaleProvider: { MockScaleProvider() }
+        )
+        _ = controller // silence unused warning
+
+        // The controller should have applied the current layout fit on init,
+        // calling setArtboardSize even though the fitDidChange event was missed.
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.count, 1)
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.first?.width, 320)
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.first?.height, 240)
+    }
+
+    @MainActor
+    func test_init_appliesLayoutFitFromRiveInit() async throws {
+        let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
+
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue))
+        let artboard = Artboard(
+            dependencies: .init(artboardService: artboardService),
+            artboardHandle: 42
+        )
+
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: commandQueue))
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 123
+        )
+
+        // Pass layout fit directly in Rive init
+        let rive = try await Rive(
+            file: file,
+            artboard: artboard,
+            stateMachine: stateMachine,
+            dataBind: .none,
+            fit: .layout(scaleFactor: .automatic)
+        )
+
+        let controller = RiveController(
+            rive: rive,
+            drawableSizeProvider: { CGSize(width: 400, height: 300) },
+            scaleProvider: { MockScaleProvider() }
+        )
+        _ = controller
+
+        // The controller should apply the layout fit on init even though
+        // no fitDidChange event was ever published (fit was set in Rive.init).
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.count, 1)
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.first?.width, 400)
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.first?.height, 300)
+    }
+
+    @MainActor
+    func test_applyCurrentFit_updatesArtboardSizeWhenBoundsChange() async throws {
+        let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
+
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue))
+        let artboard = Artboard(
+            dependencies: .init(artboardService: artboardService),
+            artboardHandle: 42
+        )
+
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: commandQueue))
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 123
+        )
+
+        let rive = try await Rive(
+            file: file,
+            artboard: artboard,
+            stateMachine: stateMachine,
+            dataBind: .none,
+            fit: .layout(scaleFactor: .automatic)
+        )
+
+        var currentDrawableSize = CGSize.zero
+        let controller = RiveController(
+            rive: rive,
+            drawableSizeProvider: { currentDrawableSize },
+            scaleProvider: { MockScaleProvider() }
+        )
+
+        // Initial call had zero drawable size
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.count, 1)
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.first?.width, 0)
+
+        // Simulate drawable size becoming available (e.g. drawableSizeWillChange)
+        currentDrawableSize = CGSize(width: 402, height: 400)
+        controller.applyCurrentFit()
+
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.count, 2)
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.last?.width, 402)
+        XCTAssertEqual(commandQueue.setArtboardSizeCalls.last?.height, 400)
+    }
+
     // MARK: - Helpers
 
     @MainActor

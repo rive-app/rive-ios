@@ -350,6 +350,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
 
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        // Re-apply layout fit — drawable may have been zero when fit was first set.
+        if let rive, case .layout = rive.fit {
+            controller?.applyCurrentFit()
+        }
+
         // Drawable size changes (window resize, backing scale factor change) do
         // not otherwise trigger a draw when the MTKView is paused + uses
         // enableSetNeedsDisplay. Request a single redraw; the controller will
