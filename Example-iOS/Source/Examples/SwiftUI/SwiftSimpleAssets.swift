@@ -13,7 +13,7 @@ struct SwiftSimpleAssets: DismissableView {
     var dismiss: () -> Void = {}
     @StateObject private var riveViewModel = RiveViewModel(fileName: "simple_assets", autoPlay: false, loadCdn: false, customLoader: { (asset: RiveFileAsset, data: Data, factory: RiveFactory) -> Bool in
         
-        if (asset is RiveImageAsset){
+        if let asset = asset as? RiveImageAsset {
             
             guard let url = (.main as Bundle).url(forResource: asset.uniqueName(), withExtension: "jpeg") else {
                 fatalError("Failed to locate '\(asset.uniqueName())' in bundle.")
@@ -21,11 +21,11 @@ struct SwiftSimpleAssets: DismissableView {
             guard let data = try? Data(contentsOf: url) else {
                 fatalError("Failed to load \(url) from bundle.")
             }
-            (asset as! RiveImageAsset).renderImage(
+            asset.renderImage(
                 factory.decodeImage(data)
             )
             return true;
-        }else if (asset is RiveFontAsset) {
+        }else if let asset = asset as? RiveFontAsset {
             guard let url = (.main as Bundle).url(forResource: asset.uniqueName(), withExtension: asset.fileExtension()) else {
                 fatalError("Failed to locate '\(asset.uniqueName())' in bundle.")
             }
@@ -33,7 +33,7 @@ struct SwiftSimpleAssets: DismissableView {
                 fatalError("Failed to load \(url) from bundle.")
             }
             
-            (asset as! RiveFontAsset).font(
+            asset.font(
                 factory.decodeFont(data)
             )
             return true;
