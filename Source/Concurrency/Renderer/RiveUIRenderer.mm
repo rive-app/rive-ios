@@ -143,135 +143,174 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
     }
 
     __weak RiveUIRenderer* weakSelf = self;
+
+    // The draw callback is bridged into a C++ std::function via
+    // RiveCommandQueue. When the C++ side destroys the std::function,
+    // ARC may not release the block's captured ObjC objects. Use __block
+    // variables and nil them explicitly after use so Metal resources
+    // (textures, drawables) are freed immediately.
+    __block id<MTLTexture> blockTexture = texture;
+    __block void (^blockFinalize)(id<MTLCommandBuffer>) = finalize;
+    __block void (^blockOnSkipped)(void) = onSkipped;
+    __block void (^blockOnError)(NSError*) = onError;
+
     [_commandQueue
             draw:[_commandQueue createDrawKey]
         callback:^(void* cppServer) {
-          __strong RiveUIRenderer* strongSelf = weakSelf;
-          if (!strongSelf)
-          {
-              NSError* invalidRenderer =
-                  [NSError errorWithDomain:@"app.rive.renderer"
-                                      code:RendererErrorInvalidRenderer
-                                  userInfo:@{
-                                      NSLocalizedDescriptionKey :
-                                          @"Invalid renderer for drawing."
-                                  }];
-              if (onError)
-              {
-                  onError(invalidRenderer);
-              }
-              return;
-          }
-          auto server = static_cast<rive::CommandServer*>(cppServer);
-          auto artboard = server->getArtboardInstance(
-              reinterpret_cast<rive::ArtboardHandle>(
-                  configuration.artboardHandle));
-          if (artboard == nullptr)
-          {
-              NSError* invalidArtboard = [NSError
-                  errorWithDomain:@"app.rive.renderer"
-                             code:RendererErrorInvalidArtboard
-                         userInfo:@{
-                             @"artboard" : @(configuration.artboardHandle),
-                             NSLocalizedDescriptionKey :
-                                 @"Attempted to draw with invalid artboard."
-                         }];
-              if (onError)
-              {
-                  onError(invalidArtboard);
-              }
-              return;
-          }
-
-          // When the render target is missing or stale (first draw, or the
-          // viewport resized) we must still render so the newly-sized
-          // drawable gets populated and presented. Otherwise MTKView keeps
-          // presenting the previous drawable stretched to its new bounds —
-          // which is what happens for non-layout fits, where the artboard's
-          // own state doesn't change on resize and `didChange()` returns
-          // false.
-          auto renderTarget = strongSelf.renderTarget;
-          BOOL renderTargetNeedsResize =
-              renderTarget == nullptr ||
-              renderTarget->width() != configuration.size.width ||
-              renderTarget->height() != configuration.size.height;
-
-          if (renderTargetNeedsResize == NO && artboard->didChange() == false)
-          {
-              if (onSkipped)
-              {
-                  onSkipped();
-              }
-              return;
-          }
-
-          auto stateMachine = server->getStateMachineInstance(
-              reinterpret_cast<rive::StateMachineHandle>(
-                  configuration.stateMachineHandle));
-          if (stateMachine == nullptr)
-          {
-              NSError* invalidStateMachine =
-                  [NSError errorWithDomain:@"app.rive.renderer"
-                                      code:RendererErrorInvalidStateMachine
-                                  userInfo:@{
-                                      @"stateMachine" :
-                                          @(configuration.stateMachineHandle),
-                                      NSLocalizedDescriptionKey :
-                                          @"Attempted to draw with invalid "
-                                          @"state machine."
-                                  }];
-              if (onError)
-              {
-                  onError(invalidStateMachine);
-              }
-              return;
-          }
-
-          auto riveContext =
-              static_cast<rive::gpu::RenderContext*>(server->factory());
-
-          auto metalContext =
-              riveContext
-                  ->static_impl_cast<rive::gpu::RenderContextMetalImpl>();
-          if (renderTargetNeedsResize)
-          {
-              renderTarget = metalContext->makeRenderTarget(
-                  MTLRiveColorPixelFormat(),
-                  (uint32_t)configuration.size.width,
-                  (uint32_t)configuration.size.height);
-              strongSelf.renderTarget = renderTarget;
-          }
-          renderTarget->setTargetTexture(texture);
-
-          riveContext->beginFrame(rive::gpu::RenderContext::FrameDescriptor{
-              .renderTargetWidth = renderTarget->width(),
-              .renderTargetHeight = renderTarget->height(),
-              .loadAction = rive::gpu::LoadAction::clear,
-              .clearColor = configuration.color});
-
-          auto renderer = rive::RiveRenderer(riveContext);
-          renderer.align(
-              RiveConfigurationFitCppValue(configuration.fit),
-              RiveConfigurationAlignmentCppValue(configuration.alignment),
-              rive::AABB(
-                  0.0f, 0.0f, renderTarget->width(), renderTarget->height()),
-              artboard->bounds(),
-              configuration.layoutScale);
-
-          artboard->draw(&renderer);
-
+          // Ensure autoreleased ObjC objects produced by the nil-outs
+          // and Metal teardown drain immediately rather than waiting for
+          // the GCD-level pool to drain.
           @autoreleasepool
           {
+              void (^cleanup)(void) = ^{
+                blockTexture = nil;
+                blockFinalize = nil;
+                blockOnSkipped = nil;
+                blockOnError = nil;
+              };
+
+              __strong RiveUIRenderer* strongSelf = weakSelf;
+              if (!strongSelf)
+              {
+                  NSError* invalidRenderer =
+                      [NSError errorWithDomain:@"app.rive.renderer"
+                                          code:RendererErrorInvalidRenderer
+                                      userInfo:@{
+                                          NSLocalizedDescriptionKey :
+                                              @"Invalid renderer for drawing."
+                                      }];
+                  if (blockOnError)
+                  {
+                      blockOnError(invalidRenderer);
+                  }
+                  cleanup();
+                  return;
+              }
+              auto server = static_cast<rive::CommandServer*>(cppServer);
+              auto artboard = server->getArtboardInstance(
+                  reinterpret_cast<rive::ArtboardHandle>(
+                      configuration.artboardHandle));
+              if (artboard == nullptr)
+              {
+                  NSError* invalidArtboard = [NSError
+                      errorWithDomain:@"app.rive.renderer"
+                                 code:RendererErrorInvalidArtboard
+                             userInfo:@{
+                                 @"artboard" : @(configuration.artboardHandle),
+                                 NSLocalizedDescriptionKey :
+                                     @"Attempted to draw with invalid artboard."
+                             }];
+                  if (blockOnError)
+                  {
+                      blockOnError(invalidArtboard);
+                  }
+                  cleanup();
+                  return;
+              }
+
+              // When the render target is missing or stale (first draw, or the
+              // viewport resized) we must still render so the newly-sized
+              // drawable gets populated and presented. Otherwise MTKView keeps
+              // presenting the previous drawable stretched to its new bounds —
+              // which is what happens for non-layout fits, where the artboard's
+              // own state doesn't change on resize and `didChange()` returns
+              // false.
+              auto renderTarget = strongSelf.renderTarget;
+              BOOL renderTargetNeedsResize =
+                  renderTarget == nullptr ||
+                  renderTarget->width() != configuration.size.width ||
+                  renderTarget->height() != configuration.size.height;
+
+              if (renderTargetNeedsResize == NO &&
+                  artboard->didChange() == false)
+              {
+                  if (blockOnSkipped)
+                  {
+                      blockOnSkipped();
+                  }
+                  if (renderTarget)
+                  {
+                      renderTarget->setTargetTexture(nil);
+                  }
+                  cleanup();
+                  return;
+              }
+
+              auto stateMachine = server->getStateMachineInstance(
+                  reinterpret_cast<rive::StateMachineHandle>(
+                      configuration.stateMachineHandle));
+              if (stateMachine == nullptr)
+              {
+                  NSError* invalidStateMachine = [NSError
+                      errorWithDomain:@"app.rive.renderer"
+                                 code:RendererErrorInvalidStateMachine
+                             userInfo:@{
+                                 @"stateMachine" :
+                                     @(configuration.stateMachineHandle),
+                                 NSLocalizedDescriptionKey :
+                                     @"Attempted to draw with invalid "
+                                     @"state machine."
+                             }];
+                  if (blockOnError)
+                  {
+                      blockOnError(invalidStateMachine);
+                  }
+                  if (renderTarget)
+                  {
+                      renderTarget->setTargetTexture(nil);
+                  }
+                  cleanup();
+                  return;
+              }
+
+              auto riveContext =
+                  static_cast<rive::gpu::RenderContext*>(server->factory());
+
+              auto metalContext =
+                  riveContext
+                      ->static_impl_cast<rive::gpu::RenderContextMetalImpl>();
+              if (renderTargetNeedsResize)
+              {
+                  renderTarget = metalContext->makeRenderTarget(
+                      MTLRiveColorPixelFormat(),
+                      (uint32_t)configuration.size.width,
+                      (uint32_t)configuration.size.height);
+                  strongSelf.renderTarget = renderTarget;
+              }
+              renderTarget->setTargetTexture(blockTexture);
+
+              riveContext->beginFrame(rive::gpu::RenderContext::FrameDescriptor{
+                  .renderTargetWidth = renderTarget->width(),
+                  .renderTargetHeight = renderTarget->height(),
+                  .loadAction = rive::gpu::LoadAction::clear,
+                  .clearColor = configuration.color});
+
+              auto renderer = rive::RiveRenderer(riveContext);
+              renderer.align(
+                  RiveConfigurationFitCppValue(configuration.fit),
+                  RiveConfigurationAlignmentCppValue(configuration.alignment),
+                  rive::AABB(0.0f,
+                             0.0f,
+                             renderTarget->width(),
+                             renderTarget->height()),
+                  artboard->bounds(),
+                  configuration.layoutScale);
+
+              artboard->draw(&renderer);
+
               id<MTLCommandBuffer> commandBuffer =
                   [strongSelf.renderContext newCommandBuffer];
               riveContext->flush(
                   {.renderTarget = strongSelf.renderTarget.get(),
                    .externalCommandBuffer = (__bridge void*)commandBuffer});
 
-              if (finalize)
+              if (blockFinalize)
               {
-                  finalize(commandBuffer);
+                  blockFinalize(commandBuffer);
               }
+
+              renderTarget->setTargetTexture(nil);
+              cleanup();
           }
         }];
 }

@@ -34,22 +34,26 @@ final class DefaultDisplayLink: DisplayLink {
     #endif
     typealias Tick = () -> Void
 
-    private let host: Host
     private let tick: Tick
 
-    private var displayLink: CADisplayLink!
+    // Weak to avoid a retain cycle: CADisplayLink strongly retains its target
+    // (this DefaultDisplayLink instance), so holding it strongly back would
+    // create a cycle that prevents deallocation. The run loop owns the
+    // CADisplayLink while it is active.
+    private weak var displayLink: CADisplayLink?
 
     var isPaused: Bool {
-        get { displayLink.isPaused }
-        set { displayLink.isPaused = newValue }
+        get { displayLink?.isPaused ?? true }
+        set { displayLink?.isPaused = newValue }
     }
 
     var timestamp: TimeInterval {
-        return displayLink.timestamp
+        return displayLink?.timestamp ?? 0
     }
 
     var frameRate: FrameRate {
         didSet {
+            guard let displayLink else { return }
             switch frameRate {
             case .default:
                 // Restore the link's initial cadence values captured at initialization.
@@ -112,12 +116,6 @@ final class DefaultDisplayLink: DisplayLink {
     private var defaultPreferredFrameRateRange: (Float, Float, Float?)!
 
     init(host: Host, tick: @escaping Tick) {
-        defer {
-            self.displayLink.add(to: .main, forMode: .common)
-            RiveLog.debug(tag: .view, "[RiveUIView] Registered display link with main run loop")
-        }
-
-        self.host = host
         self.tick = tick
         self.frameRate = .default
 
@@ -154,11 +152,14 @@ final class DefaultDisplayLink: DisplayLink {
         // We don't want to "tick" until the display link is set to unpaused,
         // which is done, for example, in RiveUIView when Rive.isPaused is used / updated
         self.isPaused = true
+
+        displayLink.add(to: .main, forMode: .common)
+        RiveLog.debug(tag: .view, "[RiveUIView] Registered display link with main run loop")
     }
 
     func invalidate() {
         RiveLog.debug(tag: .view, "[RiveUIView] Invalidating display link")
-        displayLink.invalidate()
+        displayLink?.invalidate()
     }
 
     @objc private func _tick() {
