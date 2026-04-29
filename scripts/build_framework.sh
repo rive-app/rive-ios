@@ -33,7 +33,7 @@ xcodebuild archive \
   -destination generic/platform=iOS \
   -archivePath ".build/archives/RiveRuntime_iOS" \
   SKIP_INSTALL=NO \
-  BUILD_LIBRARY_FOR_DISTRIBUTION=YES 
+  BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
 xcodebuild archive \
   -configuration ${CONFIGURATION} \
@@ -122,4 +122,17 @@ xcodebuild \
     -archive .build/archives/RiveRuntime_macOS_Catalyst.xcarchive \
     -framework RiveRuntime.framework \
     -output archive/RiveRuntime.xcframework
+
+# Strip the `module RiveRuntime.Swift { ... }` block from every modulemap in the
+# XCFramework. The Swift build phase unconditionally appends this block, which
+# bakes in C++ interop type definitions for the Swift version used to build the
+# XCFramework. Consumers using a different Xcode/Swift version see conflicting
+# definitions and get ODR errors. Removing the block prevents Clang from ever
+# loading the stale header.
+echo "Stripping RiveRuntime.Swift submodule from XCFramework modulemaps..."
+find archive/RiveRuntime.xcframework -name "module.modulemap" | while read -r map; do
+  perl -0777 -i -pe 's/\n*^module RiveRuntime\.Swift \{[^}]*\}\n?//mg' "$map"
+  echo "  Patched: $map"
+done
+echo "Done."
 
