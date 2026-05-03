@@ -136,7 +136,7 @@ build_runtime() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=ios gmake2
+    premake5 --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios gmake2
     make -C out/iphoneos_$1 clean
     make -C out/iphoneos_$1 -j12 rive_pls_renderer
     popd
@@ -177,7 +177,7 @@ build_runtime_sim() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=ios --variant=emulator gmake2
+    premake5 --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=emulator gmake2
     make -C out/iphonesimulator_$1 clean
     make -C out/iphonesimulator_$1 -j12 rive_pls_renderer
     popd
@@ -217,7 +217,7 @@ build_runtime_macosx() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=macosx gmake2
+    premake5 --config=$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=macosx gmake2
     make -C out/$1 clean
     make -C out/$1 -j12 rive_pls_renderer
     popd
@@ -257,7 +257,7 @@ build_runtime_xros() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/xros_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=ios --variant=xros gmake2
+    premake5 --config=$1 --out=out/xros_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=xros gmake2
     make -C out/xros_$1 clean
     make -C out/xros_$1 -j12 rive_pls_renderer
     popd
@@ -298,7 +298,7 @@ build_runtime_xrsimulator() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/xrsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=ios --variant=xrsimulator gmake2
+    premake5 --config=$1 --out=out/xrsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=xrsimulator gmake2
     make -C out/xrsimulator_$1 clean
     make -C out/xrsimulator_$1 -j12 rive_pls_renderer
     popd
@@ -337,7 +337,7 @@ build_runtime_appletvos() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/appletvos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=ios --variant=appletvos gmake2
+    premake5 --config=$1 --out=out/appletvos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=appletvos gmake2
     make -C out/appletvos_$1 clean
     make -C out/appletvos_$1 -j12 rive_pls_renderer
     popd
@@ -379,7 +379,7 @@ build_runtime_appletvsimulator() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/appletvsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=ios --variant=appletvsimulator gmake2
+    premake5 --config=$1 --out=out/appletvsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=appletvsimulator gmake2
     make -C out/appletvsimulator_$1 clean
     make -C out/appletvsimulator_$1 -j12 rive_pls_renderer
     popd
@@ -425,7 +425,7 @@ build_runtime_maccatalyst() {
 
         # Build rive_pls_renderer.
         pushd $RIVE_PLS_DIR
-        premake5 --config=${config} --out=out/maccatalyst_${arch}_${config} --arch=${arch} --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --os=macosx --variant=maccatalyst gmake2
+        premake5 --config=${config} --out=out/maccatalyst_${arch}_${config} --arch=${arch} --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=macosx --variant=maccatalyst gmake2
         make -C out/maccatalyst_${arch}_${config} clean
         make -C out/maccatalyst_${arch}_${config} -j12 rive_pls_renderer
         popd
