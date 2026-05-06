@@ -72,6 +72,7 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
     id<RiveCommandQueueProtocol> _commandQueue;
     rive::rcp<rive::gpu::RenderTargetMetal> _renderTarget;
     RiveUIRenderContext* _renderContext;
+    uint64_t _drawKey;
 }
 
 - (instancetype)initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
@@ -81,6 +82,7 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
     {
         _commandQueue = commandQueue;
         _renderContext = renderContext;
+        _drawKey = [commandQueue createDrawKey];
     }
     return self;
 }
@@ -155,7 +157,7 @@ static rive::Alignment RiveConfigurationAlignmentCppValue(
     __block void (^blockOnError)(NSError*) = onError;
 
     [_commandQueue
-            draw:[_commandQueue createDrawKey]
+            draw:_drawKey
         callback:^(void* cppServer) {
           // Ensure autoreleased ObjC objects produced by the nil-outs
           // and Metal teardown drain immediately rather than waiting for

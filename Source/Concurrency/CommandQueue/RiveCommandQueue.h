@@ -453,8 +453,9 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * Creates a unique draw key for coordinating drawing operations.
  *
  * @return A unique draw key identifier
- * @note Draw keys should be created on the main thread and used immediately
- *       with draw:callback:. They are not meant to be stored or reused.
+ * @note Draw keys should be created once per rendering surface (e.g. per
+ *       renderer) and reused across draw:callback: invocations. Reusing
+ *       the same key enables draw deduplication on the command server.
  */
 - (uint64_t)createDrawKey;
 
