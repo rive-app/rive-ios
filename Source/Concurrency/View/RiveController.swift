@@ -140,7 +140,11 @@ final class RiveController {
         } else {
             // Unpaused timing: first frame advances by 0, subsequent frames use timestamp delta.
             if let lastTimestamp {
-                delta = now - lastTimestamp
+                // The CACurrentMediaTime() fallback in DisplayLink can
+                // slightly overshoot the first real vsync timestamp,
+                // producing a small negative delta. Clamp to zero since
+                // negative advances are not supported by the C++ runtime.
+                delta = max(0, now - lastTimestamp)
             } else {
                 delta = 0
             }
@@ -203,10 +207,6 @@ final class RiveController {
                 guard let self else { return }
                 if case .layout = fit {
                     RiveLog.debug(tag: .view, "[RiveUIView] Applying layout fit to artboard size")
-                    // Use the drawable (pixel) size, matching the advance path.
-                    // `CommandQueue::setArtboardSize` divides by scale on the C++ side,
-                    // so the caller must provide pixels — not view points — for
-                    // `.layout(.automatic)` and `.explicit(N)` to size correctly.
                     let drawableSize = drawableSizeProvider() ?? .zero
                     let provider = scaleProvider() ?? FallbackScaleProvider()
                     let scale = fit.bridged(from: provider).scaleFactor
@@ -215,59 +215,51 @@ final class RiveController {
                     RiveLog.debug(tag: .view, "[RiveUIView] Resetting artboard size for non-layout fit")
                     rive.artboard.resetSize()
                 }
+                RiveLog.trace(tag: .view, "[RiveUIView] Settled state changed: false (fit)")
+                isSettled = false
             }
             .store(in: &cancellables)
 
-        let anyFit = rive
-            .fitDidChange
-            .removeDuplicates()
-            .map { _ in return false }
-        let anyBackgroundColor = rive
+        rive
             .backgroundColorDidChange
             .removeDuplicates()
-            .map { _ in return false }
-        let stateMachineSettled = settledPublisher(for: rive.stateMachine).map { true }
-        var settled = stateMachineSettled.merge(with: anyFit, anyBackgroundColor).eraseToAnyPublisher()
-        if let viewModelInstance = rive.viewModelInstance {
-            let dirty = dirtyPublisher(for: viewModelInstance).map { false }
-            settled = settled.merge(with: dirty).eraseToAnyPublisher()
-        }
-
-        settled
-            .removeDuplicates()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isSettled in
+            .sink { [weak self] _ in
                 guard let self else { return }
-                RiveLog.trace(tag: .view, "[RiveUIView] Settled state changed: \(isSettled)")
-                self.isSettled = isSettled
+                RiveLog.trace(tag: .view, "[RiveUIView] Settled state changed: false (backgroundColor)")
+                self.isSettled = false
             }
             .store(in: &cancellables)
-    }
 
-    private func settledPublisher(for stateMachine: StateMachine) -> AnyPublisher<Void, Never> {
-        let subject = PassthroughSubject<Void, Never>()
+        // Settled and dirty events are observed directly via @MainActor Tasks
+        // rather than bridging through Combine (PassthroughSubject → merge →
+        // removeDuplicates → receive(on:) → sink). This eliminates two async
+        // hops per event and preserves FIFO ordering on the actor executor.
+        //
+        // Streams are captured as locals before the Task so that `guard let self`
+        // only lives inside each loop iteration — never across the `for await`
+        // suspension — avoiding a retain cycle between the Task and the controller.
         settledStreamTask?.cancel()
-        settledStreamTask = Task { @MainActor in
-            for await _ in stateMachine.settledStream() {
+        let settledStream = rive.stateMachine.settledStream()
+        settledStreamTask = Task { @MainActor [weak self] in
+            for await _ in settledStream {
+                guard let self else { break }
                 if Task.isCancelled { break }
-                subject.send(())
+                isSettled = true
             }
-            subject.send(completion: .finished)
         }
-        return subject.eraseToAnyPublisher()
-    }
 
-    private func dirtyPublisher(for instance: ViewModelInstance) -> AnyPublisher<Void, Never> {
-        let subject = PassthroughSubject<Void, Never>()
-        dirtyStreamTask?.cancel()
-        dirtyStreamTask = Task { @MainActor in
-            for await _ in instance.dirtyStream() {
-                if Task.isCancelled { break }
-                subject.send(())
+        if let viewModelInstance = rive.viewModelInstance {
+            dirtyStreamTask?.cancel()
+            let dirtyStream = viewModelInstance.dirtyStream()
+            dirtyStreamTask = Task { @MainActor [weak self] in
+                for await _ in dirtyStream {
+                    guard let self else { break }
+                    if Task.isCancelled { break }
+                    isSettled = false
+                }
             }
-            subject.send(completion: .finished)
         }
-        return subject.eraseToAnyPublisher()
     }
 }
 

@@ -47,8 +47,13 @@ final class DefaultDisplayLink: DisplayLink {
         set { displayLink?.isPaused = newValue }
     }
 
+    // CADisplayLink.timestamp is 0 before its first callback. A layout-
+    // triggered draw (via drawableSizeWillChange) can call draw(in:) before
+    // the first tick, so fall back to CACurrentMediaTime() to avoid a zero
+    // timestamp that would produce a massive delta on the next real frame.
     var timestamp: TimeInterval {
-        return displayLink?.timestamp ?? 0
+        let ts = displayLink?.timestamp ?? 0
+        return ts > 0 ? ts : CACurrentMediaTime()
     }
 
     var frameRate: FrameRate {

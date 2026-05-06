@@ -586,6 +586,28 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
+    func test_advance_whenTimestampDecreases_clampsDeltaToZero() async throws {
+        let fixture = try await makeController(dataBind: .none)
+
+        _ = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: false,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        _ = fixture.controller.advance(
+            now: 10.499,
+            isOnscreen: false,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, 2)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[0].time, 0)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[1].time, 0)
+    }
+
+    @MainActor
     func test_advance_whenPaused_allowsFirstDraw_thenBlocksSubsequentDraws() async throws {
         let fixture = try await makeController(dataBind: .none)
         fixture.controller.isPaused = true
