@@ -42,6 +42,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
 
     private var mtkView: MTKView?
+    /// Guards drawable acquisition to avoid blocking the main thread.
+    /// `currentDrawable` blocks if all drawables are in use; the semaphore
+    /// lets `draw(in:)` bail early with a non-blocking `wait(timeout: .now())`
+    /// instead. Signaled via ``DrawableToken`` when the draw completes.
     private var drawableSemaphore: DispatchSemaphore?
 
     private var renderer: RiveUIRenderer?
@@ -401,31 +405,34 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 return
             }
 
+            // Token guarantees signal() for this wait(), even if the draw
+            // callback is never executed (e.g. CommandServer disconnects first).
+            let token = DrawableToken(drawableSemaphore)
+
             guard let currentDrawable = view.currentDrawable else {
-                drawableSemaphore.signal()
+                token.signal()
                 RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing drawable")
                 delegate?.view(self, didReceiveError: .noDrawable)
                 return
             }
 
             guard let renderer else {
-                drawableSemaphore.signal()
+                token.signal()
                 RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing renderer")
                 delegate?.view(self, didReceiveError: .noRenderer)
                 return
             }
 
-            renderer.draw(configuration, to: currentDrawable.texture, from: device) { [drawableSemaphore] commandBuffer in
+            renderer.draw(configuration, to: currentDrawable.texture, from: device) { commandBuffer in
                 commandBuffer.addCompletedHandler { _ in
-                    drawableSemaphore.signal()
+                    token.signal()
                 }
                 commandBuffer.present(currentDrawable)
                 commandBuffer.commit()
-            } onSkipped: { [drawableSemaphore] in
-                // Skipping a frame is valid (e.g. unchanged artboard); still release wait().
-                drawableSemaphore.signal()
-            } onError: { [weak self, drawableSemaphore] error in
-                drawableSemaphore.signal()
+            } onSkipped: {
+                token.signal()
+            } onError: { [weak self] error in
+                token.signal()
                 guard let self else { return }
                 RiveLog.error(tag: .view, error: error, "[RiveUIView] Error rendering")
                 self.delegate?.view(self, didReceiveError: RiveUIViewError.renderer(error.localizedDescription))
@@ -629,4 +636,47 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         #endif
     }
 
+}
+
+extension RiveUIView {
+    /// A one-shot guard that ensures a `DispatchSemaphore` is signaled exactly once
+    /// for each corresponding `wait()`.
+    ///
+    /// Created per draw cycle in `draw(in:)` after `drawableSemaphore.wait()` succeeds.
+    /// The token is captured by the draw callback closures (finalize, onSkipped, onError).
+    /// If the callback executes normally, `signal()` is called explicitly. If the callback
+    /// is never executed — e.g. when `CommandServer` processes a `disconnect` before the
+    /// draw loop runs — the closures are destroyed, the token's `deinit` fires, and the
+    /// semaphore is signaled automatically, preventing a `SIGTRAP` from libdispatch's
+    /// "Semaphore object deallocated while in use" assertion.
+    ///
+    /// See: https://github.com/rive-app/rive-ios/issues/442
+    final class DrawableToken: @unchecked Sendable {
+        private let semaphore: DispatchSemaphore
+        private let lock = NSLock()
+        private var didSignal = false
+
+        init(_ semaphore: DispatchSemaphore) {
+            self.semaphore = semaphore
+        }
+
+        /// Signals the semaphore. Safe to call multiple times — only the first call signals.
+        func signal() {
+            let shouldSignal = lock.withLock {
+                guard !didSignal else { return false }
+                didSignal = true
+                return true
+            }
+            if shouldSignal {
+                semaphore.signal()
+            }
+        }
+
+        /// Signals the semaphore if `signal()` was never called explicitly.
+        deinit {
+            if !didSignal {
+                semaphore.signal()
+            }
+        }
+    }
 }
