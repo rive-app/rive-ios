@@ -18,6 +18,10 @@ import Foundation
 ///
 /// The service handles property subscriptions via `subscribe`/`unsubscribe` commands. When a stream
 /// is terminated, the `onTermination` handler automatically unsubscribes and cleans up the stream continuation.
+///
+/// All continuation-based methods are wrapped with `withTaskCancellationHandler` because
+/// `withCheckedThrowingContinuation` does not auto-resume on task cancellation. Without
+/// explicit handling, a cancelled task leaks its continuation indefinitely.
 @MainActor
 final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     let dependencies: Dependencies
@@ -40,6 +44,30 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
 
     private func finishImmediateRequest(_ requestID: UInt64) {
         dependencies.messageGate.callbackProcessed(requestID: requestID)
+    }
+
+    /// Wraps a continuation-based command queue operation with cancellation support.
+    private func withCancellableContinuation<T>(
+        cancelledError: Error,
+        operation: @escaping (UInt64) -> Void
+    ) async throws -> T {
+        try Task.checkCancellation()
+        let requestID = dependencies.commandQueue.nextRequestID
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                continuations[requestID] = AnyContinuation(continuation)
+                beginImmediateRequest(requestID)
+                operation(requestID)
+            }
+        } onCancel: { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                if let continuation = self.continuations.removeValue(forKey: requestID) {
+                    self.finishImmediateRequest(requestID)
+                    try? continuation.resume(with: .failure(cancelledError))
+                }
+            }
+        }
     }
 
     @MainActor
@@ -87,12 +115,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     @MainActor
     func deleteViewModelInstance(_ instance: ViewModelInstance.ViewModelInstanceHandle) async throws -> ViewModelInstance.ViewModelInstanceHandle {
         RiveLog.debug(tag: .viewModelInstance, "\(Self.context(instance)) Deleting instance")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.deleteViewModelInstance(instance, requestID: requestID)
+        return try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.deleteViewModelInstance(instance, requestID: requestID)
         }
     }
 
@@ -118,12 +142,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// - Throws: `ViewModelInstanceError.missingData` if the property value is missing or invalid
     @MainActor
     func stringValue(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) async throws -> String {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelInstanceString(instance, path: path, requestID: requestID)
+        try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceString(instance, path: path, requestID: requestID)
         }
     }
 
@@ -171,12 +191,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// - Throws: `ViewModelInstanceError.missingData` if the property value is missing or invalid
     @MainActor
     func numberValue(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) async throws -> Float {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelInstanceNumber(instance, path: path, requestID: requestID)
+        try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceNumber(instance, path: path, requestID: requestID)
         }
     }
 
@@ -224,12 +240,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// - Throws: `ViewModelInstanceError.missingData` if the property value is missing or invalid
     @MainActor
     func boolValue(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) async throws -> Bool {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelInstanceBool(instance, path: path, requestID: requestID)
+        try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceBool(instance, path: path, requestID: requestID)
         }
     }
 
@@ -277,12 +289,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// - Throws: `ViewModelInstanceError.missingData` if the property value is missing or invalid
     @MainActor
     func colorValue(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) async throws -> Color {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelInstanceColor(instance, path: path, requestID: requestID)
+        try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceColor(instance, path: path, requestID: requestID)
         }
     }
 
@@ -330,12 +338,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// - Throws: `ViewModelInstanceError.missingData` if the property value is missing or invalid
     @MainActor
     func enumValue(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) async throws -> String {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelInstanceEnum(instance, path: path, requestID: requestID)
+        try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceEnum(instance, path: path, requestID: requestID)
         }
     }
 
@@ -465,12 +469,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// - Throws: `ViewModelInstanceError` if the request fails
     @MainActor
     func listSize(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) async throws -> Int {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelInstanceListSize(instance, path: path, requestID: requestID)
+        try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceListSize(instance, path: path, requestID: requestID)
         }
     }
 

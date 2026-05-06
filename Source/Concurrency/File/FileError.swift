@@ -16,7 +16,8 @@ public enum FileError: LocalizedError {
     case invalidArtboard(String)
     case invalidViewModel(String)
     case invalidViewModelInstance(String)
-    
+    case cancelled
+
     public var errorDescription: String? {
         switch self {
         case .missingFile(let message):
@@ -33,6 +34,8 @@ public enum FileError: LocalizedError {
             return "View model not found: \(message)"
         case .invalidViewModelInstance(let message):
             return "View model instance not found: \(message)"
+        case .cancelled:
+            return "Operation was cancelled."
         }
     }
 }

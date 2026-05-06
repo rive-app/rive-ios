@@ -133,6 +133,72 @@ class FileLoaderTests: XCTestCase {
     }
 
     @MainActor
+    func test_urlSource_cancelledBeforeLoad_throwsCancellation() async {
+        let urlSession = MockURLSession()
+        let loader = FileLoader(
+            source: .url(URL(string: "https://rive.app")!),
+            dependencies: .init(urlSession: urlSession)
+        )
+
+        let task = Task {
+            try await loader.load()
+        }
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("load() should have thrown")
+        } catch is CancellationError {
+            // Task.checkCancellation() threw before the request started
+        } catch let error as FileError {
+            if case .cancelled = error { } else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected CancellationError or FileError.cancelled, got \(error)")
+        }
+    }
+
+    @MainActor
+    func test_urlSource_cancelledDuringLoad_cancelsTaskAndThrows() async {
+        let loadStarted = expectation(description: "URL request started")
+        let urlSession = MockURLSession()
+        var savedCompletionHandler: MockURLSession.CompletionHandler?
+
+        urlSession.stubGet { _, completionHandler in
+            savedCompletionHandler = completionHandler
+            loadStarted.fulfill()
+        }
+
+        urlSession.onCancel = {
+            savedCompletionHandler?(nil, nil, URLError(.cancelled))
+        }
+
+        let loader = FileLoader(
+            source: .url(URL(string: "https://rive.app")!),
+            dependencies: .init(urlSession: urlSession)
+        )
+
+        let task = Task {
+            try await loader.load()
+        }
+
+        await fulfillment(of: [loadStarted], timeout: 2)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("load() should have thrown")
+        } catch let error as FileError {
+            if case .cancelled = error { } else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(error)")
+        }
+    }
+
+    @MainActor
     func test_localSource_withUnreadableFile_throwsInvalidFileError() async {
         // Use a directory URL which will cause Data(contentsOf:) to throw an error
         // when trying to read it as data

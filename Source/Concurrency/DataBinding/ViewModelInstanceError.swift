@@ -16,6 +16,7 @@ public enum ViewModelInstanceError: LocalizedError {
     case valueMismatch(String, String)
     case error(Error)
     case message(String)
+    case cancelled
 
     public var errorDescription: String? {
         switch self {
@@ -27,6 +28,8 @@ public enum ViewModelInstanceError: LocalizedError {
             error.localizedDescription
         case .message(let message):
             message
+        case .cancelled:
+            "Operation was cancelled."
         }
     }
 }

@@ -14,11 +14,14 @@ import Foundation
 /// `AudioService.onAudioSourceError` is called.
 public enum AudioError: LocalizedError {
     case failedDecoding(String)
-    
+    case cancelled
+
     public var errorDescription: String? {
         switch self {
         case .failedDecoding(let message):
             return "Failed to decode audio: \(message)"
+        case .cancelled:
+            return "Operation was cancelled."
         }
     }
 }

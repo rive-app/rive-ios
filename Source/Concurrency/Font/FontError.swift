@@ -14,11 +14,14 @@ import Foundation
 /// `FontService.onFontError` is called.
 public enum FontError: LocalizedError {
     case failedDecoding(String)
-    
+    case cancelled
+
     public var errorDescription: String? {
         switch self {
         case .failedDecoding(let message):
             return "Failed to decode font: \(message)"
+        case .cancelled:
+            return "Operation was cancelled."
         }
     }
 }

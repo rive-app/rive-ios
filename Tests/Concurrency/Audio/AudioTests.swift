@@ -74,6 +74,73 @@ class AudioTests: XCTestCase {
         XCTAssertEqual(commandQueue.decodeAudioCalls.first?.data, testData)
     }
     
+    // MARK: - Cancellation
+
+    @MainActor
+    func test_decodeAudio_whenCancelled_throwsCancelledError() async throws {
+        let commandQueue = MockCommandQueue()
+        let audioService = AudioService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+
+        let testData = Data([0x00, 0x01, 0x02, 0x03])
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        commandQueue.stubDecodeAudio { data, listener, requestID in
+            enteredContinuation.fulfill()
+            return 0
+        }
+
+        let task = Task { @MainActor in
+            try await audioService.decodeAudio(from: testData)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected AudioError.cancelled to be thrown")
+        } catch let error as AudioError {
+            guard case .cancelled = error else {
+                XCTFail("Expected AudioError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected AudioError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_deleteAudio_whenCancelled_throwsCancelledError() async throws {
+        let commandQueue = MockCommandQueue()
+        let audioService = AudioService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        commandQueue.stubDeleteAudio { handle in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await audioService.deleteAudio(42)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected AudioError.cancelled to be thrown")
+        } catch let error as AudioError {
+            guard case .cancelled = error else {
+                XCTFail("Expected AudioError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected AudioError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    // MARK: - Lifecycle
+
     @MainActor
     func test_deinit_callsDeleteAudio() async throws {
         let commandQueue = MockCommandQueue()

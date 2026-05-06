@@ -142,24 +142,40 @@ final class FileLoader: FileLoaderProtocol {
     /// - Returns: The downloaded file data
     /// - Throws: `FileError.missingData` if the download fails or returns empty data
     private func load(url: URL) async throws -> Data {
+        // If already cancelled, bail before starting the request — onCancel would fire with urlTask still nil.
+        try Task.checkCancellation()
         let urlSession = dependencies.urlSession
-        return try await withCheckedThrowingContinuation { continuation in
-            let task = urlSession.get(url: url) { data, response, error in
-                guard error == nil, let data, data.isEmpty == false else {
-                    Task { @MainActor in
-                        let fileError = FileError.missingData(url.absoluteString)
-                        RiveLog.error(tag: .file, error: fileError, "[File] Failed to load file from URL")
-                        continuation.resume(throwing: fileError)
+        // nonisolated(unsafe) opts out of sendability checking for this variable, which is captured
+        // across isolation boundaries (the continuation closure and the onCancel closure run on
+        // different threads). The access pattern is safe: urlTask is assigned inside the continuation
+        // before the request starts, and onCancel only reads it — if cancellation races ahead of
+        // assignment, urlTask is still nil, making cancel() a no-op.
+        nonisolated(unsafe) var urlTask: (any URLSessionDataTaskProtocol)?
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                urlTask = urlSession.get(url: url) { data, response, error in
+                    guard error == nil, let data, data.isEmpty == false else {
+                        Task { @MainActor in
+                            if let urlError = error as? URLError, urlError.code == .cancelled {
+                                continuation.resume(throwing: FileError.cancelled)
+                            } else {
+                                let fileError = FileError.missingData(url.absoluteString)
+                                RiveLog.error(tag: .file, error: fileError, "[File] Failed to load file from URL")
+                                continuation.resume(throwing: fileError)
+                            }
+                        }
+                        return
                     }
-                    return
-                }
 
-                Task { @MainActor in
-                    RiveLog.debug(tag: .file, "[File] Loaded file from URL (\(data.count) bytes)")
-                    continuation.resume(returning: data)
+                    Task { @MainActor in
+                        RiveLog.debug(tag: .file, "[File] Loaded file from URL (\(data.count) bytes)")
+                        continuation.resume(returning: data)
+                    }
                 }
+                urlTask?.resume()
             }
-            task.resume()
+        } onCancel: {
+            urlTask?.cancel()
         }
     }
 }
@@ -192,9 +208,11 @@ protocol URLSessionProtocol: Sendable {
 /// Protocol defining the interface for URL session data tasks.
 ///
 /// Enables dependency injection and testing. Only exposes `resume()` to start network requests.
-protocol URLSessionDataTaskProtocol {
+protocol URLSessionDataTaskProtocol: Sendable {
     /// Starts the data task to begin the network request.
     func resume()
+    /// Cancels the data task.
+    func cancel()
 }
 
 extension URLSession: URLSessionProtocol {

@@ -15,6 +15,10 @@ import Foundation
 /// are invoked. All command queue operations must be performed on the main thread (either marked
 /// `@MainActor` or dispatched to the main queue). Listener callbacks are dispatched to the
 /// main actor to safely access continuations.
+///
+/// All continuation-based methods are wrapped with `withTaskCancellationHandler` because
+/// `withCheckedThrowingContinuation` does not auto-resume on task cancellation. Without
+/// explicit handling, a cancelled task leaks its continuation indefinitely.
 @MainActor
 final class ArtboardService: NSObject, ArtboardListener {
     let dependencies: Dependencies
@@ -42,6 +46,30 @@ final class ArtboardService: NSObject, ArtboardListener {
         dependencies.messageGate.callbackProcessed(requestID: requestID)
     }
 
+    /// Wraps a continuation-based command queue operation with cancellation support.
+    private func withCancellableContinuation<T>(
+        cancelledError: Error,
+        operation: @escaping (UInt64) -> Void
+    ) async throws -> T {
+        try Task.checkCancellation()
+        let requestID = dependencies.commandQueue.nextRequestID
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                continuations[requestID] = AnyContinuation(continuation)
+                beginImmediateRequest(requestID)
+                operation(requestID)
+            }
+        } onCancel: { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                if let continuation = self.continuations.removeValue(forKey: requestID) {
+                    self.finishImmediateRequest(requestID)
+                    try? continuation.resume(with: .failure(cancelledError))
+                }
+            }
+        }
+    }
+
     /// Instantiates a state machine from an artboard asynchronously.
     ///
     /// The continuation is resumed when `onStateMachineInstantiated` is called, or fails
@@ -55,11 +83,8 @@ final class ArtboardService: NSObject, ArtboardListener {
     /// - Throws: `ArtboardError.invalidStateMachine` if the server reports an error.
     @MainActor
     func instantiateStateMachine(name: String?, artboardHandle: Artboard.ArtboardHandle, observer: StateMachineListener) async throws -> StateMachine.StateMachineHandle {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
+        try await withCancellableContinuation(cancelledError: ArtboardError.cancelled) { requestID in
+            let commandQueue = self.dependencies.commandQueue
             if let name {
                 _ = commandQueue.createStateMachineNamed(name, fromArtboard: artboardHandle, observer: observer, requestID: requestID)
             } else {
@@ -78,12 +103,8 @@ final class ArtboardService: NSObject, ArtboardListener {
     @MainActor
     func getStateMachineNames(from artboard: Artboard.ArtboardHandle) async throws -> [String] {
         RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Requesting state machine names")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.requestStateMachineNames(artboard, requestID: requestID)
+        return try await withCancellableContinuation(cancelledError: ArtboardError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestStateMachineNames(artboard, requestID: requestID)
         }
     }
 
@@ -99,12 +120,8 @@ final class ArtboardService: NSObject, ArtboardListener {
     @MainActor
     func getDefaultViewModelInfo(from artboard: Artboard.ArtboardHandle, file: File.FileHandle) async throws -> (viewModelName: String, instanceName: String) {
         RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Requesting default view model info")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.requestDefaultViewModelInfo(artboard, fromFile: file, requestID: requestID)
+        return try await withCancellableContinuation(cancelledError: ArtboardError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestDefaultViewModelInfo(artboard, fromFile: file, requestID: requestID)
         }
     }
 
@@ -190,12 +207,8 @@ final class ArtboardService: NSObject, ArtboardListener {
     @MainActor
     func deleteArtboard(_ artboard: Artboard.ArtboardHandle) async throws -> Artboard.ArtboardHandle {
         RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Deleting artboard")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = AnyContinuation(continuation)
-            beginImmediateRequest(requestID)
-            commandQueue.deleteArtboard(artboard, requestID: requestID)
+        return try await withCancellableContinuation(cancelledError: ArtboardError.cancelled) { requestID in
+            self.dependencies.commandQueue.deleteArtboard(artboard, requestID: requestID)
         }
     }
 

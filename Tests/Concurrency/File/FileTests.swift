@@ -540,6 +540,222 @@ class FileTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 1)
     }
 
+    // MARK: - Cancellation
+
+    @MainActor
+    func test_loadFile_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let fileService = FileService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+
+        let testData = Data([0x52, 0x49, 0x56, 0x45])
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubLoadFile { data, listener, requestID in
+            enteredContinuation.fulfill()
+            return 0
+        }
+
+        let task = Task { @MainActor in
+            try await fileService.loadFile(data: testData)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FileError.cancelled to be thrown")
+        } catch let error as FileError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_getArtboardNames_whenCancelled_throwsCancelledError() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestArtboardNames { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await file.getArtboardNames()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FileError.cancelled to be thrown")
+        } catch let error as FileError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_getViewModelNames_whenCancelled_throwsCancelledError() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelNames { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await file.getViewModelNames()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FileError.cancelled to be thrown")
+        } catch let error as FileError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_getViewModelEnums_whenCancelled_throwsCancelledError() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelEnums { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await file.getViewModelEnums()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FileError.cancelled to be thrown")
+        } catch let error as FileError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_createDefaultArtboard_whenCancelled_throwsCancelledError() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubCreateDefaultArtboard { _, _, _ in
+            enteredContinuation.fulfill()
+            return 0
+        }
+
+        let task = Task { @MainActor in
+            try await file.createArtboard()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FileError.cancelled to be thrown")
+        } catch let error as FileError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_createDefaultViewModelInstance_whenCancelled_throwsCancelledError() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubCreateDefaultViewModelInstance { _, _, _, _ in
+            enteredContinuation.fulfill()
+            return 0
+        }
+
+        let task = Task { @MainActor in
+            try await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(artboard)))
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FileError.cancelled to be thrown")
+        } catch let error as FileError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_deleteFile_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let fileService = FileService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubDeleteFile { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await fileService.deleteFile(123)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FileError.cancelled to be thrown")
+        } catch let error as FileError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    // MARK: - Equality
+
     @MainActor
     func test_equality_withSameFileHandle_returnsTrue() async {
         let (file1, _, _, _) = await File.mock(fileHandle: 1)

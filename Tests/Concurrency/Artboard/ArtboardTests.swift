@@ -308,6 +308,135 @@ class ArtboardTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 1)
     }
 
+    // MARK: - Cancellation
+
+    @MainActor
+    func test_getStateMachineNames_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 1)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestStateMachineNames { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await artboard.getStateMachineNames()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ArtboardError.cancelled to be thrown")
+        } catch let error as ArtboardError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ArtboardError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ArtboardError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_getDefaultViewModelInfo_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 1)
+        let (file, _, _, _) = await File.mock(fileHandle: 123)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestDefaultViewModelInfo { _, _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await artboard.getDefaultViewModelInfo(parent: file)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ArtboardError.cancelled to be thrown")
+        } catch let error as ArtboardError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ArtboardError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ArtboardError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_createDefaultStateMachine_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 123)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubCreateDefaultStateMachine { _, _, _ in
+            enteredContinuation.fulfill()
+            return 0
+        }
+
+        let task = Task { @MainActor in
+            try await artboard.createStateMachine()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ArtboardError.cancelled to be thrown")
+        } catch let error as ArtboardError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ArtboardError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ArtboardError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_deleteArtboard_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubDeleteArtboard { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await artboardService.deleteArtboard(1)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ArtboardError.cancelled to be thrown")
+        } catch let error as ArtboardError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ArtboardError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ArtboardError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    // MARK: - Lifecycle
+
     @MainActor
     func test_artboard_onDeinit_callsDelete() {
         let mockCommandQueue = MockCommandQueue()

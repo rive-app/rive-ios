@@ -14,11 +14,14 @@ import Foundation
 /// `ImageService.onRenderImageError` is called.
 public enum ImageError: LocalizedError {
     case failedDecoding(String)
-    
+    case cancelled
+
     public var errorDescription: String? {
         switch self {
         case .failedDecoding(let message):
             return "Failed to decode image: \(message)"
+        case .cancelled:
+            return "Operation was cancelled."
         }
     }
 }

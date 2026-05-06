@@ -136,6 +136,40 @@ class StateMachineTests: XCTestCase {
         XCTAssertEqual(mockCommandQueue.deleteStateMachineListenerCalls.first?.stateMachineHandle, 1)
     }
 
+    // MARK: - Cancellation
+
+    @MainActor
+    func test_deleteStateMachine_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubDeleteStateMachine { handle in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await stateMachineService.deleteStateMachine(123)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected StateMachineError.cancelled to be thrown")
+        } catch let error as StateMachineError {
+            guard case .cancelled = error else {
+                XCTFail("Expected StateMachineError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected StateMachineError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    // MARK: - Streams
+
     @MainActor
     func test_settledStream_emitsVoid_whenStateMachineSettles() async {
         let mockCommandQueue = MockCommandQueue()

@@ -12,7 +12,11 @@ import Foundation
 ///
 /// Handles state machine creation, advancement, deletion, and view model binding. All operations
 /// are fire-and-forget (no listener callbacks). All command queue operations must be performed
-/// on the main thread (either marked `@MainActor` or dispatched to the main queue)
+/// on the main thread (either marked `@MainActor` or dispatched to the main queue).
+///
+/// All continuation-based methods are wrapped with `withTaskCancellationHandler` because
+/// `withCheckedThrowingContinuation` does not auto-resume on task cancellation. Without
+/// explicit handling, a cancelled task leaks its continuation indefinitely.
 @MainActor
 final class StateMachineService: NSObject, StateMachineListener {
     private let dependencies: Dependencies
@@ -35,6 +39,30 @@ final class StateMachineService: NSObject, StateMachineListener {
 
     private func finishImmediateRequest(_ requestID: UInt64) {
         dependencies.messageGate.callbackProcessed(requestID: requestID)
+    }
+
+    /// Wraps a continuation-based command queue operation with cancellation support.
+    private func withCancellableContinuation(
+        cancelledError: Error,
+        operation: @escaping (UInt64) -> Void
+    ) async throws -> UInt64 {
+        try Task.checkCancellation()
+        let requestID = dependencies.commandQueue.nextRequestID
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                continuations[requestID] = continuation
+                beginImmediateRequest(requestID)
+                operation(requestID)
+            }
+        } onCancel: { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                if let continuation = self.continuations.removeValue(forKey: requestID) {
+                    self.finishImmediateRequest(requestID)
+                    continuation.resume(throwing: cancelledError)
+                }
+            }
+        }
     }
 
     /// Advances a state machine by the specified time interval.
@@ -84,12 +112,8 @@ final class StateMachineService: NSObject, StateMachineListener {
     @MainActor
     func deleteStateMachine(_ stateMachine: StateMachine.StateMachineHandle) async throws -> StateMachine.StateMachineHandle {
         RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Deleting state machine")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = continuation
-            beginImmediateRequest(requestID)
-            commandQueue.deleteStateMachine(stateMachine, requestID: requestID)
+        return try await withCancellableContinuation(cancelledError: StateMachineError.cancelled) { requestID in
+            self.dependencies.commandQueue.deleteStateMachine(stateMachine, requestID: requestID)
         }
     }
 
@@ -120,7 +144,7 @@ final class StateMachineService: NSObject, StateMachineListener {
             }
 
             RiveLog.error(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Operation failed: \(message)")
-            continuation.resume(throwing: StateMachineServiceError.error(message))
+            continuation.resume(throwing: StateMachineError.error(message))
         }
     }
 
@@ -140,17 +164,6 @@ final class StateMachineService: NSObject, StateMachineListener {
         Task { @MainActor in
             RiveLog.trace(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Settled state machine")
             settledContinuations[stateMachineHandle]?.values.forEach { $0.yield(()) }
-        }
-    }
-}
-
-private enum StateMachineServiceError: LocalizedError {
-    case error(String)
-
-    var errorDescription: String? {
-        switch self {
-        case .error(let message):
-            return message
         }
     }
 }

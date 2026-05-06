@@ -1366,8 +1366,220 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(call.withIndex, withIndex)
     }
     
+    // MARK: - Cancellation
+
+    @MainActor
+    func test_deleteViewModelInstance_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubDeleteViewModelInstance { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstanceService.deleteViewModelInstance(99)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_stringValue_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelInstanceString { _, _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstance.value(of: StringProperty(path: "test"))
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_numberValue_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelInstanceNumber { _, _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstance.value(of: NumberProperty(path: "test"))
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_boolValue_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelInstanceBool { _, _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstance.value(of: BoolProperty(path: "test"))
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_colorValue_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelInstanceColor { _, _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstance.value(of: ColorProperty(path: "test"))
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_enumValue_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelInstanceEnum { _, _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstance.value(of: EnumProperty(path: "test"))
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_listSize_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelInstanceListSize { _, _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstance.size(of: ListProperty(path: "test"))
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
     // MARK: - Error Handling
-    
+
     @MainActor
     func test_value_withServerError_throwsMessageError() async throws {
         let mockCommandQueue = MockCommandQueue()

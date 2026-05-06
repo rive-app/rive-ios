@@ -15,6 +15,10 @@ import Foundation
 /// are invoked. All command queue operations must be performed on the main thread (either marked
 /// `@MainActor` or dispatched to the main queue). Listener callbacks are dispatched to the
 /// main actor to safely access continuations.
+///
+/// All continuation-based methods are wrapped with `withTaskCancellationHandler` because
+/// `withCheckedThrowingContinuation` does not auto-resume on task cancellation. Without
+/// explicit handling, a cancelled task leaks its continuation indefinitely.
 @MainActor
 final class FileService: NSObject, FileListener {
     /// The dependencies required for file service operations.
@@ -48,6 +52,33 @@ final class FileService: NSObject, FileListener {
         dependencies.messageGate.callbackProcessed(requestID: requestID)
     }
 
+    /// Wraps a continuation-based command queue operation with cancellation support.
+    private func withCancellableRequest<T>(
+        mapError: @escaping (String) -> Error,
+        operation: @escaping (UInt64) -> Void
+    ) async throws -> T {
+        try Task.checkCancellation()
+        let requestID = dependencies.commandQueue.nextRequestID
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                continuations[requestID] = PendingRequest(
+                    continuation: AnyContinuation(continuation),
+                    mapError: mapError
+                )
+                beginImmediateRequest(requestID)
+                operation(requestID)
+            }
+        } onCancel: { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                if let request = self.continuations.removeValue(forKey: requestID) {
+                    self.finishImmediateRequest(requestID)
+                    try? request.continuation.resume(with: .failure(FileError.cancelled))
+                }
+            }
+        }
+    }
+
     /// Loads a Rive file asynchronously from the provided data.
     ///
     /// Creates a request ID, stores the continuation, and delegates to the command queue.
@@ -59,12 +90,8 @@ final class FileService: NSObject, FileListener {
     @MainActor
     func loadFile(data: Data) async throws -> File.FileHandle {
         RiveLog.debug(tag: .file, "[File] Loading file (\(data.count) bytes)")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
-            beginImmediateRequest(requestID)
-            commandQueue.loadFile(data, observer: self, requestID: requestID)
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.loadFile(data, observer: self, requestID: requestID)
         }
     }
 
@@ -81,11 +108,8 @@ final class FileService: NSObject, FileListener {
     /// - Throws: `FileError.invalidArtboard` if the server reports an error.
     @MainActor
     func instantiateArtboard(name: String?, fileHandle: File.FileHandle, observer: ArtboardListener) async throws -> Artboard.ArtboardHandle {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidArtboard)
-            beginImmediateRequest(requestID)
+        try await withCancellableRequest(mapError: FileError.invalidArtboard) { requestID in
+            let commandQueue = self.dependencies.commandQueue
             if let name {
                 _ = commandQueue.createArtboardNamed(name, fromFile: fileHandle, observer: observer, requestID: requestID)
             } else {
@@ -107,11 +131,8 @@ final class FileService: NSObject, FileListener {
     /// - Throws: `FileError.invalidViewModelInstance` if the server reports an error.
     @MainActor
     func instantiateViewModelInstance(source: ViewModelInstanceSource, fileHandle: File.FileHandle, observer: ViewModelInstanceListener) async throws -> ViewModelInstance.ViewModelInstanceHandle {
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidViewModelInstance)
-            beginImmediateRequest(requestID)
+        try await withCancellableRequest(mapError: FileError.invalidViewModelInstance) { requestID in
+            let commandQueue = self.dependencies.commandQueue
             switch source {
             case .blank(let viewModelSource):
                 switch viewModelSource {
@@ -148,12 +169,8 @@ final class FileService: NSObject, FileListener {
     @MainActor
     func getArtboardNames(fileHandle: File.FileHandle) async throws -> [String] {
         RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting artboard names")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
-            beginImmediateRequest(requestID)
-            commandQueue.requestArtboardNames(fileHandle, requestID: requestID)
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.requestArtboardNames(fileHandle, requestID: requestID)
         }
     }
 
@@ -167,12 +184,8 @@ final class FileService: NSObject, FileListener {
     @MainActor
     func getViewModelNames(fileHandle: File.FileHandle) async throws -> [String] {
         RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting view model names")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelNames(fileHandle, requestID: requestID)
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.requestViewModelNames(fileHandle, requestID: requestID)
         }
     }
 
@@ -188,12 +201,8 @@ final class FileService: NSObject, FileListener {
     @MainActor
     func getInstanceNames(of viewModelName: String, from fileHandle: File.FileHandle) async throws -> [String] {
         RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting instance names for view model '\(viewModelName)'")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelInstanceNames(fileHandle, viewModelName: viewModelName, requestID: requestID)
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceNames(fileHandle, viewModelName: viewModelName, requestID: requestID)
         }
     }
 
@@ -209,14 +218,9 @@ final class FileService: NSObject, FileListener {
     @MainActor
     func getProperties(of viewModelName: String, from fileHandle: File.FileHandle) async throws -> [ViewModelProperty] {
         RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting property definitions for view model '\(viewModelName)'")
-        let commandQueue = dependencies.commandQueue
-        let properties: [ViewModelProperty] = try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelPropertyDefinitions(fileHandle, viewModelName: viewModelName, requestID: requestID)
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.requestViewModelPropertyDefinitions(fileHandle, viewModelName: viewModelName, requestID: requestID)
         }
-        return properties
     }
 
     /// Requests enum definitions for a file asynchronously.
@@ -229,14 +233,9 @@ final class FileService: NSObject, FileListener {
     @MainActor
     func getViewModelEnums(from fileHandle: File.FileHandle) async throws -> [ViewModelEnum] {
         RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting view model enums")
-        let commandQueue = dependencies.commandQueue
-        let enums: [ViewModelEnum] = try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
-            beginImmediateRequest(requestID)
-            commandQueue.requestViewModelEnums(fileHandle, requestID: requestID)
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.requestViewModelEnums(fileHandle, requestID: requestID)
         }
-        return enums
     }
 
     /// Called when a file loading operation completes successfully.
@@ -395,12 +394,8 @@ final class FileService: NSObject, FileListener {
     @MainActor
     func deleteFile(_ file: File.FileHandle) async throws -> File.FileHandle {
         RiveLog.debug(tag: .file, "\(Self.context(file)) Deleting file")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = PendingRequest(continuation: AnyContinuation(continuation), mapError: FileError.invalidFile)
-            beginImmediateRequest(requestID)
-            commandQueue.deleteFile(file, requestID: requestID)
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.deleteFile(file, requestID: requestID)
         }
     }
 

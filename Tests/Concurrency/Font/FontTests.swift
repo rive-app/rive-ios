@@ -73,6 +73,73 @@ class FontTests: XCTestCase {
         XCTAssertEqual(commandQueue.decodeFontCalls.first?.data, testData)
     }
     
+    // MARK: - Cancellation
+
+    @MainActor
+    func test_decodeFont_whenCancelled_throwsCancelledError() async throws {
+        let commandQueue = MockCommandQueue()
+        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+
+        let testData = Data([0x00, 0x01, 0x02, 0x03])
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        commandQueue.stubDecodeFont { data, listener, requestID in
+            enteredContinuation.fulfill()
+            return 0
+        }
+
+        let task = Task { @MainActor in
+            try await fontService.decodeFont(from: testData)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FontError.cancelled to be thrown")
+        } catch let error as FontError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FontError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FontError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_deleteFont_whenCancelled_throwsCancelledError() async throws {
+        let commandQueue = MockCommandQueue()
+        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        commandQueue.stubDeleteFont { handle in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await fontService.deleteFont(42)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FontError.cancelled to be thrown")
+        } catch let error as FontError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FontError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FontError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    // MARK: - Lifecycle
+
     @MainActor
     func test_deinit_callsDeleteFont() async throws {
         let commandQueue = MockCommandQueue()

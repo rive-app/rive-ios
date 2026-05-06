@@ -15,6 +15,10 @@ import Foundation
 /// are invoked. All command queue operations must be performed on the main thread (either marked
 /// `@MainActor` or dispatched to the main queue). Listener callbacks are dispatched to the
 /// main actor to safely access continuations.
+///
+/// All continuation-based methods are wrapped with `withTaskCancellationHandler` because
+/// `withCheckedThrowingContinuation` does not auto-resume on task cancellation. Without
+/// explicit handling, a cancelled task leaks its continuation indefinitely.
 @MainActor
 final class ImageService: NSObject, RenderImageListener {
     private let dependencies: Dependencies
@@ -37,6 +41,30 @@ final class ImageService: NSObject, RenderImageListener {
         dependencies.messageGate.callbackProcessed(requestID: requestID)
     }
 
+    /// Wraps a continuation-based command queue operation with cancellation support.
+    private func withCancellableContinuation(
+        cancelledError: Error,
+        operation: @escaping (UInt64) -> Void
+    ) async throws -> UInt64 {
+        try Task.checkCancellation()
+        let requestID = dependencies.commandQueue.nextRequestID
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                continuations[requestID] = continuation
+                beginImmediateRequest(requestID)
+                operation(requestID)
+            }
+        } onCancel: { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                if let continuation = self.continuations.removeValue(forKey: requestID) {
+                    self.finishImmediateRequest(requestID)
+                    continuation.resume(throwing: cancelledError)
+                }
+            }
+        }
+    }
+
     /// Decodes image data into an image handle.
     ///
     /// The continuation is resumed when `onRenderImageDecoded` or `onRenderImageError` is called.
@@ -46,12 +74,8 @@ final class ImageService: NSObject, RenderImageListener {
     /// - Throws: `ImageError.failedDecoding` if the image data cannot be decoded
     func decodeImage(from data: Data) async throws -> Image.ImageHandle {
         RiveLog.debug(tag: .image, "[Image] Decoding image data (\(data.count) bytes)")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = continuation
-            beginImmediateRequest(requestID)
-            commandQueue.decodeImage(data, listener: self, requestID: requestID)
+        return try await withCancellableContinuation(cancelledError: ImageError.cancelled) { requestID in
+            self.dependencies.commandQueue.decodeImage(data, listener: self, requestID: requestID)
         }
     }
 
@@ -64,12 +88,8 @@ final class ImageService: NSObject, RenderImageListener {
     @MainActor
     func deleteImage(_ renderImage: Image.ImageHandle) async throws -> Image.ImageHandle {
         RiveLog.debug(tag: .image, "[Image] Deleting image")
-        let commandQueue = dependencies.commandQueue
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestID = commandQueue.nextRequestID
-            continuations[requestID] = continuation
-            beginImmediateRequest(requestID)
-            commandQueue.deleteImage(renderImage, requestID: requestID)
+        return try await withCancellableContinuation(cancelledError: ImageError.cancelled) { requestID in
+            self.dependencies.commandQueue.deleteImage(renderImage, requestID: requestID)
         }
     }
 

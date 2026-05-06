@@ -73,6 +73,73 @@ class ImageTests: XCTestCase {
         XCTAssertEqual(commandQueue.decodeImageCalls.first?.data, testData)
     }
     
+    // MARK: - Cancellation
+
+    @MainActor
+    func test_decodeImage_whenCancelled_throwsCancelledError() async throws {
+        let commandQueue = MockCommandQueue()
+        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+
+        let testData = Data([0x89, 0x50, 0x4E, 0x47])
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        commandQueue.stubDecodeImage { data, listener, requestID in
+            enteredContinuation.fulfill()
+            return 0
+        }
+
+        let task = Task { @MainActor in
+            try await imageService.decodeImage(from: testData)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ImageError.cancelled to be thrown")
+        } catch let error as ImageError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ImageError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ImageError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_deleteImage_whenCancelled_throwsCancelledError() async throws {
+        let commandQueue = MockCommandQueue()
+        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        commandQueue.stubDeleteImage { handle in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await imageService.deleteImage(42)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ImageError.cancelled to be thrown")
+        } catch let error as ImageError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ImageError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ImageError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    // MARK: - Lifecycle
+
     @MainActor
     func test_deinit_callsDeleteImage() async throws {
         let commandQueue = MockCommandQueue()
