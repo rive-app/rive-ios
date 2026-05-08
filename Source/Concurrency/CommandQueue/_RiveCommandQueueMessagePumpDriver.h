@@ -17,6 +17,7 @@ NS_SWIFT_NAME(_CommandQueueMessagePumpDriver)
 
 - (void)startMessageProcessing;
 - (void)stopMessageProcessing;
+- (void)processMessages;
 
 @end
 

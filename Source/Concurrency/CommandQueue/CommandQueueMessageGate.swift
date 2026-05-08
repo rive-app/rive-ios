@@ -31,7 +31,6 @@ import Foundation
 final class CommandQueueMessageGate {
     private let messagePumpDriver: any _CommandQueueMessagePumpDriver
     private var pendingRequestIDs = Set<UInt64>()
-    private var isFrameDrainActive = false
     private var didScheduleFrameDrainThisTurn = false
     private var isPumpActive = false
     private var isEnabled = true
@@ -53,11 +52,8 @@ final class CommandQueueMessageGate {
         stopPumpIfIdle()
     }
 
-    func processMessagesForFrame(hasActiveListeners: Bool) {
+    func processMessagesForFrame() {
         guard isEnabled else {
-            return
-        }
-        guard hasActiveListeners else {
             return
         }
         guard !didScheduleFrameDrainThisTurn else {
@@ -65,24 +61,16 @@ final class CommandQueueMessageGate {
         }
 
         didScheduleFrameDrainThisTurn = true
-        isFrameDrainActive = true
-        startPumpIfNeeded()
+        messagePumpDriver.processMessages()
 
-        // Clean up at the tail of this run-loop turn so the pump stays armed
-        // just long enough to process the current frame's messages, then
-        // re-evaluates whether it should remain active.
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            self.didScheduleFrameDrainThisTurn = false
-            self.isFrameDrainActive = false
-            self.stopPumpIfIdle()
+            self?.didScheduleFrameDrainThisTurn = false
         }
     }
 
     func stop() {
         isEnabled = false
         pendingRequestIDs.removeAll()
-        isFrameDrainActive = false
         didScheduleFrameDrainThisTurn = false
         if isPumpActive {
             messagePumpDriver.stopMessageProcessing()
@@ -105,7 +93,7 @@ final class CommandQueueMessageGate {
         guard isPumpActive else {
             return
         }
-        if pendingRequestIDs.isEmpty && !isFrameDrainActive {
+        if pendingRequestIDs.isEmpty {
             messagePumpDriver.stopMessageProcessing()
             isPumpActive = false
         }

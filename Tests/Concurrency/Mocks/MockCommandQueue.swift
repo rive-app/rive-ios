@@ -76,6 +76,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private var viewModelInstanceObservers: [UInt64: ViewModelInstanceListener] = [:]
     private var unsubscribeStub: ((UInt64, String, RiveViewModelInstanceDataType, UInt64) -> Void)?
 
+    private(set) var processMessagesCalls: [ProcessMessagesCall] = []
     private(set) var startCalls: [StartCall] = []
     private(set) var stopCalls: [StopCall] = []
     private(set) var disconnectCalls: [DisconnectCall] = []
@@ -170,6 +171,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     func stop() {
         stopCalls.append(StopCall())
         stopStub?()
+    }
+
+    func processMessages() {
+        processMessagesCalls.append(ProcessMessagesCall())
     }
 
     func startMessageProcessing() {
@@ -995,6 +1000,9 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
 }
 
 extension MockCommandQueue {
+    struct ProcessMessagesCall {
+    }
+
     struct StartCall {
     }
     

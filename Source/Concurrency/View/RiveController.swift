@@ -160,14 +160,12 @@ final class RiveController {
         }
 
         resolvePendingEvents()
+        messageGate.processMessagesForFrame()
 
         let shouldAdvance = hasProcessedFirstDraw == false || isSettled == false
         if shouldAdvance {
             RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
             rive.stateMachine.advance(by: delta)
-            let hasActiveListeners = rive.stateMachine.hasActiveListeners
-                || (rive.viewModelInstance?.hasActiveListeners ?? false)
-            messageGate.processMessagesForFrame(hasActiveListeners: hasActiveListeners)
         }
 
         if isSettled {

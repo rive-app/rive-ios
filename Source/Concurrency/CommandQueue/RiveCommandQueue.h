@@ -1173,6 +1173,16 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  */
 - (void)removeGlobalAudioAsset:(NSString*)name requestID:(uint64_t)requestID;
 
+/**
+ * Synchronously drains all pending messages from the command queue.
+ *
+ * This is called once per display-link frame to process responses from the
+ * command server. The call is coalesced by CommandQueueMessageGate so that
+ * multiple views sharing the same queue result in a single drain per
+ * run-loop turn.
+ */
+- (void)processMessages;
+
 @end
 
 @class RiveCommandQueue;
