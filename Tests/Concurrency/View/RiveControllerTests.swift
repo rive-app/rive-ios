@@ -746,6 +746,26 @@ final class RiveControllerTests: XCTestCase {
         XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[1].time, 0)
     }
 
+    // MARK: - Settled/dirty race
+
+    @MainActor
+    func test_staleSettledAfterDirty_doesNotOverwriteDirty() async throws {
+        let fixture = try await setupStaleSettledAfterDirty()
+        XCTAssertFalse(fixture.controller.isSettled)
+    }
+
+    @MainActor
+    func test_advanceAfterStaleSettled_producesFrame() async throws {
+        let fixture = try await setupStaleSettledAfterDirty()
+        let configuration = fixture.controller.advance(
+            now: 11,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        XCTAssertNotNil(configuration)
+    }
+
     // MARK: - Helpers
 
     @MainActor
@@ -805,30 +825,52 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
-    private func expectSettled(within fixture: ControllerFixture) async {
-        await expectIsSettled(true, within: fixture) {
-            fixture.stateMachineService.onStateMachineSettled(fixture.stateMachine.stateMachineHandle, requestID: 1)
+    private func emitSettledAndAwaitPending(
+        within fixture: ControllerFixture,
+        requestID: UInt64
+    ) async {
+        let pendingExpectation = expectation(description: "hasPendingSettle is set")
+        fixture.controller.onHasPendingSettleForTesting = {
+            pendingExpectation.fulfill()
         }
+        fixture.stateMachineService.onStateMachineSettled(
+            fixture.stateMachine.stateMachineHandle, requestID: requestID
+        )
+        await fulfillment(of: [pendingExpectation], timeout: 1.0)
+        fixture.controller.onHasPendingSettleForTesting = nil
     }
 
     @MainActor
-    private func expectDirty(within fixture: ControllerFixture, trigger: @MainActor () -> Void) async {
-        guard let dirtyFlow = fixture.dirtyFlow else {
-            XCTFail("Expected dirty flow to be available for this fixture")
-            return
-        }
+    private func expectSettled(within fixture: ControllerFixture) async {
+        await emitSettledAndAwaitPending(within: fixture, requestID: 1)
+        fixture.controller.resolveForTesting()
+        XCTAssertTrue(fixture.controller.isSettled)
+    }
 
-        let dirtyExpectation = expectation(description: "view model dirty flow emits")
-        let waitForDirtyTask = Task { @MainActor in
-            var iterator = dirtyFlow().makeAsyncIterator()
-            _ = await iterator.next()
-            dirtyExpectation.fulfill()
-        }
+    @MainActor
+    private func setupStaleSettledAfterDirty() async throws -> ControllerFixture {
+        let fixture = try await makeController(dataBind: .auto)
+        await expectSettled(within: fixture)
 
-        trigger()
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
 
-        await fulfillment(of: [dirtyExpectation], timeout: 1.0)
-        waitForDirtyTask.cancel()
+        fixture.viewModelInstance?.setValue(of: StringProperty(path: "test"), to: "value")
+
+        await emitSettledAndAwaitPending(within: fixture, requestID: 2)
+
+        _ = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+
+        return fixture
     }
 
     @MainActor

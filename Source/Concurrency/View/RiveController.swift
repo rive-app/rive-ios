@@ -22,8 +22,12 @@ final class RiveController {
 
     private(set) var isSettled = false {
         didSet {
+            guard oldValue != isSettled else { return }
+
             if isSettled {
-                // This will cause the initial advance on next play to be 0.
+                // Nil lastTimestamp so the first advance after re-unsettling
+                // starts at delta 0 instead of jumping by the wall-clock
+                // time spent settled.
                 resetTiming()
             }
 
@@ -32,6 +36,9 @@ final class RiveController {
             #endif
         }
     }
+
+    private var hasPendingSettle = false
+    private var isDirty = false
 
     private var cancellables = Set<AnyCancellable>()
     private var settledStreamTask: Task<Void, Never>?
@@ -52,6 +59,7 @@ final class RiveController {
     // MARK: Testing
     #if TESTING
     var onIsSettledChangedForTesting: ((Bool) -> Void)?
+    var onHasPendingSettleForTesting: (() -> Void)?
     #endif
 
     // MARK: -
@@ -83,7 +91,7 @@ final class RiveController {
     func handleInput(_ input: Input) {
         RiveLog.trace(tag: .view, "[RiveUIView] Handling input event")
         inputHandler.handle(input, in: rive.stateMachine)
-        isSettled = false
+        markDirty()
     }
 
     func resetTiming() {
@@ -151,6 +159,8 @@ final class RiveController {
             lastTimestamp = now
         }
 
+        resolvePendingEvents()
+
         let shouldAdvance = hasProcessedFirstDraw == false || isSettled == false
         if shouldAdvance {
             RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
@@ -197,6 +207,29 @@ final class RiveController {
 
     // MARK: - Private
 
+    private func markDirty() {
+        isDirty = true
+        hasPendingSettle = false
+        guard isSettled else { return }
+        isSettled = false
+    }
+
+    private func resolvePendingEvents() {
+        guard hasPendingSettle else { return }
+        if isDirty {
+            isDirty = false
+        } else {
+            isSettled = true
+        }
+        hasPendingSettle = false
+    }
+
+    #if TESTING
+    func resolveForTesting() {
+        resolvePendingEvents()
+    }
+    #endif
+
     private func setupSubscriptions() {
         RiveLog.debug(tag: .view, "[RiveUIView] Setting up subscriptions")
         rive
@@ -216,7 +249,7 @@ final class RiveController {
                     rive.artboard.resetSize()
                 }
                 RiveLog.trace(tag: .view, "[RiveUIView] Settled state changed: false (fit)")
-                isSettled = false
+                markDirty()
             }
             .store(in: &cancellables)
 
@@ -227,7 +260,7 @@ final class RiveController {
             .sink { [weak self] _ in
                 guard let self else { return }
                 RiveLog.trace(tag: .view, "[RiveUIView] Settled state changed: false (backgroundColor)")
-                self.isSettled = false
+                self.markDirty()
             }
             .store(in: &cancellables)
 
@@ -245,7 +278,10 @@ final class RiveController {
             for await _ in settledStream {
                 guard let self else { break }
                 if Task.isCancelled { break }
-                isSettled = true
+                hasPendingSettle = true
+                #if TESTING
+                onHasPendingSettleForTesting?()
+                #endif
             }
         }
 
@@ -256,7 +292,7 @@ final class RiveController {
                 for await _ in dirtyStream {
                     guard let self else { break }
                     if Task.isCancelled { break }
-                    isSettled = false
+                    markDirty()
                 }
             }
         }
