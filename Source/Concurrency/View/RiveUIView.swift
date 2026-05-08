@@ -523,6 +523,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         handlePointerEvent(from: event, with: { .pointerMove($0) })
     }
 
+    public override func mouseDragged(with event: NSEvent) {
+        super.mouseDragged(with: event)
+        handlePointerEvent(from: event, with: { .pointerMove($0) })
+    }
+
     public override func mouseExited(with event: NSEvent) {
         super.mouseExited(with: event)
         handlePointerEvent(from: event, with: { .pointerExit($0) })
