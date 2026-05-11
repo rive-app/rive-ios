@@ -17,6 +17,7 @@ FOUNDATION_EXPORT const unsigned char RiveRuntimeVersionString[];
 // In this header, you should import all the public headers of your framework
 // using statements like #import <RiveRuntime/PublicHeader.h>
 #import <RiveRuntime/Rive.h>
+#import <RiveRuntime/RiveLogger.h>
 #import <RiveRuntime/LayerState.h>
 #import <RiveRuntime/RiveFile.h>
 #import <RiveRuntime/RiveArtboard.h>
