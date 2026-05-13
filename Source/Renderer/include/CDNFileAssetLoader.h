@@ -14,10 +14,12 @@
 @class RiveFileAssetLoader;
 
 @interface CDNFileAssetLoader : RiveFileAssetLoader
+- (void)cancelPendingDownloads;
 @end
 
 @interface FallbackFileAssetLoader : RiveFileAssetLoader
 - (void)addLoader:(RiveFileAssetLoader*)loader;
+- (void)cancelPendingDownloads;
 @end
 
 typedef bool (^LoadAsset)(RiveFileAsset* asset,

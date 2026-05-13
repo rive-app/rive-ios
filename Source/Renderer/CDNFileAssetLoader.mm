@@ -12,16 +12,37 @@
 #import <RiveRuntime/RiveRuntime-Swift.h>
 
 @implementation CDNFileAssetLoader
-{}
+{
+    NSMutableArray<NSURLSessionTask*>* _activeTasks;
+}
+
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        _activeTasks = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (void)cancelPendingDownloads
+{
+    for (NSURLSessionTask* task in _activeTasks)
+    {
+        [task cancel];
+    }
+    [_activeTasks removeAllObjects];
+}
+
+- (void)dealloc
+{
+    [self cancelPendingDownloads];
+}
 
 - (bool)loadContentsWithAsset:(RiveFileAsset*)asset
                       andData:(NSData*)data
                    andFactory:(RiveFactory*)factory
 {
-    // TODO: Error handling
-    // TODO: Track tasks, so we can cancel them if we garbage collect the asset
-    // loader
-
     if ([[asset cdnUuid] length] > 0)
     {
         NSURL* URL =
@@ -65,9 +86,7 @@
                 }
               }];
 
-        // Kick off the http download
-        // QUESTION: Do we need to tie this into the RiveFile so we can wait for
-        // these loads to be completed?
+        [_activeTasks addObject:task];
         [task resume];
         return true;
     }
@@ -92,6 +111,17 @@
 - (void)addLoader:(RiveFileAssetLoader*)loader
 {
     [loaders addObject:loader];
+}
+
+- (void)cancelPendingDownloads
+{
+    for (RiveFileAssetLoader* loader in loaders)
+    {
+        if ([loader respondsToSelector:@selector(cancelPendingDownloads)])
+        {
+            [(id)loader cancelPendingDownloads];
+        }
+    }
 }
 
 - (bool)loadContentsWithAsset:(RiveFileAsset*)asset

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CDNTEST002A01E3D2FAEAB9 /* CDNFileAssetLoaderTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDNTEST001913C0541E001B /* CDNFileAssetLoaderTest.mm */; };
 		041265262B0CB41E009400EC /* OutOfBandAssetTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */; };
 		041265282B0CC387009400EC /* hosted_assets.riv in Resources */ = {isa = PBXBuildFile; fileRef = 041265272B0CC387009400EC /* hosted_assets.riv */; };
 		0412652A2B0CCB8E009400EC /* embedded_assets.riv in Resources */ = {isa = PBXBuildFile; fileRef = 041265292B0CCB8E009400EC /* embedded_assets.riv */; };
@@ -151,6 +152,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CDNTEST001913C0541E001B /* CDNFileAssetLoaderTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CDNFileAssetLoaderTest.mm; sourceTree = "<group>"; };
 		041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OutOfBandAssetTest.mm; sourceTree = "<group>"; };
 		041265272B0CC387009400EC /* hosted_assets.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hosted_assets.riv; sourceTree = "<group>"; };
 		041265292B0CCB8E009400EC /* embedded_assets.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = embedded_assets.riv; sourceTree = "<group>"; };
@@ -526,6 +528,7 @@
 				04BE542C264C1A3300427B39 /* RiveDelegatesTest.swift */,
 				C38BB5F528762B720039E385 /* RiveStateMachineTest.swift */,
 				041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */,
+				CDNTEST001913C0541E001B /* CDNFileAssetLoaderTest.mm */,
 				F28DE4522C5002D900F3C379 /* RiveModelTests.swift */,
 				F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */,
 				F23992E62CB9C1C60021EF61 /* RenderContextTests.m */,
@@ -840,6 +843,7 @@
 				F26698D92E8D74E700E03BBA /* IDPoolTests.swift in Sources */,
 				04BE541E264AC7A600427B39 /* RiveArtboardLoadTest.mm in Sources */,
 				041265262B0CB41E009400EC /* OutOfBandAssetTest.mm in Sources */,
+				CDNTEST002A01E3D2FAEAB9 /* CDNFileAssetLoaderTest.mm in Sources */,
 				04BE542D264C1A3300427B39 /* RiveDelegatesTest.swift in Sources */,
 				04BE5422264AD97C00427B39 /* RiveStateMachineConfigurationTest.mm in Sources */,
 				04ED72F1299C114000E8DE53 /* RiveViewModelTest.swift in Sources */,
