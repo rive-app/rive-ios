@@ -47,7 +47,7 @@ final class ArtboardService: NSObject, ArtboardListener {
     }
 
     /// Wraps a continuation-based command queue operation with cancellation support.
-    private func withCancellableContinuation<T>(
+    private func withCancellableContinuation<T: Sendable>(
         cancelledError: Error,
         operation: @escaping (UInt64) -> Void
     ) async throws -> T {
@@ -64,7 +64,7 @@ final class ArtboardService: NSObject, ArtboardListener {
                 guard let self else { return }
                 if let continuation = self.continuations.removeValue(forKey: requestID) {
                     self.finishImmediateRequest(requestID)
-                    try? continuation.resume(with: .failure(cancelledError))
+                    continuation.resume(throwing: cancelledError)
                 }
             }
         }
@@ -154,7 +154,7 @@ final class ArtboardService: NSObject, ArtboardListener {
             finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Received \(names.count) state machine names")
-            try continuation.resume(with: .success(names))
+            try continuation.resume(returning: names)
         }
     }
 
@@ -167,7 +167,7 @@ final class ArtboardService: NSObject, ArtboardListener {
             finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Received default view model info '\(viewModelName)' / '\(instanceName)'")
-            try continuation.resume(with: .success((viewModelName: viewModelName, instanceName: instanceName)))
+            try continuation.resume(returning: (viewModelName: viewModelName, instanceName: instanceName))
         }
     }
 
@@ -180,7 +180,7 @@ final class ArtboardService: NSObject, ArtboardListener {
             finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Instantiated state machine (\(stateMachineHandle))")
-            try continuation.resume(with: .success(stateMachineHandle))
+            try continuation.resume(returning: stateMachineHandle)
         }
     }
 
@@ -194,7 +194,7 @@ final class ArtboardService: NSObject, ArtboardListener {
             finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.error(tag: .artboard, "\(Self.context(artboardHandle)) Operation failed: \(message)")
-            try continuation.resume(with: .failure(ArtboardError.invalidStateMachine(message)))
+            continuation.resume(throwing: ArtboardError.invalidStateMachine(message))
         }
     }
 
@@ -229,7 +229,7 @@ final class ArtboardService: NSObject, ArtboardListener {
             finishImmediateRequest(requestID)
             guard let continuation = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Deleted artboard")
-            try continuation.resume(with: .success(artboardHandle))
+            try continuation.resume(returning: artboardHandle)
         }
     }
 }

@@ -11,8 +11,8 @@ import Foundation
 
 enum Notifications {
     private static let lock = NSLock()
-    private static var observers: [NSObjectProtocol] = []
-    private static var observerCount = 0
+    nonisolated(unsafe) private static var observers: [NSObjectProtocol] = []
+    nonisolated(unsafe) private static var observerCount = 0
 
     static func observe() {
         let shouldRegister = lock.withLock {

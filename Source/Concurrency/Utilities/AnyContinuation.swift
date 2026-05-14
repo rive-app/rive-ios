@@ -15,38 +15,42 @@ import Foundation
 /// are called. When listener callbacks are invoked, the continuation is looked up and
 /// resumed with the result. Type checking is performed at runtime when resuming.
 struct AnyContinuation {
-    private let resume: (Result<Any, Error>) throws -> Void
+    private let resumeReturning: (sending Any) throws -> Void
+    private let resumeThrowing: (Error) -> Void
 
     init<T: Sendable>(_ continuation: CheckedContinuation<T, Error>) {
-        resume = { result in
-            switch result {
-            case .success(let value):
-                if let typedValue = value as? T {
-                    continuation.resume(returning: typedValue)
-                } else {
-                    let error = AnyContinuationError.typeMismatch(
-                        expected: String(describing: T.self),
-                        actual: String(describing: type(of: value))
-                    )
-                    RiveLog.error(
-                        tag: .rive,
-                        error: error,
-                        "[Rive] Failed to resume continuation"
-                    )
-                    throw error
-                }
-            case .failure(let error):
-                continuation.resume(throwing: error)
+        resumeReturning = { value in
+            if let typedValue = value as? T {
+                continuation.resume(returning: typedValue)
+            } else {
+                let error = AnyContinuationError.typeMismatch(
+                    expected: String(describing: T.self),
+                    actual: String(describing: type(of: value))
+                )
+                RiveLog.error(
+                    tag: .rive,
+                    error: error,
+                    "[Rive] Failed to resume continuation"
+                )
+                throw error
             }
+        }
+        resumeThrowing = { error in
+            continuation.resume(throwing: error)
         }
     }
 
-    /// Resumes the continuation with the provided result.
+    /// Resumes the continuation by returning a value.
     ///
     /// Performs runtime type checking to ensure the value type matches the continuation's
     /// expected type. Throws `AnyContinuationError.typeMismatch` if types don't match.
-    func resume(with result: Result<Any, Error>) throws {
-        try resume(result)
+    func resume(returning value: sending Any) throws {
+        try resumeReturning(value)
+    }
+
+    /// Resumes the continuation by throwing an error.
+    func resume(throwing error: Error) {
+        resumeThrowing(error)
     }
 }
 
@@ -55,7 +59,7 @@ struct AnyContinuation {
 /// These errors are thrown when the value type doesn't match the continuation's expected type.
 enum AnyContinuationError: LocalizedError {
     case typeMismatch(expected: String, actual: String)
-    
+
     var errorDescription: String? {
         switch self {
         case .typeMismatch(let expected, let actual):

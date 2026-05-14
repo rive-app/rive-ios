@@ -15,7 +15,7 @@ import os
 /// logging (the default).
 public enum RiveLog: Sendable {
     private static let lock = NSLock()
-    private static var _logger: any Logger = noneLogger
+    nonisolated(unsafe) private static var _logger: any Logger = noneLogger
     
     private static let noneLogger: any Logger = NoOpLogger()
     nonisolated public static var none: any Logger { noneLogger }

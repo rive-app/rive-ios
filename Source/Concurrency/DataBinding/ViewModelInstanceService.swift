@@ -47,7 +47,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     }
 
     /// Wraps a continuation-based command queue operation with cancellation support.
-    private func withCancellableContinuation<T>(
+    private func withCancellableContinuation<T: Sendable>(
         cancelledError: Error,
         operation: @escaping (UInt64) -> Void
     ) async throws -> T {
@@ -64,7 +64,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
                 guard let self else { return }
                 if let continuation = self.continuations.removeValue(forKey: requestID) {
                     self.finishImmediateRequest(requestID)
-                    try? continuation.resume(with: .failure(cancelledError))
+                    continuation.resume(throwing: cancelledError)
                 }
             }
         }
@@ -608,9 +608,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             finishImmediateRequest(requestID)
             RiveLog.error(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Operation failed: \(message)")
             if let continuation = continuations.removeValue(forKey: requestID) {
-                try continuation.resume(
-                    with: .failure(ViewModelInstanceError.message(message))
-                )
+                continuation.resume(throwing: ViewModelInstanceError.message(message))
             }
         }
     }
@@ -634,23 +632,23 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
                 do {
                     switch viewModelInstanceData.type {
                     case .trigger:
-                        try continuation.resume(with: .failure(ViewModelInstanceError.missingData))
+                        continuation.resume(throwing: ViewModelInstanceError.missingData)
                     case .value(let value):
                         switch value {
                         case .string(let stringValue):
-                            try continuation.resume(with: .success(stringValue))
+                            try continuation.resume(returning: stringValue)
                         case .number(let numberValue):
-                            try continuation.resume(with: .success(numberValue))
+                            try continuation.resume(returning: numberValue)
                         case .boolean(let booleanValue):
-                            try continuation.resume(with: .success(booleanValue))
+                            try continuation.resume(returning: booleanValue)
                         case .color(let argbValue):
-                            try continuation.resume(with: .success(Color(argbValue)))
+                            try continuation.resume(returning: Color(argbValue))
                         case .none:
-                            try continuation.resume(with: .failure(ViewModelInstanceError.missingData))
+                            continuation.resume(throwing: ViewModelInstanceError.missingData)
                         }
                     }
                 } catch AnyContinuationError.typeMismatch(expected: let expected, actual: let actual) {
-                    try continuation.resume(with: .failure(ViewModelInstanceError.valueMismatch(expected, actual)))
+                    continuation.resume(throwing: ViewModelInstanceError.valueMismatch(expected, actual))
                 }
                 return
             }
@@ -700,7 +698,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             finishImmediateRequest(requestID)
             if let continuation = continuations.removeValue(forKey: requestID) {
                 RiveLog.trace(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Received list size \(size) for path '\(path)'")
-                try continuation.resume(with: .success(size))
+                try continuation.resume(returning: size)
             }
         }
     }
@@ -717,7 +715,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             finishImmediateRequest(requestID)
             if let continuation = continuations.removeValue(forKey: requestID) {
                 RiveLog.debug(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Deleted instance")
-                try continuation.resume(with: .success(viewModelInstanceHandle))
+                try continuation.resume(returning: viewModelInstanceHandle)
             }
         }
     }

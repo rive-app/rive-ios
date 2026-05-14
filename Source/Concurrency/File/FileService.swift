@@ -53,7 +53,7 @@ final class FileService: NSObject, FileListener {
     }
 
     /// Wraps a continuation-based command queue operation with cancellation support.
-    private func withCancellableRequest<T>(
+    private func withCancellableRequest<T: Sendable>(
         mapError: @escaping (String) -> Error,
         operation: @escaping (UInt64) -> Void
     ) async throws -> T {
@@ -73,7 +73,7 @@ final class FileService: NSObject, FileListener {
                 guard let self else { return }
                 if let request = self.continuations.removeValue(forKey: requestID) {
                     self.finishImmediateRequest(requestID)
-                    try? request.continuation.resume(with: .failure(FileError.cancelled))
+                    request.continuation.resume(throwing: FileError.cancelled)
                 }
             }
         }
@@ -251,7 +251,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(handle)) Loaded file")
-            try request.continuation.resume(with: .success(handle))
+            try request.continuation.resume(returning: handle)
         }
     }
 
@@ -264,7 +264,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(handle)) Deleted file")
-            try request.continuation.resume(with: .success(handle))
+            try request.continuation.resume(returning: handle)
         }
     }
 
@@ -283,7 +283,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.error(tag: .file, "\(Self.context(fileHandle)) Operation failed: \(message)")
-            try request.continuation.resume(with: .failure(request.mapError(message)))
+            request.continuation.resume(throwing: request.mapError(message))
         }
     }
 
@@ -296,7 +296,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Instantiated artboard (\(artboardHandle))")
-            try request.continuation.resume(with: .success(artboardHandle))
+            try request.continuation.resume(returning: artboardHandle)
         }
     }
 
@@ -309,7 +309,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Instantiated view model instance (\(viewModelInstanceHandle))")
-            try request.continuation.resume(with: .success(viewModelInstanceHandle))
+            try request.continuation.resume(returning: viewModelInstanceHandle)
         }
     }
 
@@ -322,7 +322,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) artboard names")
-            try request.continuation.resume(with: .success(names))
+            try request.continuation.resume(returning: names)
         }
     }
 
@@ -335,7 +335,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) view model names")
-            try request.continuation.resume(with: .success(names))
+            try request.continuation.resume(returning: names)
         }
     }
 
@@ -348,7 +348,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) instance names for view model '\(viewModelName)'")
-            try request.continuation.resume(with: .success(names))
+            try request.continuation.resume(returning: names)
         }
     }
 
@@ -364,7 +364,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(properties.count) property definitions for view model '\(viewModelName)'")
-            try request.continuation.resume(with: .success(properties))
+            try request.continuation.resume(returning: properties)
         }
     }
 
@@ -381,7 +381,7 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(enums.count) view model enums")
-            try request.continuation.resume(with: .success(enums))
+            try request.continuation.resume(returning: enums)
         }
     }
 

@@ -15,9 +15,8 @@ import Foundation
 /// request ID when subscribing to property changes. When listener callbacks are invoked,
 /// values are yielded to the stream. Type checking is performed at runtime when yielding.
 struct AnyAsyncThrowingStreamContinuation {
-    private let yieldValue: (Any) throws -> Void
-    private let finishStream: () -> Void
-    private let finishStreamThrowing: (Error) -> Void
+    private let yieldValue: (sending Any) throws -> Void
+    private let finishStream: (Error?) -> Void
 
     init<T: Sendable>(_ continuation: AsyncThrowingStream<T, Error>.Continuation) {
         yieldValue = { value in
@@ -36,10 +35,7 @@ struct AnyAsyncThrowingStreamContinuation {
                 throw error
             }
         }
-        finishStream = {
-            continuation.finish()
-        }
-        finishStreamThrowing = { error in
+        finishStream = { error in
             continuation.finish(throwing: error)
         }
     }
@@ -51,18 +47,13 @@ struct AnyAsyncThrowingStreamContinuation {
     ///
     /// - Parameter value: The value to yield to the stream
     /// - Throws: `AnyAsyncThrowingStreamContinuationError.typeMismatch` if the value type doesn't match the continuation's expected type
-    func yield(_ value: Any) throws {
+    func yield(_ value: sending Any) throws {
         try yieldValue(value)
     }
 
-    /// Finishes the stream successfully.
-    func finish() {
-        finishStream()
-    }
-
-    /// Finishes the stream with an error.
-    func finish(throwing error: Error) {
-        finishStreamThrowing(error)
+    /// Finishes the stream, optionally with an error.
+    func finish(throwing error: Error? = nil) {
+        finishStream(error)
     }
 }
 
@@ -71,7 +62,7 @@ struct AnyAsyncThrowingStreamContinuation {
 /// These errors are thrown when the value type doesn't match the continuation's expected type.
 enum AnyAsyncThrowingStreamContinuationError: LocalizedError {
     case typeMismatch(expected: String, actual: String)
-    
+
     var errorDescription: String? {
         switch self {
         case .typeMismatch(let expected, let actual):
@@ -79,4 +70,3 @@ enum AnyAsyncThrowingStreamContinuationError: LocalizedError {
         }
     }
 }
-
