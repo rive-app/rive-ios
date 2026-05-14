@@ -26,7 +26,7 @@ private typealias ScrollView = NSScrollView
 
 extension View {
     func isOnscreen() -> Bool {
-        guard let window = window, isWindowHidden(window) == false, isViewHidden(self) == false else {
+        guard let window = window, isWindowHidden(window) == false, isViewHidden(self) == false, bounds.isEmpty == false else {
             return false
         }
 
@@ -43,19 +43,23 @@ extension View {
                 return false
             }
 
-            // Test this - TL;DR: if _some_ superview clips to bounds, we might have to skip drawing
             if superview.clipsToBounds == false {
                 currentView = superview
                 continue
             }
 
-            guard rect.intersects(superview.bounds) else {
+            guard superview.bounds.isEmpty == false, rect.intersects(superview.bounds) else {
                 return false
             }
-            
+
             currentView = superview
         }
-        return true
+        #if canImport(AppKit) && !RIVE_MAC_CATALYST
+        guard let contentView = window.contentView else { return false }
+        return rect.intersects(contentView.bounds)
+        #else
+        return rect.intersects(window.bounds)
+        #endif
     }
 
     private func isRectVisible(in scrollView: ScrollView, rect: CGRect) -> Bool {
@@ -69,12 +73,12 @@ extension View {
     }
     #else
     private func isWindowHidden(_ window: Window) -> Bool {
-        return isViewHidden(window)
+        return window.bounds.isEmpty || isViewHidden(window)
     }
     #endif
 
     private func isViewHidden(_ view: View) -> Bool {
-        return view.bounds.isEmpty || view.isHidden || view.alpha == 0
+        return view.isHidden || view.alpha == 0
     }
 }
 

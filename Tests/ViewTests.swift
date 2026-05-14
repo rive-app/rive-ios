@@ -31,6 +31,15 @@ class ViewTests: XCTestCase {
         XCTAssertFalse(view.isOnscreen())
     }
     
+    func testIsOnscreen_WhenWindowHasEmptyBounds_ReturnsFalse() {
+        let window = UIWindow(frame: CGRect.zero)
+        window.isHidden = false
+        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 10, height: 10)))
+        window.addSubview(view)
+
+        XCTAssertFalse(view.isOnscreen())
+    }
+
     func testIsOnscreen_WhenWindowIsVisible_ReturnsTrue() {
         let window = UIWindow(frame: CGRect(origin: .zero, size: CGSize(width: 10, height: 10)))
         window.clipsToBounds = true
@@ -103,7 +112,7 @@ class ViewTests: XCTestCase {
         XCTAssertFalse(view.isOnscreen())
     }
     
-    func testIsOnscreen_WhenSuperviewHasEmptyBounds_ReturnsFalse() {
+    func testIsOnscreen_WhenSuperviewHasEmptyBoundsAndClips_ReturnsFalse() {
         let window = UIWindow(frame: CGRect(origin: .zero, size: CGSize(width: 10, height: 10)))
         window.clipsToBounds = true
         window.isHidden = false
@@ -111,9 +120,24 @@ class ViewTests: XCTestCase {
         let view = UIView(frame: superview.bounds)
         window.addSubview(superview)
         superview.addSubview(view)
+        superview.clipsToBounds = true
         superview.frame = CGRect.zero
-        
+
         XCTAssertFalse(view.isOnscreen())
+    }
+
+    func testIsOnscreen_WhenSuperviewHasEmptyBoundsAndDoesNotClip_ReturnsTrue() {
+        let window = UIWindow(frame: CGRect(origin: .zero, size: CGSize(width: 10, height: 10)))
+        window.clipsToBounds = false
+        window.isHidden = false
+        let superview = UIView(frame: window.bounds)
+        let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 10, height: 10)))
+        window.addSubview(superview)
+        superview.addSubview(view)
+        superview.clipsToBounds = false
+        superview.frame = CGRect.zero
+
+        XCTAssertTrue(view.isOnscreen())
     }
     
     func testIsOnscreen_WhenSuperviewHasZeroAlpha_ReturnsFalse() {
@@ -210,7 +234,7 @@ class ViewTests: XCTestCase {
         XCTAssertTrue(view.isOnscreen())
     }
     
-    func testIsOnscreen_WhenSuperviewDoesNotClipToBoundsAndViewOutsideBounds_ReturnsTrue() {
+    func testIsOnscreen_WhenSuperviewDoesNotClipToBoundsAndViewOutsideWindow_ReturnsFalse() {
         let window = UIWindow(frame: CGRect(origin: .zero, size: CGSize(width: 10, height: 10)))
         window.clipsToBounds = false
         window.isHidden = false
@@ -219,7 +243,20 @@ class ViewTests: XCTestCase {
         window.addSubview(superview)
         superview.addSubview(view)
         superview.clipsToBounds = false
-        
+
+        XCTAssertFalse(view.isOnscreen())
+    }
+
+    func testIsOnscreen_WhenSuperviewDoesNotClipToBoundsAndViewInsideWindow_ReturnsTrue() {
+        let window = UIWindow(frame: CGRect(origin: .zero, size: CGSize(width: 10, height: 10)))
+        window.clipsToBounds = false
+        window.isHidden = false
+        let superview = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 5))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 5))
+        window.addSubview(superview)
+        superview.addSubview(view)
+        superview.clipsToBounds = false
+
         XCTAssertTrue(view.isOnscreen())
     }
     
