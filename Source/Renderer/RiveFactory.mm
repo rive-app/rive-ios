@@ -128,6 +128,7 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
     }
 }
 
+
 - (RiveRenderImage*)decodeImage:(nonnull NSData*)data
 {
     UInt8* bytes = (UInt8*)[data bytes];
