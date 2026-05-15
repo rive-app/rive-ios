@@ -21,6 +21,7 @@ enum RiveLoggerFileEvent {
     case viewModelWithName(String, Bool)
     case viewModelAtIndex(Int, Bool)
     case defaultViewModelForArtboard(String, Bool)
+    case cancelledAssetDownload(URL, RiveFileAsset)
 }
 
 extension RiveLogger {
@@ -60,6 +61,10 @@ extension RiveLogger {
 
     @objc(logFileViewModelAtIndex:found:) static func log(fileViewModelAtIndex index: Int, found: Bool) {
         log(file: nil, event: .viewModelAtIndex(index, found))
+    }
+
+    @objc(logCancelledAssetDownload:fromURL:) static func log(cancelledAssetDownload asset: RiveFileAsset, from url: URL) {
+        log(file: nil, event: .cancelledAssetDownload(url, asset))
     }
 
     @objc(logFileDefaultViewModelForArtboard:found:) static func log(fileDefaultViewModelForArtboard artboard: RiveArtboard, found: Bool) {
@@ -114,6 +119,10 @@ extension RiveLogger {
             _log(event: event, level: .debug) {
                 let message = found ? "Found default view model for artboard \(name)" : "Could not find default view for artboard \(name)"
                 Self.file.debug("\(message)")
+            }
+        case .cancelledAssetDownload(let url, let asset):
+            _log(event: event, level: .debug) {
+                Self.file.debug("Cancelled asset download \(asset.name()) from URL: \(url)")
             }
         }
     }

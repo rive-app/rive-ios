@@ -24,6 +24,7 @@
     rive::rcp<rive::File> riveFile;
     rive::rcp<rive::FileAssetLoader> fileAssetLoader;
     RenderContext* _renderContext;
+    FallbackFileAssetLoader* _fallbackLoader;
 }
 
 + (uint)majorVersion
@@ -374,6 +375,8 @@
         [fallbackLoader addLoader:cdnLoader];
     }
 
+    _fallbackLoader = fallbackLoader;
+
     fileAssetLoader =
         rive::make_rcp<rive::FileAssetLoaderAdapter>(fallbackLoader);
 
@@ -600,6 +603,7 @@
 /// Clean up rive file
 - (void)dealloc
 {
+    [_fallbackLoader cancel];
     riveFile = nullptr;
     fileAssetLoader = nullptr;
 }

@@ -18,6 +18,7 @@
 - (BOOL)loadContentsWithAsset:(RiveFileAsset*)asset
                       andData:(NSData*)data
                    andFactory:(RiveFactory*)factory;
+- (void)cancel;
 @end
 
 #endif /* RiveFileAssetLoader_h */

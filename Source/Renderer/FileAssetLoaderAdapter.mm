@@ -10,7 +10,6 @@
 #import <RiveFileAssetLoader.h>
 #import <RiveFileAsset.h>
 #import <RiveFactory.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 rive::FileAssetLoaderAdapter::FileAssetLoaderAdapter(

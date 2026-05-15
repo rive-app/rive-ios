@@ -21,4 +21,7 @@ using namespace rive;
     return false;
 }
 
+- (void)cancel
+{}
+
 @end
