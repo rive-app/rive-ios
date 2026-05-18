@@ -425,9 +425,9 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     ///
     /// Delegates to the command queue. No listener callback is invoked for this operation.
     @MainActor
-    func setArtboardValue(_ value: Artboard, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
+    func setArtboardValue(_ value: Artboard?, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
         let requestID = dependencies.commandQueue.nextRequestID
-        dependencies.commandQueue.setViewModelInstanceArtboard(instance, path: path, value: value.artboardHandle, requestID: requestID)
+        dependencies.commandQueue.setViewModelInstanceArtboard(instance, path: path, value: value?.artboardHandle ?? 0, requestID: requestID)
         emitDirty(for: instance)
     }
 

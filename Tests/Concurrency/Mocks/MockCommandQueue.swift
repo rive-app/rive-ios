@@ -124,7 +124,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     
     private var decodeImageStub: ((Data, any RenderImageListener, UInt64) -> UInt64)?
     private(set) var decodeImageCalls: [DecodeImageCall] = []
-    private var deleteImageStub: ((UInt64) -> Void)?
+    private var deleteImageStub: ((UInt64, UInt64) -> Void)?
     private var deleteImageListenerStub: ((UInt64) -> Void)?
     private(set) var deleteImageCalls: [DeleteImageCall] = []
     private(set) var deleteImageListenerCalls: [DeleteImageListenerCall] = []
@@ -358,7 +358,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         decodeImageStub = stub
     }
     
-    func stubDeleteImage(_ stub: @escaping (UInt64) -> Void) {
+    func stubDeleteImage(_ stub: @escaping (UInt64, UInt64) -> Void) {
         deleteImageStub = stub
     }
 
@@ -862,7 +862,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     
     func deleteImage(_ renderImage: UInt64, requestID: UInt64) {
         deleteImageCalls.append(DeleteImageCall(renderImageHandle: renderImage, requestID: requestID))
-        deleteImageStub?(renderImage)
+        deleteImageStub?(renderImage, requestID)
     }
 
     func deleteImageListener(_ renderImage: UInt64) {

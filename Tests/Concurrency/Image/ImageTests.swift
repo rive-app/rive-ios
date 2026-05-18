@@ -114,7 +114,7 @@ class ImageTests: XCTestCase {
         let imageService = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
 
         let enteredContinuation = expectation(description: "entered continuation")
-        commandQueue.stubDeleteImage { handle in
+        commandQueue.stubDeleteImage { handle, _ in
             enteredContinuation.fulfill()
         }
 
@@ -165,13 +165,9 @@ class ImageTests: XCTestCase {
         
         let deleteExpectation = expectation(description: "deleteImage called")
         let deleteListenerExpectation = expectation(description: "deleteImageListener called")
-        commandQueue.stubDeleteImage { handle in
+        commandQueue.stubDeleteImage { handle, requestID in
             XCTAssertEqual(handle, 100)
             deleteExpectation.fulfill()
-            guard let requestID = commandQueue.deleteImageCalls.last?.requestID else {
-                XCTFail("Missing delete image request ID")
-                return
-            }
             imageService.onRenderImageDeleted(handle, requestID: requestID)
         }
         commandQueue.stubDeleteImageListener { handle in

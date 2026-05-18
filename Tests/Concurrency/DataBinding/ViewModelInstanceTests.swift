@@ -869,7 +869,160 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(call.path, "test.image.property.path")
         XCTAssertEqual(call.value, expectedRenderImageHandle)
     }
-    
+
+    @MainActor
+    func test_setValue_withImageProperty_withNil_sendsZeroHandleToCommandQueue() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let property = ImageProperty(path: "test.image.property.path")
+
+        viewModelInstance.setValue(of: property, to: nil)
+
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceImageCalls.count, 1)
+        let call = mockCommandQueue.setViewModelInstanceImageCalls[0]
+        XCTAssertEqual(call.viewModelInstanceHandle, 99)
+        XCTAssertEqual(call.path, "test.image.property.path")
+        XCTAssertEqual(call.value, 0)
+    }
+
+    @MainActor
+    func test_setValue_withImageProperty_retainsImageAfterExternalReferenceIsDropped() async {
+        let mockCommandQueue = MockCommandQueue()
+        let messageGate = CommandQueueMessageGate(driver: mockCommandQueue)
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+        let imageService = ImageService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+
+        let deleteVMExpectation = expectation(description: "deleteViewModelInstance called")
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            XCTAssertTrue(
+                mockCommandQueue.deleteImageCalls.isEmpty,
+                "deleteImage should not be called before ViewModelInstance is deleted"
+            )
+            deleteVMExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteViewModelInstanceListener { _ in }
+
+        let deleteImageExpectation = expectation(description: "deleteImage called")
+        mockCommandQueue.stubDeleteImage { handle, requestID in
+            XCTAssertEqual(handle, 42)
+            XCTAssertEqual(
+                mockCommandQueue.deleteViewModelInstanceCalls.count, 1,
+                "deleteImage should only be called after ViewModelInstance is deleted"
+            )
+            deleteImageExpectation.fulfill()
+            imageService.onRenderImageDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteImageListener { _ in }
+
+        let property = ImageProperty(path: "bg")
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+            )
+
+            autoreleasepool {
+                let image = Image(
+                    handle: 42,
+                    dependencies: .init(imageService: imageService)
+                )
+                viewModelInstance!.setValue(of: property, to: image)
+            }
+
+            XCTAssertTrue(
+                mockCommandQueue.deleteImageCalls.isEmpty,
+                "deleteImage should not be called while external reference is dropped but ViewModelInstance retains the image"
+            )
+
+            viewModelInstance = nil
+        }
+
+        await fulfillment(of: [deleteVMExpectation, deleteImageExpectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteImageCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteImageCalls.first?.renderImageHandle, 42)
+    }
+
+    @MainActor
+    func test_setValue_withImageProperty_replacingImage_releasesPrevious() async {
+        let mockCommandQueue = MockCommandQueue()
+        let messageGate = CommandQueueMessageGate(driver: mockCommandQueue)
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+        let imageService = ImageService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+
+        let deleteVMExpectation = expectation(description: "deleteViewModelInstance called")
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            XCTAssertEqual(
+                mockCommandQueue.deleteImageCalls.count, 1,
+                "Replaced image (42) should be deleted before ViewModelInstance is deleted"
+            )
+            XCTAssertEqual(mockCommandQueue.deleteImageCalls.first?.renderImageHandle, 42)
+            deleteVMExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteViewModelInstanceListener { _ in }
+
+        let deleteImageAExpectation = expectation(description: "deleteImage called for imageA")
+        let deleteImageBExpectation = expectation(description: "deleteImage called for imageB")
+        mockCommandQueue.stubDeleteImage { handle, requestID in
+            if handle == 42 {
+                XCTAssertTrue(
+                    mockCommandQueue.deleteViewModelInstanceCalls.isEmpty,
+                    "Replaced image should be deleted while ViewModelInstance is still alive"
+                )
+                deleteImageAExpectation.fulfill()
+            } else if handle == 77 {
+                XCTAssertEqual(
+                    mockCommandQueue.deleteViewModelInstanceCalls.count, 1,
+                    "Current image should only be deleted after ViewModelInstance is deleted"
+                )
+                deleteImageBExpectation.fulfill()
+            }
+            imageService.onRenderImageDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteImageListener { _ in }
+
+        let property = ImageProperty(path: "bg")
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+            )
+
+            autoreleasepool {
+                let imageA = Image(
+                    handle: 42,
+                    dependencies: .init(imageService: imageService)
+                )
+                viewModelInstance!.setValue(of: property, to: imageA)
+
+                let imageB = Image(
+                    handle: 77,
+                    dependencies: .init(imageService: imageService)
+                )
+                viewModelInstance!.setValue(of: property, to: imageB)
+            }
+
+            viewModelInstance = nil
+        }
+
+        await fulfillment(
+            of: [deleteImageAExpectation, deleteVMExpectation, deleteImageBExpectation],
+            timeout: 1
+        )
+        XCTAssertEqual(mockCommandQueue.deleteImageCalls.count, 2)
+    }
+
     // MARK: - Artboard
     
     @MainActor
@@ -899,7 +1052,160 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(call.path, "test.artboard.property.path")
         XCTAssertEqual(call.value, expectedArtboardHandle)
     }
-    
+
+    @MainActor
+    func test_setValue_withArtboardProperty_withNil_sendsZeroHandleToCommandQueue() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let property = ArtboardProperty(path: "test.artboard.property.path")
+
+        viewModelInstance.setValue(of: property, to: nil)
+
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceArtboardCalls.count, 1)
+        let call = mockCommandQueue.setViewModelInstanceArtboardCalls[0]
+        XCTAssertEqual(call.viewModelInstanceHandle, 99)
+        XCTAssertEqual(call.path, "test.artboard.property.path")
+        XCTAssertEqual(call.value, 0)
+    }
+
+    @MainActor
+    func test_setValue_withArtboardProperty_retainsArtboardAfterExternalReferenceIsDropped() async {
+        let mockCommandQueue = MockCommandQueue()
+        let messageGate = CommandQueueMessageGate(driver: mockCommandQueue)
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+        let artboardService = ArtboardService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+
+        let deleteVMExpectation = expectation(description: "deleteViewModelInstance called")
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            XCTAssertTrue(
+                mockCommandQueue.deleteArtboardCalls.isEmpty,
+                "deleteArtboard should not be called before ViewModelInstance is deleted"
+            )
+            deleteVMExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteViewModelInstanceListener { _ in }
+
+        let deleteArtboardExpectation = expectation(description: "deleteArtboard called")
+        mockCommandQueue.stubDeleteArtboard { handle, requestID in
+            XCTAssertEqual(handle, 42)
+            XCTAssertEqual(
+                mockCommandQueue.deleteViewModelInstanceCalls.count, 1,
+                "deleteArtboard should only be called after ViewModelInstance is deleted"
+            )
+            deleteArtboardExpectation.fulfill()
+            artboardService.onArtboardDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteArtboardListener { _ in }
+
+        let property = ArtboardProperty(path: "bg")
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+            )
+
+            autoreleasepool {
+                let artboard = Artboard(
+                    dependencies: .init(artboardService: artboardService),
+                    artboardHandle: 42
+                )
+                viewModelInstance!.setValue(of: property, to: artboard)
+            }
+
+            XCTAssertTrue(
+                mockCommandQueue.deleteArtboardCalls.isEmpty,
+                "deleteArtboard should not be called while external reference is dropped but ViewModelInstance retains the artboard"
+            )
+
+            viewModelInstance = nil
+        }
+
+        await fulfillment(of: [deleteVMExpectation, deleteArtboardExpectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteArtboardCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteArtboardCalls.first?.artboardHandle, 42)
+    }
+
+    @MainActor
+    func test_setValue_withArtboardProperty_replacingArtboard_releasesPrevious() async {
+        let mockCommandQueue = MockCommandQueue()
+        let messageGate = CommandQueueMessageGate(driver: mockCommandQueue)
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+        let artboardService = ArtboardService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+
+        let deleteVMExpectation = expectation(description: "deleteViewModelInstance called")
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            XCTAssertEqual(
+                mockCommandQueue.deleteArtboardCalls.count, 1,
+                "Replaced artboard (42) should be deleted before ViewModelInstance is deleted"
+            )
+            XCTAssertEqual(mockCommandQueue.deleteArtboardCalls.first?.artboardHandle, 42)
+            deleteVMExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteViewModelInstanceListener { _ in }
+
+        let deleteArtboardAExpectation = expectation(description: "deleteArtboard called for artboardA")
+        let deleteArtboardBExpectation = expectation(description: "deleteArtboard called for artboardB")
+        mockCommandQueue.stubDeleteArtboard { handle, requestID in
+            if handle == 42 {
+                XCTAssertTrue(
+                    mockCommandQueue.deleteViewModelInstanceCalls.isEmpty,
+                    "Replaced artboard should be deleted while ViewModelInstance is still alive"
+                )
+                deleteArtboardAExpectation.fulfill()
+            } else if handle == 77 {
+                XCTAssertEqual(
+                    mockCommandQueue.deleteViewModelInstanceCalls.count, 1,
+                    "Current artboard should only be deleted after ViewModelInstance is deleted"
+                )
+                deleteArtboardBExpectation.fulfill()
+            }
+            artboardService.onArtboardDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteArtboardListener { _ in }
+
+        let property = ArtboardProperty(path: "bg")
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+            )
+
+            autoreleasepool {
+                let artboardA = Artboard(
+                    dependencies: .init(artboardService: artboardService),
+                    artboardHandle: 42
+                )
+                viewModelInstance!.setValue(of: property, to: artboardA)
+
+                let artboardB = Artboard(
+                    dependencies: .init(artboardService: artboardService),
+                    artboardHandle: 77
+                )
+                viewModelInstance!.setValue(of: property, to: artboardB)
+            }
+
+            viewModelInstance = nil
+        }
+
+        await fulfillment(
+            of: [deleteArtboardAExpectation, deleteVMExpectation, deleteArtboardBExpectation],
+            timeout: 1
+        )
+        XCTAssertEqual(mockCommandQueue.deleteArtboardCalls.count, 2)
+    }
+
     // MARK: - Trigger
     
     @MainActor

@@ -42,6 +42,8 @@ public final class ViewModelInstance: Equatable {
 
     private let dependencies: Dependencies
     let viewModelInstanceHandle: ViewModelInstanceHandle
+    private var artboardPropertyValues: [String: Artboard] = [:]
+    private var imagePropertyValues: [String: Image] = [:]
 
     private static func logContext(for handle: ViewModelInstanceHandle) -> String {
         "[ViewModelInstance (\(handle))]"
@@ -298,30 +300,32 @@ public final class ViewModelInstance: Equatable {
 
     // MARK: - ImageProperty
 
-    /// Sets the value of an image property.
+    /// Sets the value of an image property, or clears it if `nil` is passed.
     ///
     /// - Parameters:
     ///   - property: The image property to modify
-    ///   - image: The image to assign to the property
+    ///   - image: The image to assign to the property, or `nil` to clear it
     @MainActor
-    public func setValue(of property: ImageProperty, to image: Image) {
+    public func setValue(of property: ImageProperty, to image: Image?) {
         let handle = viewModelInstanceHandle
         RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting image property '\(property.path)'")
-        dependencies.viewModelInstanceService.setImageValue(image.handle, for: viewModelInstanceHandle, path: property.path)
+        dependencies.viewModelInstanceService.setImageValue(image?.handle ?? 0, for: viewModelInstanceHandle, path: property.path)
+        imagePropertyValues[property.path] = image
     }
 
     // MARK: - ArtboardProperty
 
-    /// Sets the value of an artboard property.
+    /// Sets the value of an artboard property, or clears it if `nil` is passed.
     ///
     /// - Parameters:
     ///   - property: The artboard property to modify
-    ///   - artboard: The artboard to assign to the property
+    ///   - artboard: The artboard to assign to the property, or `nil` to clear it
     @MainActor
-    public func setValue(of property: ArtboardProperty, to artboard: Artboard) {
+    public func setValue(of property: ArtboardProperty, to artboard: Artboard?) {
         let handle = viewModelInstanceHandle
         RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting artboard property '\(property.path)'")
         dependencies.viewModelInstanceService.setArtboardValue(artboard, for: viewModelInstanceHandle, path: property.path)
+        artboardPropertyValues[property.path] = artboard
     }
 
     // MARK: ViewModelInstanceProperty
