@@ -729,6 +729,7 @@
 @implementation RiveDataBindingViewModelInstanceArtboardProperty
 {
     rive::ViewModelInstanceArtboardRuntime* _artboard;
+    RiveBindableArtboard* _currentValue;
 }
 
 - (instancetype)initWithArtboard:
@@ -754,6 +755,7 @@
         _artboard->value(bindableArtboard);
         [RiveLogger logPropertyUpdated:self value:[artboard name]];
     }
+    _currentValue = artboard;
 }
 
 - (void)setViewModelInstance:(RiveDataBindingViewModelInstance*)instance

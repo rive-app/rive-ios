@@ -576,8 +576,9 @@
                                  }];
         return nil;
     }
-    return [[RiveBindableArtboard alloc]
-        initWithBindableArtboard:bindableArtboard];
+    return
+        [[RiveBindableArtboard alloc] initWithBindableArtboard:bindableArtboard
+                                                 renderContext:_renderContext];
 }
 
 - (RiveBindableArtboard*)defaultBindableArtboard:
@@ -596,8 +597,9 @@
                                  }];
         return nil;
     }
-    return [[RiveBindableArtboard alloc]
-        initWithBindableArtboard:bindableArtboard];
+    return
+        [[RiveBindableArtboard alloc] initWithBindableArtboard:bindableArtboard
+                                                 renderContext:_renderContext];
 }
 
 /// Clean up rive file

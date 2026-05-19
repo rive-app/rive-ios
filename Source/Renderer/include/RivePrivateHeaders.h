@@ -254,7 +254,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RiveBindableArtboard ()
 - (rive::rcp<rive::BindableArtboard>)bindableArtboard;
 - (instancetype)initWithBindableArtboard:
-    (rive::rcp<rive::BindableArtboard>)bindableArtboard;
+                    (rive::rcp<rive::BindableArtboard>)bindableArtboard
+                           renderContext:(RenderContext*)renderContext;
 @end
 
 NS_ASSUME_NONNULL_END

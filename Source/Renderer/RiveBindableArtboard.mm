@@ -12,14 +12,17 @@
 @implementation RiveBindableArtboard
 {
     rive::rcp<rive::BindableArtboard> _bindableArtboard;
+    RenderContext* _renderContext;
 }
 
 - (instancetype)initWithBindableArtboard:
-    (rive::rcp<rive::BindableArtboard>)bindableArtboard
+                    (rive::rcp<rive::BindableArtboard>)bindableArtboard
+                           renderContext:(RenderContext*)renderContext
 {
     if (self = [super init])
     {
         _bindableArtboard = bindableArtboard;
+        _renderContext = renderContext;
     }
     return self;
 }
