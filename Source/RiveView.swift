@@ -122,17 +122,11 @@ open class RiveView: RiveRendererView {
         try! setModel(model, autoPlay: autoPlay)
     }
 
-    
-    #if os(visionOS)
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    #else
+
     required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
-    #endif
 
     private func commonInit() {
         #if os(iOS) || os(visionOS) || os(tvOS)

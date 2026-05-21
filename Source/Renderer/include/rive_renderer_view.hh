@@ -5,14 +5,8 @@
 
 #import <Metal/Metal.h>
 
-#if TARGET_OS_VISION
-@interface RiveMTKView : UIView <RiveMetalDrawableView>
-- (nonnull instancetype)initWithFrame:(CGRect) frameRect device:(nullable id<MTLDevice>) device;
-@end
-#else
 @interface RiveMTKView : MTKView <RiveMetalDrawableView>
 @end
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
