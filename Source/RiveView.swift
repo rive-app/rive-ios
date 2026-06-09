@@ -534,7 +534,7 @@ open class RiveView: RiveRendererView {
                 guard let id = touchPool.add(touch) else {
                     return
                 }
-                handleTouch(touch, delegate: stateMachineDelegate?.touchBegan) { stateMachine, location in
+                handleTouch(touch, delegate: stateMachineDelegate?.touchBegan, advanceImmediately: true) { stateMachine, location in
                     let result = stateMachine.touchBegan(atLocation: location, touchID: id)
                     RiveLogger.log(view: self, event: .touchBegan(location, id))
 
@@ -576,7 +576,7 @@ open class RiveView: RiveRendererView {
                 }
                 touchPool.remove(touch)
 
-                handleTouch(touch, delegate: stateMachineDelegate?.touchEnded) { stateMachine, location in
+                handleTouch(touch, delegate: stateMachineDelegate?.touchEnded, advanceImmediately: true) { stateMachine, location in
                     RiveLogger.log(view: self, event: .touchEnded(location, id))
 
                     var result = stateMachine.touchEnded(atLocation: location, touchID: id)
@@ -604,7 +604,7 @@ open class RiveView: RiveRendererView {
                 }
                 touchPool.remove(touch)
 
-                handleTouch(touch, delegate: stateMachineDelegate?.touchCancelled) { stateMachine, location in
+                handleTouch(touch, delegate: stateMachineDelegate?.touchCancelled, advanceImmediately: true) { stateMachine, location in
                     RiveLogger.log(view: self, event: .touchCancelled(location, id))
 
                     var result = stateMachine.touchCancelled(atLocation: location, touchID: id)
@@ -634,22 +634,26 @@ open class RiveView: RiveRendererView {
         private func handleTouch(
             _ touch: UITouch,
             delegate delegateAction: ((RiveArtboard?, CGPoint)->Void)?,
+            advanceImmediately: Bool = false,
             stateMachineAction: (RiveStateMachineInstance, CGPoint)->Void
         ) {
             guard let artboard = riveModel?.artboard else { return }
             guard let stateMachine = riveModel?.stateMachine else { return }
             let location = touch.location(in: self)
-            
+
             let artboardLocation = artboardLocation(
                 fromTouchLocation: location,
                 inArtboard: artboard.bounds(),
                 fit: fit,
                 alignment: alignment
             )
-            
+
             stateMachineAction(stateMachine, artboardLocation)
+            if advanceImmediately {
+                advanceStateMachine(by: 0)
+            }
             play()
-            
+
             // We send back the touch location in UIView coordinates because
             // users cannot query or manually control the coordinates of elements
             // in the Artboard. So that information would be of no use.
@@ -657,7 +661,7 @@ open class RiveView: RiveRendererView {
         }
     #else
         open override func mouseDown(with event: NSEvent) {
-            handleTouch(event, delegate: stateMachineDelegate?.touchBegan) { stateMachine, location in
+            handleTouch(event, delegate: stateMachineDelegate?.touchBegan, advanceImmediately: true) { stateMachine, location in
                 RiveLogger.log(view: self, event: .touchBegan(location, 0))
 
                 let result = stateMachine.touchBegan(atLocation: location)
@@ -702,7 +706,7 @@ open class RiveView: RiveRendererView {
         }
         
         open override func mouseUp(with event: NSEvent) {
-            handleTouch(event, delegate: stateMachineDelegate?.touchEnded) { stateMachine, location in
+            handleTouch(event, delegate: stateMachineDelegate?.touchEnded, advanceImmediately: true) { stateMachine, location in
                 RiveLogger.log(view: self, event: .touchEnded(location, 0))
 
                 let result = stateMachine.touchEnded(atLocation: location)
@@ -717,7 +721,7 @@ open class RiveView: RiveRendererView {
         }
         
         open override func mouseExited(with event: NSEvent) {
-            handleTouch(event, delegate: stateMachineDelegate?.touchCancelled) { stateMachine, location in
+            handleTouch(event, delegate: stateMachineDelegate?.touchCancelled, advanceImmediately: true) { stateMachine, location in
                 RiveLogger.log(view: self, event: .touchCancelled(location, 0))
 
                 let result = stateMachine.touchCancelled(atLocation: location)
@@ -751,26 +755,30 @@ open class RiveView: RiveRendererView {
         private func handleTouch(
             _ event: NSEvent,
             delegate delegateAction: ((RiveArtboard?, CGPoint)->Void)?,
+            advanceImmediately: Bool = false,
             stateMachineAction: (RiveStateMachineInstance, CGPoint)->Void
         ) {
             guard let artboard = riveModel?.artboard else { return }
             guard let stateMachine = riveModel?.stateMachine else { return }
             let location = convert(event.locationInWindow, from: nil)
-            
+
             // This is conforms the point to UIView coordinates which the
             // RiveRendererView expects in its artboardLocation method
             let locationFlippedY = CGPoint(x: location.x, y: frame.height - location.y)
-            
+
             let artboardLocation = artboardLocation(
                 fromTouchLocation: locationFlippedY,
                 inArtboard: artboard.bounds(),
                 fit: fit,
                 alignment: alignment
             )
-            
+
             stateMachineAction(stateMachine, artboardLocation)
+            if advanceImmediately {
+                advanceStateMachine(by: 0)
+            }
             play()
-            
+
             // We send back the touch location in NSView coordinates because
             // users cannot query or manually control the coordinates of elements
             // in the Artboard. So that information would be of no use.
@@ -794,6 +802,29 @@ open class RiveView: RiveRendererView {
     }
 
     // MARK: - Private
+
+    private func advanceStateMachine(by delta: Double) {
+        guard let stateMachine = riveModel?.stateMachine else { return }
+
+        let firedEventCount = stateMachine.reportedEventCount()
+        if firedEventCount > 0 {
+            for i in 0..<firedEventCount {
+                let event = stateMachine.reportedEvent(at: i)
+                RiveLogger.log(view: self, event: .eventReceived(event.name()))
+                stateMachineDelegate?.onRiveEventReceived?(onRiveEvent: event)
+            }
+        }
+
+        stateMachine.advance(by: delta)
+
+        if let delegate = stateMachineDelegate {
+            stateMachine.stateChanges().forEach {
+                delegate.stateMachine?(stateMachine, didChangeState: $0)
+            }
+        }
+
+        stateMachine.viewModelInstance?.updateListeners()
+    }
 
     private func redrawIfNecessary() {
         if isPlaying == false {

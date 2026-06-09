@@ -96,6 +96,8 @@
 		F20808E22E05C3FF0082A281 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20808E12E05C3FF0082A281 /* View+Extensions.swift */; };
 		F21C3D1B2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */; };
 		F21F08142C66526D00FFA205 /* RiveFallbackFontDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */; };
+		BF6FBEC8A38640258F9DD13F /* rapid_pointer_events.riv in Resources */ = {isa = PBXBuildFile; fileRef = C6558B3CC36949B99AD49DA9 /* rapid_pointer_events.riv */; };
+		D6ED12CF24B347EB8D037D56 /* RapidPointerEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA3A3431992478B9EF62B2D /* RapidPointerEventTests.swift */; };
 		F22CF1B12D380E3700D35779 /* data_binding_test.riv in Resources */ = {isa = PBXBuildFile; fileRef = F22CF1B02D380E3700D35779 /* data_binding_test.riv */; };
 		F22CF1B32D380E6900D35779 /* DataBindingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22CF1B22D380E6900D35779 /* DataBindingTests.swift */; };
 		F22E12112D67D47C00F2E8C3 /* RiveDisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23B2B7F2D2DCD70007AA53E /* RiveDisplayLink.swift */; };
@@ -245,6 +247,8 @@
 		F21C3D1A2DDFCD93005F82F4 /* RiveRenderImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RiveRenderImage+Extensions.swift"; sourceTree = "<group>"; };
 		F21F08132C66526D00FFA205 /* RiveFallbackFontDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFallbackFontDescriptor.swift; sourceTree = "<group>"; };
 		F22883752E1D61B50042FB20 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		C6558B3CC36949B99AD49DA9 /* rapid_pointer_events.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = rapid_pointer_events.riv; sourceTree = "<group>"; };
+		EBA3A3431992478B9EF62B2D /* RapidPointerEventTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RapidPointerEventTests.swift; sourceTree = "<group>"; };
 		F22CF1B02D380E3700D35779 /* data_binding_test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = data_binding_test.riv; sourceTree = "<group>"; };
 		F22CF1B22D380E6900D35779 /* DataBindingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBindingTests.swift; sourceTree = "<group>"; };
 		F23626A92C8F90FA00727D9A /* nested_text_run.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = nested_text_run.riv; sourceTree = "<group>"; };
@@ -379,6 +383,7 @@
 				F24FC6562DD3D7AD00DEE8C5 /* data_binding_image_test.riv */,
 				F24FC6472DD3C85E00DEE8C5 /* 1x1_jpg.jpg */,
 				F24FC6482DD3C85E00DEE8C5 /* 1x1_png.png */,
+				C6558B3CC36949B99AD49DA9 /* rapid_pointer_events.riv */,
 				F22CF1B02D380E3700D35779 /* data_binding_test.riv */,
 				F2CCA9782C9B2799007DC0D2 /* referenced_image_asset.riv */,
 				F23626A92C8F90FA00727D9A /* nested_text_run.riv */,
@@ -536,6 +541,7 @@
 				F24FC6442DD3C83700DEE8C5 /* RiveRenderImageTests.swift */,
 				F2BE72102E05DB8E00B66C78 /* ViewTests.swift */,
 				F26698D82E8D74E700E03BBA /* IDPoolTests.swift */,
+				EBA3A3431992478B9EF62B2D /* RapidPointerEventTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -749,6 +755,7 @@
 				04BE540A2649403600427B39 /* noanimation.riv in Resources */,
 				04BE54042649403600427B39 /* shapes.riv in Resources */,
 				04BE540F2649403600427B39 /* sample6.riv in Resources */,
+				BF6FBEC8A38640258F9DD13F /* rapid_pointer_events.riv in Resources */,
 				F22CF1B12D380E3700D35779 /* data_binding_test.riv in Resources */,
 				C38BB5F4287629C20039E385 /* defaultstatemachine.riv in Resources */,
 				04BE54082649403600427B39 /* flux_capacitor.riv in Resources */,
@@ -859,6 +866,7 @@
 				04BE5418264A818F00427B39 /* RiveAnimationConfigurationsTest.mm in Sources */,
 				04BE5427264C02AA00427B39 /* StateMachineInstanceTest.mm in Sources */,
 				F24FC6452DD3C83700DEE8C5 /* RiveRenderImageTests.swift in Sources */,
+				D6ED12CF24B347EB8D037D56 /* RapidPointerEventTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
