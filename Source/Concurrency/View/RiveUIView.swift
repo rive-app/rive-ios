@@ -167,6 +167,20 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
     public weak var delegate: RiveUIViewDelegate?
 
+    private var _isOpaque: Bool = false
+
+    public override var isOpaque: Bool {
+        get { _isOpaque }
+        set {
+            _isOpaque = newValue
+            #if canImport(UIKit) || RIVE_MAC_CATALYST
+            mtkView?.isOpaque = newValue
+            #else
+            mtkView?.layer?.isOpaque = newValue
+            #endif
+        }
+    }
+
     #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
     public override var isMultipleTouchEnabled: Bool {
         didSet {
@@ -287,9 +301,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 #if canImport(UIKit) || RIVE_MAC_CATALYST
         backgroundColor = .clear
         mtkView.backgroundColor = .clear
+        mtkView.isOpaque = isOpaque
 #else
         layer?.backgroundColor = NSColor.clear.cgColor
         mtkView.layer?.backgroundColor = NSColor.clear.cgColor
+        mtkView.layer?.isOpaque = isOpaque
 #endif
 
         // Capture defaults once so `.default` does not rely on undocumented resets.
