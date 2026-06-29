@@ -63,6 +63,7 @@ extern "C"
 #import <RiveRuntime/RiveAudioListener.h>
 #import <RiveRuntime/RiveUIRenderer.h>
 #import <RiveRuntime/RiveViewModelInstanceListener.h>
+#import <RiveRuntime/RiveSemanticsDiff.h>
 #import <RiveRuntime/RiveUIRenderContext.h>
 #import <RiveRuntime/_RiveCommandQueueMessagePumpDriver.h>
 

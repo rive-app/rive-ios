@@ -10,6 +10,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class RiveSemanticsDiff;
+
 NS_ASSUME_NONNULL_BEGIN
 
 NS_SWIFT_NAME(StateMachineListener)
@@ -24,6 +26,10 @@ NS_SWIFT_NAME(StateMachineListener)
 
 - (void)onStateMachineSettled:(uint64_t)stateMachineHandle
                     requestID:(uint64_t)requestID;
+
+- (void)onSemanticsDiffReceived:(uint64_t)stateMachineHandle
+                      requestID:(uint64_t)requestID
+                           diff:(RiveSemanticsDiff*)diff;
 
 @end
 

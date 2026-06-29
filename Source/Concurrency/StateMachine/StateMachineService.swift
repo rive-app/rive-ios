@@ -22,7 +22,12 @@ final class StateMachineService: NSObject, StateMachineListener {
     private let dependencies: Dependencies
     private var continuations: [UInt64: CheckedContinuation<UInt64, Error>] = [:]
     private var settledContinuations: [UInt64: [UUID: AsyncStream<Void>.Continuation]] = [:]
-    
+    private var semanticsDiffContinuations: [UInt64: [UUID: AsyncStream<SemanticsDiff>.Continuation]] = [:]
+
+    #if TESTING
+    var onContinuationRemoved: (() -> Void)?
+    #endif
+
     private static func context(_ stateMachine: StateMachine.StateMachineHandle) -> String {
         "[StateMachine (\(stateMachine))]"
     }
@@ -102,8 +107,69 @@ final class StateMachineService: NSObject, StateMachineListener {
     }
 
     @MainActor
+    func semanticsDiffStream(for stateMachine: StateMachine.StateMachineHandle) -> AsyncStream<SemanticsDiff> {
+        return AsyncStream { continuation in
+            let continuationID = UUID()
+            var continuationsForStateMachine = semanticsDiffContinuations[stateMachine] ?? [:]
+            continuationsForStateMachine[continuationID] = continuation
+            semanticsDiffContinuations[stateMachine] = continuationsForStateMachine
+            continuation.onTermination = { [weak self] _ in
+                Task { @MainActor in
+                    guard let self else { return }
+                    guard var continuations = self.semanticsDiffContinuations[stateMachine] else { return }
+                    continuations.removeValue(forKey: continuationID)
+                    if continuations.isEmpty {
+                        self.semanticsDiffContinuations.removeValue(forKey: stateMachine)
+                    } else {
+                        self.semanticsDiffContinuations[stateMachine] = continuations
+                    }
+
+                    #if TESTING
+                    self.onContinuationRemoved?()
+                    #endif
+                }
+            }
+        }
+    }
+
+    @MainActor
+    func enableSemantics(for stateMachine: StateMachine.StateMachineHandle) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Enabling semantics")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.enableSemantics(stateMachine, requestID: requestID)
+    }
+
+    @MainActor
+    func drainSemanticsDiff(for stateMachine: StateMachine.StateMachineHandle, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, viewBounds: CGSize) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Draining semantics diff")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.drainSemanticsDiff(stateMachine, fit: fit, alignment: alignment, scaleFactor: scaleFactor, viewBounds: viewBounds, requestID: requestID)
+    }
+
+    @MainActor
+    func fireSemanticAction(on stateMachine: StateMachine.StateMachineHandle, nodeID: UInt32, actionType: SemanticActionType) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Firing semantic action \(actionType) on node \(nodeID)")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.fireSemanticAction(stateMachine, semanticNodeID: nodeID, actionType: actionType, requestID: requestID)
+    }
+
+    @MainActor
+    func requestSemanticFocus(on stateMachine: StateMachine.StateMachineHandle, nodeID: UInt32) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Requesting semantic focus on node \(nodeID)")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.requestSemanticFocus(stateMachine, semanticNodeID: nodeID, requestID: requestID)
+    }
+
+    @MainActor
+    func clearSemanticFocus(on stateMachine: StateMachine.StateMachineHandle) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Clearing semantic focus")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.clearSemanticFocus(stateMachine, requestID: requestID)
+    }
+
+    @MainActor
     func hasActiveListeners() -> Bool {
-        return !settledContinuations.isEmpty
+        return !settledContinuations.isEmpty || !semanticsDiffContinuations.isEmpty
     }
 
     /// Deletes a state machine via the command queue.
@@ -164,6 +230,14 @@ final class StateMachineService: NSObject, StateMachineListener {
         Task { @MainActor in
             RiveLog.trace(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Settled state machine")
             settledContinuations[stateMachineHandle]?.values.forEach { $0.yield(()) }
+        }
+    }
+
+    nonisolated func onSemanticsDiffReceived(_ stateMachineHandle: UInt64, requestID: UInt64, diff: SemanticsDiff) {
+        let sendableDiff = UncheckedSendable(value: diff)
+        Task { @MainActor in
+            RiveLog.trace(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Received semantics diff")
+            semanticsDiffContinuations[stateMachineHandle]?.values.forEach { $0.yield(sendableDiff.value) }
         }
     }
 }

@@ -313,6 +313,7 @@
 				Renderer/RiveUIRenderer.h,
 				RiveConcurrency.h,
 				RiveEnums.h,
+				Semantics/RiveSemanticsDiff.h,
 				StateMachine/RiveStateMachineListener.h,
 			);
 			target = C9C73ED024FC478800EF9516 /* RiveRuntime */;

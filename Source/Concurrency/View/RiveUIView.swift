@@ -29,7 +29,17 @@ public protocol RiveUIViewDelegate: AnyObject {
 /// RiveUIView provides a native view that can display Rive animations with automatic rendering,
 /// state machine advancement, and touch / pointer input handling. It uses Metal for high-performance
 /// rendering.
-public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink {
+public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink, RiveControllerDelegate {
+    public enum Constants {
+        public enum Defaults {
+            public static let isPaused = false
+            public static let frameRate: FrameRate = .default
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            public static let semantics: Semantics = .off
+            #endif
+        }
+    }
+
     public var rive: Rive? {
         didSet {
             // Treat identity changes as updates
@@ -73,6 +83,22 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         return NSScreen.main?.backingScaleFactor ?? 1
 #endif
     }
+
+    // MARK: RiveControllerDelegate
+
+    var drawableSize: CGSize {
+        mtkView?.drawableSize ?? .zero
+    }
+
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    var accessibilityContainer: AnyObject { self }
+
+    func controller(_ controller: RiveController, didUpdateModalState isModal: Bool) -> Bool {
+        let transitioned = accessibilityViewIsModal != isModal
+        accessibilityViewIsModal = isModal
+        return transitioned
+    }
+    #endif
 
     // MARK: DisplayLink
 
@@ -134,7 +160,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     // MARK: Public
 
     // This is for implementing DisplayLink as well as the public view property
-    public var frameRate: FrameRate = .default {
+    public var frameRate: FrameRate = Constants.Defaults.frameRate {
         didSet {
             guard frameRate != oldValue else { return }
             // Calling displayLink?.frameRate here would cause an infinite loop,
@@ -189,6 +215,25 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
     #endif
 
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    private var _semantics: Semantics = Constants.Defaults.semantics {
+        didSet {
+            controller?.semantics = _semantics
+        }
+    }
+
+    /// The VoiceOver accessibility semantics mode for this Rive view.
+    public var semantics: Semantics {
+        get { _semantics }
+        set { _semantics = newValue }
+    }
+
+    public override var accessibilityElements: [Any]? {
+        get { controller?.semanticsController.accessibilityElements ?? [] }
+        set { }
+    }
+    #endif
+
     // MARK: -
 
     /// Creates a new RiveUIView that asynchronously loads a Rive configuration.
@@ -198,7 +243,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     ///
     /// - Parameter rive: An async closure that returns a `Rive` configuration
     @MainActor
-    public convenience init(rive: @MainActor @escaping () async throws -> Rive, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = false) {
+    public convenience init(rive: @MainActor @escaping () async throws -> Rive, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = Constants.Defaults.isPaused) {
         self.init(rive: nil, delegate: delegate, isPaused: isPaused)
         RiveLog.debug(tag: .view, "[RiveUIView] Initializing with async Rive loader")
 
@@ -222,7 +267,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     ///
     /// - Parameter rive: An optional `Rive` configuration to display
     @MainActor
-    public init(rive: Rive?, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = false) {
+    public init(rive: Rive?, delegate: RiveUIViewDelegate? = nil, isPaused: Bool = Constants.Defaults.isPaused) {
         RiveLog.debug(tag: .view, "[RiveUIView] Initializing view")
         #if !os(macOS) || RIVE_MAC_CATALYST
         defer { Notifications.observe() }
@@ -329,16 +374,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 renderContext: rive.file.worker.dependencies.workerService.dependencies.renderContext
             )
 
-            controller = RiveController(
-                rive: rive,
-                drawableSizeProvider: { [weak self] in
-                    self?.mtkView?.drawableSize
-                },
-                scaleProvider: { [weak self] in
-                    self
-                }
-            )
+            controller = RiveController(rive: rive, delegate: self)
             controller?.isPaused = isPaused
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            controller?.semantics = semantics
+            #endif
 
             // If we are paused, we want to draw at least one frame
             // We'll leverage MTKView's (set)NeedsDisplay to draw once

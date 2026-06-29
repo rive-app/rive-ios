@@ -53,7 +53,7 @@ final class RiveControllerTests: XCTestCase {
     func test_fitChangedToLayoutWithAutomaticScale_setsArtboardSizeUsingScaleProvider() async throws {
         let fixture = try await makeController(
             dataBind: .none,
-            scaleProvider: MockScaleProvider(nativeScale: 3, displayScale: 1)
+            delegate: MockControllerDelegate(nativeScale: 3, displayScale: 1)
         )
         await expectSettled(within: fixture)
 
@@ -71,14 +71,10 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
-    func test_fitChangedToLayout_withNilDrawableSizeProvider_fallsBackToZeroSize() async throws {
-        // A `[weak self]` drawable-size provider that returns nil (e.g. the
-        // owning view has deallocated) must not crash; the controller
-        // resolves the fallback to `.zero`.
+    func test_fitChangedToLayout_withZeroDrawableSize_fallsBackToZeroSize() async throws {
         let fixture = try await makeController(
             dataBind: .none,
-            drawableSize: nil,
-            scaleProvider: MockScaleProvider()
+            delegate: MockControllerDelegate(drawableSize: .zero)
         )
         await expectSettled(within: fixture)
 
@@ -95,12 +91,10 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
-    func test_fitChangedToLayout_withNilScaleProvider_fallsBackToUnitScale() async throws {
-        // A `[weak self]` scale provider that returns nil must not crash; the
-        // controller resolves the fallback to scale factor 1.
+    func test_fitChangedToLayout_withNoNativeScale_fallsBackToUnitScale() async throws {
         let fixture = try await makeController(
             dataBind: .none,
-            scaleProvider: nil
+            delegate: MockControllerDelegate(nativeScale: nil, displayScale: 1)
         )
         await expectSettled(within: fixture)
 
@@ -746,6 +740,340 @@ final class RiveControllerTests: XCTestCase {
         XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls[1].time, 0)
     }
 
+    // MARK: - Semantics Lifecycle
+
+    #if !os(macOS) || RIVE_MAC_CATALYST
+
+    @MainActor
+    func test_init_voiceOverAlreadyOn_startsSemanticsImmediately() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+
+        XCTAssertNotNil(fixture.controller.semanticsController.manager)
+        XCTAssertEqual(fixture.commandQueue.enableSemanticsCalls.count, 1)
+    }
+
+    @MainActor
+    func test_init_voiceOverOff_doesNotStartSemantics() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = false
+
+        let fixture = try await makeControllerWithSemantics()
+
+        XCTAssertNil(fixture.controller.semanticsController.manager)
+        XCTAssertEqual(fixture.commandQueue.enableSemanticsCalls.count, 0)
+    }
+
+    @MainActor
+    func test_voiceOverNotification_turnsOn_startsSemanticsManager() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = false
+
+        let fixture = try await makeControllerWithSemantics()
+        XCTAssertNil(fixture.controller.semanticsController.manager)
+
+        MockUIAccessibility.isVoiceOverRunning = true
+        fixture.mockNotificationCenter.fire(name: UIAccessibility.voiceOverStatusDidChangeNotification)
+        await Task.yield()
+
+        XCTAssertNotNil(fixture.controller.semanticsController.manager)
+        XCTAssertEqual(fixture.commandQueue.enableSemanticsCalls.count, 1)
+    }
+
+    @MainActor
+    func test_voiceOverNotification_turnsOn_whileSettled_unsettlesForDrain() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = false
+
+        let fixture = try await makeControllerWithSemantics()
+
+        // Bootstrap draw + settle
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 640, height: 480),
+            scaleProvider: MockScaleProvider()
+        )
+        await expectSettled(within: fixture)
+        XCTAssertEqual(fixture.commandQueue.drainSemanticsDiffCalls.count, 0)
+
+        // Enable VoiceOver while settled
+        MockUIAccessibility.isVoiceOverRunning = true
+        fixture.mockNotificationCenter.fire(name: UIAccessibility.voiceOverStatusDidChangeNotification)
+        await Task.yield()
+
+        XCTAssertFalse(fixture.controller.isSettled)
+
+        // Next advance should enter shouldAdvance and drain
+        _ = fixture.controller.advance(
+            now: 11,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 640, height: 480),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.drainSemanticsDiffCalls.count, 2)
+    }
+
+    @MainActor
+    func test_voiceOverNotification_turnsOff_stopsSemanticsManager() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+        XCTAssertNotNil(fixture.controller.semanticsController.manager)
+
+        MockUIAccessibility.isVoiceOverRunning = false
+        fixture.mockNotificationCenter.fire(name: UIAccessibility.voiceOverStatusDidChangeNotification)
+        await Task.yield()
+
+        XCTAssertNil(fixture.controller.semanticsController.manager)
+    }
+
+    @MainActor
+    func test_advance_whenSemanticsActive_callsDrainSemanticsDiff() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+        let drainCountAfterSetup = fixture.commandQueue.drainSemanticsDiffCalls.count
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 640, height: 480),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.drainSemanticsDiffCalls.count, drainCountAfterSetup + 1)
+    }
+
+    @MainActor
+    func test_advance_whenSemanticsInactive_doesNotCallDrainSemanticsDiff() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = false
+
+        let fixture = try await makeControllerWithSemantics()
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 640, height: 480),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(fixture.commandQueue.drainSemanticsDiffCalls.count, 0)
+    }
+
+    @MainActor
+    func test_advance_drainSemanticsDiff_passesDrawableSize() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 960, height: 720),
+            scaleProvider: MockScaleProvider()
+        )
+
+        let call = fixture.commandQueue.drainSemanticsDiffCalls.last
+        XCTAssertNotNil(call)
+        XCTAssertEqual(call?.viewBounds, CGSize(width: 960, height: 720))
+    }
+
+    @MainActor
+    func test_semanticsDiffStream_appliesDiffToManager() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+
+        let diffProcessed = expectation(description: "diff processed")
+        fixture.controller.semanticsController.onSemanticsDiffProcessedForTesting = {
+            diffProcessed.fulfill()
+        }
+
+        let textNode = SemanticsDiffNode(
+            id: 1, role: .text, label: "Hello", value: "", hint: "",
+            stateFlags: [], traitFlags: [], headingLevel: 0,
+            minX: 0, minY: 0, maxX: 100, maxY: 50,
+            parentID: -1, siblingIndex: 0
+        )
+        let diff = SemanticsDiff(
+            frameNumber: 1, treeVersion: 1, rootID: 1,
+            removed: [], added: [textNode], moved: [],
+            childrenUpdated: [], updatedSemantic: [], updatedGeometry: []
+        )
+
+        fixture.stateMachineService.onSemanticsDiffReceived(
+            fixture.stateMachine.stateMachineHandle,
+            requestID: 1,
+            diff: diff
+        )
+        await fulfillment(of: [diffProcessed], timeout: 1.0)
+
+        fixture.controller.semanticsController.manager?.commitDiffs()
+
+        let elements = fixture.controller.semanticsController.manager?.accessibilityElements
+        XCTAssertEqual(elements?.count, 1)
+        XCTAssertEqual(elements?.first?.accessibilityLabel, "Hello")
+    }
+
+    @MainActor
+    func test_semanticsDiffStream_postsLayoutChangedNotification() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+
+        let diffProcessed = expectation(description: "diff processed")
+        fixture.controller.semanticsController.onSemanticsDiffProcessedForTesting = {
+            diffProcessed.fulfill()
+        }
+
+        let diff = SemanticsDiff(
+            frameNumber: 1, treeVersion: 1, rootID: 1,
+            removed: [], added: [SemanticsDiffNode(
+                id: 1, role: .text, label: "Hello", value: "", hint: "",
+                stateFlags: [], traitFlags: [], headingLevel: 0,
+                minX: 0, minY: 0, maxX: 100, maxY: 50,
+                parentID: -1, siblingIndex: 0
+            )], moved: [],
+            childrenUpdated: [], updatedSemantic: [], updatedGeometry: []
+        )
+
+        fixture.stateMachineService.onSemanticsDiffReceived(
+            fixture.stateMachine.stateMachineHandle,
+            requestID: 1,
+            diff: diff
+        )
+        await fulfillment(of: [diffProcessed], timeout: 1.0)
+
+        MockUIAccessibility.postedNotifications = []
+        fixture.controller.semanticsController.manager?.commitDiffs()
+
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.count, 1)
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.first?.notification, .layoutChanged)
+    }
+
+    @MainActor
+    func test_advance_whenSettled_stillCommitsDiffsAndProcessesMessages() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+
+        // Bootstrap draw
+        _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 640, height: 480),
+            scaleProvider: MockScaleProvider()
+        )
+
+        // Settle
+        await expectSettled(within: fixture)
+
+        // Enqueue a diff while settled
+        let textNode = SemanticsDiffNode(
+            id: 1, role: .text, label: "Settled Text", value: "", hint: "",
+            stateFlags: [], traitFlags: [], headingLevel: 0,
+            minX: 0, minY: 0, maxX: 100, maxY: 50,
+            parentID: -1, siblingIndex: 0
+        )
+        let diff = SemanticsDiff(
+            frameNumber: 2, treeVersion: 2, rootID: 1,
+            removed: [], added: [textNode], moved: [],
+            childrenUpdated: [], updatedSemantic: [], updatedGeometry: []
+        )
+        fixture.controller.semanticsController.manager?.enqueue(diff: diff)
+        MockUIAccessibility.postedNotifications = []
+
+        // Advance while settled — commitDiffs should still run
+        _ = fixture.controller.advance(
+            now: 11,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 640, height: 480),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.count, 1)
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.first?.notification, .layoutChanged)
+
+        let elements = fixture.controller.semanticsController.manager?.accessibilityElements
+        XCTAssertEqual(elements?.count, 1)
+        XCTAssertEqual(elements?.first?.accessibilityLabel, "Settled Text")
+    }
+
+    @MainActor
+    func test_managerDidCommitDiffs_postsLayoutChangedNotification() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+        let manager = fixture.controller.semanticsController.manager!
+
+        MockUIAccessibility.postedNotifications = []
+        fixture.controller.semanticsController.manager(manager, didCommitDiffsWithFocusedElement: nil, isModal: false)
+
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.count, 1)
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.first?.notification, .layoutChanged)
+    }
+
+    @MainActor
+    func test_managerDidCommitDiffs_modalEnter_postsScreenChanged() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+        let manager = fixture.controller.semanticsController.manager!
+
+        MockUIAccessibility.postedNotifications = []
+        fixture.controller.semanticsController.manager(manager, didCommitDiffsWithFocusedElement: nil, isModal: true)
+
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.count, 1)
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.first?.notification, .screenChanged)
+    }
+
+    @MainActor
+    func test_managerDidCommitDiffs_modalExit_postsScreenChanged() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+        let manager = fixture.controller.semanticsController.manager!
+
+        fixture.controller.semanticsController.manager(manager, didCommitDiffsWithFocusedElement: nil, isModal: true)
+
+        MockUIAccessibility.postedNotifications = []
+        fixture.controller.semanticsController.manager(manager, didCommitDiffsWithFocusedElement: nil, isModal: false)
+
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.count, 1)
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.first?.notification, .screenChanged)
+    }
+
+    @MainActor
+    func test_managerDidCommitDiffs_noModalTransition_postsLayoutChanged() async throws {
+        MockUIAccessibility.reset()
+        MockUIAccessibility.isVoiceOverRunning = true
+
+        let fixture = try await makeControllerWithSemantics()
+        let manager = fixture.controller.semanticsController.manager!
+
+        MockUIAccessibility.postedNotifications = []
+        fixture.controller.semanticsController.manager(manager, didCommitDiffsWithFocusedElement: nil, isModal: false)
+
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.count, 1)
+        XCTAssertEqual(MockUIAccessibility.postedNotifications.first?.notification, .layoutChanged)
+    }
+
+    #endif
+
     // MARK: - Settled/dirty race
 
     @MainActor
@@ -772,9 +1100,9 @@ final class RiveControllerTests: XCTestCase {
     private func makeController(
         dataBind: DataBind = .none,
         fit: Fit = .contain(alignment: .center),
-        drawableSize: CGSize? = CGSize(width: 320, height: 240),
-        scaleProvider: ScaleProvider? = nil
+        delegate: MockControllerDelegate? = nil
     ) async throws -> ControllerFixture {
+        let delegate = delegate ?? MockControllerDelegate()
         let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
 
         let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
@@ -805,14 +1133,11 @@ final class RiveControllerTests: XCTestCase {
             fit: fit
         )
 
-        let controller = RiveController(
-            rive: rive,
-            drawableSizeProvider: { drawableSize },
-            scaleProvider: { scaleProvider }
-        )
+        let controller = RiveController(rive: rive, delegate: delegate)
 
         return ControllerFixture(
             controller: controller,
+            delegate: delegate,
             rive: rive,
             stateMachine: stateMachine,
             stateMachineService: stateMachineService,
@@ -823,6 +1148,54 @@ final class RiveControllerTests: XCTestCase {
             commandQueue: commandQueue
         )
     }
+
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    @MainActor
+    private func makeControllerWithSemantics(
+        drawableSize: CGSize = CGSize(width: 320, height: 240)
+    ) async throws -> SemanticsControllerFixture {
+        let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
+
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+        let artboard = Artboard(
+            dependencies: .init(artboardService: artboardService),
+            artboardHandle: 42
+        )
+
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 123
+        )
+
+        let rive = try await Rive(
+            file: file,
+            artboard: artboard,
+            stateMachine: stateMachine,
+            dataBind: .none
+        )
+
+        let delegate = MockControllerDelegate(drawableSize: drawableSize)
+        let mockNotificationCenter = MockNotificationCenter()
+        let controller = RiveController(
+            rive: rive,
+            delegate: delegate,
+            accessibility: MockUIAccessibility.self,
+            notificationCenter: mockNotificationCenter
+        )
+        controller.semantics = .automatic
+
+        return SemanticsControllerFixture(
+            controller: controller,
+            delegate: delegate,
+            rive: rive,
+            stateMachine: stateMachine,
+            stateMachineService: stateMachineService,
+            commandQueue: commandQueue,
+            mockNotificationCenter: mockNotificationCenter
+        )
+    }
+    #endif
 
     @MainActor
     private func emitSettledAndAwaitPending(
@@ -846,6 +1219,31 @@ final class RiveControllerTests: XCTestCase {
         fixture.controller.resolveForTesting()
         XCTAssertTrue(fixture.controller.isSettled)
     }
+
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    @MainActor
+    private func emitSettledAndAwaitPending(
+        within fixture: SemanticsControllerFixture,
+        requestID: UInt64
+    ) async {
+        let pendingExpectation = expectation(description: "hasPendingSettle is set")
+        fixture.controller.onHasPendingSettleForTesting = {
+            pendingExpectation.fulfill()
+        }
+        fixture.stateMachineService.onStateMachineSettled(
+            fixture.stateMachine.stateMachineHandle, requestID: requestID
+        )
+        await fulfillment(of: [pendingExpectation], timeout: 1.0)
+        fixture.controller.onHasPendingSettleForTesting = nil
+    }
+
+    @MainActor
+    private func expectSettled(within fixture: SemanticsControllerFixture) async {
+        await emitSettledAndAwaitPending(within: fixture, requestID: 1)
+        fixture.controller.resolveForTesting()
+        XCTAssertTrue(fixture.controller.isSettled)
+    }
+    #endif
 
     @MainActor
     private func setupStaleSettledAfterDirty() async throws -> ControllerFixture {
@@ -900,6 +1298,7 @@ final class RiveControllerTests: XCTestCase {
 
 private struct ControllerFixture {
     let controller: RiveController
+    let delegate: MockControllerDelegate
     let rive: Rive
     let stateMachine: StateMachine
     let stateMachineService: StateMachineService
@@ -917,3 +1316,45 @@ private struct MockScaleProvider: ScaleProvider {
         self.displayScale = displayScale
     }
 }
+
+private class MockControllerDelegate: RiveControllerDelegate {
+    var drawableSize: CGSize
+    var nativeScale: CGFloat?
+    var displayScale: CGFloat
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    var accessibilityContainer: AnyObject = NSObject()
+    private var isModal = false
+
+    func controller(_ controller: RiveController, didUpdateModalState isModal: Bool) -> Bool {
+        let transitioned = self.isModal != isModal
+        self.isModal = isModal
+        return transitioned
+    }
+    #endif
+
+    init(
+        drawableSize: CGSize = CGSize(width: 320, height: 240),
+        nativeScale: CGFloat? = nil,
+        displayScale: CGFloat = 1
+    ) {
+        self.drawableSize = drawableSize
+        self.nativeScale = nativeScale
+        self.displayScale = displayScale
+    }
+}
+
+// MARK: - Semantics Fixture
+
+#if !os(macOS) || RIVE_MAC_CATALYST
+
+private struct SemanticsControllerFixture {
+    let controller: RiveController
+    let delegate: MockControllerDelegate
+    let rive: Rive
+    let stateMachine: StateMachine
+    let stateMachineService: StateMachineService
+    let commandQueue: MockCommandQueue
+    let mockNotificationCenter: MockNotificationCenter
+}
+
+#endif

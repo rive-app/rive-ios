@@ -160,4 +160,75 @@ typedef NS_ENUM(NSInteger, RiveViewModelInstanceDataType) {
     RiveViewModelInstanceDataTypeAny
 };
 
+/// The type of semantic action to fire on a semantic node.
+typedef NS_ENUM(NSInteger, RiveSemanticActionType) {
+    /// Primary activation (click/press).
+    RiveSemanticActionTypeTap = 0,
+    /// Step up / increment.
+    RiveSemanticActionTypeIncrease = 1,
+    /// Step down / decrement.
+    RiveSemanticActionTypeDecrease = 2,
+} NS_SWIFT_NAME(SemanticActionType);
+
+/// The semantic role of an accessibility node.
+typedef NS_ENUM(NSInteger, RiveSemanticRole) {
+    RiveSemanticRoleNone = 0,
+    RiveSemanticRoleButton = 1,
+    RiveSemanticRoleLink = 2,
+    RiveSemanticRoleCheckbox = 3,
+    RiveSemanticRoleSwitchControl = 4,
+    RiveSemanticRoleSlider = 5,
+    RiveSemanticRoleTextField = 6,
+    RiveSemanticRoleText = 7,
+    RiveSemanticRoleImage = 8,
+    RiveSemanticRoleGroup = 9,
+    RiveSemanticRoleList = 10,
+    RiveSemanticRoleListItem = 11,
+    RiveSemanticRoleTab = 12,
+    RiveSemanticRoleTabList = 13,
+    RiveSemanticRoleDialog = 14,
+    RiveSemanticRoleAlertDialog = 15,
+    RiveSemanticRoleRadioGroup = 16,
+    RiveSemanticRoleRadioButton = 17,
+} NS_SWIFT_NAME(SemanticRole);
+
+/// Bitmask of semantic traits declaring what capabilities a node has.
+///
+/// Traits solve the tristate problem: a state flag is only meaningful when its
+/// corresponding trait is set. Without the trait, the state is not applicable.
+typedef NS_OPTIONS(NSUInteger, RiveSemanticTrait) {
+    RiveSemanticTraitNone = 0,
+    RiveSemanticTraitExpandable = 1u << 0,
+    RiveSemanticTraitSelectable = 1u << 1,
+    RiveSemanticTraitCheckable = 1u << 2,
+    RiveSemanticTraitToggleable = 1u << 3,
+    RiveSemanticTraitRequirable = 1u << 4,
+    RiveSemanticTraitEnablable = 1u << 5,
+    RiveSemanticTraitFocusable = 1u << 6,
+} NS_SWIFT_NAME(SemanticTrait);
+
+/// Bitmask of semantic state flags.
+///
+/// Bits 0-7 are trait-gated: only meaningful when the corresponding
+/// SemanticTrait is set. Bits 8-13 are non-trait states (always applicable).
+typedef NS_OPTIONS(NSUInteger, RiveSemanticState) {
+    RiveSemanticStateNone = 0,
+    // Trait-gated
+    RiveSemanticStateExpanded = 1u << 0,
+    RiveSemanticStateSelected = 1u << 1,
+    RiveSemanticStateChecked = 1u << 2,
+    RiveSemanticStateMixed = 1u << 3,
+    RiveSemanticStateToggled = 1u << 4,
+    RiveSemanticStateRequired = 1u << 5,
+    RiveSemanticStateDisabled = 1u << 6,
+    RiveSemanticStateFocused = 1u << 7,
+    // Non-trait
+    RiveSemanticStateHidden = 1u << 8,
+    RiveSemanticStateLiveRegion = 1u << 9,
+    RiveSemanticStateReadOnly = 1u << 10,
+    RiveSemanticStateModal = 1u << 11,
+    RiveSemanticStateObscured = 1u << 12,
+    RiveSemanticStateMultiline = 1u << 13,
+} NS_SWIFT_NAME(SemanticState);
+
 #endif /* RiveEnums_h */

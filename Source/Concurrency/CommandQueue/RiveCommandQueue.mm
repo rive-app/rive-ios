@@ -19,6 +19,12 @@
 #import "_RiveCommandQueueMessagePumpDriver.h"
 #import "RivePrivateHeaders.h"
 #import "RiveConcurrency_Private.hh"
+#import "RiveSemanticsDiff.h"
+#include "rive/animation/semantic_listener_group.hpp"
+#include "rive/semantic/semantic_snapshot.hpp"
+#include "rive/semantic/semantic_role.hpp"
+#include "rive/semantic/semantic_trait.hpp"
+#include "rive/semantic/semantic_state.hpp"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -164,6 +170,201 @@ static rive::CommandQueue::PointerEvent RivePointerEventToCpp(
     cppEvent.scaleFactor = scaleFactor;
     cppEvent.pointerId = pointerId;
     return cppEvent;
+}
+
+static rive::SemanticActionType RiveSemanticActionTypeToCpp(
+    RiveSemanticActionType type)
+{
+    switch (type)
+    {
+        case RiveSemanticActionTypeTap:
+            return rive::SemanticActionType::tap;
+        case RiveSemanticActionTypeIncrease:
+            return rive::SemanticActionType::increase;
+        case RiveSemanticActionTypeDecrease:
+            return rive::SemanticActionType::decrease;
+        default:
+            return rive::SemanticActionType::tap;
+    }
+}
+
+static RiveSemanticRole RiveSemanticRoleFromCpp(uint32_t role)
+{
+    switch ((rive::SemanticRole)role)
+    {
+        case rive::SemanticRole::none:
+            return RiveSemanticRoleNone;
+        case rive::SemanticRole::button:
+            return RiveSemanticRoleButton;
+        case rive::SemanticRole::link:
+            return RiveSemanticRoleLink;
+        case rive::SemanticRole::checkbox:
+            return RiveSemanticRoleCheckbox;
+        case rive::SemanticRole::switchControl:
+            return RiveSemanticRoleSwitchControl;
+        case rive::SemanticRole::slider:
+            return RiveSemanticRoleSlider;
+        case rive::SemanticRole::textField:
+            return RiveSemanticRoleTextField;
+        case rive::SemanticRole::text:
+            return RiveSemanticRoleText;
+        case rive::SemanticRole::image:
+            return RiveSemanticRoleImage;
+        case rive::SemanticRole::group:
+            return RiveSemanticRoleGroup;
+        case rive::SemanticRole::list:
+            return RiveSemanticRoleList;
+        case rive::SemanticRole::listItem:
+            return RiveSemanticRoleListItem;
+        case rive::SemanticRole::tab:
+            return RiveSemanticRoleTab;
+        case rive::SemanticRole::tabList:
+            return RiveSemanticRoleTabList;
+        case rive::SemanticRole::dialog:
+            return RiveSemanticRoleDialog;
+        case rive::SemanticRole::alertDialog:
+            return RiveSemanticRoleAlertDialog;
+        case rive::SemanticRole::radioGroup:
+            return RiveSemanticRoleRadioGroup;
+        case rive::SemanticRole::radioButton:
+            return RiveSemanticRoleRadioButton;
+    }
+    return RiveSemanticRoleNone;
+}
+
+static RiveSemanticTrait RiveSemanticTraitFromCpp(uint32_t flags)
+{
+    RiveSemanticTrait out = RiveSemanticTraitNone;
+    if (hasSemanticTrait(flags, rive::SemanticTrait::Expandable))
+        out |= RiveSemanticTraitExpandable;
+    if (hasSemanticTrait(flags, rive::SemanticTrait::Selectable))
+        out |= RiveSemanticTraitSelectable;
+    if (hasSemanticTrait(flags, rive::SemanticTrait::Checkable))
+        out |= RiveSemanticTraitCheckable;
+    if (hasSemanticTrait(flags, rive::SemanticTrait::Toggleable))
+        out |= RiveSemanticTraitToggleable;
+    if (hasSemanticTrait(flags, rive::SemanticTrait::Requirable))
+        out |= RiveSemanticTraitRequirable;
+    if (hasSemanticTrait(flags, rive::SemanticTrait::Enablable))
+        out |= RiveSemanticTraitEnablable;
+    if (hasSemanticTrait(flags, rive::SemanticTrait::Focusable))
+        out |= RiveSemanticTraitFocusable;
+    return out;
+}
+
+static RiveSemanticState RiveSemanticStateFromCpp(uint32_t flags)
+{
+    RiveSemanticState out = RiveSemanticStateNone;
+    if (hasSemanticState(flags, rive::SemanticState::Expanded))
+        out |= RiveSemanticStateExpanded;
+    if (hasSemanticState(flags, rive::SemanticState::Selected))
+        out |= RiveSemanticStateSelected;
+    if (hasSemanticState(flags, rive::SemanticState::Checked))
+        out |= RiveSemanticStateChecked;
+    if (hasSemanticState(flags, rive::SemanticState::Mixed))
+        out |= RiveSemanticStateMixed;
+    if (hasSemanticState(flags, rive::SemanticState::Toggled))
+        out |= RiveSemanticStateToggled;
+    if (hasSemanticState(flags, rive::SemanticState::Required))
+        out |= RiveSemanticStateRequired;
+    if (hasSemanticState(flags, rive::SemanticState::Disabled))
+        out |= RiveSemanticStateDisabled;
+    if (hasSemanticState(flags, rive::SemanticState::Focused))
+        out |= RiveSemanticStateFocused;
+    if (hasSemanticState(flags, rive::SemanticState::Hidden))
+        out |= RiveSemanticStateHidden;
+    if (hasSemanticState(flags, rive::SemanticState::LiveRegion))
+        out |= RiveSemanticStateLiveRegion;
+    if (hasSemanticState(flags, rive::SemanticState::ReadOnly))
+        out |= RiveSemanticStateReadOnly;
+    if (hasSemanticState(flags, rive::SemanticState::Modal))
+        out |= RiveSemanticStateModal;
+    if (hasSemanticState(flags, rive::SemanticState::Obscured))
+        out |= RiveSemanticStateObscured;
+    if (hasSemanticState(flags, rive::SemanticState::Multiline))
+        out |= RiveSemanticStateMultiline;
+    return out;
+}
+
+static RiveSemanticsDiffNode* RiveSemanticsDiffNodeFromCpp(
+    const rive::SemanticsDiffNode& node)
+{
+    return [[RiveSemanticsDiffNode alloc]
+          initWithID:node.id
+                role:RiveSemanticRoleFromCpp(node.role)
+               label:[NSString stringWithUTF8String:node.label.c_str()]
+               value:[NSString stringWithUTF8String:node.value.c_str()]
+                hint:[NSString stringWithUTF8String:node.hint.c_str()]
+          stateFlags:RiveSemanticStateFromCpp(node.stateFlags)
+          traitFlags:RiveSemanticTraitFromCpp(node.traitFlags)
+        headingLevel:node.headingLevel
+                minX:node.minX
+                minY:node.minY
+                maxX:node.maxX
+                maxY:node.maxY
+            parentID:node.parentId
+        siblingIndex:node.siblingIndex];
+}
+
+static NSArray<RiveSemanticsDiffNode*>* RiveSemanticsDiffNodeArrayFromCpp(
+    const std::vector<rive::SemanticsDiffNode>& nodes)
+{
+    NSMutableArray* array = [NSMutableArray arrayWithCapacity:nodes.size()];
+    for (const auto& node : nodes)
+    {
+        [array addObject:RiveSemanticsDiffNodeFromCpp(node)];
+    }
+    return array;
+}
+
+static RiveSemanticsDiff* RiveSemanticsDiffFromCpp(
+    const rive::SemanticsDiff& diff)
+{
+    NSMutableArray<NSNumber*>* removed =
+        [NSMutableArray arrayWithCapacity:diff.removed.size()];
+    for (uint32_t nodeID : diff.removed)
+    {
+        [removed addObject:@(nodeID)];
+    }
+
+    NSMutableArray<RiveSemanticsChildrenUpdate*>* childrenUpdated =
+        [NSMutableArray arrayWithCapacity:diff.childrenUpdated.size()];
+    for (const auto& update : diff.childrenUpdated)
+    {
+        NSMutableArray<NSNumber*>* childIDs =
+            [NSMutableArray arrayWithCapacity:update.childIds.size()];
+        for (uint32_t childID : update.childIds)
+        {
+            [childIDs addObject:@(childID)];
+        }
+        [childrenUpdated addObject:[[RiveSemanticsChildrenUpdate alloc]
+                                       initWithParentID:update.parentId
+                                               childIDs:childIDs]];
+    }
+
+    NSMutableArray<RiveSemanticsBoundsUpdate*>* updatedGeometry =
+        [NSMutableArray arrayWithCapacity:diff.updatedGeometry.size()];
+    for (const auto& bounds : diff.updatedGeometry)
+    {
+        [updatedGeometry addObject:[[RiveSemanticsBoundsUpdate alloc]
+                                       initWithID:bounds.id
+                                             minX:bounds.minX
+                                             minY:bounds.minY
+                                             maxX:bounds.maxX
+                                             maxY:bounds.maxY]];
+    }
+
+    return [[RiveSemanticsDiff alloc]
+        initWithFrameNumber:diff.frameNumber
+                treeVersion:diff.treeVersion
+                     rootID:diff.rootId
+                    removed:removed
+                      added:RiveSemanticsDiffNodeArrayFromCpp(diff.added)
+                      moved:RiveSemanticsDiffNodeArrayFromCpp(diff.moved)
+            childrenUpdated:childrenUpdated
+            updatedSemantic:RiveSemanticsDiffNodeArrayFromCpp(
+                                diff.updatedSemantic)
+            updatedGeometry:updatedGeometry];
 }
 
 // MARK: - Internal Artboard Listener Implementation
@@ -364,6 +565,10 @@ public:
     virtual void onStateMachineSettled(const rive::StateMachineHandle handle,
                                        uint64_t requestId) override;
 
+    virtual void onSemanticsDiffReceived(const rive::StateMachineHandle handle,
+                                         uint64_t requestId,
+                                         rive::SemanticsDiff diff) override;
+
 private:
     __weak id<RiveStateMachineListener> _observer;
 };
@@ -400,6 +605,20 @@ void _StateMachineListener::onStateMachineSettled(
     {
         [_observer onStateMachineSettled:reinterpret_cast<uint64_t>(handle)
                                requestID:requestId];
+    }
+}
+
+void _StateMachineListener::onSemanticsDiffReceived(
+    const rive::StateMachineHandle handle,
+    uint64_t requestId,
+    rive::SemanticsDiff diff)
+{
+    if (_observer)
+    {
+        RiveSemanticsDiff* objcDiff = RiveSemanticsDiffFromCpp(diff);
+        [_observer onSemanticsDiffReceived:reinterpret_cast<uint64_t>(handle)
+                                 requestID:requestId
+                                      diff:objcDiff];
     }
 }
 
@@ -1707,6 +1926,74 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           viewModelInstanceHandle);
       self->_commandQueue->bindViewModelInstance(
           smHandle, vmiHandle, requestID);
+    }];
+}
+
+#pragma mark - Semantics
+
+- (void)enableSemantics:(uint64_t)stateMachineHandle
+              requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      self->_commandQueue->enableSemantics(handle, requestID);
+    }];
+}
+
+- (void)drainSemanticsDiff:(uint64_t)stateMachineHandle
+                       fit:(RiveConfigurationFit)fit
+                 alignment:(RiveConfigurationAlignment)alignment
+               scaleFactor:(float)scaleFactor
+                viewBounds:(CGSize)viewBounds
+                 requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      self->_commandQueue->drainSemanticsDiff(
+          handle,
+          RiveConfigurationFitCppValue(fit),
+          RiveConfigurationAlignmentCppValue(alignment),
+          scaleFactor,
+          rive::Vec2D(viewBounds.width, viewBounds.height),
+          requestID);
+    }];
+}
+
+- (void)fireSemanticAction:(uint64_t)stateMachineHandle
+            semanticNodeID:(uint32_t)semanticNodeID
+                actionType:(RiveSemanticActionType)actionType
+                 requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      auto cppAction = RiveSemanticActionTypeToCpp(actionType);
+      self->_commandQueue->fireSemanticAction(
+          handle, semanticNodeID, cppAction, requestID);
+    }];
+}
+
+- (void)requestSemanticFocus:(uint64_t)stateMachineHandle
+              semanticNodeID:(uint32_t)semanticNodeID
+                   requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      self->_commandQueue->requestSemanticFocus(
+          handle, semanticNodeID, requestID);
+    }];
+}
+
+- (void)clearSemanticFocus:(uint64_t)stateMachineHandle
+                 requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      self->_commandQueue->clearSemanticFocus(handle, requestID);
     }];
 }
 

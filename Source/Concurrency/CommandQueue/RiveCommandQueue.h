@@ -357,6 +357,80 @@ NS_SWIFT_NAME(CommandQueueProtocol)
           toViewModelInstance:(uint64_t)viewModelInstanceHandle
                     requestID:(uint64_t)requestID;
 
+#pragma mark - Semantics
+
+/**
+ * Enables the semantic accessibility subsystem on a state machine.
+ *
+ * Must be called before diffs are delivered. Safe to call multiple times.
+ *
+ * @param stateMachineHandle The handle of the state machine
+ * @param requestID The request ID for this operation
+ */
+- (void)enableSemantics:(uint64_t)stateMachineHandle
+              requestID:(uint64_t)requestID;
+
+/**
+ * Drains the current semantic diff for a state machine.
+ *
+ * The response is delivered via the state machine listener's
+ * onSemanticsDiffReceived callback when the diff is non-empty.
+ * Output bounds are mapped to view space using the provided
+ * fit/alignment/scale/view-bounds parameters.
+ *
+ * @param stateMachineHandle The handle of the state machine
+ * @param fit The fit the artboard is drawn with
+ * @param alignment The alignment the artboard is drawn with
+ * @param scaleFactor Scale factor for things like retina display
+ * @param viewBounds The bounds of the view
+ * @param requestID The request ID for this operation
+ */
+- (void)drainSemanticsDiff:(uint64_t)stateMachineHandle
+                       fit:(RiveConfigurationFit)fit
+                 alignment:(RiveConfigurationAlignment)alignment
+               scaleFactor:(float)scaleFactor
+                viewBounds:(CGSize)viewBounds
+                 requestID:(uint64_t)requestID;
+
+/**
+ * Fires a semantic action on a semantic node.
+ *
+ * Fire-and-forget; errors are reported through the state machine error
+ * channel.
+ *
+ * @param stateMachineHandle The handle of the state machine
+ * @param semanticNodeID The identifier of the semantic node to act on
+ * @param actionType The type of action to fire (tap, increase, decrease)
+ * @param requestID The request ID for this operation
+ */
+- (void)fireSemanticAction:(uint64_t)stateMachineHandle
+            semanticNodeID:(uint32_t)semanticNodeID
+                actionType:(RiveSemanticActionType)actionType
+                 requestID:(uint64_t)requestID;
+
+/**
+ * Requests focus on a semantic node.
+ *
+ * Fire-and-forget; errors are reported through the state machine error
+ * channel.
+ *
+ * @param stateMachineHandle The handle of the state machine
+ * @param semanticNodeID The identifier of the semantic node to focus
+ * @param requestID The request ID for this operation
+ */
+- (void)requestSemanticFocus:(uint64_t)stateMachineHandle
+              semanticNodeID:(uint32_t)semanticNodeID
+                   requestID:(uint64_t)requestID;
+
+/**
+ * Clears semantic focus from all nodes in a state machine.
+ *
+ * @param stateMachineHandle The handle of the state machine
+ * @param requestID The request ID for this operation
+ */
+- (void)clearSemanticFocus:(uint64_t)stateMachineHandle
+                 requestID:(uint64_t)requestID;
+
 #pragma mark - Pointer Events
 
 /**

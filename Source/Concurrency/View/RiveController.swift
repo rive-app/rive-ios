@@ -7,6 +7,22 @@
 
 import Foundation
 import Combine
+#if !os(macOS) || RIVE_MAC_CATALYST
+import UIKit
+#endif
+
+// MARK: - RiveControllerDelegate
+
+@MainActor
+protocol RiveControllerDelegate: AnyObject, ScaleProvider {
+    var drawableSize: CGSize { get }
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    var accessibilityContainer: AnyObject { get }
+    func controller(_ controller: RiveController, didUpdateModalState isModal: Bool) -> Bool
+    #endif
+}
+
+// MARK: - RiveController
 
 @MainActor
 final class RiveController {
@@ -45,16 +61,20 @@ final class RiveController {
     private var dirtyStreamTask: Task<Void, Never>?
     private let inputHandler: InputHandler
     private let messageGate: CommandQueueMessageGate
-    // Optional returns let callers capture the provider with `[weak self]`
-    // without a call-site fallback. The controller resolves nil to a
-    // deterministic default below (`.zero` / `FallbackScaleProvider`), which
-    // also makes both fallbacks unit-testable.
-    private let drawableSizeProvider: () -> CGSize?
-    private let scaleProvider: () -> ScaleProvider?
+    private weak var delegate: RiveControllerDelegate?
     private var lastTimestamp: TimeInterval?
     private var hasProcessedFirstDraw = false
     private var wasOnscreen = false
     private var lastDrawnDrawableSize: CGSize?
+
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    let semanticsController: SemanticsController
+
+    var semantics: Semantics {
+        get { semanticsController.semantics }
+        set { semanticsController.semantics = newValue }
+    }
+    #endif
 
     // MARK: Testing
     #if TESTING
@@ -64,15 +84,42 @@ final class RiveController {
 
     // MARK: -
 
+    #if !os(macOS) || RIVE_MAC_CATALYST
     init(
         rive: Rive,
-        drawableSizeProvider: @escaping () -> CGSize?,
-        scaleProvider: @escaping () -> ScaleProvider?,
+        delegate: RiveControllerDelegate,
+        accessibility: UIAccessibilityProtocol.Type = UIAccessibility.self,
+        notificationCenter: NotificationCenterProtocol = NotificationCenter.default
     ) {
         RiveLog.debug(tag: .view, "[RiveUIView] Initializing controller")
         self.rive = rive
-        self.drawableSizeProvider = drawableSizeProvider
-        self.scaleProvider = scaleProvider
+        self.delegate = delegate
+        self.messageGate = rive.file.worker.dependencies.workerService.messageGate
+        self.inputHandler = InputHandler(
+            dependencies: .init(
+                commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue
+            )
+        )
+
+        self.semanticsController = SemanticsController(
+            dependencies: .init(
+                stateMachine: rive.stateMachine,
+                accessibility: accessibility,
+                notificationCenter: notificationCenter
+            )
+        )
+
+        setupSubscriptions()
+        semanticsController.delegate = self
+    }
+    #else
+    init(
+        rive: Rive,
+        delegate: RiveControllerDelegate
+    ) {
+        RiveLog.debug(tag: .view, "[RiveUIView] Initializing controller")
+        self.rive = rive
+        self.delegate = delegate
         self.messageGate = rive.file.worker.dependencies.workerService.messageGate
         self.inputHandler = InputHandler(
             dependencies: .init(
@@ -82,6 +129,7 @@ final class RiveController {
 
         setupSubscriptions()
     }
+    #endif
 
     deinit {
         settledStreamTask?.cancel()
@@ -159,13 +207,28 @@ final class RiveController {
             lastTimestamp = now
         }
 
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        semanticsController.commitDiffs()
+        #endif
+
         resolvePendingEvents()
         messageGate.processMessagesForFrame()
 
         let shouldAdvance = hasProcessedFirstDraw == false || isSettled == false
         if shouldAdvance {
+            isDirty = false
             RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
             rive.stateMachine.advance(by: delta)
+
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            let semanticsFitBridge = rive.fit.bridged(from: scaleProvider)
+            semanticsController.drainDiffs(
+                fit: semanticsFitBridge.fit,
+                alignment: semanticsFitBridge.alignment,
+                scaleFactor: Float(semanticsFitBridge.scaleFactor),
+                viewBounds: drawableSize
+            )
+            #endif
         }
 
         if isSettled {
@@ -238,8 +301,8 @@ final class RiveController {
                 guard let self else { return }
                 if case .layout = fit {
                     RiveLog.debug(tag: .view, "[RiveUIView] Applying layout fit to artboard size")
-                    let drawableSize = drawableSizeProvider() ?? .zero
-                    let provider = scaleProvider() ?? FallbackScaleProvider()
+                    let drawableSize = delegate?.drawableSize ?? .zero
+                    let provider: ScaleProvider = delegate ?? FallbackScaleProvider()
                     let scale = fit.bridged(from: provider).scaleFactor
                     rive.artboard.setSize(drawableSize, scale: Float(scale))
                 } else {
@@ -304,3 +367,36 @@ fileprivate struct FallbackScaleProvider: ScaleProvider {
     var nativeScale: CGFloat? { nil }
     var displayScale: CGFloat { 1 }
 }
+
+// MARK: - RiveController + SemanticsControllerDelegate
+
+#if !os(macOS) || RIVE_MAC_CATALYST
+extension RiveController: SemanticsControllerDelegate {
+    func semanticsControllerDidRequestWake(_ controller: SemanticsController) {
+        markDirty()
+    }
+
+    func semanticsControllerDidEnableSemantics(_ controller: SemanticsController) {
+        guard let delegate else { return }
+        let fitBridge = rive.fit.bridged(from: delegate)
+        controller.drainDiffs(
+            fit: fitBridge.fit,
+            alignment: fitBridge.alignment,
+            scaleFactor: Float(fitBridge.scaleFactor),
+            viewBounds: delegate.drawableSize
+        )
+    }
+
+    func semanticsController(_ controller: SemanticsController, didUpdateModalState isModal: Bool) -> Bool {
+        delegate?.controller(self, didUpdateModalState: isModal) ?? false
+    }
+
+    func accessibilityContainerForSemanticsController(_ controller: SemanticsController) -> AnyObject {
+        delegate?.accessibilityContainer ?? NSObject()
+    }
+
+    func displayScaleForSemanticsController(_ controller: SemanticsController) -> CGFloat {
+        delegate?.displayScale ?? 1.0
+    }
+}
+#endif

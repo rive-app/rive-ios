@@ -112,7 +112,18 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var deleteStateMachineListenerCalls: [DeleteStateMachineListenerCall] = []
     private var bindViewModelInstanceStub: ((UInt64, UInt64, UInt64) -> Void)?
     private(set) var bindViewModelInstanceCalls: [BindViewModelInstanceCall] = []
-    
+
+    private var enableSemanticsStub: ((UInt64, UInt64) -> Void)?
+    private(set) var enableSemanticsCalls: [EnableSemanticsCall] = []
+    private var drainSemanticsDiffStub: ((UInt64, RiveConfigurationFit, RiveConfigurationAlignment, Float, CGSize, UInt64) -> Void)?
+    private(set) var drainSemanticsDiffCalls: [DrainSemanticsDiffCall] = []
+    private var fireSemanticActionStub: ((UInt64, UInt32, SemanticActionType, UInt64) -> Void)?
+    private(set) var fireSemanticActionCalls: [FireSemanticActionCall] = []
+    private var requestSemanticFocusStub: ((UInt64, UInt32, UInt64) -> Void)?
+    private(set) var requestSemanticFocusCalls: [RequestSemanticFocusCall] = []
+    private var clearSemanticFocusStub: ((UInt64, UInt64) -> Void)?
+    private(set) var clearSemanticFocusCalls: [ClearSemanticFocusCall] = []
+
     private var pointerMoveStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
     private(set) var pointerMoveCalls: [PointerMoveCall] = []
     private var pointerDownStub: ((UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void)?
@@ -337,7 +348,27 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     func stubBindViewModelInstance(_ stub: @escaping (UInt64, UInt64, UInt64) -> Void) {
         bindViewModelInstanceStub = stub
     }
-    
+
+    func stubEnableSemantics(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        enableSemanticsStub = stub
+    }
+
+    func stubDrainSemanticsDiff(_ stub: @escaping (UInt64, RiveConfigurationFit, RiveConfigurationAlignment, Float, CGSize, UInt64) -> Void) {
+        drainSemanticsDiffStub = stub
+    }
+
+    func stubFireSemanticAction(_ stub: @escaping (UInt64, UInt32, SemanticActionType, UInt64) -> Void) {
+        fireSemanticActionStub = stub
+    }
+
+    func stubRequestSemanticFocus(_ stub: @escaping (UInt64, UInt32, UInt64) -> Void) {
+        requestSemanticFocusStub = stub
+    }
+
+    func stubClearSemanticFocus(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        clearSemanticFocusStub = stub
+    }
+
     func stubPointerMove(_ stub: @escaping (UInt64, Int32, CGPoint, CGSize, RiveConfigurationFit, RiveConfigurationAlignment, Float, UInt64) -> Void) {
         pointerMoveStub = stub
     }
@@ -535,7 +566,32 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         ))
         bindViewModelInstanceStub?(stateMachineHandle, viewModelInstanceHandle, requestID)
     }
-    
+
+    func enableSemantics(_ stateMachineHandle: UInt64, requestID: UInt64) {
+        enableSemanticsCalls.append(EnableSemanticsCall(stateMachineHandle: stateMachineHandle, requestID: requestID))
+        enableSemanticsStub?(stateMachineHandle, requestID)
+    }
+
+    func drainSemanticsDiff(_ stateMachineHandle: UInt64, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, viewBounds: CGSize, requestID: UInt64) {
+        drainSemanticsDiffCalls.append(DrainSemanticsDiffCall(stateMachineHandle: stateMachineHandle, fit: fit, alignment: alignment, scaleFactor: scaleFactor, viewBounds: viewBounds, requestID: requestID))
+        drainSemanticsDiffStub?(stateMachineHandle, fit, alignment, scaleFactor, viewBounds, requestID)
+    }
+
+    func fireSemanticAction(_ stateMachineHandle: UInt64, semanticNodeID: UInt32, actionType: SemanticActionType, requestID: UInt64) {
+        fireSemanticActionCalls.append(FireSemanticActionCall(stateMachineHandle: stateMachineHandle, semanticNodeID: semanticNodeID, actionType: actionType, requestID: requestID))
+        fireSemanticActionStub?(stateMachineHandle, semanticNodeID, actionType, requestID)
+    }
+
+    func requestSemanticFocus(_ stateMachineHandle: UInt64, semanticNodeID: UInt32, requestID: UInt64) {
+        requestSemanticFocusCalls.append(RequestSemanticFocusCall(stateMachineHandle: stateMachineHandle, semanticNodeID: semanticNodeID, requestID: requestID))
+        requestSemanticFocusStub?(stateMachineHandle, semanticNodeID, requestID)
+    }
+
+    func clearSemanticFocus(_ stateMachineHandle: UInt64, requestID: UInt64) {
+        clearSemanticFocusCalls.append(ClearSemanticFocusCall(stateMachineHandle: stateMachineHandle, requestID: requestID))
+        clearSemanticFocusStub?(stateMachineHandle, requestID)
+    }
+
     func pointerMove(_ stateMachineHandle: UInt64, id: Int32, position: CGPoint, screenBounds: CGSize, fit: RiveConfigurationFit, alignment: RiveConfigurationAlignment, scaleFactor: Float, requestID: UInt64) {
         pointerMoveCalls.append(PointerMoveCall(
             stateMachineHandle: stateMachineHandle,
@@ -1132,7 +1188,39 @@ extension MockCommandQueue {
         let viewModelInstanceHandle: UInt64
         let requestID: UInt64
     }
-    
+
+    struct EnableSemanticsCall {
+        let stateMachineHandle: UInt64
+        let requestID: UInt64
+    }
+
+    struct DrainSemanticsDiffCall {
+        let stateMachineHandle: UInt64
+        let fit: RiveConfigurationFit
+        let alignment: RiveConfigurationAlignment
+        let scaleFactor: Float
+        let viewBounds: CGSize
+        let requestID: UInt64
+    }
+
+    struct FireSemanticActionCall {
+        let stateMachineHandle: UInt64
+        let semanticNodeID: UInt32
+        let actionType: SemanticActionType
+        let requestID: UInt64
+    }
+
+    struct RequestSemanticFocusCall {
+        let stateMachineHandle: UInt64
+        let semanticNodeID: UInt32
+        let requestID: UInt64
+    }
+
+    struct ClearSemanticFocusCall {
+        let stateMachineHandle: UInt64
+        let requestID: UInt64
+    }
+
     struct PointerMoveCall {
         let stateMachineHandle: UInt64
         let id: Int32

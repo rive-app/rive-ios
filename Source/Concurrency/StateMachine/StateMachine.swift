@@ -79,6 +79,74 @@ public final class StateMachine: Equatable {
         return dependencies.stateMachineService.hasActiveListeners()
     }
 
+    /// Enables the accessibility semantics subsystem for this state machine.
+    ///
+    /// Must be called before semantics diffs are delivered. Safe to call multiple times.
+    @MainActor
+    public func enableSemantics() {
+        dependencies.stateMachineService.enableSemantics(for: stateMachineHandle)
+    }
+
+    /// Stream of incremental semantics diffs.
+    ///
+    /// After calling ``enableSemantics()``, this stream emits a ``SemanticsDiff``
+    /// each time the accessibility tree changes. Multiple subscribers are supported.
+    @MainActor
+    public func semanticsDiffStream() -> AsyncStream<SemanticsDiff> {
+        return dependencies.stateMachineService.semanticsDiffStream(for: stateMachineHandle)
+    }
+
+    /// Fires a semantic action on a semantic node.
+    ///
+    /// - Parameters:
+    ///   - nodeID: The identifier of the semantic node to act on.
+    ///   - actionType: The type of action to fire.
+    @MainActor
+    public func fireSemanticAction(nodeID: UInt32, actionType: SemanticActionType) {
+        dependencies.stateMachineService.fireSemanticAction(on: stateMachineHandle, nodeID: nodeID, actionType: actionType)
+    }
+
+    /// Requests focus on a specific semantic node.
+    ///
+    /// - Parameter nodeID: The identifier of the semantic node to focus.
+    @MainActor
+    public func requestSemanticFocus(nodeID: UInt32) {
+        dependencies.stateMachineService.requestSemanticFocus(on: stateMachineHandle, nodeID: nodeID)
+    }
+
+    /// Clears semantic focus from all nodes.
+    @MainActor
+    public func clearSemanticFocus() {
+        dependencies.stateMachineService.clearSemanticFocus(on: stateMachineHandle)
+    }
+
+    /// Drains the semantic diff for this state machine.
+    ///
+    /// Must be called after every ``advance(by:)`` when semantics are enabled.
+    /// The C++ runtime transforms artboard-space bounds into view-space using
+    /// the provided fit, alignment, scale, and view bounds parameters.
+    ///
+    /// - Parameters:
+    ///   - fit: The current content fit mode.
+    ///   - alignment: The current content alignment.
+    ///   - scaleFactor: The display scale factor (points to pixels).
+    ///   - viewBounds: The view size in pixels.
+    @MainActor
+    public func drainSemanticsDiff(
+        fit: RiveConfigurationFit,
+        alignment: RiveConfigurationAlignment,
+        scaleFactor: Float,
+        viewBounds: CGSize
+    ) {
+        dependencies.stateMachineService.drainSemanticsDiff(
+            for: stateMachineHandle,
+            fit: fit,
+            alignment: alignment,
+            scaleFactor: scaleFactor,
+            viewBounds: viewBounds
+        )
+    }
+
     /// Binds a view model instance to this state machine.
     ///
     /// Binding a view model instance allows the state machine to access and modify view model

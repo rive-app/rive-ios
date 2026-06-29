@@ -19,12 +19,15 @@ public struct RiveUIViewRepresentable: NativeViewRepresentable, Equatable {
     private var frameRate: FrameRate
     private var isPaused: Bool
     private var delegate: RiveUIViewDelegate?
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    private var semantics: Semantics = RiveUIView.Constants.Defaults.semantics
+    #endif
 
     public init(rive: Rive?, delegate: RiveUIViewDelegate? = nil) {
         self.rive = rive
         self.delegate = delegate
-        self.frameRate = .default
-        self.isPaused = false
+        self.frameRate = RiveUIView.Constants.Defaults.frameRate
+        self.isPaused = RiveUIView.Constants.Defaults.isPaused
     }
 
 #if canImport(UIKit) || RIVE_MAC_CATALYST
@@ -38,6 +41,7 @@ public struct RiveUIViewRepresentable: NativeViewRepresentable, Equatable {
         uiView.rive = rive
         uiView.frameRate = frameRate
         uiView.isPaused = isPaused
+        uiView.semantics = semantics
     }
 #else
     public func makeNSView(context: Context) -> RiveUIView {
@@ -65,12 +69,25 @@ public struct RiveUIViewRepresentable: NativeViewRepresentable, Equatable {
         return copy
     }
 
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    /// Sets the VoiceOver accessibility semantics mode for this Rive view.
+    public func semantics(_ semantics: Semantics) -> Self {
+        var copy = self
+        copy.semantics = semantics
+        return copy
+    }
+    #endif
+
     // MARK: Equatable
     nonisolated public static func ==(lhs: Self, rhs: Self) -> Bool {
         MainActor.assumeIsolated {
-            lhs.rive === rhs.rive
+            var isEqual = lhs.rive === rhs.rive
                 && lhs.frameRate == rhs.frameRate
                 && lhs.isPaused == rhs.isPaused
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            isEqual = isEqual && lhs.semantics == rhs.semantics
+            #endif
+            return isEqual
         }
     }
 }
@@ -94,12 +111,15 @@ public struct AsyncRiveUIViewRepresentable: NativeViewRepresentable, Equatable {
     private var frameRate: FrameRate
     private var isPaused: Bool
     private var delegate: RiveUIViewDelegate?
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    private var semantics: Semantics = RiveUIView.Constants.Defaults.semantics
+    #endif
 
     public init(rive: @MainActor @escaping () async throws -> Rive, delegate: RiveUIViewDelegate? = nil) {
         self.riveLoader = rive
         self.delegate = delegate
-        self.frameRate = .default
-        self.isPaused = false
+        self.frameRate = RiveUIView.Constants.Defaults.frameRate
+        self.isPaused = RiveUIView.Constants.Defaults.isPaused
     }
 
 #if canImport(UIKit) || RIVE_MAC_CATALYST
@@ -112,6 +132,7 @@ public struct AsyncRiveUIViewRepresentable: NativeViewRepresentable, Equatable {
         RiveLog.trace(tag: .view, "[RiveUIView] Updating async SwiftUI-backed view")
         uiView.frameRate = frameRate
         uiView.isPaused = isPaused
+        uiView.semantics = semantics
     }
 #else
     public func makeNSView(context: Context) -> RiveUIView {
@@ -138,11 +159,24 @@ public struct AsyncRiveUIViewRepresentable: NativeViewRepresentable, Equatable {
         return copy
     }
 
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    /// Sets the VoiceOver accessibility semantics mode for this Rive view.
+    public func semantics(_ semantics: Semantics) -> Self {
+        var copy = self
+        copy.semantics = semantics
+        return copy
+    }
+    #endif
+
     // MARK: Equatable
     nonisolated public static func ==(lhs: Self, rhs: Self) -> Bool {
         MainActor.assumeIsolated {
-            lhs.frameRate == rhs.frameRate
-            && lhs.isPaused == rhs.isPaused
+            var isEqual = lhs.frameRate == rhs.frameRate
+                && lhs.isPaused == rhs.isPaused
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            isEqual = isEqual && lhs.semantics == rhs.semantics
+            #endif
+            return isEqual
         }
     }
 }
