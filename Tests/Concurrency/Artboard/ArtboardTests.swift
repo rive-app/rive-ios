@@ -534,5 +534,90 @@ class ArtboardTests: XCTestCase {
         XCTAssertEqual(mockCommandQueue.resetArtboardSizeCalls.first?.artboardHandle, 77)
     }
 
+    // MARK: - Volume Tests
 
+    @MainActor
+    func test_setVolume_callsSetArtboardVolume() {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let dependencies = Artboard.Dependencies(artboardService: artboardService)
+        let artboard = Artboard(dependencies: dependencies, artboardHandle: 42)
+
+        artboard.setVolume(0.75)
+
+        XCTAssertEqual(mockCommandQueue.setArtboardVolumeCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.setArtboardVolumeCalls.first?.artboardHandle, 42)
+        XCTAssertEqual(mockCommandQueue.setArtboardVolumeCalls.first?.volume, 0.75)
+    }
+
+    @MainActor
+    func test_volume_returnsVolumeFromCallback() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let dependencies = Artboard.Dependencies(artboardService: artboardService)
+        let artboard = Artboard(dependencies: dependencies, artboardHandle: 1)
+
+        let expectation = expectation(description: "volume received")
+        mockCommandQueue.stubRequestArtboardVolume { artboardHandle, requestID in
+            XCTAssertEqual(artboardHandle, 1)
+            artboardService.onArtboardVolumeReceived(1, requestID: requestID, volume: 0.5)
+            expectation.fulfill()
+        }
+
+        let volume = try await artboard.volume()
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(volume, 0.5)
+    }
+
+    @MainActor
+    func test_volume_passesCorrectArtboardHandle() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let dependencies = Artboard.Dependencies(artboardService: artboardService)
+        let artboard = Artboard(dependencies: dependencies, artboardHandle: 42)
+
+        let expectation = expectation(description: "volume received")
+        mockCommandQueue.stubRequestArtboardVolume { artboardHandle, requestID in
+            XCTAssertEqual(artboardHandle, 42)
+            artboardService.onArtboardVolumeReceived(artboardHandle, requestID: requestID, volume: 0.75)
+            expectation.fulfill()
+        }
+
+        _ = try await artboard.volume()
+        await fulfillment(of: [expectation], timeout: 1)
+
+        XCTAssertEqual(mockCommandQueue.requestArtboardVolumeCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.requestArtboardVolumeCalls.first?.artboardHandle, 42)
+    }
+
+    @MainActor
+    func test_volume_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 1)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestArtboardVolume { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await artboard.volume()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ArtboardError.cancelled to be thrown")
+        } catch let error as ArtboardError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ArtboardError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ArtboardError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
 }

@@ -9,11 +9,14 @@
 import Foundation
 
 public enum ArtboardError: LocalizedError {
+    case invalidArtboard(String)
     case invalidStateMachine(String)
     case cancelled
 
     public var errorDescription: String? {
         switch self {
+        case .invalidArtboard(let message):
+            return "Artboard error: \(message)"
         case .invalidStateMachine(let message):
             return "State machine not found: \(message)"
         case .cancelled:

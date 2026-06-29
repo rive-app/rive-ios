@@ -144,6 +144,25 @@ public final class Artboard: Equatable {
     func resetSize() {
         dependencies.artboardService.resetSize(of: artboardHandle)
     }
+
+    /// Sets the audio volume for this artboard.
+    ///
+    /// Volume is propagated to all nested artboards.
+    ///
+    /// - Parameter volume: The volume level (0.0 = muted, 1.0 = full volume)
+    @MainActor
+    public func setVolume(_ volume: Float) {
+        dependencies.artboardService.setVolume(of: artboardHandle, volume: volume)
+    }
+
+    /// Retrieves the current volume of this artboard.
+    ///
+    /// - Returns: The current volume (0.0 = muted, 1.0 = full volume)
+    /// - Throws: `ArtboardError` if the request fails
+    @MainActor
+    public func volume() async throws -> Float {
+        return try await dependencies.artboardService.getVolume(of: artboardHandle)
+    }
 }
 
 extension Artboard {

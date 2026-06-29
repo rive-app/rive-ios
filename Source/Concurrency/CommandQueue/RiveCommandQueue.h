@@ -237,6 +237,26 @@ NS_SWIFT_NAME(CommandQueueProtocol)
                 requestID:(uint64_t)requestID;
 
 /**
+ * Sets the volume of an artboard.
+ *
+ * @param artboardHandle The artboard handle of the artboard to modify
+ * @param volume The volume level (0.0 = muted, 1.0 = full volume)
+ * @param requestID The request ID for this operation
+ */
+- (void)setArtboardVolume:(uint64_t)artboardHandle
+                   volume:(float)volume
+                requestID:(uint64_t)requestID;
+
+/**
+ * Requests the current volume of an artboard.
+ *
+ * @param artboardHandle The artboard handle of the artboard to query
+ * @param requestID The unique request ID for this operation
+ */
+- (void)requestArtboardVolume:(uint64_t)artboardHandle
+                    requestID:(uint64_t)requestID;
+
+/**
  * Requests the names of all state machines available on an artboard.
  *
  * This method initiates an asynchronous request to retrieve the names of

@@ -112,6 +112,17 @@ NS_SWIFT_NAME(ArtboardListener)
                          viewModelName:(NSString*)viewModelName
                           instanceName:(NSString*)instanceName;
 
+/**
+ * Called when artboard volume information is received.
+ *
+ * @param artboardHandle The handle of the artboard that was queried.
+ * @param requestID The unique identifier for the request that completed.
+ * @param volume The current volume of the artboard (0.0 to 1.0).
+ */
+- (void)onArtboardVolumeReceived:(uint64_t)artboardHandle
+                       requestID:(uint64_t)requestID
+                          volume:(float)volume;
+
 @end
 
 NS_ASSUME_NONNULL_END

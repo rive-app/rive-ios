@@ -10,11 +10,11 @@ import Foundation
 
 /// A service class that manages artboard operations and coordinates with the command queue.
 ///
-/// Implements `ArtboardListener` to receive callbacks from the command queue. Manages continuations
+/// Implements `ArtboardListener` to receive callbacks from the command queue. Manages requests
 /// for async operations, storing them by request ID and resuming them when listener callbacks
 /// are invoked. All command queue operations must be performed on the main thread (either marked
 /// `@MainActor` or dispatched to the main queue). Listener callbacks are dispatched to the
-/// main actor to safely access continuations.
+/// main actor to safely access requests.
 ///
 /// All continuation-based methods are wrapped with `withTaskCancellationHandler` because
 /// `withCheckedThrowingContinuation` does not auto-resume on task cancellation. Without
@@ -27,12 +27,17 @@ final class ArtboardService: NSObject, ArtboardListener {
         "[Artboard (\(artboard))]"
     }
 
-    /// A dictionary mapping request IDs to continuations for async operations.
+    private struct PendingRequest {
+        let continuation: AnyContinuation
+        let mapError: (String) -> Error
+    }
+
+    /// A dictionary mapping request IDs to pending requests for async operations.
     ///
-    /// Continuations are stored when command queue functions are called and resumed when
+    /// Requests are stored when command queue functions are called and resumed when
     /// listener callbacks are invoked. Access must be on the main thread.
     @MainActor
-    private var continuations: [UInt64: AnyContinuation] = [:]
+    private var requests: [UInt64: PendingRequest] = [:]
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -47,24 +52,27 @@ final class ArtboardService: NSObject, ArtboardListener {
     }
 
     /// Wraps a continuation-based command queue operation with cancellation support.
-    private func withCancellableContinuation<T: Sendable>(
-        cancelledError: Error,
+    private func withCancellableRequest<T: Sendable>(
+        mapError: @escaping (String) -> Error,
         operation: @escaping (UInt64) -> Void
     ) async throws -> T {
         try Task.checkCancellation()
         let requestID = dependencies.commandQueue.nextRequestID
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
-                continuations[requestID] = AnyContinuation(continuation)
+                requests[requestID] = PendingRequest(
+                    continuation: AnyContinuation(continuation),
+                    mapError: mapError
+                )
                 beginImmediateRequest(requestID)
                 operation(requestID)
             }
         } onCancel: { [weak self] in
             Task { @MainActor in
                 guard let self else { return }
-                if let continuation = self.continuations.removeValue(forKey: requestID) {
+                if let request = self.requests.removeValue(forKey: requestID) {
                     self.finishImmediateRequest(requestID)
-                    continuation.resume(throwing: cancelledError)
+                    request.continuation.resume(throwing: ArtboardError.cancelled)
                 }
             }
         }
@@ -72,8 +80,8 @@ final class ArtboardService: NSObject, ArtboardListener {
 
     /// Instantiates a state machine from an artboard asynchronously.
     ///
-    /// The continuation is resumed when `onStateMachineInstantiated` is called, or fails
-    /// via `onArtboardError` if the server could not instantiate the state machine.
+    /// The request's continuation is resumed when `onStateMachineInstantiated` is called, or
+    /// fails via `onArtboardError` if the server could not instantiate the state machine.
     ///
     /// - Parameters:
     ///   - name: The name of the state machine to instantiate. If `nil`, the default state machine is instantiated.
@@ -83,7 +91,7 @@ final class ArtboardService: NSObject, ArtboardListener {
     /// - Throws: `ArtboardError.invalidStateMachine` if the server reports an error.
     @MainActor
     func instantiateStateMachine(name: String?, artboardHandle: Artboard.ArtboardHandle, observer: StateMachineListener) async throws -> StateMachine.StateMachineHandle {
-        try await withCancellableContinuation(cancelledError: ArtboardError.cancelled) { requestID in
+        try await withCancellableRequest(mapError: ArtboardError.invalidStateMachine) { requestID in
             let commandQueue = self.dependencies.commandQueue
             if let name {
                 _ = commandQueue.createStateMachineNamed(name, fromArtboard: artboardHandle, observer: observer, requestID: requestID)
@@ -95,7 +103,7 @@ final class ArtboardService: NSObject, ArtboardListener {
 
     /// Retrieves the names of all state machines available on an artboard.
     ///
-    /// The continuation is resumed when `onStateMachineNamesListed` is called.
+    /// The request's continuation is resumed when `onStateMachineNamesListed` is called.
     ///
     /// - Parameter artboard: The handle of the artboard to query.
     /// - Returns: An array of state machine names available on the artboard.
@@ -103,14 +111,14 @@ final class ArtboardService: NSObject, ArtboardListener {
     @MainActor
     func getStateMachineNames(from artboard: Artboard.ArtboardHandle) async throws -> [String] {
         RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Requesting state machine names")
-        return try await withCancellableContinuation(cancelledError: ArtboardError.cancelled) { requestID in
+        return try await withCancellableRequest(mapError: ArtboardError.invalidArtboard) { requestID in
             self.dependencies.commandQueue.requestStateMachineNames(artboard, requestID: requestID)
         }
     }
 
     /// Retrieves the default view model information for an artboard.
     ///
-    /// The continuation is resumed when `onDefaultViewModelInfoReceived` is called.
+    /// The request's continuation is resumed when `onDefaultViewModelInfoReceived` is called.
     ///
     /// - Parameters:
     ///   - artboard: The handle of the artboard to query.
@@ -120,7 +128,7 @@ final class ArtboardService: NSObject, ArtboardListener {
     @MainActor
     func getDefaultViewModelInfo(from artboard: Artboard.ArtboardHandle, file: File.FileHandle) async throws -> (viewModelName: String, instanceName: String) {
         RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Requesting default view model info")
-        return try await withCancellableContinuation(cancelledError: ArtboardError.cancelled) { requestID in
+        return try await withCancellableRequest(mapError: ArtboardError.invalidArtboard) { requestID in
             self.dependencies.commandQueue.requestDefaultViewModelInfo(artboard, fromFile: file, requestID: requestID)
         }
     }
@@ -145,69 +153,106 @@ final class ArtboardService: NSObject, ArtboardListener {
         dependencies.commandQueue.resetArtboardSize(artboard, requestID: requestID)
     }
 
+    /// Sets the volume of an artboard.
+    ///
+    /// Delegates to the command queue. No listener callback is invoked for this operation.
+    @MainActor
+    func setVolume(of artboard: Artboard.ArtboardHandle, volume: Float) {
+        RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Setting volume to \(volume)")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.setArtboardVolume(artboard, volume: volume, requestID: requestID)
+    }
+
+    /// Retrieves the current volume of an artboard.
+    ///
+    /// The request's continuation is resumed when `onArtboardVolumeReceived` is called.
+    ///
+    /// - Parameter artboard: The handle of the artboard to query.
+    /// - Returns: The current volume of the artboard (0.0 to 1.0).
+    /// - Throws: `ArtboardError` if the request fails
+    @MainActor
+    func getVolume(of artboard: Artboard.ArtboardHandle) async throws -> Float {
+        RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Requesting volume")
+        return try await withCancellableRequest(mapError: ArtboardError.invalidArtboard) { requestID in
+            self.dependencies.commandQueue.requestArtboardVolume(artboard, requestID: requestID)
+        }
+    }
+
     /// Called when state machine names are listed.
     ///
     /// Listener callback invoked by the command server. Dispatches to main actor to access
-    /// continuations dictionary and resume the continuation with the state machine names.
+    /// requests dictionary and resume its continuation with the state machine names.
     nonisolated func onStateMachineNamesListed(_ artboardHandle: UInt64, names: [String], requestID: UInt64) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = requests.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Received \(names.count) state machine names")
-            try continuation.resume(returning: names)
+            try request.continuation.resume(returning: names)
         }
     }
 
     /// Called when default view model information is received.
     ///
     /// Listener callback invoked by the command server. Dispatches to main actor to access
-    /// continuations dictionary and resume the continuation with the view model name and instance name.
+    /// requests dictionary and resume its continuation with the view model name and instance name.
     nonisolated func onDefaultViewModelInfoReceived(_ artboardHandle: UInt64, requestID: UInt64, viewModelName: String, instanceName: String) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = requests.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Received default view model info '\(viewModelName)' / '\(instanceName)'")
-            try continuation.resume(returning: (viewModelName: viewModelName, instanceName: instanceName))
+            try request.continuation.resume(returning: (viewModelName: viewModelName, instanceName: instanceName))
         }
     }
 
     /// Called when a state machine has been successfully instantiated from an artboard.
     ///
     /// Listener callback invoked by the command server. Dispatches to main actor to access
-    /// continuations dictionary and resume the continuation with the new state machine handle.
+    /// requests dictionary and resume its continuation with the new state machine handle.
     nonisolated func onStateMachineInstantiated(_ artboardHandle: UInt64, requestID: UInt64, stateMachineHandle: UInt64) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = requests.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Instantiated state machine (\(stateMachineHandle))")
-            try continuation.resume(returning: stateMachineHandle)
+            try request.continuation.resume(returning: stateMachineHandle)
+        }
+    }
+
+    /// Called when artboard volume information is received.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// requests dictionary and resume its continuation with the volume value.
+    nonisolated func onArtboardVolumeReceived(_ artboardHandle: UInt64, requestID: UInt64, volume: Float) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let request = requests.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Received volume \(volume)")
+            try request.continuation.resume(returning: volume)
         }
     }
 
     /// Called when an artboard error occurs.
     ///
-    /// Listener callback invoked by the command server. Dispatches to main actor to resume
-    /// the pending continuation with an `ArtboardError.invalidStateMachine` error when a
-    /// state machine instantiation fails.
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// requests dictionary and resume its continuation with the error mapped by the originating request.
     nonisolated func onArtboardError(_ artboardHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = requests.removeValue(forKey: requestID) else { return }
             RiveLog.error(tag: .artboard, "\(Self.context(artboardHandle)) Operation failed: \(message)")
-            continuation.resume(throwing: ArtboardError.invalidStateMachine(message))
+            request.continuation.resume(throwing: request.mapError(message))
         }
     }
 
     /// Deletes an artboard via the command queue.
     ///
-    /// The continuation is resumed when `onArtboardDeleted` is called.
+    /// The request's continuation is resumed when `onArtboardDeleted` is called.
     ///
     /// - Parameter artboard: The artboard handle to delete
     /// - Returns: The artboard handle that was deleted
     @MainActor
     func deleteArtboard(_ artboard: Artboard.ArtboardHandle) async throws -> Artboard.ArtboardHandle {
         RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Deleting artboard")
-        return try await withCancellableContinuation(cancelledError: ArtboardError.cancelled) { requestID in
+        return try await withCancellableRequest(mapError: ArtboardError.invalidArtboard) { requestID in
             self.dependencies.commandQueue.deleteArtboard(artboard, requestID: requestID)
         }
     }
@@ -223,13 +268,13 @@ final class ArtboardService: NSObject, ArtboardListener {
     /// Called when an artboard deletion operation completes.
     ///
     /// Listener callback invoked by the command server. Dispatches to main actor to access
-    /// continuations dictionary and resume the continuation with the artboard handle.
+    /// requests dictionary and resume its continuation with the artboard handle.
     nonisolated func onArtboardDeleted(_ artboardHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
             finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else { return }
+            guard let request = requests.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Deleted artboard")
-            try continuation.resume(returning: artboardHandle)
+            try request.continuation.resume(returning: artboardHandle)
         }
     }
 }

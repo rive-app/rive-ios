@@ -104,6 +104,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var setArtboardSizeCalls: [SetArtboardSizeCall] = []
     private var resetArtboardSizeStub: ((UInt64, UInt64) -> Void)?
     private(set) var resetArtboardSizeCalls: [ResetArtboardSizeCall] = []
+    private var setArtboardVolumeStub: ((UInt64, Float, UInt64) -> Void)?
+    private(set) var setArtboardVolumeCalls: [SetArtboardVolumeCall] = []
+    private var requestArtboardVolumeStub: ((UInt64, UInt64) -> Void)?
+    private(set) var requestArtboardVolumeCalls: [RequestArtboardVolumeCall] = []
     private var advanceStateMachineStub: ((UInt64, TimeInterval, UInt64) -> Void)?
     private(set) var advanceStateMachineCalls: [AdvanceStateMachineCall] = []
     private var deleteStateMachineStub: ((UInt64) -> Void)?
@@ -333,6 +337,14 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         resetArtboardSizeStub = stub
     }
 
+    func stubSetArtboardVolume(_ stub: @escaping (UInt64, Float, UInt64) -> Void) {
+        setArtboardVolumeStub = stub
+    }
+
+    func stubRequestArtboardVolume(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        requestArtboardVolumeStub = stub
+    }
+
     func stubAdvanceStateMachine(_ stub: @escaping (UInt64, TimeInterval, UInt64) -> Void) {
         advanceStateMachineStub = stub
     }
@@ -500,6 +512,16 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     func resetArtboardSize(_ artboardHandle: UInt64, requestID: UInt64) {
         resetArtboardSizeCalls.append(ResetArtboardSizeCall(artboardHandle: artboardHandle, requestID: requestID))
         resetArtboardSizeStub?(artboardHandle, requestID)
+    }
+
+    func setArtboardVolume(_ artboardHandle: UInt64, volume: Float, requestID: UInt64) {
+        setArtboardVolumeCalls.append(SetArtboardVolumeCall(artboardHandle: artboardHandle, volume: volume, requestID: requestID))
+        setArtboardVolumeStub?(artboardHandle, volume, requestID)
+    }
+
+    func requestArtboardVolume(_ artboardHandle: UInt64, requestID: UInt64) {
+        requestArtboardVolumeCalls.append(RequestArtboardVolumeCall(artboardHandle: artboardHandle, requestID: requestID))
+        requestArtboardVolumeStub?(artboardHandle, requestID)
     }
 
     func requestStateMachineNames(_ artboardHandle: UInt64, requestID: UInt64) {
@@ -1133,6 +1155,17 @@ extension MockCommandQueue {
     }
 
     struct ResetArtboardSizeCall {
+        let artboardHandle: UInt64
+        let requestID: UInt64
+    }
+
+    struct SetArtboardVolumeCall {
+        let artboardHandle: UInt64
+        let volume: Float
+        let requestID: UInt64
+    }
+
+    struct RequestArtboardVolumeCall {
         let artboardHandle: UInt64
         let requestID: UInt64
     }

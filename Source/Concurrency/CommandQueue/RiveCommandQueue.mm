@@ -464,6 +464,10 @@ public:
         std::string viewModelName,
         std::string instanceName) override;
 
+    virtual void onArtboardVolumeReceived(const rive::ArtboardHandle handle,
+                                          uint64_t requestId,
+                                          float volume) override;
+
 private:
     __weak id<RiveArtboardListener> _observer;
 };
@@ -542,6 +546,17 @@ void _ArtboardListener::onDefaultViewModelInfoReceived(
                                  requestID:requestId
                              viewModelName:viewModelNameObjC
                               instanceName:instanceNameObjC];
+    }
+}
+
+void _ArtboardListener::onArtboardVolumeReceived(
+    const rive::ArtboardHandle handle, uint64_t requestId, float volume)
+{
+    if (_observer)
+    {
+        [_observer onArtboardVolumeReceived:reinterpret_cast<uint64_t>(handle)
+                                  requestID:requestId
+                                     volume:volume];
     }
 }
 
@@ -1737,6 +1752,25 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     [self executeCommand:^{
       auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
       self->_commandQueue->resetArtboardSize(handle, requestID);
+    }];
+}
+
+- (void)setArtboardVolume:(uint64_t)artboardHandle
+                   volume:(float)volume
+                requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+      self->_commandQueue->setArtboardVolume(handle, volume, requestID);
+    }];
+}
+
+- (void)requestArtboardVolume:(uint64_t)artboardHandle
+                    requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+      self->_commandQueue->requestArtboardVolume(handle, requestID);
     }];
 }
 
