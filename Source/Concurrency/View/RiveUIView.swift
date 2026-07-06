@@ -380,26 +380,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             controller?.semantics = semantics
             #endif
 
-            // If we are paused, we want to draw at least one frame
-            // We'll leverage MTKView's (set)NeedsDisplay to draw once
-            // and return to the previous settings. This accounts for
-            // both iOS and macOS, on all OSes
-            if isPaused {
-                guard let mtkView else {
-                    return
-                }
-
-                let currentIsPaused = mtkView.isPaused
-                let currentEnableSetNeedsDisplay = mtkView.enableSetNeedsDisplay
-
-                mtkView.isPaused = true
-                mtkView.enableSetNeedsDisplay = true
-
-                tick()
-
-               mtkView.isPaused = currentIsPaused
-               mtkView.enableSetNeedsDisplay = currentEnableSetNeedsDisplay
-            }
+            mtkView?.draw()
         } else {
             RiveLog.debug(tag: .view, "[RiveUIView] Clearing Rive renderer and controller")
             renderer = nil
