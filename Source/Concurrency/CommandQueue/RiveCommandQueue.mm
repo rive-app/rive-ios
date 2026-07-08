@@ -57,6 +57,8 @@ rive::DataType RiveViewModelInstanceDataTypeToCppType(
             return rive::DataType::symbolListIndex;
         case RiveViewModelInstanceDataTypeAssetImage:
             return rive::DataType::assetImage;
+        case RiveViewModelInstanceDataTypeAssetFont:
+            return rive::DataType::assetFont;
         case RiveViewModelInstanceDataTypeArtboard:
             return rive::DataType::artboard;
         case RiveViewModelInstanceDataTypeInput:
@@ -95,6 +97,8 @@ RiveViewModelInstanceDataType RiveViewModelInstanceDataTypeFromCpp(
             return RiveViewModelInstanceDataTypeSymbolListIndex;
         case rive::DataType::assetImage:
             return RiveViewModelInstanceDataTypeAssetImage;
+        case rive::DataType::assetFont:
+            return RiveViewModelInstanceDataTypeAssetFont;
         case rive::DataType::artboard:
             return RiveViewModelInstanceDataTypeArtboard;
         case rive::DataType::input:

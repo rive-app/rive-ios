@@ -151,6 +151,9 @@ typedef NS_ENUM(NSInteger, RiveViewModelInstanceDataType) {
     /// Asset Image.
     RiveViewModelInstanceDataTypeAssetImage,
 
+    /// Asset Font.
+    RiveViewModelInstanceDataTypeAssetFont,
+
     /// Artboard.
     RiveViewModelInstanceDataTypeArtboard,
 

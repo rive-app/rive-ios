@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, RiveDataBindingViewModelInstancePropertyDataType) {
     RiveDataBindingViewModelInstancePropertyDataTypeInteger,
     RiveDataBindingViewModelInstancePropertyDataTypeSymbolListIndex,
     RiveDataBindingViewModelInstancePropertyDataTypeAssetImage,
+    RiveDataBindingViewModelInstancePropertyDataTypeAssetFont,
     RiveDataBindingViewModelInstancePropertyDataTypeArtboard,
     RiveDataBindingViewModelInstancePropertyDataTypeInput,
     RiveDataBindingViewModelInstancePropertyDataTypeAny,
