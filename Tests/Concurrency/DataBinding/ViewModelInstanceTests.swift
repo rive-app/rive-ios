@@ -1914,5 +1914,189 @@ class ViewModelInstanceTests: XCTestCase {
             XCTFail("Expected ViewModelInstanceError.message, got \(type(of: error)): \(error)")
         }
     }
-    
+
+    // MARK: - Names
+
+    @MainActor
+    func test_viewModelName_returnsName() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        var capturedObserver: ViewModelInstanceListener?
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+            capturedObserver = observer
+        }
+
+        mockCommandQueue.stubRequestViewModelInstanceViewModelName { instanceHandle, requestID in
+            capturedObserver?.onViewModelInstanceViewModelNameReceived(instanceHandle, requestID: requestID, viewModelName: "Test All")
+        }
+
+        let name = try await viewModelInstance.viewModelName()
+        XCTAssertEqual(name, "Test All")
+    }
+
+    @MainActor
+    func test_name_returnsName() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        var capturedObserver: ViewModelInstanceListener?
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+            capturedObserver = observer
+        }
+
+        mockCommandQueue.stubRequestViewModelInstanceName { instanceHandle, requestID in
+            capturedObserver?.onViewModelInstanceNameReceived(instanceHandle, requestID: requestID, name: "Test Default")
+        }
+
+        let name = try await viewModelInstance.name()
+        XCTAssertEqual(name, "Test Default")
+    }
+
+    @MainActor
+    func test_viewModelName_withServerError_throwsMessageError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        var capturedObserver: ViewModelInstanceListener?
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+            capturedObserver = observer
+        }
+
+        mockCommandQueue.stubRequestViewModelInstanceViewModelName { instanceHandle, requestID in
+            capturedObserver?.onViewModelInstanceError(instanceHandle, requestID: requestID, message: "invalid view model instance handle")
+        }
+
+        do {
+            _ = try await viewModelInstance.viewModelName()
+            XCTFail("Expected ViewModelInstanceError.message to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .message = error else {
+                XCTFail("Expected .message error, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.message, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_name_withServerError_throwsMessageError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        var capturedObserver: ViewModelInstanceListener?
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+            capturedObserver = observer
+        }
+
+        mockCommandQueue.stubRequestViewModelInstanceName { instanceHandle, requestID in
+            capturedObserver?.onViewModelInstanceError(instanceHandle, requestID: requestID, message: "invalid view model instance handle")
+        }
+
+        do {
+            _ = try await viewModelInstance.name()
+            XCTFail("Expected ViewModelInstanceError.message to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .message = error else {
+                XCTFail("Expected .message error, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.message, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_viewModelName_cachesResult_requestIssuedOnce() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        var capturedObserver: ViewModelInstanceListener?
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+            capturedObserver = observer
+        }
+
+        mockCommandQueue.stubRequestViewModelInstanceViewModelName { instanceHandle, requestID in
+            capturedObserver?.onViewModelInstanceViewModelNameReceived(instanceHandle, requestID: requestID, viewModelName: "Test All")
+        }
+
+        let first = try await viewModelInstance.viewModelName()
+        let second = try await viewModelInstance.viewModelName()
+
+        XCTAssertEqual(first, "Test All")
+        XCTAssertEqual(second, "Test All")
+        XCTAssertEqual(mockCommandQueue.requestViewModelInstanceViewModelNameCallCount, 1)
+    }
+
+    @MainActor
+    func test_name_cachesResult_requestIssuedOnce() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        var capturedObserver: ViewModelInstanceListener?
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue) { observer in
+            capturedObserver = observer
+        }
+
+        mockCommandQueue.stubRequestViewModelInstanceName { instanceHandle, requestID in
+            capturedObserver?.onViewModelInstanceNameReceived(instanceHandle, requestID: requestID, name: "Test Default")
+        }
+
+        let first = try await viewModelInstance.name()
+        let second = try await viewModelInstance.name()
+
+        XCTAssertEqual(first, "Test Default")
+        XCTAssertEqual(second, "Test Default")
+        XCTAssertEqual(mockCommandQueue.requestViewModelInstanceNameCallCount, 1)
+    }
+
+    @MainActor
+    func test_viewModelName_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelInstanceViewModelName { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstance.viewModelName()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_name_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestViewModelInstanceName { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await viewModelInstance.name()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ViewModelInstanceError.cancelled to be thrown")
+        } catch let error as ViewModelInstanceError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ViewModelInstanceError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ViewModelInstanceError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
 }

@@ -201,4 +201,63 @@ class RiveUIIntegrationTests: XCTestCase {
             XCTFail("Expected FileError, got \(type(of: error)): \(error)")
         }
     }
+
+    // MARK: - View Model Instance Names
+    //
+    // Fixture: data_binding_test.riv defines a view model "Test" with instances "Default" and
+    // "Editor Defaults", and "Test" is the default artboard's view model.
+
+    @MainActor
+    func test_viewModelInstanceName_namedInstance_reportsRequestedName() async throws {
+        let worker = try await Worker()
+        let file = try await File(source: .local("data_binding_test", Bundle(for: Self.self)), worker: worker)
+
+        let instance = try await file.createViewModelInstance(.name("Editor Defaults", from: .name("Test")))
+        let viewModelName = try await instance.viewModelName()
+        let name = try await instance.name()
+
+        XCTAssertEqual(viewModelName, "Test")
+        XCTAssertEqual(name, "Editor Defaults")
+    }
+
+    @MainActor
+    func test_viewModelInstanceName_blankInstance_reportsEmptyName() async throws {
+        let worker = try await Worker()
+        let file = try await File(source: .local("data_binding_test", Bundle(for: Self.self)), worker: worker)
+
+        let instance = try await file.createViewModelInstance(.blank(from: .name("Test")))
+        let viewModelName = try await instance.viewModelName()
+        let name = try await instance.name()
+
+        XCTAssertEqual(viewModelName, "Test")
+        XCTAssertEqual(name, "")
+    }
+
+    @MainActor
+    func test_viewModelInstanceName_defaultInstance_reportsDefaultName() async throws {
+        let worker = try await Worker()
+        let file = try await File(source: .local("data_binding_test", Bundle(for: Self.self)), worker: worker)
+
+        let instance = try await file.createViewModelInstance(.viewModelDefault(from: .name("Test")))
+        let viewModelName = try await instance.viewModelName()
+        let name = try await instance.name()
+
+        XCTAssertEqual(viewModelName, "Test")
+        XCTAssertEqual(name, "Default")
+    }
+
+    @MainActor
+    func test_viewModelInstanceName_artboardDefaultInstance_matchesDefaultInfo() async throws {
+        let worker = try await Worker()
+        let file = try await File(source: .local("data_binding_test", Bundle(for: Self.self)), worker: worker)
+        let artboard = try await file.createArtboard()
+        let info = try await file.getDefaultViewModelInfo(for: artboard)
+
+        let instance = try await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(artboard)))
+        let viewModelName = try await instance.viewModelName()
+        let name = try await instance.name()
+
+        XCTAssertEqual(viewModelName, info.viewModelName)
+        XCTAssertEqual(name, info.instanceName)
+    }
 }

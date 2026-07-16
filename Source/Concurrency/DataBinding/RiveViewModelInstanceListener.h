@@ -71,6 +71,33 @@ NS_SWIFT_NAME(ViewModelInstanceListener)
                                path:(NSString*)path
                                size:(NSInteger)size;
 
+/**
+ * Called when a view model instance's view model (definition) name is
+ * received.
+ *
+ * @param viewModelInstanceHandle The view model instance handle that was
+ *        queried.
+ * @param requestID The unique identifier for the request that completed.
+ * @param viewModelName The name of the view model that defines the instance.
+ */
+- (void)onViewModelInstanceViewModelNameReceived:
+            (uint64_t)viewModelInstanceHandle
+                                       requestID:(uint64_t)requestID
+                                   viewModelName:(NSString*)viewModelName;
+
+/**
+ * Called when a view model instance's editor-assigned name is received.
+ *
+ * @param viewModelInstanceHandle The view model instance handle that was
+ *        queried.
+ * @param requestID The unique identifier for the request that completed.
+ * @param name The editor-assigned name of the instance, or an empty string for
+ *        instances without a name (e.g. blank instances).
+ */
+- (void)onViewModelInstanceNameReceived:(uint64_t)viewModelInstanceHandle
+                              requestID:(uint64_t)requestID
+                                   name:(NSString*)name;
+
 @end
 
 NS_ASSUME_NONNULL_END

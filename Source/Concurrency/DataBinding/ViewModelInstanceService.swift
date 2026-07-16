@@ -129,6 +129,37 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         dirtyStreamContinuations.removeValue(forKey: instance)
     }
 
+    // MARK: - Names
+
+    /// Retrieves the name of the view model that defines the instance.
+    ///
+    /// The continuation is resumed when `onViewModelInstanceViewModelNameReceived` is called.
+    ///
+    /// - Parameter instance: The view model instance handle
+    /// - Returns: The name of the view model that defines the instance
+    /// - Throws: `ViewModelInstanceError` if the request fails
+    @MainActor
+    func viewModelName(for instance: ViewModelInstance.ViewModelInstanceHandle) async throws -> String {
+        try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceViewModelName(instance, requestID: requestID)
+        }
+    }
+
+    /// Retrieves the editor-assigned name of the instance.
+    ///
+    /// The continuation is resumed when `onViewModelInstanceNameReceived` is called.
+    ///
+    /// - Parameter instance: The view model instance handle
+    /// - Returns: The editor-assigned name of the instance, or an empty string for instances
+    ///   without a name (e.g. blank instances)
+    /// - Throws: `ViewModelInstanceError` if the request fails
+    @MainActor
+    func name(for instance: ViewModelInstance.ViewModelInstanceHandle) async throws -> String {
+        try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestViewModelInstanceName(instance, requestID: requestID)
+        }
+    }
+
     // MARK: - StringProperty
 
     /// Retrieves a string property value.
@@ -699,6 +730,42 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             if let continuation = continuations.removeValue(forKey: requestID) {
                 RiveLog.trace(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Received list size \(size) for path '\(path)'")
                 try continuation.resume(returning: size)
+            }
+        }
+    }
+
+    /// Called when a view model instance's view model (definition) name is received.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the view model name.
+    nonisolated public func onViewModelInstanceViewModelNameReceived(
+        _ viewModelInstanceHandle: UInt64,
+        requestID: UInt64,
+        viewModelName: String
+    ) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            if let continuation = continuations.removeValue(forKey: requestID) {
+                RiveLog.trace(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Received view model name '\(viewModelName)'")
+                try continuation.resume(returning: viewModelName)
+            }
+        }
+    }
+
+    /// Called when a view model instance's editor-assigned name is received.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// continuations dictionary and resume the continuation with the instance name.
+    nonisolated public func onViewModelInstanceNameReceived(
+        _ viewModelInstanceHandle: UInt64,
+        requestID: UInt64,
+        name: String
+    ) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            if let continuation = continuations.removeValue(forKey: requestID) {
+                RiveLog.trace(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Received instance name '\(name)'")
+                try continuation.resume(returning: name)
             }
         }
     }

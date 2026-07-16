@@ -44,6 +44,12 @@ public final class ViewModelInstance: Equatable {
     let viewModelInstanceHandle: ViewModelInstanceHandle
     private var artboardPropertyValues: [String: Artboard] = [:]
     private var imagePropertyValues: [String: Image] = [:]
+    /// The view model (definition) name, cached after first fetch since it is immutable for the
+    /// instance's lifetime.
+    private var cachedViewModelName: String?
+    /// The editor-assigned instance name, cached after first fetch since it is immutable for the
+    /// instance's lifetime.
+    private var cachedName: String?
 
     private static func logContext(for handle: ViewModelInstanceHandle) -> String {
         "[ViewModelInstance (\(handle))]"
@@ -89,6 +95,41 @@ public final class ViewModelInstance: Equatable {
     @MainActor
     var hasActiveListeners: Bool {
         return dependencies.viewModelInstanceService.hasActiveListeners()
+    }
+
+    // MARK: - Names
+
+    /// Retrieves the name of the view model that defines this instance.
+    ///
+    /// Unlike ``name()``, which returns this instance's own editor-assigned name, this returns the
+    /// name of its view model definition. Multiple instances can share the same view model name
+    /// while having different instance names.
+    ///
+    /// - Returns: The name of the view model that defines this instance
+    /// - Throws: An error if the name cannot be read
+    @MainActor
+    public func viewModelName() async throws -> String {
+        if let cachedViewModelName {
+            return cachedViewModelName
+        }
+        let name = try await dependencies.viewModelInstanceService.viewModelName(for: viewModelInstanceHandle)
+        cachedViewModelName = name
+        return name
+    }
+
+    /// Retrieves the editor-assigned name of this instance.
+    ///
+    /// - Returns: The editor-assigned name of this instance, or an empty string for instances
+    ///   without a name (e.g. blank instances)
+    /// - Throws: An error if the name cannot be read
+    @MainActor
+    public func name() async throws -> String {
+        if let cachedName {
+            return cachedName
+        }
+        let name = try await dependencies.viewModelInstanceService.name(for: viewModelInstanceHandle)
+        cachedName = name
+        return name
     }
 
     // MARK: - StringProperty

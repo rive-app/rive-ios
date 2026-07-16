@@ -55,6 +55,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private var requestViewModelInstanceColorStub: ((UInt64, String, UInt64) -> Void)?
     private var requestViewModelInstanceEnumStub: ((UInt64, String, UInt64) -> Void)?
     private var requestViewModelInstanceListSizeStub: ((UInt64, String, UInt64) -> Void)?
+    private var requestViewModelInstanceViewModelNameStub: ((UInt64, UInt64) -> Void)?
+    private var requestViewModelInstanceNameStub: ((UInt64, UInt64) -> Void)?
+    private(set) var requestViewModelInstanceViewModelNameCallCount = 0
+    private(set) var requestViewModelInstanceNameCallCount = 0
     private(set) var setViewModelInstanceStringCalls: [SetViewModelInstanceStringCall] = []
     private(set) var setViewModelInstanceNumberCalls: [SetViewModelInstanceNumberCall] = []
     private(set) var setViewModelInstanceBoolCalls: [SetViewModelInstanceBoolCall] = []
@@ -799,7 +803,25 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     func requestViewModelInstanceListSize(_ viewModelInstanceHandle: UInt64, path: String, requestID: UInt64) {
         requestViewModelInstanceListSizeStub?(viewModelInstanceHandle, path, requestID)
     }
-    
+
+    func stubRequestViewModelInstanceViewModelName(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        requestViewModelInstanceViewModelNameStub = stub
+    }
+
+    func requestViewModelInstanceViewModelName(_ viewModelInstanceHandle: UInt64, requestID: UInt64) {
+        requestViewModelInstanceViewModelNameCallCount += 1
+        requestViewModelInstanceViewModelNameStub?(viewModelInstanceHandle, requestID)
+    }
+
+    func stubRequestViewModelInstanceName(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        requestViewModelInstanceNameStub = stub
+    }
+
+    func requestViewModelInstanceName(_ viewModelInstanceHandle: UInt64, requestID: UInt64) {
+        requestViewModelInstanceNameCallCount += 1
+        requestViewModelInstanceNameStub?(viewModelInstanceHandle, requestID)
+    }
+
     func setViewModelInstanceString(_ viewModelInstanceHandle: UInt64, path: String, value: String, requestID: UInt64) {
         setViewModelInstanceStringCalls.append(SetViewModelInstanceStringCall(
             viewModelInstanceHandle: viewModelInstanceHandle,

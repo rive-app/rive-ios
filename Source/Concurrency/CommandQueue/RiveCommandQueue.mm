@@ -1071,6 +1071,31 @@ public:
         std::string path,
         size_t size) override;
 
+    /**
+     * Called when a view model instance's view model (definition) name is
+     * received.
+     *
+     * @param handle The unique identifier of the view model instance
+     * @param requestId The identifier of the name request
+     * @param viewModelName The name of the view model that defines the instance
+     */
+    virtual void onViewModelInstanceViewModelNameReceived(
+        const rive::ViewModelInstanceHandle handle,
+        uint64_t requestId,
+        std::string viewModelName) override;
+
+    /**
+     * Called when a view model instance's editor-assigned name is received.
+     *
+     * @param handle The unique identifier of the view model instance
+     * @param requestId The identifier of the name request
+     * @param instanceName The editor-assigned name of the instance
+     */
+    virtual void onViewModelInstanceNameReceived(
+        const rive::ViewModelInstanceHandle handle,
+        uint64_t requestId,
+        std::string instanceName) override;
+
 private:
     __weak id<RiveViewModelInstanceListener> _observer;
 };
@@ -1161,6 +1186,38 @@ void _ViewModelInstanceListener::onViewModelListSizeReceived(
                               requestID:requestId
                                    path:nsPath
                                    size:static_cast<NSInteger>(size)];
+    }
+}
+
+void _ViewModelInstanceListener::onViewModelInstanceViewModelNameReceived(
+    const rive::ViewModelInstanceHandle handle,
+    uint64_t requestId,
+    std::string viewModelName)
+{
+    if (_observer)
+    {
+        NSString* nsName =
+            [NSString stringWithUTF8String:viewModelName.c_str()];
+        [_observer
+            onViewModelInstanceViewModelNameReceived:reinterpret_cast<uint64_t>(
+                                                         handle)
+                                           requestID:requestId
+                                       viewModelName:nsName];
+    }
+}
+
+void _ViewModelInstanceListener::onViewModelInstanceNameReceived(
+    const rive::ViewModelInstanceHandle handle,
+    uint64_t requestId,
+    std::string instanceName)
+{
+    if (_observer)
+    {
+        NSString* nsName = [NSString stringWithUTF8String:instanceName.c_str()];
+        [_observer
+            onViewModelInstanceNameReceived:reinterpret_cast<uint64_t>(handle)
+                                  requestID:requestId
+                                       name:nsName];
     }
 }
 
@@ -2309,6 +2366,27 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto stdPath = std::string([path UTF8String]);
       self->_commandQueue->requestViewModelInstanceListSize(
           handle, stdPath, requestID);
+    }];
+}
+
+- (void)requestViewModelInstanceViewModelName:(uint64_t)viewModelInstanceHandle
+                                    requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+          viewModelInstanceHandle);
+      self->_commandQueue->requestViewModelInstanceViewModelName(handle,
+                                                                 requestID);
+    }];
+}
+
+- (void)requestViewModelInstanceName:(uint64_t)viewModelInstanceHandle
+                           requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+          viewModelInstanceHandle);
+      self->_commandQueue->requestViewModelInstanceName(handle, requestID);
     }];
 }
 
