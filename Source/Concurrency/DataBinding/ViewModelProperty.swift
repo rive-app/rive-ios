@@ -95,6 +95,8 @@ extension ViewModelProperty {
         case assetImage
         /// Asset Font.
         case assetFont
+        /// Asset Blob.
+        case assetBlob
         /// Artboard.
         case artboard
         /// Special case, this type is used to indicate it uses the input type.
@@ -117,6 +119,7 @@ extension ViewModelProperty {
             case .symbolListIndex: self = .symbolListIndex
             case .assetImage: self = .assetImage
             case .assetFont: self = .assetFont
+            case .assetBlob: self = .assetBlob
             case .artboard: self = .artboard
             case .input: self = .input
             case .any: self = .any
@@ -141,6 +144,7 @@ extension ViewModelProperty {
             case .symbolListIndex: return .symbolListIndex
             case .assetImage: return .assetImage
             case .assetFont: return .assetFont
+            case .assetBlob: return .assetBlob
             case .artboard: return .artboard
             case .input: return .input
             case .any: return .any

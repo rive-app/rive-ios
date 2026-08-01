@@ -40,6 +40,8 @@ RiveDataBindingViewModelInstancePropertyDataTypeFromRuntime(rive::DataType type)
             return RiveDataBindingViewModelInstancePropertyDataTypeAssetImage;
         case rive::DataType::assetFont:
             return RiveDataBindingViewModelInstancePropertyDataTypeAssetFont;
+        case rive::DataType::assetBlob:
+            return RiveDataBindingViewModelInstancePropertyDataTypeAssetBlob;
         case rive::DataType::artboard:
             return RiveDataBindingViewModelInstancePropertyDataTypeArtboard;
         case rive::DataType::input:
