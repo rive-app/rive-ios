@@ -199,9 +199,11 @@ import Combine
               let instance = viewModel.createDefaultInstance()
         else { return }
 
-        artboard.bind(viewModelInstance: instance)
-        // If, for some reason, there is no state machine (e.g linear animation) then no need to bind
-        stateMachine?.bind(viewModelInstance: instance)
+        if let stateMachine {
+            stateMachine.bind(viewModelInstance: instance)
+        } else {
+            artboard.bind(viewModelInstance: instance)
+        }
 
         autoBindCallback?(instance)
     }
