@@ -49,7 +49,7 @@ jobs:
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    runs-on: [self-hosted, macOS, ARM64, tart]
+    runs-on: warp-macos-26-arm64-12x
     needs: [determine_version]
     outputs:
       checksum: ${{steps.get_checksum.outputs.checksum}}
@@ -84,8 +84,16 @@ jobs:
           sudo mv premake5 /usr/local/bin
           pip3 install ply
 
-      - name: Select Xcode 26.5
-        run: sudo xcodes select 26.5
+      - name: Select Xcode 26
+        run: |
+          if command -v xcodes >/dev/null 2>&1; then
+            sudo xcodes select 26.5
+          else
+            APP=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+            echo "xcodes not found; selecting $APP"
+            sudo xcode-select -s "$APP/Contents/Developer"
+          fi
+          xcodebuild -version
 
       - name: Install all Xcode platforms
         run: xcodebuild -downloadAllPlatforms
