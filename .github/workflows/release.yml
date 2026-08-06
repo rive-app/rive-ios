@@ -49,7 +49,7 @@ jobs:
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    runs-on: ghcr.io/cirruslabs/macos-runner:sequoia
+    runs-on: [self-hosted, macOS, ARM64, tart]
     needs: [determine_version]
     outputs:
       checksum: ${{steps.get_checksum.outputs.checksum}}
@@ -84,9 +84,9 @@ jobs:
           sudo mv premake5 /usr/local/bin
           pip3 install ply
 
-      - name: Select Xcode 16.4
-        run: sudo xcodes select 16.4
-      
+      - name: Select Xcode 26.5
+        run: sudo xcodes select 26.5
+
       - name: Install all Xcode platforms
         run: xcodebuild -downloadAllPlatforms
 
