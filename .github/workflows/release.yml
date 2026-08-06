@@ -49,7 +49,7 @@ jobs:
 
   build_framework:
     name: Create RiveRuntime.xcframework
-    runs-on: warp-macos-26-arm64-12x
+    runs-on: [self-hosted, macOS, ARM64, tart]
     needs: [determine_version]
     outputs:
       checksum: ${{steps.get_checksum.outputs.checksum}}

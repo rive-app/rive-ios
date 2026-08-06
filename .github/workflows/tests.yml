@@ -9,7 +9,7 @@ on:
 jobs:
   run_tests:
     name: Run Rive tests
-    runs-on: warp-macos-26-arm64-12x
+    runs-on: [self-hosted, macOS, ARM64, tart]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
