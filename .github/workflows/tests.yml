@@ -9,7 +9,7 @@ on:
 jobs:
   run_tests:
     name: Run Rive tests
-    runs-on: warp-macos-26-arm64-12x
+    runs-on: [self-hosted, macOS, ARM64, tart]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -57,6 +57,12 @@ jobs:
           ./scripts/build.sh ios_sim release
 
       - name: Test iOS runtime
+        # xcpretty parses xcodebuild output through a Ruby regex that throws on
+        # non-ASCII bytes when the locale is US-ASCII; the tart image doesn't set a
+        # UTF-8 LANG, so set it here (matches the rive repo's iossim test job).
+        env:
+          LANG: en_US.UTF-8
+          LC_ALL: en_US.UTF-8
         run: ./scripts/test.sh ios_sim
 
       - name: Build for visionOS Simulator (using the cache, we should make an archive of course)
