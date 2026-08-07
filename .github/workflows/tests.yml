@@ -9,7 +9,7 @@ on:
 jobs:
   run_tests:
     name: Run Rive tests
-    runs-on: ghcr.io/cirruslabs/macos-runner:sequoia
+    runs-on: [self-hosted, macOS, ARM64, tart]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
