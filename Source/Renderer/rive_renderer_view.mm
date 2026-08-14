@@ -77,7 +77,7 @@
     self = [super initWithCoder:decoder];
 
     _renderContext = [[RenderContextManager shared] newDefaultContext];
-    assert(_renderContext);
+    NSAssert(_renderContext, @"A render context must be available.");
     self.device = [_renderContext metalDevice];
 
     [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
@@ -114,7 +114,7 @@
              object:nil];
 #endif
     _renderContext = [[RenderContextManager shared] newDefaultContext];
-    assert(_renderContext);
+    NSAssert(_renderContext, @"A render context must be available.");
 
     auto value = [super initWithFrame:frameRect
                                device:_renderContext.metalDevice];
@@ -164,13 +164,13 @@
 }
 - (void)save
 {
-    assert(_renderer != nil);
+    NSAssert(_renderer != nil, @"A renderer must be available.");
     _renderer->save();
 }
 
 - (void)restore
 {
-    assert(_renderer != nil);
+    NSAssert(_renderer != nil, @"A renderer must be available.");
     _renderer->restore();
 }
 
@@ -181,13 +181,13 @@
                tx:(float)tx
                ty:(float)ty
 {
-    assert(_renderer != nil);
+    NSAssert(_renderer != nil, @"A renderer must be available.");
     _renderer->transform(rive::Mat2D{xx, xy, yx, yy, tx, ty});
 }
 
 - (void)drawWithArtboard:(RiveArtboard*)artboard
 {
-    assert(_renderer != nil);
+    NSAssert(_renderer != nil, @"A renderer must be available.");
     [artboard artboardInstance]->draw(_renderer);
 }
 

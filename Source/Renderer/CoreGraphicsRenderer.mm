@@ -226,7 +226,7 @@ void CoreGraphicsRenderPath::addRawPath(const RawPath& rawPath)
                 break;
         }
     }
-    assert(p == pts.end());
+    NSCAssert(p == pts.end(), @"Raw path verb and point counts must match.");
 }
 
 void CoreGraphicsRenderPath::addRenderPath(const RenderPath* path,

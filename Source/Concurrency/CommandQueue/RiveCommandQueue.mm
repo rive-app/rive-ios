@@ -17,6 +17,7 @@
 #import "RiveFontListener.h"
 #import "RiveAudioListener.h"
 #import "_RiveCommandQueueMessagePumpDriver.h"
+#import <RiveRuntime/RiveRuntime-Swift.h>
 #import "RivePrivateHeaders.h"
 #import "RiveConcurrency_Private.hh"
 #import "RiveSemanticsDiff.h"
@@ -1431,14 +1432,15 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  *
  * This initializer sets up the command queue with a new C++ command queue
  * instance and a file listener for handling file-related events. The
- * initialization must occur on the main thread to ensure proper UI integration.
+ * initialization must occur on the MainActor to ensure proper UI integration.
  *
  * @return An initialized RiveCommandQueue instance
- * @note This method must be called on the main thread
+ * @note This method must be called on the MainActor
  */
 - (instancetype)init
 {
-    assert([NSThread isMainThread]);
+    [_RiveMainActor
+        assertIsolated:@"Workers must be initialized on the MainActor."];
     if (self = [super init])
     {
         _commandQueue = rive::make_rcp<rive::CommandQueue>();
@@ -1538,7 +1540,8 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 
 - (uint64_t)nextRequestID
 {
-    assert([NSThread isMainThread]);
+    [_RiveMainActor
+        assertIsolated:@"Worker calls must be made on the MainActor."];
     return _nextRequestID++;
 }
 
@@ -1549,19 +1552,21 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  *
  * This method signals the command queue to stop processing messages and
  * disconnects from the underlying C++ command queue. It must be called
- * on the main thread to ensure proper cleanup.
+ * on the MainActor to ensure proper cleanup.
  *
- * @note This method must be called on the main thread
+ * @note This method must be called on the MainActor
  */
 - (void)disconnect
 {
-    assert([NSThread isMainThread]);
+    [_RiveMainActor
+        assertIsolated:@"Worker calls must be made on the MainActor."];
     _commandQueue->disconnect();
 }
 
 - (void)startMessageProcessing
 {
-    assert([NSThread isMainThread]);
+    [_RiveMainActor
+        assertIsolated:@"Worker calls must be made on the MainActor."];
 
     // Create once; this source is armed/disarmed as demand changes.
     if (_processTimer == nil)
@@ -1595,7 +1600,8 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 
 - (void)stopMessageProcessing
 {
-    assert([NSThread isMainThread]);
+    [_RiveMainActor
+        assertIsolated:@"Worker calls must be made on the MainActor."];
 
     // Disarm but keep the source alive to avoid recreate/cancel churn.
     if (_processTimer && _isProcessTimerArmed)
@@ -1622,7 +1628,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  * @param requestID A unique identifier for this loading request
  * @return A unique file handle identifier that can be used for subsequent
  * operations
- * @note This method must be called on the main thread
+ * @note This method must be called on the MainActor
  */
 - (uint64_t)loadFile:(nonnull NSData*)data
             observer:(nonnull id<RiveFileListener>)observer
@@ -1657,7 +1663,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  * also be deleted.
  *
  * @param file The file handle of the file to delete
- * @note This method must be called on the main thread
+ * @note This method must be called on the MainActor
  */
 - (void)deleteFile:(uint64_t)file requestID:(uint64_t)requestID
 {
@@ -2933,7 +2939,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  * Executes a command block with proper setup and teardown.
  *
  * This helper method ensures that all commands follow the same pattern:
- * - Assert main thread execution
+ * - Assert MainActor isolation
  * - Start processing
  * - Execute the command block
  *
@@ -2941,7 +2947,8 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (void)executeCommand:(void (^)(void))commandBlock
 {
-    assert([NSThread isMainThread]);
+    [_RiveMainActor
+        assertIsolated:@"Worker calls must be made on the MainActor."];
 
     commandBlock();
 }
@@ -2950,7 +2957,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  * Executes a command block with proper setup and teardown, returning a value.
  *
  * This helper method ensures that all commands follow the same pattern:
- * - Assert main thread execution
+ * - Assert MainActor isolation
  * - Start processing
  * - Execute the command block
  * - Return the result
@@ -2960,7 +2967,8 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (uint64_t)executeCommandWithReturn:(uint64_t (^)(void))commandBlock
 {
-    assert([NSThread isMainThread]);
+    [_RiveMainActor
+        assertIsolated:@"Worker calls must be made on the MainActor."];
 
     uint64_t result = commandBlock();
 

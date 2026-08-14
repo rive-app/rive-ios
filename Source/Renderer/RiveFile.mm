@@ -359,7 +359,7 @@
 {
     rive::ImportResult result;
     _renderContext = [[RenderContextManager shared] newDefaultContext];
-    assert(_renderContext);
+    NSAssert(_renderContext, @"A render context must be available.");
     rive::Factory* factory = [_renderContext factory];
 
     FallbackFileAssetLoader* fallbackLoader =
