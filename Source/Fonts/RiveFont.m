@@ -6,7 +6,8 @@
 //  Copyright © 2024 Rive. All rights reserved.
 //
 
-#import "RiveFont.h"
+#import <Rive.h>
+#import <RivePrivateHeaders.h>
 #import <rive/text/font_hb.hpp>
 #import <rive/text/utf.hpp>
 #import <RiveRuntime/RiveRuntime-Swift.h>
@@ -105,29 +106,6 @@ static NSArray<id<RiveFallbackFontProvider>>* _fallbackFonts = nil;
 /// A user-specified block that returns usable font providers.
 static RiveFallbackFontsCallback _fallbackFontsCallback = nil;
 
-static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
-                                                    bool useSystemShaper)
-{
-#ifdef WITH_RIVE_TEXT
-    uint16_t weight = 400;
-    if ([font conformsToProtocol:@protocol(RiveWeightProvider)])
-    {
-        weight = [font riveWeightValue];
-    }
-
-    uint8_t width = 100;
-    if ([font conformsToProtocol:@protocol(RiveFontWidthProvider)])
-    {
-        width = [font riveFontWidthValue];
-    }
-
-    CTFontRef ctFont = (__bridge CTFontRef)font;
-    return HBFont::FromSystem((void*)ctFont, useSystemShaper, weight, width);
-#else
-    return nullptr;
-#endif
-}
-
 #ifdef WITH_RIVE_TEXT
 static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
                                               const uint32_t fallbackIndex,
@@ -193,7 +171,8 @@ static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
         }
 
         BOOL usesSystemShaper = fallbackIndex >= providers.count;
-        auto riveFont = riveFontFromNativeFont(fallbackFont, usesSystemShaper);
+        auto riveFont = [RiveFont fontFromNativeFont:fallbackFont
+                                     useSystemShaper:usesSystemShaper];
         return rive::rcp<rive::Font>(riveFont);
     }
 
@@ -205,6 +184,29 @@ static rive::rcp<rive::Font> findFallbackFont(const rive::Unichar missing,
 {
     rive::rcp<rive::Font>
         instance; // note: we do NOT own this, so don't delete it
+}
+
++ (rive::rcp<rive::Font>)fontFromNativeFont:(id)font
+                            useSystemShaper:(BOOL)useSystemShaper
+{
+#ifdef WITH_RIVE_TEXT
+    uint16_t weight = 400;
+    if ([font conformsToProtocol:@protocol(RiveWeightProvider)])
+    {
+        weight = [font riveWeightValue];
+    }
+
+    uint8_t width = 100;
+    if ([font conformsToProtocol:@protocol(RiveFontWidthProvider)])
+    {
+        width = [font riveFontWidthValue];
+    }
+
+    CTFontRef ctFont = (__bridge CTFontRef)font;
+    return HBFont::FromSystem((void*)ctFont, useSystemShaper, weight, width);
+#else
+    return nullptr;
+#endif
 }
 
 + (void)load

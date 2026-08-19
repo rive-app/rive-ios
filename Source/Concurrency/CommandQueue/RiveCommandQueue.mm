@@ -2675,11 +2675,34 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           fontListener.get(),
           requestID);
 
-      uint64_t fontHandleUInt = reinterpret_cast<uint64_t>(handle);
-      self->_fontListeners[@(fontHandleUInt)] =
+      uint64_t fontHandle = reinterpret_cast<uint64_t>(handle);
+      self->_fontListeners[@(fontHandle)] =
           [NSValue valueWithPointer:fontListener.release()];
 
-      return fontHandleUInt;
+      return fontHandle;
+    }];
+}
+
+#if !TARGET_OS_OSX || RIVE_MAC_CATALYST
+- (uint64_t)decodeUIFont:(UIFont*)font
+#else
+- (uint64_t)decodeNSFont:(NSFont*)font
+#endif
+                listener:(id<RiveFontListener>)listener
+               requestID:(uint64_t)requestID
+{
+    return [self executeCommandWithReturn:^uint64_t {
+      auto fontListener = std::make_unique<_FontListener>(listener);
+      auto riveFont = [RiveFont fontFromNativeFont:font useSystemShaper:YES];
+
+      auto handle = self->_commandQueue->addExternalFont(
+          std::move(riveFont), fontListener.get(), requestID);
+
+      uint64_t fontHandle = reinterpret_cast<uint64_t>(handle);
+      self->_fontListeners[@(fontHandle)] =
+          [NSValue valueWithPointer:fontListener.release()];
+
+      return fontHandle;
     }];
 }
 

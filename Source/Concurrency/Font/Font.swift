@@ -7,11 +7,16 @@
 //
 
 import Foundation
+#if canImport(UIKit) || RIVE_MAC_CATALYST
+import UIKit
+#else
+import AppKit
+#endif
 
 /// A class that represents a decoded font that can be used as a global asset.
 ///
-/// Font instances are created by decoding font data (e.g., TTF, OTF) and can be registered
-/// as global assets with a worker, allowing them to be provided dynamically at runtime.
+/// Font instances are created from font data (e.g., TTF, OTF) or a platform-native font and can
+/// be registered as global assets with a worker, allowing them to be provided dynamically at runtime.
 ///
 /// Lifetime: Font instances are guaranteed to exist while registered as a global asset with a worker.
 /// When not used as a global asset, you must maintain a strong reference to the instance to keep it alive.
@@ -40,6 +45,26 @@ public final class Font: Equatable {
         RiveLog.debug(tag: .font, "[Font (\(handle))] Initialized font")
         self.init(handle: handle, dependencies: dependencies)
     }
+
+    #if canImport(UIKit) || RIVE_MAC_CATALYST
+    /// Creates a font from a UIKit font.
+    @MainActor
+    convenience init(font: UIFont, dependencies: Dependencies) async throws {
+        RiveLog.debug(tag: .font, "[Font] Initializing font from UIFont")
+        let handle = try await dependencies.fontService.decodeFont(from: font)
+        RiveLog.debug(tag: .font, "[Font (\(handle))] Initialized font")
+        self.init(handle: handle, dependencies: dependencies)
+    }
+    #else
+    /// Creates a font from an AppKit font.
+    @MainActor
+    convenience init(font: NSFont, dependencies: Dependencies) async throws {
+        RiveLog.debug(tag: .font, "[Font] Initializing font from NSFont")
+        let handle = try await dependencies.fontService.decodeFont(from: font)
+        RiveLog.debug(tag: .font, "[Font (\(handle))] Initialized font")
+        self.init(handle: handle, dependencies: dependencies)
+    }
+    #endif
 
     @MainActor
     init(handle: FontHandle, dependencies: Dependencies) {

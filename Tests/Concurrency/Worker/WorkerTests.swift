@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import UIKit
 @testable import RiveRuntime
 
 class WorkerTests: XCTestCase {
@@ -53,6 +54,46 @@ class WorkerTests: XCTestCase {
         await fulfillment(of: [disconnectExpectation], timeout: 1.0)
         
         XCTAssertEqual(mockCommandQueue.disconnectCalls.count, 1, "disconnect() should be called when Worker is deinitialized")
+    }
+
+    @MainActor
+    func test_decodeFont_withUIFont_usesUIFontCommandQueueOverload() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let mockCommandServer = MockCommandServer()
+        let device = await MetalDevice.shared.defaultDevice()!.value
+        let workerService = WorkerService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                commandServer: mockCommandServer,
+                renderContext: RiveUIRenderContext(device: device),
+                messagePumpDriver: mockCommandQueue
+            )
+        )
+        let worker = Worker(dependencies: .init(workerService: workerService))
+        let expectedHandle: UInt64 = 42
+
+        let nativeFont = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        mockCommandQueue.stubDecodeUIFont { font, listener, requestID in
+            XCTAssertTrue(font === nativeFont)
+            listener.onFontDecoded(expectedHandle, requestID: requestID)
+            return expectedHandle
+        }
+
+        let font = try await worker.decodeFont(from: nativeFont)
+
+        XCTAssertEqual(font.handle, expectedHandle)
+        XCTAssertEqual(mockCommandQueue.decodeFontCalls.count, 0)
+        XCTAssertEqual(mockCommandQueue.decodeUIFontCalls.count, 1)
+    }
+
+    @MainActor
+    func test_decodeFont_withUIFont_succeedsWithRealWorker() async throws {
+        let worker = try await Worker()
+
+        let nativeFont = UIFont.systemFont(ofSize: 16, weight: .semibold)
+
+        let font = try await worker.decodeFont(from: nativeFont)
+        XCTAssertNotEqual(font.handle, 0)
     }
 
     @MainActor
@@ -172,4 +213,3 @@ class WorkerTests: XCTestCase {
         XCTAssertEqual(removeCall.requestID, 1)
     }
 }
-

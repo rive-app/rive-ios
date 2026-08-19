@@ -14,6 +14,12 @@
 #import <RiveRuntime/RiveEnums.h>
 #import <RiveRuntime/_RiveCommandQueueMessagePumpDriver.h>
 
+#if !TARGET_OS_OSX || RIVE_MAC_CATALYST
+#import <UIKit/UIFont.h>
+#else
+#import <AppKit/NSFont.h>
+#endif
+
 @protocol RiveCommandServerProtocol;
 @protocol RiveFileListener;
 @protocol RiveArtboardListener;
@@ -1173,14 +1179,46 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @param listener The listener that will receive decode completion
  * notifications
  * @param requestID The request ID for correlating the response
- * @return A temporary handle (the actual handle is delivered via the listener)
- * @note The font handle is delivered via the listener's
- *       onFontDecoded:requestID: method. If decoding fails,
+ * @return The handle allocated for the pending font resource
+ * @note The same font handle is delivered via the listener's
+ *       onFontDecoded:requestID: method when decoding succeeds. If it fails,
  *       onFontError:requestID:message: is called instead.
  */
 - (uint64_t)decodeFont:(NSData*)data
               listener:(id<RiveFontListener>)listener
              requestID:(uint64_t)requestID;
+
+#if !TARGET_OS_OSX || RIVE_MAC_CATALYST
+/**
+ * Creates a font resource from a UIKit font.
+ *
+ * @param font The UIKit font to decode
+ * @param listener The listener that will receive decode completion
+ * notifications
+ * @param requestID The request ID for correlating the response
+ * @return The handle allocated for the pending font resource
+ * @note The listener confirms whether the handle decoded successfully.
+ */
+- (uint64_t)decodeUIFont:(UIFont*)font
+                listener:(id<RiveFontListener>)listener
+               requestID:(uint64_t)requestID
+    NS_SWIFT_NAME(decodeFont(_:listener:requestID:));
+#else
+/**
+ * Creates a font resource from an AppKit font.
+ *
+ * @param font The AppKit font to decode
+ * @param listener The listener that will receive decode completion
+ * notifications
+ * @param requestID The request ID for correlating the response
+ * @return The handle allocated for the pending font resource
+ * @note The listener confirms whether the handle decoded successfully.
+ */
+- (uint64_t)decodeNSFont:(NSFont*)font
+                listener:(id<RiveFontListener>)listener
+               requestID:(uint64_t)requestID
+    NS_SWIFT_NAME(decodeFont(_:listener:requestID:));
+#endif
 
 /**
  * Deletes a previously decoded font.

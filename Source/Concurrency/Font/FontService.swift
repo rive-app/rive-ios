@@ -7,6 +7,11 @@
 //
 
 import Foundation
+#if canImport(UIKit) || RIVE_MAC_CATALYST
+import UIKit
+#else
+import AppKit
+#endif
 
 /// A service class that manages font decoding operations and coordinates with the command queue.
 ///
@@ -75,9 +80,27 @@ final class FontService: NSObject, FontListener {
     func decodeFont(from data: Data) async throws -> Font.FontHandle {
         RiveLog.debug(tag: .font, "[Font] Decoding font data (\(data.count) bytes)")
         return try await withCancellableContinuation(cancelledError: FontError.cancelled) { requestID in
-            self.dependencies.commandQueue.decodeFont(data, listener: self, requestID: requestID)
+            _ = self.dependencies.commandQueue.decodeFont(data, listener: self, requestID: requestID)
         }
     }
+
+    #if canImport(UIKit) || RIVE_MAC_CATALYST
+    /// Creates a font handle from a UIKit font.
+    func decodeFont(from font: UIFont) async throws -> Font.FontHandle {
+        RiveLog.debug(tag: .font, "[Font] Decoding UIFont")
+        return try await withCancellableContinuation(cancelledError: FontError.cancelled) { requestID in
+            _ = self.dependencies.commandQueue.decodeFont(font, listener: self, requestID: requestID)
+        }
+    }
+    #else
+    /// Creates a font handle from an AppKit font.
+    func decodeFont(from font: NSFont) async throws -> Font.FontHandle {
+        RiveLog.debug(tag: .font, "[Font] Decoding NSFont")
+        return try await withCancellableContinuation(cancelledError: FontError.cancelled) { requestID in
+            _ = self.dependencies.commandQueue.decodeFont(font, listener: self, requestID: requestID)
+        }
+    }
+    #endif
 
     /// Deletes a font via the command queue.
     ///
@@ -162,4 +185,3 @@ extension FontService {
         }
     }
 }
-

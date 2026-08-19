@@ -7,6 +7,11 @@
 //
 
 import Foundation
+#if canImport(UIKit) || RIVE_MAC_CATALYST
+import UIKit
+#else
+import AppKit
+#endif
 
 /// A worker that manages a background instance of Rive for processing data and rendering graphics.
 ///
@@ -158,18 +163,45 @@ public final class Worker {
         RiveLog.debug(tag: .worker, "[Worker] Decoding font data (\(data.count) bytes)")
         let font = try await Font(
             data: data,
-            dependencies: .init(
-                fontService: .init(
-                    dependencies: .init(
-                        commandQueue: dependencies.workerService.dependencies.commandQueue,
-                        messageGate: dependencies.workerService.messageGate
-                    )
-                )
-            )
+            dependencies: makeFontDependencies()
         )
         RiveLog.debug(tag: .worker, "[Worker] Decoded font")
         return font
     }
+
+    #if canImport(UIKit) || RIVE_MAC_CATALYST
+    /// Creates a font from a UIKit font.
+    ///
+    /// - Parameter font: The UIKit font to decode.
+    /// - Returns: A font that can be registered as a global asset.
+    /// - Throws: `FontError.failedDecoding` if the native font cannot be converted.
+    @MainActor
+    public func decodeFont(from font: UIFont) async throws -> Font {
+        RiveLog.debug(tag: .worker, "[Worker] Decoding UIFont")
+        let font = try await Font(
+            font: font,
+            dependencies: makeFontDependencies()
+        )
+        RiveLog.debug(tag: .worker, "[Worker] Decoded UIFont")
+        return font
+    }
+    #else
+    /// Creates a font from an AppKit font.
+    ///
+    /// - Parameter font: The AppKit font to decode.
+    /// - Returns: A font that can be registered as a global asset.
+    /// - Throws: `FontError.failedDecoding` if the native font cannot be converted.
+    @MainActor
+    public func decodeFont(from font: NSFont) async throws -> Font {
+        RiveLog.debug(tag: .worker, "[Worker] Decoding NSFont")
+        let font = try await Font(
+            font: font,
+            dependencies: makeFontDependencies()
+        )
+        RiveLog.debug(tag: .worker, "[Worker] Decoded NSFont")
+        return font
+    }
+    #endif
 
     /// Registers a font as a global asset that can be referenced by name.
     ///
@@ -253,6 +285,18 @@ public final class Worker {
         RiveLog.debug(tag: .worker, "[Worker] Removing global audio asset '\(name)'")
         dependencies.workerService.remove(audio: name)
         audios.removeValue(forKey: name)
+    }
+
+    @MainActor
+    private func makeFontDependencies() -> Font.Dependencies {
+        .init(
+            fontService: .init(
+                dependencies: .init(
+                    commandQueue: dependencies.workerService.dependencies.commandQueue,
+                    messageGate: dependencies.workerService.messageGate
+                )
+            )
+        )
     }
 }
 

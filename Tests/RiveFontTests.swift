@@ -14,6 +14,11 @@ class RiveFontTests: XCTestCase {
         RiveFont.fallbackFonts = []
     }
 
+    func testFactoryDecodesNativeFont() {
+        let font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+        XCTAssertNotNil(RiveFactory().decodeFont(font))
+    }
+
     func testSystemFallbackDefaults() {
         var defaults = RiveFont.fallbackFonts.compactMap { $0 as? RiveFallbackFontDescriptor }
         XCTAssertEqual(defaults.first?.design, .default)

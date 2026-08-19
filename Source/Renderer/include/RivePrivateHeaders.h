@@ -167,6 +167,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface RiveFont ()
++ (rive::rcp<rive::Font>)fontFromNativeFont:(id)font
+                            useSystemShaper:(BOOL)useSystemShaper;
 - (instancetype)initWithFont:(rive::rcp<rive::Font>)font;
 - (rive::rcp<rive::Font>)instance;
 @end

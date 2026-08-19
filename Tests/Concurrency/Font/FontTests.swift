@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import UIKit
 @testable import RiveRuntime
 
 class FontTests: XCTestCase {
@@ -72,6 +73,56 @@ class FontTests: XCTestCase {
         XCTAssertEqual(commandQueue.decodeFontCalls.count, 1)
         XCTAssertEqual(commandQueue.decodeFontCalls.first?.data, testData)
     }
+
+    @MainActor
+    func test_init_withUIFont_succeeds() async throws {
+        let commandQueue = MockCommandQueue()
+        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+        let dependencies = Font.Dependencies(fontService: fontService)
+        let expectedRequestID: UInt64 = 0
+        let expectedHandle: UInt64 = 42
+
+        let expectation = expectation(description: "decode native font called")
+        let nativeFont = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        commandQueue.stubDecodeUIFont { font, listener, requestID in
+            XCTAssertTrue(font === nativeFont)
+            XCTAssertEqual(requestID, expectedRequestID)
+            expectation.fulfill()
+            listener.onFontDecoded(expectedHandle, requestID: requestID)
+            return expectedHandle
+        }
+        let font = try await Font(font: nativeFont, dependencies: dependencies)
+        let call = try XCTUnwrap(commandQueue.decodeUIFontCalls.first)
+        XCTAssertTrue(call.font === nativeFont)
+        XCTAssertEqual(call.requestID, expectedRequestID)
+
+        XCTAssertEqual(font.handle, expectedHandle)
+        XCTAssertEqual(commandQueue.decodeFontCalls.count, 0)
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_init_withUIFont_whenDecodingFails_throwsError() async {
+        let commandQueue = MockCommandQueue()
+        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+        let dependencies = Font.Dependencies(fontService: fontService)
+        let errorMessage = "Failed to decode native font"
+
+        let nativeFont = UIFont.systemFont(ofSize: 16)
+        commandQueue.stubDecodeUIFont { _, listener, requestID in
+            listener.onFontError(1, requestID: requestID, message: errorMessage)
+            return 1
+        }
+
+        do {
+            _ = try await Font(font: nativeFont, dependencies: dependencies)
+            XCTFail("Error should be thrown")
+        } catch FontError.failedDecoding(let message) {
+            XCTAssertEqual(message, errorMessage)
+        } catch {
+            XCTFail("Expected FontError.failedDecoding, got \(type(of: error)): \(error)")
+        }
+    }
     
     // MARK: - Cancellation
 
@@ -90,6 +141,38 @@ class FontTests: XCTestCase {
 
         let task = Task { @MainActor in
             try await fontService.decodeFont(from: testData)
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FontError.cancelled to be thrown")
+        } catch let error as FontError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FontError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FontError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_decodeFont_withUIFont_whenCancelled_throwsCancelledError() async throws {
+        let commandQueue = MockCommandQueue()
+        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+        let enteredContinuation = expectation(description: "entered native font continuation")
+
+        let nativeFont = UIFont.systemFont(ofSize: 16)
+        commandQueue.stubDecodeUIFont { _, _, _ in
+            enteredContinuation.fulfill()
+            return 1
+        }
+
+        let task = Task { @MainActor in
+            try await fontService.decodeFont(from: nativeFont)
         }
 
         await fulfillment(of: [enteredContinuation], timeout: 1)
@@ -189,4 +272,3 @@ class FontTests: XCTestCase {
         XCTAssertEqual(commandQueue.deleteFontListenerCalls.first?.fontHandle, 100)
     }
 }
-

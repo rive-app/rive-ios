@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 @testable import RiveRuntime
 
 class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
@@ -154,6 +155,8 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     
     private var decodeFontStub: ((Data, any FontListener, UInt64) -> UInt64)?
     private(set) var decodeFontCalls: [DecodeFontCall] = []
+    private var decodeUIFontStub: ((UIFont, any FontListener, UInt64) -> UInt64)?
+    private(set) var decodeUIFontCalls: [DecodeUIFontCall] = []
     private var deleteFontStub: ((UInt64) -> Void)?
     private var deleteFontListenerStub: ((UInt64) -> Void)?
     private(set) var deleteFontCalls: [DeleteFontCall] = []
@@ -415,6 +418,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     
     func stubDecodeFont(_ stub: @escaping (Data, any FontListener, UInt64) -> UInt64) {
         decodeFontStub = stub
+    }
+
+    func stubDecodeUIFont(_ stub: @escaping (UIFont, any FontListener, UInt64) -> UInt64) {
+        decodeUIFontStub = stub
     }
     
     func stubDeleteFont(_ stub: @escaping (UInt64) -> Void) {
@@ -989,6 +996,18 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         fontListeners[fontHandle] = listener
         return fontHandle
     }
+
+    func decodeFont(_ font: UIFont, listener: any FontListener, requestID: UInt64) -> UInt64 {
+        decodeUIFontCalls.append(DecodeUIFontCall(font: font, listener: listener, requestID: requestID))
+        if let stub = decodeUIFontStub {
+            let handle = stub(font, listener, requestID)
+            fontListeners[handle] = listener
+            return handle
+        }
+        fontHandle += 1
+        fontListeners[fontHandle] = listener
+        return fontHandle
+    }
     
     func deleteFont(_ font: UInt64, requestID: UInt64) {
         deleteFontCalls.append(DeleteFontCall(fontHandle: font, requestID: requestID))
@@ -1477,6 +1496,12 @@ extension MockCommandQueue {
     
     struct DecodeFontCall {
         let data: Data
+        let listener: any FontListener
+        let requestID: UInt64
+    }
+
+    struct DecodeUIFontCall {
+        let font: UIFont
         let listener: any FontListener
         let requestID: UInt64
     }

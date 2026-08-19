@@ -12,36 +12,6 @@
 #import <RiveRuntime/RiveRuntime-Swift.h>
 #import <RenderContext.h>
 
-#ifdef WITH_RIVE_TEXT
-#import <CoreText/CTFont.h>
-#import <rive/text/font_hb.hpp>
-
-#if TARGET_OS_IPHONE
-#import <UIKit/UIFont.h>
-#endif
-#endif
-
-#ifdef WITH_RIVE_TEXT
-static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
-                                                    bool useSystemShaper)
-{
-    uint16_t weight = 400;
-    if ([font conformsToProtocol:@protocol(RiveWeightProvider)])
-    {
-        weight = [font riveWeightValue];
-    }
-
-    uint8_t width = 100;
-    if ([font conformsToProtocol:@protocol(RiveFontWidthProvider)])
-    {
-        width = [font riveFontWidthValue];
-    }
-
-    CTFontRef ctFont = (__bridge CTFontRef)font;
-    return HBFont::FromSystem((void*)ctFont, useSystemShaper, weight, width);
-}
-#endif
-
 @implementation RiveRenderImage
 {
     rive::rcp<rive::RenderImage>
@@ -147,20 +117,22 @@ static rive::rcp<rive::Font> riveFontFromNativeFont(id font,
 #if TARGET_OS_IPHONE
 - (RiveFont*)decodeUIFont:(UIFont*)font
 {
-#ifdef WITH_RIVE_TEXT
-    return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font, true)];
-#else
-    return nil;
-#endif
+    auto riveFont = [RiveFont fontFromNativeFont:font useSystemShaper:YES];
+    if (riveFont == nullptr)
+    {
+        return nil;
+    }
+    return [[RiveFont alloc] initWithFont:std::move(riveFont)];
 }
 #else
 - (RiveFont*)decodeNSFont:(NSFont*)font
 {
-#ifdef WITH_RIVE_TEXT
-    return [[RiveFont alloc] initWithFont:riveFontFromNativeFont(font, true)];
-#else
-    return nil;
-#endif
+    auto riveFont = [RiveFont fontFromNativeFont:font useSystemShaper:YES];
+    if (riveFont == nullptr)
+    {
+        return nil;
+    }
+    return [[RiveFont alloc] initWithFont:std::move(riveFont)];
 }
 #endif
 
