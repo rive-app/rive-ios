@@ -77,7 +77,7 @@ if [ "$NO_TEXT" = false ]; then
     DEFINITIONS="$DEFINITIONS WITH_RIVE_TEXT"
 fi
 if [ "$NO_SCRIPTING" = false ]; then
-    DEFINITIONS="$DEFINITIONS WITH_RIVE_SCRIPTING"
+    DEFINITIONS="$DEFINITIONS WITH_RIVE_SCRIPTING WITH_RIVE_SCRIPTING_LUAU"
 fi
 
 # Set the preprocessor definitions line
