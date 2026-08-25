@@ -32,6 +32,10 @@ public final class File: Equatable {
 
     let worker: Worker
 
+    /// File asset metadata is immutable for the lifetime of a loaded file.
+    @MainActor
+    private var cachedAssets: [Asset]?
+
     private static func logContext(for handle: FileHandle) -> String {
         "[File (\(handle))]"
     }
@@ -231,6 +235,26 @@ public final class File: Equatable {
     @MainActor
     public func getViewModelEnums() async throws -> [ViewModelEnum] {
         return try await dependencies.fileService.getViewModelEnums(from: fileHandle)
+    }
+
+    /// Retrieves all assets contained in this Rive file.
+    ///
+    /// Assets include images, fonts, and audio files that are embedded in or referenced by
+    /// the Rive file. Each asset includes metadata such as its name, type, CDN information,
+    /// and file extension. Use an asset's `uniqueName` when registering its replacement with
+    /// this file's worker.
+    ///
+    /// - Returns: An array of `Asset` instances describing each asset in the file
+    /// - Throws: `FileError` if the request fails
+    @MainActor
+    public func getAssets() async throws -> [Asset] {
+        if let cachedAssets {
+            return cachedAssets
+        }
+
+        let assets = try await dependencies.fileService.getFileAssets(fileHandle: fileHandle)
+        cachedAssets = assets
+        return assets
     }
 
     /// Retrieves the default view model information for an artboard.

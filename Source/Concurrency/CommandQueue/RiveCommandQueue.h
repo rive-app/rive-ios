@@ -169,6 +169,16 @@ NS_SWIFT_NAME(CommandQueueProtocol)
                                   requestID:(uint64_t)requestID;
 
 /**
+ * Requests the list of all assets in a loaded Rive file.
+ *
+ * @param fileHandle The file handle of the file to query
+ * @param requestID The request ID for this operation
+ * @note The response will be delivered via the file listener observer's
+ *       onFileAssetsListed:requestID:assets: method
+ */
+- (void)requestFileAssets:(uint64_t)fileHandle requestID:(uint64_t)requestID;
+
+/**
  * Creates the default artboard for a file.
  *
  * @param fileHandle The file handle of the file

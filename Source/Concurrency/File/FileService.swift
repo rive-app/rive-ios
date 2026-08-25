@@ -385,6 +385,51 @@ final class FileService: NSObject, FileListener {
         }
     }
 
+    /// Requests file assets for a loaded file asynchronously.
+    ///
+    /// The continuation is resumed when `onFileAssetsListed` is called.
+    ///
+    /// - Parameter fileHandle: The file handle for the loaded file
+    /// - Returns: An array of `File.Asset` instances describing each asset in the file
+    /// - Throws: `FileError.invalidFile` if the request fails, or `FileError.invalidAsset`
+    ///   if asset parsing fails
+    @MainActor
+    func getFileAssets(fileHandle: File.FileHandle) async throws -> [File.Asset] {
+        RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting file assets")
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.requestFileAssets(fileHandle, requestID: requestID)
+        }
+    }
+
+    /// Called when file assets are listed for a file.
+    ///
+    /// Listener callback invoked by the command server. Parses asset dictionaries off the
+    /// main actor, then dispatches to main actor to resume the continuation. Propagates
+    /// parse errors to the caller rather than silently returning an empty array.
+    nonisolated func onFileAssetsListed(_ fileHandle: UInt64, requestID: UInt64, assets: [[String: Any]]) {
+        let result: Result<[File.Asset], Error>
+        do {
+            let fileAssets = try assets.map { dictionary in
+                try File.Asset(from: dictionary)
+            }
+            result = .success(fileAssets)
+        } catch {
+            result = .failure(error)
+        }
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
+            switch result {
+            case .success(let fileAssets):
+                RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(fileAssets.count) file assets")
+                try request.continuation.resume(returning: fileAssets)
+            case .failure(let error):
+                RiveLog.error(tag: .file, "\(Self.context(fileHandle)) Failed to parse file assets: \(error.localizedDescription)")
+                request.continuation.resume(throwing: error)
+            }
+        }
+    }
+
     /// Deletes a file via the command queue.
     ///
     /// The continuation is resumed when `onFileDeleted` is called.

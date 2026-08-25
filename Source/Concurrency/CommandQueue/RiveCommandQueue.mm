@@ -113,6 +113,17 @@ RiveViewModelInstanceDataType RiveViewModelInstanceDataTypeFromCpp(
     }
 }
 
+static RiveFileAssetType RiveFileAssetTypeFromCpp(uint16_t cppType)
+{
+    if (cppType == rive::ImageAssetBase::typeKey)
+        return RiveFileAssetTypeImage;
+    if (cppType == rive::FontAssetBase::typeKey)
+        return RiveFileAssetTypeFont;
+    if (cppType == rive::AudioAssetBase::typeKey)
+        return RiveFileAssetTypeAudio;
+    return RiveFileAssetTypeUnknown;
+}
+
 static rive::Fit RiveConfigurationFitCppValue(RiveConfigurationFit fit)
 {
     switch (fit)
@@ -791,6 +802,12 @@ public:
         uint64_t requestId,
         std::vector<rive::ViewModelEnum> enums) override;
 
+    virtual void onFileAssetsListed(
+        const rive::FileHandle handle,
+        uint64_t requestId,
+        std::vector<rive::CommandQueue::FileListener::FileAssetData> assets)
+        override;
+
 private:
     __weak id<RiveFileListener> _observer;
 };
@@ -997,6 +1014,44 @@ void _FileListener::onViewModelEnumsListed(
         [_observer onViewModelEnumsListed:reinterpret_cast<uint64_t>(handle)
                                 requestID:requestId
                                     enums:enumArray];
+    }
+}
+
+void _FileListener::onFileAssetsListed(
+    const rive::FileHandle handle,
+    uint64_t requestId,
+    std::vector<rive::CommandQueue::FileListener::FileAssetData> assets)
+{
+    if (_observer)
+    {
+        NSMutableArray<NSDictionary<NSString*, id>*>* assetArray =
+            [NSMutableArray arrayWithCapacity:assets.size()];
+
+        for (const auto& asset : assets)
+        {
+            NSMutableDictionary<NSString*, id>* assetDict =
+                [NSMutableDictionary dictionary];
+
+            assetDict[@"name"] =
+                [NSString stringWithUTF8String:asset.name.c_str()];
+            assetDict[@"uniqueName"] =
+                [NSString stringWithUTF8String:asset.uniqueName.c_str()];
+            assetDict[@"assetID"] = @(asset.assetID);
+            assetDict[@"cdnUUID"] =
+                [NSString stringWithUTF8String:asset.cdnUUID.c_str()];
+            assetDict[@"cdnBaseURL"] =
+                [NSString stringWithUTF8String:asset.cdnBaseURL.c_str()];
+            assetDict[@"fileExtension"] =
+                [NSString stringWithUTF8String:asset.fileExtension.c_str()];
+            assetDict[@"type"] = @(RiveFileAssetTypeFromCpp(asset.type));
+            assetDict[@"rawType"] = @(asset.type);
+
+            [assetArray addObject:assetDict];
+        }
+
+        [_observer onFileAssetsListed:reinterpret_cast<uint64_t>(handle)
+                            requestID:requestId
+                               assets:assetArray];
     }
 }
 
@@ -1732,6 +1787,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       auto stdName = std::string([viewModelName UTF8String]);
       self->_commandQueue->requestViewModelPropertyDefinitions(
           handle, stdName, requestID);
+    }];
+}
+
+- (void)requestFileAssets:(uint64_t)fileHandle requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+      self->_commandQueue->requestFileAssets(handle, requestID);
     }];
 }
 

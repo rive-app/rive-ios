@@ -169,6 +169,26 @@ NS_SWIFT_NAME(FileListener)
                      requestID:(uint64_t)requestID
                          enums:(NSArray<NSDictionary<NSString*, id>*>*)enums;
 
+/**
+ * Called when file assets are listed for a file.
+ *
+ * @param fileHandle The unique identifier of the file
+ * @param requestID The identifier of the listing request
+ * @param assets Array of asset dictionaries, each containing:
+ *               - "name": NSString with the asset name
+ *               - "uniqueName": NSString with the exact global registration
+ *                 name for the asset
+ *               - "assetID": NSNumber with the asset ID (uint32_t)
+ *               - "cdnUUID": NSString with the CDN UUID
+ *               - "cdnBaseURL": NSString with the CDN base URL
+ *               - "fileExtension": NSString with the file extension
+ *               - "type": NSNumber with the mapped RiveFileAssetType value
+ *               - "rawType": NSNumber with the original C++ type (uint16_t)
+ */
+- (void)onFileAssetsListed:(uint64_t)fileHandle
+                 requestID:(uint64_t)requestID
+                    assets:(NSArray<NSDictionary<NSString*, id>*>*)assets;
+
 @end
 
 NS_ASSUME_NONNULL_END

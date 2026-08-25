@@ -33,6 +33,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private var requestViewModelNamesStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelEnumsStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelInstanceNamesStub: ((UInt64, String, UInt64) -> Void)?
+    private var requestFileAssetsStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelPropertyDefinitionsStub: ((UInt64, String, UInt64) -> Void)?
     private var createDefaultArtboardStub: ((UInt64, any ArtboardListener, UInt64) -> UInt64)?
     private var createArtboardNamedStub: ((String, UInt64, any ArtboardListener, UInt64) -> UInt64)?
@@ -91,6 +92,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var requestViewModelNamesCalls: [RequestViewModelNamesCall] = []
     private(set) var requestViewModelEnumsCalls: [RequestViewModelEnumsCall] = []
     private(set) var requestViewModelInstanceNamesCalls: [RequestViewModelInstanceNamesCall] = []
+    private(set) var requestFileAssetsCalls: [RequestFileAssetsCall] = []
     private(set) var requestViewModelPropertyDefinitionsCalls: [RequestViewModelPropertyDefinitionsCall] = []
     private(set) var createDefaultArtboardCalls: [CreateDefaultArtboardCall] = []
     private(set) var createArtboardNamedCalls: [CreateArtboardNamedCall] = []
@@ -244,6 +246,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         requestViewModelInstanceNamesStub = stub
     }
     
+    func stubRequestFileAssets(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        requestFileAssetsStub = stub
+    }
+
     func stubRequestViewModelPropertyDefinitions(_ stub: @escaping (UInt64, String, UInt64) -> Void) {
         requestViewModelPropertyDefinitionsStub = stub
     }
@@ -472,6 +478,11 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         requestViewModelInstanceNamesStub?(fileHandle, viewModelName, requestID)
     }
     
+    func requestFileAssets(_ fileHandle: UInt64, requestID: UInt64) {
+        requestFileAssetsCalls.append(RequestFileAssetsCall(fileHandle: fileHandle, requestID: requestID))
+        requestFileAssetsStub?(fileHandle, requestID)
+    }
+
     func requestViewModelPropertyDefinitions(_ fileHandle: UInt64, viewModelName: String, requestID: UInt64) {
         requestViewModelPropertyDefinitionsCalls.append(RequestViewModelPropertyDefinitionsCall(fileHandle: fileHandle, viewModelName: viewModelName, requestID: requestID))
         requestViewModelPropertyDefinitionsStub?(fileHandle, viewModelName, requestID)
@@ -1161,6 +1172,11 @@ extension MockCommandQueue {
         let requestID: UInt64
     }
     
+    struct RequestFileAssetsCall {
+        let fileHandle: UInt64
+        let requestID: UInt64
+    }
+
     struct RequestViewModelPropertyDefinitionsCall {
         let fileHandle: UInt64
         let viewModelName: String

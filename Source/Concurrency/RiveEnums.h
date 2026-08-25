@@ -236,5 +236,22 @@ typedef NS_OPTIONS(NSUInteger, RiveSemanticState) {
     RiveSemanticStateObscured = 1u << 12,
     RiveSemanticStateMultiline = 1u << 13,
 } NS_SWIFT_NAME(SemanticState);
+/// Asset types that can be contained in a Rive file.
+///
+/// This enum maps to C++ asset type keys via a conversion function in the
+/// command queue implementation.
+typedef NS_ENUM(uint16_t, RiveFileAssetType) {
+    /// Image asset.
+    RiveFileAssetTypeImage,
+
+    /// Font asset.
+    RiveFileAssetTypeFont,
+
+    /// Audio asset.
+    RiveFileAssetTypeAudio,
+
+    /// Unknown asset type.
+    RiveFileAssetTypeUnknown
+};
 
 #endif /* RiveEnums_h */

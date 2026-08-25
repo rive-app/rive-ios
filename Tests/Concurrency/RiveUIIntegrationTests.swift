@@ -11,6 +11,35 @@ import RiveRuntime
 
 class RiveUIIntegrationTests: XCTestCase {
 
+    // MARK: - File Assets
+
+    @MainActor
+    func test_getAssets_returnsNativeAssetMetadata() async throws {
+        let worker = try await Worker()
+        let file = try await File(
+            source: .local("asset_load_check", Bundle(for: Self.self)),
+            worker: worker
+        )
+
+        let assets = try await file.getAssets()
+
+        XCTAssertFalse(assets.isEmpty)
+        XCTAssertTrue(assets.contains { $0.type == .image })
+        XCTAssertTrue(assets.contains { $0.type == .font })
+        for asset in assets {
+            let nameWithoutExtension = (asset.name as NSString).deletingPathExtension
+            XCTAssertEqual(asset.uniqueName, "\(nameWithoutExtension)-\(asset.assetID)")
+        }
+
+        let hostedAssets = assets.compactMap(\.cdn)
+        XCTAssertFalse(hostedAssets.isEmpty)
+        XCTAssertTrue(assets.contains { $0.cdn == nil })
+        for cdn in hostedAssets {
+            XCTAssertFalse(cdn.baseURL.isEmpty)
+            XCTAssertNotNil(UUID(uuidString: cdn.uuid))
+        }
+    }
+
     // MARK: - Artboard
 
     @MainActor

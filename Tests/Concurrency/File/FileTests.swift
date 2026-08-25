@@ -540,6 +540,280 @@ class FileTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 1)
     }
 
+    // MARK: - getAssets
+
+    @MainActor
+    func test_getAssets_withValidFileHandle_returnsAssets() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "file assets received")
+        mockCommandQueue.stubRequestFileAssets { fileHandle, requestID in
+            XCTAssertEqual(fileHandle, 1)
+            let assets: [[String: Any]] = [
+                ["name": "hero.png", "uniqueName": "hero-1", "assetID": UInt32(1), "cdnUUID": "uuid-1", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "png", "type": RiveFileAssetType.image.rawValue, "rawType": UInt16(105)],
+                ["name": "body.ttf", "uniqueName": "body-2", "assetID": UInt32(2), "cdnUUID": "uuid-2", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "ttf", "type": RiveFileAssetType.font.rawValue, "rawType": UInt16(141)],
+                ["name": "click.mp3", "uniqueName": "click-3", "assetID": UInt32(3), "cdnUUID": "uuid-3", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "mp3", "type": RiveFileAssetType.audio.rawValue, "rawType": UInt16(406)]
+            ]
+            fileService.onFileAssetsListed(1, requestID: requestID, assets: assets)
+            expectation.fulfill()
+        }
+
+        let assets = try await file.getAssets()
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(assets.count, 3)
+        XCTAssertEqual(assets[0].name, "hero.png")
+        XCTAssertEqual(assets[0].uniqueName, "hero-1")
+        XCTAssertEqual(assets[0].assetID, 1)
+        XCTAssertEqual(assets[0].cdn?.uuid, "uuid-1")
+        XCTAssertEqual(assets[0].cdn?.baseURL, "https://cdn.example.com")
+        XCTAssertEqual(assets[0].fileExtension, "png")
+        XCTAssertEqual(assets[0].type, .image)
+        XCTAssertEqual(assets[1].name, "body.ttf")
+        XCTAssertEqual(assets[1].uniqueName, "body-2")
+        XCTAssertEqual(assets[1].type, .font)
+        XCTAssertEqual(assets[2].name, "click.mp3")
+        XCTAssertEqual(assets[2].uniqueName, "click-3")
+        XCTAssertEqual(assets[2].type, .audio)
+
+        let cachedAssets = try await file.getAssets()
+        XCTAssertEqual(cachedAssets, assets)
+        XCTAssertEqual(mockCommandQueue.requestFileAssetsCalls.count, 1)
+    }
+
+    @MainActor
+    func test_getAssets_withEmptyAssets_returnsEmptyArray() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "file assets received")
+        mockCommandQueue.stubRequestFileAssets { fileHandle, requestID in
+            XCTAssertEqual(fileHandle, 1)
+            fileService.onFileAssetsListed(1, requestID: requestID, assets: [])
+            expectation.fulfill()
+        }
+
+        let assets = try await file.getAssets()
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertTrue(assets.isEmpty)
+
+        let cachedAssets = try await file.getAssets()
+        XCTAssertTrue(cachedAssets.isEmpty)
+        XCTAssertEqual(mockCommandQueue.requestFileAssetsCalls.count, 1)
+    }
+
+    @MainActor
+    func test_getAssets_withInvalidAssetDictionary_throwsInvalidAsset() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "file assets error")
+        mockCommandQueue.stubRequestFileAssets { fileHandle, requestID in
+            let invalidAssets: [[String: Any]] = [["missing": "keys"]]
+            fileService.onFileAssetsListed(1, requestID: requestID, assets: invalidAssets)
+            expectation.fulfill()
+        }
+
+        do {
+            _ = try await file.getAssets()
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidAsset = error else {
+                XCTFail("Expected FileError.invalidAsset, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_getAssets_whenServerReportsError_throws() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        let expectation = expectation(description: "file assets error")
+        mockCommandQueue.stubRequestFileAssets { fileHandle, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "file not found")
+            expectation.fulfill()
+        }
+
+        do {
+            _ = try await file.getAssets()
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidFile = error else {
+                XCTFail("Expected FileError.invalidFile, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_getAssets_afterServerError_retries() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        let errorExpectation = expectation(description: "file assets error")
+        mockCommandQueue.stubRequestFileAssets { fileHandle, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "file not found")
+            errorExpectation.fulfill()
+        }
+
+        do {
+            _ = try await file.getAssets()
+            XCTFail("Expected FileError to be thrown")
+        } catch let error as FileError {
+            guard case .invalidFile = error else {
+                XCTFail("Expected FileError.invalidFile, got \(error)")
+                return
+            }
+        }
+
+        await fulfillment(of: [errorExpectation], timeout: 1)
+
+        let retryExpectation = expectation(description: "file assets retry")
+        mockCommandQueue.stubRequestFileAssets { fileHandle, requestID in
+            fileService.onFileAssetsListed(fileHandle, requestID: requestID, assets: [])
+            retryExpectation.fulfill()
+        }
+
+        let assets = try await file.getAssets()
+        await fulfillment(of: [retryExpectation], timeout: 1)
+        XCTAssertTrue(assets.isEmpty)
+        XCTAssertEqual(mockCommandQueue.requestFileAssetsCalls.count, 2)
+    }
+
+    @MainActor
+    func test_getAssets_whenCancelled_throwsCancelledError() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
+        let fileService = file.dependencies.fileService
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestFileAssets { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await file.getAssets()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FileError.cancelled to be thrown")
+        } catch let error as FileError {
+            guard case .cancelled = error else {
+                XCTFail("Expected FileError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError.cancelled, got \(type(of: error)): \(error)")
+        }
+
+        let retryExpectation = expectation(description: "file assets retry")
+        mockCommandQueue.stubRequestFileAssets { fileHandle, requestID in
+            fileService.onFileAssetsListed(fileHandle, requestID: requestID, assets: [])
+            retryExpectation.fulfill()
+        }
+
+        let assets = try await file.getAssets()
+        await fulfillment(of: [retryExpectation], timeout: 1)
+        XCTAssertTrue(assets.isEmpty)
+        XCTAssertEqual(mockCommandQueue.requestFileAssetsCalls.count, 2)
+    }
+
+    // MARK: - File.Asset type mapping
+
+    func test_assetType_image_mapsFromRiveFileAssetType() throws {
+        let dict: [String: Any] = [
+            "name": "hero.png", "uniqueName": "hero-1", "assetID": UInt32(1),
+            "cdnUUID": "uuid-1", "cdnBaseURL": "https://cdn.example.com",
+            "fileExtension": "png", "type": RiveFileAssetType.image.rawValue,
+            "rawType": UInt16(105)
+        ]
+        let asset = try File.Asset(from: dict)
+        XCTAssertEqual(asset.name, "hero.png")
+        XCTAssertEqual(asset.uniqueName, "hero-1")
+        XCTAssertEqual(asset.assetID, 1)
+        XCTAssertEqual(asset.cdn?.uuid, "uuid-1")
+        XCTAssertEqual(asset.cdn?.baseURL, "https://cdn.example.com")
+        XCTAssertEqual(asset.fileExtension, "png")
+        XCTAssertEqual(asset.type, .image)
+    }
+
+    func test_assetType_font_mapsFromRiveFileAssetType() throws {
+        let dict: [String: Any] = [
+            "name": "body.ttf", "uniqueName": "body-2", "assetID": UInt32(2),
+            "cdnUUID": "uuid-2", "cdnBaseURL": "https://cdn.example.com/fonts",
+            "fileExtension": "ttf", "type": RiveFileAssetType.font.rawValue,
+            "rawType": UInt16(141)
+        ]
+        let asset = try File.Asset(from: dict)
+        XCTAssertEqual(asset.name, "body.ttf")
+        XCTAssertEqual(asset.uniqueName, "body-2")
+        XCTAssertEqual(asset.assetID, 2)
+        XCTAssertEqual(asset.cdn?.uuid, "uuid-2")
+        XCTAssertEqual(asset.cdn?.baseURL, "https://cdn.example.com/fonts")
+        XCTAssertEqual(asset.fileExtension, "ttf")
+        XCTAssertEqual(asset.type, .font)
+    }
+
+    func test_assetType_audio_mapsFromRiveFileAssetType() throws {
+        let dict: [String: Any] = [
+            "name": "click.mp3", "uniqueName": "click-3", "assetID": UInt32(3),
+            "cdnUUID": "uuid-3", "cdnBaseURL": "https://cdn.example.com/audio",
+            "fileExtension": "mp3", "type": RiveFileAssetType.audio.rawValue,
+            "rawType": UInt16(406)
+        ]
+        let asset = try File.Asset(from: dict)
+        XCTAssertEqual(asset.name, "click.mp3")
+        XCTAssertEqual(asset.uniqueName, "click-3")
+        XCTAssertEqual(asset.assetID, 3)
+        XCTAssertEqual(asset.cdn?.uuid, "uuid-3")
+        XCTAssertEqual(asset.cdn?.baseURL, "https://cdn.example.com/audio")
+        XCTAssertEqual(asset.fileExtension, "mp3")
+        XCTAssertEqual(asset.type, .audio)
+    }
+
+    func test_assetType_unknown_preservesRawType() throws {
+        let dict: [String: Any] = [
+            "name": "data.bin", "uniqueName": "data-4", "assetID": UInt32(4),
+            "cdnUUID": "uuid-4", "cdnBaseURL": "https://cdn.example.com/other",
+            "fileExtension": "bin", "type": RiveFileAssetType.unknown.rawValue,
+            "rawType": UInt16(999)
+        ]
+        let asset = try File.Asset(from: dict)
+        XCTAssertEqual(asset.name, "data.bin")
+        XCTAssertEqual(asset.uniqueName, "data-4")
+        XCTAssertEqual(asset.assetID, 4)
+        XCTAssertEqual(asset.cdn?.uuid, "uuid-4")
+        XCTAssertEqual(asset.cdn?.baseURL, "https://cdn.example.com/other")
+        XCTAssertEqual(asset.fileExtension, "bin")
+        XCTAssertEqual(asset.type, .unknown(999))
+    }
+
+    func test_asset_withEmptyCDNUUIDAndDefaultBaseURL_hasNoCDN() throws {
+        let dict: [String: Any] = [
+            "name": "embedded.png", "uniqueName": "embedded-5", "assetID": UInt32(5),
+            "cdnUUID": "", "cdnBaseURL": "https://public.rive.app/cdn/uuid",
+            "fileExtension": "png", "type": RiveFileAssetType.image.rawValue,
+            "rawType": UInt16(105)
+        ]
+
+        let asset = try File.Asset(from: dict)
+
+        XCTAssertNil(asset.cdn)
+    }
+
     // MARK: - Cancellation
 
     @MainActor
