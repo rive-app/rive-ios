@@ -21,11 +21,11 @@ class RiveSlider: RiveViewModel {
         super.init(fileName: "riveslider", stateMachineName: "Slide", fit: .scaleDown)
     }
     
-    func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
+    @objc func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
         touchMoved(onArtboard: artboard, atLocation: location)
     }
     
-    func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
+    @objc func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint) {
         progress = Double(location.x / riveView!.frame.width) * 100
     }
 }
