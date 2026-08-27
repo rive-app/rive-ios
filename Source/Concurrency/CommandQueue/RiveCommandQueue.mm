@@ -279,10 +279,20 @@ static RiveSemanticState RiveSemanticStateFromCpp(uint32_t flags)
         out |= RiveSemanticStateExpanded;
     if (hasSemanticState(flags, rive::SemanticState::Selected))
         out |= RiveSemanticStateSelected;
-    if (hasSemanticState(flags, rive::SemanticState::Checked))
-        out |= RiveSemanticStateChecked;
-    if (hasSemanticState(flags, rive::SemanticState::Mixed))
-        out |= RiveSemanticStateMixed;
+    // Check state is a single two-bit field rather than two flags, so the two
+    // Obj-C bits are mutually exclusive by construction. Testing them
+    // individually could previously report checked and mixed together.
+    switch (rive::checkStateOf(flags))
+    {
+        case rive::SemanticCheckState::Checked:
+            out |= RiveSemanticStateChecked;
+            break;
+        case rive::SemanticCheckState::Mixed:
+            out |= RiveSemanticStateMixed;
+            break;
+        case rive::SemanticCheckState::Unchecked:
+            break;
+    }
     if (hasSemanticState(flags, rive::SemanticState::Toggled))
         out |= RiveSemanticStateToggled;
     if (hasSemanticState(flags, rive::SemanticState::Required))
