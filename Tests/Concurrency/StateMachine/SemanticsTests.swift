@@ -199,6 +199,9 @@ class SemanticsTests: XCTestCase {
         let dependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
         let stateMachine = StateMachine(dependencies: dependencies, stateMachineHandle: 123)
 
+        let cleaned = expectation(description: "continuation removed")
+        stateMachineService.onContinuationRemoved = { cleaned.fulfill() }
+
         XCTAssertFalse(stateMachine.hasActiveListeners)
 
         let stream = stateMachine.semanticsDiffStream()
@@ -211,7 +214,7 @@ class SemanticsTests: XCTestCase {
         XCTAssertTrue(stateMachine.hasActiveListeners)
 
         task.cancel()
-        await Task.yield()
+        await fulfillment(of: [cleaned], timeout: 1.0)
 
         XCTAssertFalse(stateMachine.hasActiveListeners)
     }
