@@ -21,6 +21,7 @@
 #import "RivePrivateHeaders.h"
 #import "RiveConcurrency_Private.hh"
 #import "RiveSemanticsDiff.h"
+#include "../Utilities/RiveConfiguration_Private.hh"
 #include "rive/animation/semantic_listener_group.hpp"
 #include "rive/semantic/semantic_snapshot.hpp"
 #include "rive/semantic/semantic_role.hpp"
@@ -122,55 +123,6 @@ static RiveFileAssetType RiveFileAssetTypeFromCpp(uint16_t cppType)
     if (cppType == rive::AudioAssetBase::typeKey)
         return RiveFileAssetTypeAudio;
     return RiveFileAssetTypeUnknown;
-}
-
-static rive::Fit RiveConfigurationFitCppValue(RiveConfigurationFit fit)
-{
-    switch (fit)
-    {
-        case RiveConfigurationFitFill:
-            return rive::Fit::fill;
-        case RiveConfigurationFitContain:
-            return rive::Fit::contain;
-        case RiveConfigurationFitCover:
-            return rive::Fit::cover;
-        case RiveConfigurationFitFitWidth:
-            return rive::Fit::fitWidth;
-        case RiveConfigurationFitFitHeight:
-            return rive::Fit::fitHeight;
-        case RiveConfigurationFitNone:
-            return rive::Fit::none;
-        case RiveConfigurationFitScaleDown:
-            return rive::Fit::scaleDown;
-        case RiveConfigurationFitLayout:
-            return rive::Fit::layout;
-    }
-}
-
-static rive::Alignment RiveConfigurationAlignmentCppValue(
-    RiveConfigurationAlignment alignment)
-{
-    switch (alignment)
-    {
-        case RiveConfigurationAlignmentTopLeft:
-            return rive::Alignment::topLeft;
-        case RiveConfigurationAlignmentTopCenter:
-            return rive::Alignment::topCenter;
-        case RiveConfigurationAlignmentTopRight:
-            return rive::Alignment::topRight;
-        case RiveConfigurationAlignmentCenterLeft:
-            return rive::Alignment::centerLeft;
-        case RiveConfigurationAlignmentCenter:
-            return rive::Alignment::center;
-        case RiveConfigurationAlignmentCenterRight:
-            return rive::Alignment::centerRight;
-        case RiveConfigurationAlignmentBottomLeft:
-            return rive::Alignment::bottomLeft;
-        case RiveConfigurationAlignmentBottomCenter:
-            return rive::Alignment::bottomCenter;
-        case RiveConfigurationAlignmentBottomRight:
-            return rive::Alignment::bottomRight;
-    }
 }
 
 static rive::CommandQueue::PointerEvent RivePointerEventToCpp(

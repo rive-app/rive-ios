@@ -24,7 +24,7 @@ extension File {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveUIRenderContext(device: device),
+                renderingMode: .immediate(RiveUIRenderContext(device: device)),
                 messagePumpDriver: mockCommandQueue
             )
         )

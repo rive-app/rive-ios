@@ -44,7 +44,11 @@ class FileTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderContext: RiveUIRenderContext(device: MetalDevice.shared.defaultDevice()!.value),
+                renderingMode: .immediate(
+                    RiveUIRenderContext(
+                        device: MetalDevice.shared.defaultDevice()!.value
+                    )
+                ),
                 messagePumpDriver: mockCommandQueue
             )
         )

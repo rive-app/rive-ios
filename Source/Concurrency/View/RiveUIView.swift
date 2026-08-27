@@ -21,6 +21,8 @@ public typealias NativeViewRepresentable = NSViewRepresentable
 #endif
 
 public protocol RiveUIViewDelegate: AnyObject {
+    /// Called on the main actor when the view encounters an error.
+    @MainActor
     func view(_ view: RiveUIView, didReceiveError: RiveUIViewError)
 }
 
@@ -58,7 +60,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     /// instead. Signaled via ``DrawableToken`` when the draw completes.
     private var drawableSemaphore: DispatchSemaphore?
 
-    private var renderer: RiveUIRenderer?
+    private var renderer: (any RiveUIRendererProtocol)?
 
     private var controller: RiveController?
     private var setupTask: Task<Void, Never>?
@@ -369,10 +371,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     private func setupRive() {
         if let rive {
             RiveLog.debug(tag: .view, "[RiveUIView] Setting up Rive renderer and controller")
-            renderer = RiveUIRenderer(
-                commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue,
-                renderContext: rive.file.worker.dependencies.workerService.dependencies.renderContext
-            )
+            renderer = rive.makeRenderer()
 
             controller = RiveController(rive: rive, delegate: self)
             controller?.isPaused = isPaused
@@ -427,6 +426,9 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             return
         }
 
+        // Bind main-actor-side MetalKit and drawable temporaries to this
+        // submission. The asynchronous command-server callback has its own
+        // autorelease pool in `_RiveUIRendererCore`.
         autoreleasepool {
             guard let device = view.device else {
                 RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing device")
@@ -460,23 +462,42 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 return
             }
 
-            renderer.draw(configuration, to: currentDrawable.texture, from: device) { commandBuffer in
-                commandBuffer.addCompletedHandler { _ in
+            renderer.draw(
+                configuration,
+                to: currentDrawable.texture,
+                from: device,
+                onDraw: { commandBuffer in
+                    commandBuffer.addCompletedHandler { _ in
+                        token.signal()
+                    }
+                    commandBuffer.present(currentDrawable)
+                },
+                onSkipped: {
                     token.signal()
+                },
+                onError: { [weak self] error in
+                    token.signal()
+                    self?.notifyDelegateOfRendererError(error)
                 }
-                commandBuffer.present(currentDrawable)
-                commandBuffer.commit()
-            } onSkipped: {
-                token.signal()
-            } onError: { [weak self] error in
-                token.signal()
-                guard let self else { return }
-                RiveLog.error(tag: .view, error: error, "[RiveUIView] Error rendering")
-                self.delegate?.view(self, didReceiveError: RiveUIViewError.renderer(error.localizedDescription))
-            }
+            )
 
         }
     }
+
+    private nonisolated func notifyDelegateOfRendererError(_ error: Error) {
+        RiveLog.error(tag: .view, error: error, "[RiveUIView] Error rendering")
+        let description = error.localizedDescription
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            delegate?.view(self, didReceiveError: .renderer(description))
+        }
+    }
+
+    #if TESTING
+    nonisolated func notifyDelegateOfRendererErrorForTesting(_ error: Error) {
+        notifyDelegateOfRendererError(error)
+    }
+    #endif
 
     // MARK: - DisplayLink
     func invalidate() {
@@ -685,12 +706,12 @@ extension RiveUIView {
     /// for each corresponding `wait()`.
     ///
     /// Created per draw cycle in `draw(in:)` after `drawableSemaphore.wait()` succeeds.
-    /// The token is captured by the draw callback closures (finalize, onSkipped, onError).
-    /// If the callback executes normally, `signal()` is called explicitly. If the callback
-    /// is never executed — e.g. when `CommandServer` processes a `disconnect` before the
-    /// draw loop runs — the closures are destroyed, the token's `deinit` fires, and the
-    /// semaphore is signaled automatically, preventing a `SIGTRAP` from libdispatch's
-    /// "Semaphore object deallocated while in use" assertion.
+    /// `onSkipped` and `onError` signal the token directly. `onDraw` transfers it to the
+    /// command buffer's completion handler. If no callback executes — e.g. when
+    /// `CommandServer` processes a `disconnect` before the draw loop runs — the closures
+    /// are destroyed, the token's `deinit` fires, and the semaphore is signaled
+    /// automatically, preventing a `SIGTRAP` from libdispatch's "Semaphore object
+    /// deallocated while in use" assertion.
     ///
     /// See: https://github.com/rive-app/rive-ios/issues/442
     final class DrawableToken: @unchecked Sendable {

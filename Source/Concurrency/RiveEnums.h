@@ -108,6 +108,9 @@ typedef NS_ENUM(NSInteger, RendererError) {
     /// The state machine handle is invalid or the state machine has been
     /// deleted.
     RendererErrorInvalidStateMachine,
+
+    /// The target texture does not match the renderer configuration or device.
+    RendererErrorInvalidTexture,
 };
 
 /// Data types used for view model instance properties.

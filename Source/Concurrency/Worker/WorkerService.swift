@@ -10,10 +10,9 @@ import Foundation
 
 /// A service class that manages worker lifecycle and global asset registration.
 ///
-/// Handles starting/stopping the command queue and command server, and manages global assets
-/// (images, fonts, audio) that can be shared across multiple Rive files. All operations are
-/// fire-and-forget (no listener callbacks). All command queue operations must be performed on
-/// the main thread (either marked `@MainActor` or dispatched to the main queue).
+/// Schedules command-server processing, coordinates queue shutdown, and manages global assets
+/// (images, fonts, audio) shared by files in one worker. All asset operations are fire-and-forget
+/// (no listener callbacks). Command queue operations are isolated to the main actor.
 @MainActor
 final class WorkerService {
     let dependencies: Dependencies
@@ -26,19 +25,19 @@ final class WorkerService {
         self.dependencies = dependencies
     }
 
-    /// Starts the command queue and command server.
+    /// Schedules command-server processing for the existing queue.
     ///
-    /// The command server runs until disconnected, processing commands from the command queue
-    /// on a background thread.
+    /// The server dispatches its blocking loop internally and runs until the queue disconnects.
     @MainActor
     func start() {
         RiveLog.debug(tag: .worker, "[Worker] Starting worker")
         dependencies.commandServer.serveUntilDisconnect()
     }
 
-    /// Stops the command queue and command server.
+    /// Begins asynchronous worker shutdown.
     ///
-    /// Disconnects the command server and stops the command queue, shutting down the worker.
+    /// Stops message pumping and enqueues the queue's disconnect command. The server exits its
+    /// background loop afterward and then ends the render context's processing session.
     @MainActor
     func stop() {
         RiveLog.debug(tag: .worker, "[Worker] Stopping worker")
@@ -111,24 +110,25 @@ extension WorkerService {
     /// Container for all dependencies required by the worker service.
     struct Dependencies {
         /// The command queue used to send commands to the C++ runtime.
-        /// All operations must be performed on the main thread.
+        /// All operations must be performed on the main actor.
         let commandQueue: CommandQueueProtocol
         /// The command server that processes commands from the command queue on a background thread.
         let commandServer: CommandServerProtocol
-        /// The render context used for rendering operations.
-        let renderContext: RiveUIRenderContext
+        /// The selected per-worker rendering mode. Its context is supplied to
+        /// the command server, and the same mode selects each renderer.
+        let renderingMode: Worker.RenderingMode
         /// Internal queue lifecycle driver used by the message gate.
         let messagePumpDriver: any _CommandQueueMessagePumpDriver
 
         init(
             commandQueue: CommandQueueProtocol,
             commandServer: CommandServerProtocol,
-            renderContext: RiveUIRenderContext,
+            renderingMode: Worker.RenderingMode,
             messagePumpDriver: any _CommandQueueMessagePumpDriver
         ) {
             self.commandQueue = commandQueue
             self.commandServer = commandServer
-            self.renderContext = renderContext
+            self.renderingMode = renderingMode
             self.messagePumpDriver = messagePumpDriver
         }
     }

@@ -44,7 +44,7 @@ final class VideoEncoder {
     /// functions don't need long parameter lists.
     private struct Resources {
         let rive: Rive
-        let renderer: RiveUIRenderer
+        let renderer: any RiveUIRendererProtocol
         let device: any MTLDevice
         let texture: any MTLTexture
         let writer: AVAssetWriter
@@ -88,7 +88,7 @@ final class VideoEncoder {
         // Step 3: Build immutable resources once before running the frame loop.
         let resources = try Self.makeResources(
             rive: rive,
-            renderer: RiveUIRenderer(rive: rive),
+            renderer: rive.makeRenderer(),
             device: device,
             size: size,
             frameRate: frameRate,
@@ -171,7 +171,7 @@ final class VideoEncoder {
             return RiveUIRendererConfiguration(rive: resources.rive, drawableSize: resources.size)
         }
 
-        // Step 2: Draw submission must happen on main; completion fires on the GPU timeline.
+        // Step 2: Draw submission runs on the main actor; completion follows the GPU timeline.
         try await submitDraw(configuration, with: resources)
 
         // Step 3a: Read rendered texture back into a pixel buffer for the writer.
@@ -214,22 +214,29 @@ final class VideoEncoder {
         }
     }
 
-    /// Submits a draw call to `Renderer` and resumes when the command buffer completes.
+    /// Submits a renderer draw and resumes when the command buffer completes.
     @MainActor
     private static func submitDraw(
         _ configuration: RiveUIRendererConfiguration,
         with resources: Resources
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            resources.renderer.draw(configuration, to: resources.texture, from: resources.device) { commandBuffer in
-                commandBuffer.addCompletedHandler { _ in continuation.resume() }
-                commandBuffer.commit()
-            }
-            onSkipped: {
-                continuation.resume()
-            } onError: { error in
-                continuation.resume(throwing: VideoEncoderError.renderFailed(error.localizedDescription))
-            }
+            resources.renderer.draw(
+                configuration,
+                to: resources.texture,
+                from: resources.device,
+                onDraw: { commandBuffer in
+                    commandBuffer.addCompletedHandler { _ in continuation.resume() }
+                },
+                onSkipped: {
+                    continuation.resume()
+                },
+                onError: { error in
+                    continuation.resume(
+                        throwing: VideoEncoderError.renderFailed(error.localizedDescription)
+                    )
+                }
+            )
         }
     }
 
@@ -259,7 +266,7 @@ final class VideoEncoder {
     /// 3) Start writer session and return a fully populated `Resources`.
     private static func makeResources(
         rive: Rive,
-        renderer: RiveUIRenderer,
+        renderer: any RiveUIRendererProtocol,
         device: any MTLDevice,
         size: CGSize,
         frameRate: Int,

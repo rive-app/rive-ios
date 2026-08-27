@@ -9,5 +9,7 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-GCC_PREPROCESSOR_DEFINITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING WITH_RIVE_SCRIPTING_LUAU
-SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING
+// Feature definitions below are rewritten and coordinated by
+// scripts/build.rive.sh. Change the script rather than these generated lists.
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING WITH_RIVE_SCRIPTING_LUAU RIVE_CANVAS RIVE_ORE
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) WITH_RIVE_AUDIO WITH_RIVE_TEXT WITH_RIVE_SCRIPTING RIVE_CANVAS

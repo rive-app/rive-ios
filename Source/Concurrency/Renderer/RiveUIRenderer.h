@@ -1,5 +1,5 @@
 //
-//  _RiveUIRenderer.h
+//  RiveUIRenderer.h
 //  RiveRuntime
 //
 //  Created by David Skuza on 9/9/25.
@@ -25,21 +25,22 @@ NS_ASSUME_NONNULL_BEGIN
 /// Configuration structure for rendering a Rive artboard to a Metal texture.
 ///
 /// This structure contains all the parameters needed to draw an artboard,
-/// including which artboard and state machine to use, how to fit and align
-/// it, the target texture format, and display scale.
+/// including artboard and state-machine handles, layout, and target texture
+/// properties.
 ///
 /// The renderer uses this configuration to set up the coordinate transformation
 /// from artboard space to screen space, which affects both rendering and
-/// pointer event handling.
+/// pointer event handling. Use the same fit, alignment, and layout scale when
+/// mapping pointer events so input agrees with the rendered geometry.
 typedef struct
 {
-    /// The handle of the artboard to render. Must be a valid artboard handle
-    /// created via the command queue.
+    /// The handle of the artboard to render. Must be a valid, nonzero handle
+    /// owned by the command queue that backs the renderer.
     uint64_t artboardHandle;
 
-    /// The handle of the state machine to advance and render. Must be a valid
-    /// state machine handle created from the artboard. Use 0 if no state
-    /// machine should be advanced (static artboard rendering).
+    /// The state-machine instance associated with the artboard. Must be a
+    /// valid, nonzero handle created from the artboard and owned by the same
+    /// command queue as the renderer.
     uint64_t stateMachineHandle;
 
     /// How the artboard should be fitted within the target size.
@@ -48,87 +49,147 @@ typedef struct
     /// How the artboard should be aligned when there's extra space.
     RiveConfigurationAlignment alignment;
 
-    /// The target size in points for rendering. This is the logical size
-    /// before applying the scale factor.
+    /// The target texture dimensions in pixels. Width and height must be
+    /// positive whole-pixel values, must match the supplied texture, and must
+    /// not exceed `CGSizeMaximum2DTextureSize` for the supplied device.
     CGSize size;
 
     /// The Metal pixel format for the target texture. Must match the format
-    /// of the texture passed to
-    /// drawConfiguration:toTexture:finalize:onError:.
+    /// of the texture passed to the renderer.
     MTLPixelFormat pixelFormat;
 
-    /// The display scale factor (e.g., 2.0 for Retina displays). This affects
-    /// the actual pixel resolution of the rendered output.
+    /// The scale used by `RiveConfigurationFitLayout` to map layout
+    /// coordinates to target pixels. This does not change `size` and is
+    /// ignored by other fit modes.
     CGFloat layoutScale;
 
     /// The background color in ARGB format (32-bit unsigned integer).
     uint32_t color;
 } RiveUIRendererConfiguration;
 
-/// A renderer that draws Rive artboards to Metal textures.
+/// An interface for drawing Rive artboards to Metal textures.
 ///
-/// The Renderer class coordinates the drawing of Rive artboards to Metal
-/// textures. It works with a command queue to schedule drawing operations
-/// and uses a render context to create Metal command buffers.
+/// Use ``Rive/makeRenderer()`` to create a renderer that matches the backing
+/// worker's configuration.
 ///
-/// The renderer handles coordinate transformations based on the fit and
-/// alignment settings, advances state machines if specified, and executes the
-/// actual drawing commands on a background thread.
+/// A renderer keeps render-target and skip state for one output surface.
+/// Retain one renderer per surface; drawable textures may rotate as long as
+/// they belong to that same surface.
 ///
-/// Threading:
-/// - Drawing operations are queued on the main thread
-/// - Actual rendering happens on a background thread (via command server)
-/// - Error and finalize callbacks are called on the background thread
-@interface RiveUIRenderer : NSObject
-
-- (instancetype)init NS_UNAVAILABLE;
+/// Submit only configurations whose handles belong to the renderer's command
+/// queue. The texture and device must use the same Metal device as the
+/// renderer's render context.
+///
+/// Call `drawConfiguration:toTexture:fromDevice:onDraw:onSkipped:onError:`
+/// from the main actor in Swift, or the main thread in Objective-C. Preflight
+/// errors, such as an invalid size, call `onError` synchronously on that
+/// calling context. Otherwise, drawing is performed asynchronously on the
+/// backing command-server thread, where `onDraw`, `onSkipped`, and `onError`
+/// are called.
+///
+/// Pending submissions for one renderer may be coalesced. Only the most recent
+/// submission for that renderer in a command-server batch is drawn; blocks
+/// belonging to superseded submissions are released without being called.
+@protocol RiveUIRendererProtocol <NSObject>
 
 /**
- * Initializes a renderer with a command queue and render context.
+ * Queues an artboard configuration to be drawn to a Metal texture.
  *
- * @param commandQueue The command queue used to schedule drawing operations
- * @param renderContext The render context used to create Metal command buffers
- * @return An initialized renderer instance
- * @note The command queue must be started before using the renderer. The render
- *       context must be valid and associated with a Metal device.
+ * @param configuration The artboard, state machine, layout, and output
+ *                      configuration to draw.
+ * @param texture The Metal render-target texture. Its dimensions and pixel
+ *                format must match the configuration, its usage must include
+ *                `MTLTextureUsageRenderTarget`, and it must belong to the
+ *                renderer's Metal device.
+ * @param device The Metal device that owns the texture and backs the renderer's
+ *               render context.
+ * @param onDraw A required block called with the uncommitted command buffer
+ *               after the draw commands have been recorded. Present the
+ *               drawable, if needed, and configure any completion handlers
+ *               from this block. If it remains uncommitted, the renderer
+ *               commits it after the block returns. If the block commits it
+ *               synchronously before returning, the renderer does not commit
+ *               it again. Do not wait for it to be scheduled or completed, or
+ *               retain it to configure or commit later.
+ * @param onSkipped A block called when a frame is intentionally skipped. Can
+ *                  be nil.
+ * @param onError A block called with an error if drawing fails. Can be nil.
  */
-- (instancetype)initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
-                       renderContext:
-                           (nonnull RiveUIRenderContext*)renderContext;
+- (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
+                toTexture:(id<MTLTexture>)texture
+               fromDevice:(id<MTLDevice>)device
+                   onDraw:(void (^)(id<MTLCommandBuffer>))onDraw
+                onSkipped:(nullable void (^)(void))onSkipped
+                  onError:(nullable void (^)(NSError*))onError;
 
 /**
- * Draws an artboard configuration to a Metal texture.
+ * Queues an artboard configuration to be drawn to a Metal texture.
  *
- * This method queues a drawing operation that will render the specified
- * artboard to the provided Metal texture. The operation is asynchronous and
- * executes on a background thread via the command server.
+ * All parameters other than `finalize` have the same requirements as the
+ * `onDraw` overload.
  *
- * The configuration determines which artboard to draw, how to fit and align it,
- * and what size and pixel format to use.
- *
- * @param configuration The rendering configuration (artboard, fit, alignment,
- * etc.)
- * @param texture The Metal texture to render to. Must match the pixel format
- *                specified in the configuration.
- * @param finalize A block called after drawing completes, receiving the Metal
- *                 command buffer. Use this to commit the buffer or perform
- * cleanup. Can be nil. Any objects captured by this block (e.g.,
- * CAMetalDrawable) will be automatically retained by ARC until the block is
- * released.
- * @param onSkipped A block called when a frame is intentionally skipped
- *                  (for example, unchanged artboard content). Can be nil.
- * @param onError A block called if drawing fails, receiving an NSError
- *                describing the failure. Can be nil.
- * @note The texture must be a valid Metal texture with the correct pixel
- * format. The drawing operation is queued and executes asynchronously. The
- * finalize, onSkipped, and onError blocks are called on the background thread.
+ * @param finalize A block called with the uncommitted command buffer after the
+ *                 draw commands have been recorded. When nonnull, the block
+ *                 must commit the command buffer. When nil, the renderer
+ *                 commits it automatically.
  */
 - (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
                 toTexture:(id<MTLTexture>)texture
                fromDevice:(id<MTLDevice>)device
                  finalize:(nullable void (^)(id<MTLCommandBuffer>))finalize
                 onSkipped:(nullable void (^)(void))onSkipped
+                  onError:(nullable void (^)(NSError*))onError
+    DEPRECATED_MSG_ATTRIBUTE(
+        "Use onDraw instead; the renderer commits after onDraw returns.");
+
+@end
+
+/// The immediate implementation of ``RiveUIRendererProtocol``.
+///
+/// Prefer ``Rive/makeRenderer()`` so the implementation matches the worker's
+/// selected rendering mode.
+@interface RiveUIRenderer : NSObject <RiveUIRendererProtocol>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+/**
+ * Initializes an immediate renderer with a command queue and render context.
+ *
+ * @param commandQueue The command queue used to schedule drawing operations
+ * @param renderContext The render context used to create Metal command buffers
+ * @return An initialized renderer instance
+ * @note The renderer retains both objects. They must belong to the same active
+ *       command-processing pipeline, and `renderContext` must be an immediate
+ *       context. Use ``Rive/makeRenderer()`` for a worker configured for
+ *       deferred rendering.
+ *       Initialize on the Swift main actor or Objective-C main thread.
+ */
+- (instancetype)initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
+                       renderContext:(RiveUIRenderContext*)renderContext;
+
+#if defined(RIVE_CANVAS) && defined(RIVE_ORE)
+/// Creates a disabled renderer that reports `rendererError` from draw calls.
+/// Used internally to preserve deprecated initializer behavior without pairing
+/// an immediate renderer with a deferred context.
+- (instancetype)initWithRendererError:(NSError*)rendererError
+    NS_SWIFT_NAME(init(rendererError:));
+#endif
+
+- (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
+                toTexture:(id<MTLTexture>)texture
+               fromDevice:(id<MTLDevice>)device
+                   onDraw:(void (^)(id<MTLCommandBuffer>))onDraw
+                onSkipped:(nullable void (^)(void))onSkipped
                   onError:(nullable void (^)(NSError*))onError;
+
+- (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
+                toTexture:(id<MTLTexture>)texture
+               fromDevice:(id<MTLDevice>)device
+                 finalize:(nullable void (^)(id<MTLCommandBuffer>))finalize
+                onSkipped:(nullable void (^)(void))onSkipped
+                  onError:(nullable void (^)(NSError*))onError
+    DEPRECATED_MSG_ATTRIBUTE(
+        "Use onDraw instead; the renderer commits after onDraw returns.");
 
 @end
 

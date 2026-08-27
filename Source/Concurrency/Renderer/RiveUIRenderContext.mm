@@ -1,11 +1,14 @@
 //
-//  RiveUIRenderContext.m
+//  RiveUIRenderContext.mm
 //  RiveRuntime
 //
 //  Created by David Skuza on 9/10/25.
 //  Copyright © 2025 Rive. All rights reserved.
 //
 
+#import <Rive.h>
+#import <RivePrivateHeaders.h>
+#import <RiveRuntime/_RiveUIRenderContextProtocol.h>
 #import "RiveUIRenderContext.h"
 #import <RiveRuntime/RiveConcurrency.h>
 
@@ -52,7 +55,15 @@ NS_ASSUME_NONNULL_BEGIN
     return renderContext;
 }
 
-- (rive::Factory*)factory
+- (rive::Factory*)beginCommandProcessing
+{
+    return _renderContext.get();
+}
+
+- (void)endCommandProcessing
+{}
+
+- (rive::gpu::RenderContext*)renderContext
 {
     return _renderContext.get();
 }

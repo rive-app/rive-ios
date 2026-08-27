@@ -19,18 +19,112 @@ import AppKit
 /// Rive graphics. Workers enable multithreading by allowing multiple independent Rive instances
 /// to operate concurrently.
 ///
+/// A worker owns one command queue, command server, and render context. Handles and render
+/// resources are scoped to that worker and cannot be exchanged with another worker.
+///
 /// Workers also manage global assets (images, fonts, and audio) that can be shared across
-/// multiple Rive files and artboards. These assets are registered by name and can be referenced
-/// by Rive files during rendering.
+/// multiple Rive files and artboards loaded by that worker. These assets are registered by name
+/// and can be referenced by those files during rendering.
 public final class Worker {
+    /// Options applied when a worker is created. The resulting rendering mode
+    /// and context are fixed for the worker's lifetime.
+    public struct Configuration: Sendable {
+        #if RIVE_CANVAS
+        /// Enables GPU Canvas for every file and renderer created by this
+        /// worker. Defaults to `false`, and the selection is fixed for the
+        /// worker's lifetime.
+        public var enableGPUCanvas = false
+        #endif
+
+        /// Creates the default worker configuration.
+        public init() {}
+
+        #if RIVE_CANVAS
+        /// Creates a configuration with an explicit GPU Canvas choice.
+        ///
+        /// - Parameter enableGPUCanvas: Whether the worker enables GPU Canvas.
+        public init(enableGPUCanvas: Bool) {
+            self.enableGPUCanvas = enableGPUCanvas
+        }
+        #endif
+    }
+
+    /// The rendering strategy and concrete context selected for a worker.
+    enum RenderingMode {
+        case immediate(RiveUIRenderContext)
+
+        #if RIVE_CANVAS
+        case deferred(_RiveUIDeferredRenderContext)
+        #endif
+
+        var renderContext: any _RiveUIRenderContextProtocol {
+            switch self {
+            case .immediate(let renderContext):
+                renderContext
+            #if RIVE_CANVAS
+            case .deferred(let renderContext):
+                renderContext
+            #endif
+            }
+        }
+    }
+
     let dependencies: Dependencies
 
     private var images: [String: Image] = [:]
     private var fonts: [String: Font] = [:]
     private var audios: [String: Audio] = [:]
 
+    /// Selects the worker's rendering strategy once, before command processing
+    /// or file import begins. The selected context is reused by both the command
+    /// server and every renderer created for this worker.
+    private static func makeRenderingMode(
+        device: any MTLDevice,
+        configuration: Configuration
+    ) -> RenderingMode {
+        #if RIVE_CANVAS
+        if configuration.enableGPUCanvas {
+            return .deferred(_RiveUIDeferredRenderContext(device: device))
+        }
+        #endif
+
+        return .immediate(RiveUIRenderContext(device: device))
+    }
+
+    /// Creates a per-surface renderer matching the concrete context already
+    /// selected for this worker.
+    @MainActor
+    func makeRenderer() -> any RiveUIRendererProtocol {
+        let dependencies = dependencies.workerService.dependencies
+
+        switch dependencies.renderingMode {
+        case .immediate(let renderContext):
+            return RiveUIRenderer(
+                commandQueue: dependencies.commandQueue,
+                renderContext: renderContext
+            )
+        #if RIVE_CANVAS
+        case .deferred(let renderContext):
+            return _RiveUIDeferredRenderer(
+                commandQueue: dependencies.commandQueue,
+                renderContext: renderContext
+            )
+        #endif
+        }
+    }
+
+    /// Creates a worker with the default configuration and system Metal device.
     @MainActor
     public convenience init() async throws {
+        try await self.init(configuration: .init())
+    }
+
+    /// Creates a worker with the supplied configuration and system Metal device.
+    ///
+    /// - Parameter configuration: Options fixed for the worker's lifetime.
+    /// - Throws: `WorkerError.missingDevice` when Metal is unavailable.
+    @MainActor
+    public convenience init(configuration: Configuration) async throws {
         RiveLog.debug(tag: .worker, "[Worker] Initializing worker")
         guard let device = await MetalDevice.shared.defaultDevice() else {
             let error = WorkerError.missingDevice
@@ -38,12 +132,25 @@ public final class Worker {
             throw error
         }
 
-        let renderContext = await Task.detached(priority: .userInitiated) { () -> UncheckedSendable<RiveUIRenderContext> in
-            UncheckedSendable(value: RiveUIRenderContext(device: device.value))
+        // Context construction is isolated to this detached task, then the
+        // completed context is transferred once to the worker. Subsequent C++
+        // access is serialized by the command-server processing loop.
+        let renderingMode = await Task.detached(
+            priority: .userInitiated
+        ) { () -> UncheckedSendable<RenderingMode> in
+            UncheckedSendable(
+                value: Worker.makeRenderingMode(
+                    device: device.value,
+                    configuration: configuration
+                )
+            )
         }.value
 
         let commandQueue = CommandQueue()
-        let commandServer = CommandServer(commandQueue: commandQueue, renderContext: renderContext.value)
+        let commandServer = CommandServer(
+            commandQueue: commandQueue,
+            renderContext: renderingMode.value.renderContext
+        )
 
         self.init(
             dependencies: .init(
@@ -51,7 +158,7 @@ public final class Worker {
                     dependencies: .init(
                         commandQueue: commandQueue,
                         commandServer: commandServer,
-                        renderContext: renderContext.value,
+                        renderingMode: renderingMode.value,
                         messagePumpDriver: commandQueue
                     )
                 )
@@ -59,19 +166,40 @@ public final class Worker {
         )
     }
 
+    /// Creates a worker with the default configuration and supplied Metal device.
+    /// Textures rendered by this worker must be created by `device`.
     @MainActor
     public convenience init(device: any MTLDevice) {
+        self.init(device: device, configuration: .init())
+    }
+
+    /// Creates a worker with a supplied Metal device and configuration.
+    ///
+    /// - Parameters:
+    ///   - device: The device used by the worker's render context and all target textures.
+    ///   - configuration: Options fixed for the worker's lifetime.
+    @MainActor
+    public convenience init(
+        device: any MTLDevice,
+        configuration: Configuration
+    ) {
         RiveLog.debug(tag: .worker, "[Worker] Initializing worker with provided Metal device")
-        let renderContext = RiveUIRenderContext(device: device)
+        let renderingMode = Worker.makeRenderingMode(
+            device: device,
+            configuration: configuration
+        )
         let commandQueue = CommandQueue()
-        let commandServer = CommandServer(commandQueue: commandQueue, renderContext: renderContext)
+        let commandServer = CommandServer(
+            commandQueue: commandQueue,
+            renderContext: renderingMode.renderContext
+        )
         self.init(
             dependencies: .init(
                 workerService: .init(
                     dependencies: .init(
                         commandQueue: commandQueue,
                         commandServer: commandServer,
-                        renderContext: renderContext,
+                        renderingMode: renderingMode,
                         messagePumpDriver: commandQueue
                     )
                 )

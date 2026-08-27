@@ -11,133 +11,123 @@
 #import <RiveRuntime/RiveFactory.h>
 #import <RiveRuntime/RiveCommandQueue.h>
 #import <RiveRuntime/RenderContext.h>
-#import <RiveRuntime/RiveUIRenderContext.h>
+#import <RiveRuntime/_RiveUIRenderContextProtocol.h>
 #import "RivePrivateHeaders.h"
 #import "RiveConcurrency_Private.hh"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface RiveCommandServer ()
+
+- (BOOL)connectIfNeeded;
+- (void)didDisconnect;
+
+@end
+
 @implementation RiveCommandServer
 {
-    /** The underlying C++ command server that processes Rive commands */
-    rive::CommandServer* _commandServer;
-    /** The command queue from which commands are processed */
+    /** The retained command queue from which commands are processed. */
     RiveCommandQueue* _commandQueue;
-    /** The render context used for drawing Rive graphics */
-    RiveUIRenderContext* _renderContext;
-    /** Flag indicating whether the server is currently connected and serving */
+    /** The retained render context paired with the command queue. */
+    id<_RiveUIRenderContextProtocol> _renderContext;
+    /** Whether a processing loop is scheduled or running. */
     BOOL _isConnected;
-    /** Lock object for thread-safe access to the connection state */
-    NSObject* _isConnectedLock;
+    /** Serializes processing-loop reservation and release. */
+    NSObject* _connectionStateLock;
 }
 
 /**
- * Initializes a new RiveCommandServer instance with the specified dependencies.
+ * Initializes a command server with its command-processing pipeline.
  *
- * This initializer creates a new C++ command server and sets up the connection
- * state tracking. The command server is configured to process commands from the
- * specified command queue using the provided render context.
+ * The server retains both dependencies and initializes its processing-loop
+ * state as disconnected.
  *
  * @param commandQueue The command queue from which to process commands
- * @param renderContext The render context used for drawing Rive graphics
+ * @param renderContext The render context paired with the command queue
  * @return An initialized RiveCommandServer instance
  */
 - (instancetype)initWithCommandQueue:(RiveCommandQueue*)commandQueue
-                       renderContext:(RiveUIRenderContext*)renderContext
+                       renderContext:
+                           (id<_RiveUIRenderContextProtocol>)renderContext
 {
     if (self = [super init])
     {
         _commandQueue = commandQueue;
         _renderContext = renderContext;
-        _commandServer = new rive::CommandServer(commandQueue.commandQueue,
-                                                 renderContext.factory);
         _isConnected = NO;
-        _isConnectedLock = [[NSObject alloc] init];
+        _connectionStateLock = [[NSObject alloc] init];
     }
     return self;
 }
 
 /**
- * Cleans up resources when the command server is deallocated.
- */
-- (void)dealloc
-{
-    delete _commandServer;
-}
-
-/**
- * Starts the command server's main processing loop.
- *
- * This method initiates the command server's background processing loop,
- * which continuously processes commands from the associated command queue
- * until the server is disconnected. The processing occurs on a background
- * thread to maintain UI responsiveness.
- *
- * If the server is already connected, this method has no effect.
+ * Schedules the command server's processing loop on the shared background
+ * queue. If a loop is already scheduled or running, this method has no effect.
  */
 - (void)serveUntilDisconnect
 {
-    if (self.isConnected)
+    if (![self connectIfNeeded])
     {
         return;
     }
-    self.isConnected = YES;
     __weak RiveCommandServer* weakSelf = self;
     dispatch_async([RiveCommandServer dispatchQueue], ^{
       __strong RiveCommandServer* strongSelf = weakSelf;
       if (!strongSelf)
           return;
-      [strongSelf commandServer]->serveUntilDisconnect();
-      strongSelf.isConnected = NO;
+
+      id<_RiveUIRenderContextProtocol> renderContext =
+          strongSelf->_renderContext;
+      // The factory is borrowed from the context. The inner scope guarantees
+      // the C++ server—and objects imported through it—are destroyed before
+      // the context ends the processing session that owns that factory.
+      rive::Factory* factory = [renderContext beginCommandProcessing];
+      {
+          rive::CommandServer commandServer(
+              strongSelf->_commandQueue.commandQueue, factory);
+          commandServer.serveUntilDisconnect();
+      }
+      [renderContext endCommandProcessing];
+      [strongSelf didDisconnect];
     });
 }
 
 /**
- * Returns the current connection state of the command server.
+ * Atomically reserves the server's single scheduled-or-running processing
+ * loop.
  *
- * Used to ensure the server is only started once. The lock prevents race
- * conditions when checking/setting the connection state from multiple threads.
- * While the server is run on a separate thread, serveUntilDisconnect can be
- * called on any thread.
- *
- * @return YES if the server is currently connected and serving, NO otherwise
+ * @return YES when this call reserves the loop, or NO when one is already
+ *         scheduled or running
  */
-- (BOOL)isConnected
+- (BOOL)connectIfNeeded
 {
-    @synchronized(_isConnectedLock)
+    @synchronized(_connectionStateLock)
     {
-        return _isConnected;
+        if (_isConnected)
+        {
+            return NO;
+        }
+        _isConnected = YES;
+        return YES;
     }
 }
 
-/**
- * Sets the connection state of the command server.
- *
- * Used to track whether the server is running its serveUntilDisconnect loop.
- * The lock prevents race conditions when checking/setting the connection state
- * from multiple threads. While the server is run on a separate thread,
- * serveUntilDisconnect can be called on any thread.
- *
- * @param isConnected The new connection state to set
- */
-- (void)setIsConnected:(BOOL)isConnected
+/** Clears the scheduled-or-running state after the processing loop exits. */
+- (void)didDisconnect
 {
-    @synchronized(_isConnectedLock)
+    @synchronized(_connectionStateLock)
     {
-        _isConnected = isConnected;
+        _isConnected = NO;
     }
 }
 
 // MARK: - Private
 
 /**
- * Returns the dispatch queue used for background command processing.
+ * Returns the shared concurrent queue used by command servers. Independent
+ * workers can run their blocking command loops in parallel on this queue.
  *
- * This method provides a dedicated serial queue for processing Rive commands
- * in the background. The queue is configured with high priority to ensure
- * responsive command processing while maintaining UI responsiveness.
- *
- * @return A serial dispatch queue for command processing
+ * @return A concurrent user-initiated dispatch queue
  */
 + (dispatch_queue_t)dispatchQueue
 {
@@ -149,19 +139,6 @@ NS_ASSUME_NONNULL_BEGIN
       dispatchQueue = dispatch_queue_create("app.rive.command-server", attrs);
     });
     return dispatchQueue;
-}
-
-/**
- * Returns the underlying C++ command server for internal operations.
- *
- * This method provides access to the C++ command server for internal operations
- * and integration with other C++ components.
- *
- * @return A pointer to the C++ command server
- */
-- (rive::CommandServer*)commandServer
-{
-    return _commandServer;
 }
 
 @end

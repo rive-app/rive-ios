@@ -45,6 +45,9 @@ When manually building the Apple runtime, you can choose to build with all Rive 
 
 - `--no-audio` will build all libraries without audio support
 - `--no-text` will build all libraries without text support
+- `--no-scripting` will build all libraries without Rive scripting support
+- `--no-canvas` will build all libraries without GPU Canvas support and remove
+  the `enableGPUCanvas` option from the compiled Swift API
 
 After running `build.sh` to build the framework dependencies, run the following script to build the final `.xcframework`:
 

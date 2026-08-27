@@ -20,6 +20,7 @@ fi
 NO_AUDIO=false
 NO_TEXT=false
 NO_SCRIPTING=false
+NO_CANVAS=false
 PLATFORM=""
 CONFIG=""
 
@@ -35,6 +36,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-scripting)
             NO_SCRIPTING=true
+            shift
+            ;;
+        --no-canvas)
+            NO_CANVAS=true
             shift
             ;;
         all|macosx|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|maccatalyst)
@@ -67,8 +72,16 @@ if [ "$NO_SCRIPTING" = false ]; then
     RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS --with_rive_scripting"
 fi
 
-# Handle preprocessor definitions for audio, text, and scripting
-# Build the definitions string
+# Add canvas support to the core runtime and standalone PLS renderer builds
+# unless --no-canvas is passed. The systemscript supplies the Apple Ore
+# definitions to both Premake entry points.
+CANVAS_PREMAKE_ARGS=""
+if [ "$NO_CANVAS" = false ]; then
+    CANVAS_PREMAKE_ARGS="--with_rive_canvas --systemscript=$DEV_SCRIPT_DIR/premake_options.lua"
+    RIVE_PREMAKE_ARGS="$RIVE_PREMAKE_ARGS $CANVAS_PREMAKE_ARGS"
+fi
+
+# Build the common framework definitions.
 DEFINITIONS=""
 if [ "$NO_AUDIO" = false ]; then
     DEFINITIONS="$DEFINITIONS WITH_RIVE_AUDIO"
@@ -77,19 +90,35 @@ if [ "$NO_TEXT" = false ]; then
     DEFINITIONS="$DEFINITIONS WITH_RIVE_TEXT"
 fi
 if [ "$NO_SCRIPTING" = false ]; then
-    DEFINITIONS="$DEFINITIONS WITH_RIVE_SCRIPTING WITH_RIVE_SCRIPTING_LUAU"
+    DEFINITIONS="$DEFINITIONS WITH_RIVE_SCRIPTING"
 fi
 
-# Set the preprocessor definitions line
+# Swift uses the umbrella scripting condition, while Objective-C++ also needs
+# the selected scripting backend.
+SWIFT_DEFINITIONS="$DEFINITIONS"
+if [ "$NO_SCRIPTING" = false ]; then
+    DEFINITIONS="$DEFINITIONS WITH_RIVE_SCRIPTING_LUAU"
+fi
+
+# RIVE_CANVAS is the Swift-facing capability flag. Canvas builds always compile
+# Objective-C++ with both RIVE_CANVAS and RIVE_ORE, so Swift's guarded references
+# correspond to deferred types that are present in the mixed-language module.
+if [ "$NO_CANVAS" = false ]; then
+    SWIFT_DEFINITIONS="$SWIFT_DEFINITIONS RIVE_CANVAS"
+    DEFINITIONS="$DEFINITIONS RIVE_CANVAS RIVE_ORE"
+fi
+
+# Remove leading spaces before writing the xcconfig values.
+DEFINITIONS="${DEFINITIONS# }"
+SWIFT_DEFINITIONS="${SWIFT_DEFINITIONS# }"
+
 if [ -n "$DEFINITIONS" ]; then
-    # Remove leading space
-    DEFINITIONS=$(echo "$DEFINITIONS" | sed 's/^ //')
     # Update the active GCC_PREPROCESSOR_DEFINITIONS line (not commented ones)
     sed -i '' "/^GCC_PREPROCESSOR_DEFINITIONS = /s/= .*/= \$(inherited) $DEFINITIONS/" $DEV_SCRIPT_DIR/../Config/Base.xcconfig
     # Update the active SWIFT_ACTIVE_COMPILATION_CONDITIONS line (not commented ones)
-    sed -i '' "/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= \$(inherited) $DEFINITIONS/" $DEV_SCRIPT_DIR/../Config/Base.xcconfig
+    sed -i '' "/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= \$(inherited) $SWIFT_DEFINITIONS/" $DEV_SCRIPT_DIR/../Config/Base.xcconfig
     # Update Catalyst.xcconfig SWIFT_ACTIVE_COMPILATION_CONDITIONS to include the definitions
-    sed -i '' "/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= \$(inherited) $DEFINITIONS RIVE_MAC_CATALYST/" $DEV_SCRIPT_DIR/../Config/Catalyst.xcconfig
+    sed -i '' "/^SWIFT_ACTIVE_COMPILATION_CONDITIONS = /s/= .*/= \$(inherited) $SWIFT_DEFINITIONS RIVE_MAC_CATALYST/" $DEV_SCRIPT_DIR/../Config/Catalyst.xcconfig
 else
     # Update the active GCC_PREPROCESSOR_DEFINITIONS line (not commented ones)
     sed -i '' '/^GCC_PREPROCESSOR_DEFINITIONS = /s/= .*/= $(inherited)/' $DEV_SCRIPT_DIR/../Config/Base.xcconfig
@@ -136,7 +165,7 @@ build_runtime() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios gmake2
+    premake5 $CANVAS_PREMAKE_ARGS --config=$1 --out=out/iphoneos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios gmake2
     make -C out/iphoneos_$1 clean
     make -C out/iphoneos_$1 -j12 rive_pls_renderer
     popd
@@ -177,7 +206,7 @@ build_runtime_sim() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=emulator gmake2
+    premake5 $CANVAS_PREMAKE_ARGS --config=$1 --out=out/iphonesimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=emulator gmake2
     make -C out/iphonesimulator_$1 clean
     make -C out/iphonesimulator_$1 -j12 rive_pls_renderer
     popd
@@ -217,7 +246,7 @@ build_runtime_macosx() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=macosx gmake2
+    premake5 $CANVAS_PREMAKE_ARGS --config=$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=macosx gmake2
     make -C out/$1 clean
     make -C out/$1 -j12 rive_pls_renderer
     popd
@@ -257,7 +286,7 @@ build_runtime_xros() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/xros_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=xros gmake2
+    premake5 $CANVAS_PREMAKE_ARGS --config=$1 --out=out/xros_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=xros gmake2
     make -C out/xros_$1 clean
     make -C out/xros_$1 -j12 rive_pls_renderer
     popd
@@ -298,7 +327,7 @@ build_runtime_xrsimulator() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/xrsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=xrsimulator gmake2
+    premake5 $CANVAS_PREMAKE_ARGS --config=$1 --out=out/xrsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=xrsimulator gmake2
     make -C out/xrsimulator_$1 clean
     make -C out/xrsimulator_$1 -j12 rive_pls_renderer
     popd
@@ -337,7 +366,7 @@ build_runtime_appletvos() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/appletvos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=appletvos gmake2
+    premake5 $CANVAS_PREMAKE_ARGS --config=$1 --out=out/appletvos_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=appletvos gmake2
     make -C out/appletvos_$1 clean
     make -C out/appletvos_$1 -j12 rive_pls_renderer
     popd
@@ -379,7 +408,7 @@ build_runtime_appletvsimulator() {
 
     # Build rive_pls_renderer.
     pushd $RIVE_PLS_DIR
-    premake5 --config=$1 --out=out/appletvsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=appletvsimulator gmake2
+    premake5 $CANVAS_PREMAKE_ARGS --config=$1 --out=out/appletvsimulator_$1 --arch=universal --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=ios --variant=appletvsimulator gmake2
     make -C out/appletvsimulator_$1 clean
     make -C out/appletvsimulator_$1 -j12 rive_pls_renderer
     popd
@@ -425,7 +454,7 @@ build_runtime_maccatalyst() {
 
         # Build rive_pls_renderer.
         pushd $RIVE_PLS_DIR
-        premake5 --config=${config} --out=out/maccatalyst_${arch}_${config} --arch=${arch} --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=macosx --variant=maccatalyst gmake2
+        premake5 $CANVAS_PREMAKE_ARGS --config=${config} --out=out/maccatalyst_${arch}_${config} --arch=${arch} --scripts=$RIVE_RUNTIME_DIR/build --file=premake5_pls_renderer.lua --with_objc_exceptions --os=macosx --variant=maccatalyst gmake2
         make -C out/maccatalyst_${arch}_${config} clean
         make -C out/maccatalyst_${arch}_${config} -j12 rive_pls_renderer
         popd
@@ -475,8 +504,25 @@ build_runtime_maccatalyst() {
     _create_universal_libraries "$1"
 }
 
+# The framework's scripting TUs include lua.h and miniaudio.h; stage the
+# headers the runtime build checked out.
+copy_luau_headers() {
+    for d in $DEV_SCRIPT_DIR/../dependencies/luigi-rosso_luau_*/VM/include; do
+        if [ -d "$d" ]; then
+            mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/luau
+            cp -r "$d"/. $DEV_SCRIPT_DIR/../dependencies/includes/luau/
+        fi
+    done
+    for f in $DEV_SCRIPT_DIR/../dependencies/*miniaudio*/miniaudio.h; do
+        if [ -f "$f" ]; then
+            mkdir -p $DEV_SCRIPT_DIR/../dependencies/includes/miniaudio
+            cp "$f" $DEV_SCRIPT_DIR/../dependencies/includes/miniaudio/
+        fi
+    done
+}
+
 usage() {
-    echo "USAGE: $0 [--no-audio] <all|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|macosx|maccatalyst> <debug|release>"
+    echo "USAGE: $0 [--no-audio] [--no-text] [--no-scripting] [--no-canvas] <all|ios|ios_sim|xros|xrsimulator|appletvos|appletvsimulator|macosx|maccatalyst> <debug|release>"
     exit 1
 }
 
@@ -657,3 +703,5 @@ maccatalyst)
     usage
     ;;
 esac
+
+copy_luau_headers

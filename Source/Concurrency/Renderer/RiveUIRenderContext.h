@@ -12,21 +12,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol MTLCommandBuffer;
 @protocol MTLDevice;
+@protocol _RiveUIRenderContextProtocol;
 
-/// A render context that provides Metal command buffers for rendering.
+/// The immediate render context for one Metal rendering pipeline.
 ///
-/// The render context abstracts the creation of Metal command buffers used
-/// for rendering Rive content. It's associated with a Metal device and provides
-/// a factory for creating Rive render resources.
+/// This object owns an immediate Rive GPU render context and a Metal command
+/// queue for one device.
 ///
-/// The render context is used by both the Renderer (for drawing operations)
-/// and the RiveCommandServer (for processing render commands from the queue).
+/// A context is pipeline-scoped. Do not share it between command-processing
+/// pipelines or use it concurrently from multiple command servers. Textures
+/// rendered through this context must be created by the device supplied at
+/// initialization.
 ///
 /// Threading:
-/// - Command buffers should be created on the thread where they'll be used
-/// - Typically, this is the background thread where the command server runs
-@interface RiveUIRenderContext : NSObject
+/// - Command buffers should be created on the thread where they are encoded
+/// - Worker rendering creates them on the serialized command-server thread
+@interface RiveUIRenderContext : NSObject <_RiveUIRenderContextProtocol>
 
+/// Creates an immediate context dedicated to `device`.
 - (instancetype)initWithDevice:(id<MTLDevice>)device;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -39,9 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
  * context's Metal device.
  *
  * @return A new Metal command buffer ready for encoding commands
- * @note The command buffer must be committed (via commit) to execute the
- * commands. This method should be called on the thread that will encode and
- * commit the commands (typically the command server's background thread).
+ * @note A direct caller must commit the returned buffer. Call this method on
+ *       the thread that will encode and commit the commands, normally the
+ *       command-server thread.
  */
 - (id<MTLCommandBuffer>)newCommandBuffer;
 @end

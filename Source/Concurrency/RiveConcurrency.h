@@ -1,5 +1,5 @@
 //
-//  RiveUI.h
+//  RiveConcurrency.h
 //  RiveRuntime
 //
 //  Created by David Skuza on 9/8/25.
@@ -36,14 +36,14 @@ extern "C"
     /**
      * Returns the pixel format used for Rive color textures.
      *
-     * This function returns the Metal pixel format that should be used when
-     * creating textures for Rive rendering. The format is consistent across
-     * all Rive rendering operations.
+     * This function returns the Metal pixel format used by the concurrency
+     * renderer's default color targets.
      *
      * @return The Metal pixel format (MTLPixelFormatBGRA8Unorm)
      * @note This format uses 8 bits per channel in BGRA order with normalized
-     *       values (0.0 to 1.0). Use this format when creating Metal textures
-     *       for the Renderer's drawConfiguration:toTexture: method.
+     *       values (0.0 to 1.0). Use this value for
+     *       `RiveUIRendererConfiguration.pixelFormat` and for target textures
+     *       passed to a renderer.
      */
     extern MTLPixelFormat MTLRiveColorPixelFormat(void);
 
@@ -62,9 +62,12 @@ extern "C"
 #import <RiveRuntime/RiveFontListener.h>
 #import <RiveRuntime/RiveAudioListener.h>
 #import <RiveRuntime/RiveUIRenderer.h>
+#import <RiveRuntime/_RiveUIDeferredRenderer.h>
 #import <RiveRuntime/RiveViewModelInstanceListener.h>
 #import <RiveRuntime/RiveSemanticsDiff.h>
+#import <RiveRuntime/_RiveUIRenderContextProtocol.h>
 #import <RiveRuntime/RiveUIRenderContext.h>
+#import <RiveRuntime/_RiveUIDeferredRenderContext.h>
 #import <RiveRuntime/_RiveCommandQueueMessagePumpDriver.h>
 
 #endif /* RiveUI_h */

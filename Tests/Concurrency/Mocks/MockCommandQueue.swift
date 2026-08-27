@@ -86,6 +86,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var startCalls: [StartCall] = []
     private(set) var stopCalls: [StopCall] = []
     private(set) var disconnectCalls: [DisconnectCall] = []
+    private(set) var drawCalls: [DrawCall] = []
     private(set) var deleteFileCalls: [DeleteFileCall] = []
     private(set) var deleteFileListenerCalls: [DeleteFileListenerCall] = []
     private(set) var requestArtboardNamesCalls: [RequestArtboardNamesCall] = []
@@ -697,7 +698,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     }
 
     func draw(_ drawKey: UInt64, callback: @escaping (UnsafeMutableRawPointer) -> Void) {
-
+        drawCalls.append(DrawCall(drawKey: drawKey))
     }
 
     func createBlankViewModelInstance(forArtboard artboardHandle: UInt64, fromFile fileHandle: UInt64, observer: any ViewModelInstanceListener, requestID: UInt64) -> UInt64 {
@@ -1130,6 +1131,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
 }
 
 extension MockCommandQueue {
+    struct DrawCall {
+        let drawKey: UInt64
+    }
+
     struct ProcessMessagesCall {
     }
 

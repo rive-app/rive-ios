@@ -34,23 +34,26 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @protocol RiveCommandQueueProtocol
  *
- * Defines the Objective-C interface for the Rive command queue, which provides
- * a thread-safe mechanism for queuing and executing Rive operations.
+ * Defines the Objective-C interface for submitting Rive operations from the
+ * main thread to a background command server. Its Swift import is main-actor
+ * isolated.
  *
  * The command queue architecture separates command submission (on the main
  * thread) from command processing (on a background thread via
  * RiveCommandServer). This design allows the UI to remain responsive while Rive
  * files are loaded, artboards are instantiated, and animations are advanced.
  *
- * All operations are asynchronous and use request IDs to correlate requests
- * with responses delivered through listener protocols. Handles (uint64_t) are
- * used to reference files, artboards, state machines, and other resources
- * created through the queue.
+ * Resource operations are processed asynchronously and use request IDs to
+ * correlate responses delivered through listener protocols. Methods may
+ * synchronously reserve and return request IDs, handles, or draw keys before
+ * the corresponding work is processed. Handles (`uint64_t`) reference files,
+ * artboards, state machines, and other resources created through this queue.
+ * They are scoped to this queue and must not be used with another queue.
  *
  * To use the command queue:
  * 1. Create a RiveCommandQueue instance
- * 2. Create a RiveCommandServer with the queue and start it on a background
- * thread via serveUntilDisconnect.
+ * 2. Create a RiveCommandServer with the queue and call
+ *    serveUntilDisconnect; the server schedules its background loop.
  * 3. Submit commands using the protocol methods
  * 4. Receive responses via listener protocol callbacks
  * 5. Call disconnect() when done
@@ -570,24 +573,17 @@ NS_SWIFT_NAME(CommandQueueProtocol)
 - (uint64_t)createDrawKey;
 
 /**
- * Queues a drawing operation with a callback that receives the renderer.
+ * Queues a coalescible drawing callback for one output surface.
  *
- * This method schedules a drawing operation that will be executed when the
- * command server processes drawing commands. The callback receives a pointer
- * to the C++ renderer object, which can be used to draw the artboard.
- *
- * The captured object parameter allows you to retain Objective-C objects that
- * need to stay alive during the drawing operation. The finalize block is called
- * after drawing completes and can be used to commit command buffers or perform
- * cleanup.
+ * Callbacks submitted with the same draw key are coalesced within a command
+ * batch. Only the most recently submitted callback for that key executes after
+ * the pending commands have been processed.
  *
  * @param drawKey A unique draw key created with createDrawKey
- * @param callback A block that receives the C++ renderer pointer (void*) and
- *                 performs the actual drawing. This block is called on the
- *                 background thread where the command server processes
- * commands.
- * @note The renderer pointer in the callback is only valid during the execution
- *       of the callback block. Do not store it for later use.
+ * @param callback A block called on the command-server thread with the current
+ *                 C++ `rive::CommandServer*` represented as an opaque pointer.
+ * @note The pointer is borrowed and valid only for the callback's duration. Do
+ *       not store it or use it after the block returns.
  */
 - (void)draw:(uint64_t)drawKey callback:(void (^)(void*))callback;
 
@@ -1341,10 +1337,7 @@ NS_SWIFT_NAME(CommandQueueProtocol)
 /**
  * Synchronously drains all pending messages from the command queue.
  *
- * This is called once per display-link frame to process responses from the
- * command server. The call is coalesced by CommandQueueMessageGate so that
- * multiple views sharing the same queue result in a single drain per
- * run-loop turn.
+ * Call from the Swift main actor or Objective-C main thread.
  */
 - (void)processMessages;
 
@@ -1358,13 +1351,15 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * A concrete implementation of RiveCommandQueueProtocol that manages the
  * lifecycle and execution of Rive commands.
  *
- * This class wraps a C++ command queue and provides thread-safe access from
- * Objective-C/Swift. Commands are queued on the main thread and processed
- * asynchronously by a RiveCommandServer running on a background thread.
+ * This class owns a C++ command queue and exposes its submission and message-
+ * pumping API on the Swift main actor (or Objective-C main thread). A
+ * RiveCommandServer processes the submitted commands asynchronously on a
+ * background thread.
  *
  * The queue maintains handles for all resources (files, artboards, state
  * machines, etc.) and ensures proper cleanup when resources are deleted.
- * All operations use request IDs for correlation with asynchronous responses.
+ * Resource operations use request IDs where an asynchronous response must be
+ * correlated with its request.
  */
 NS_SWIFT_UI_ACTOR
 NS_SWIFT_NAME(CommandQueue)

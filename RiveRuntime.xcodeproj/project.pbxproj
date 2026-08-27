@@ -309,6 +309,9 @@
 				File/RiveFileListener.h,
 				Font/RiveFontListener.h,
 				Image/RiveRenderImageListener.h,
+				Renderer/_RiveUIDeferredRenderContext.h,
+				Renderer/_RiveUIDeferredRenderer.h,
+				Renderer/_RiveUIRenderContextProtocol.h,
 				Renderer/RiveUIRenderContext.h,
 				Renderer/RiveUIRenderer.h,
 				RiveConcurrency.h,
@@ -1039,6 +1042,8 @@
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
+					dependencies/includes/luau,
+					dependencies/includes/miniaudio,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1171,6 +1176,8 @@
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
+					dependencies/includes/luau,
+					dependencies/includes/miniaudio,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1429,6 +1436,8 @@
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
+					dependencies/includes/luau,
+					dependencies/includes/miniaudio,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1659,6 +1668,8 @@
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
+					dependencies/includes/luau,
+					dependencies/includes/miniaudio,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1888,6 +1899,8 @@
 					dependencies/includes/rive/include,
 					dependencies/includes/renderer/include,
 					dependencies/includes/cg_renderer/include,
+					dependencies/includes/luau,
+					dependencies/includes/miniaudio,
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
