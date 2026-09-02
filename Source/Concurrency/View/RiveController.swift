@@ -325,6 +325,12 @@ final class RiveController {
             }
             .store(in: &cancellables)
 
+        rive.file.worker.globalAssetsDidChange
+            .sink { [weak self] in
+                self?.markDirty()
+            }
+            .store(in: &cancellables)
+
         // Settled and dirty events are observed directly via @MainActor Tasks
         // rather than bridging through Combine (PassthroughSubject → merge →
         // removeDuplicates → receive(on:) → sink). This eliminates two async

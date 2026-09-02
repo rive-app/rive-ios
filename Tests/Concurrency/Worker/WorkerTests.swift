@@ -8,6 +8,7 @@
 
 import XCTest
 import UIKit
+import Combine
 @testable import RiveRuntime
 
 class WorkerTests: XCTestCase {
@@ -281,5 +282,85 @@ class WorkerTests: XCTestCase {
         let removeCall = mockCommandQueue.removeGlobalAudioAssetCalls.first!
         XCTAssertEqual(removeCall.name, audioName)
         XCTAssertEqual(removeCall.requestID, 1)
+    }
+
+    @MainActor
+    func test_globalAssetChanges_areCoalescedPerMainRunLoopTurn() async {
+        let mockCommandQueue = MockCommandQueue()
+        let mockCommandServer = MockCommandServer()
+        let device = await MetalDevice.shared.defaultDevice()!.value
+        let workerService = WorkerService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                commandServer: mockCommandServer,
+                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                messagePumpDriver: mockCommandQueue
+            )
+        )
+        let worker = Worker(
+            dependencies: .init(workerService: workerService)
+        )
+
+        let image = Image(
+            handle: 123,
+            dependencies: .init(
+                imageService: ImageService(
+                    dependencies: .init(
+                        commandQueue: mockCommandQueue,
+                        messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+                    )
+                )
+            )
+        )
+        let font = Font(
+            handle: 456,
+            dependencies: .init(
+                fontService: FontService(
+                    dependencies: .init(
+                        commandQueue: mockCommandQueue,
+                        messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+                    )
+                )
+            )
+        )
+        let audio = Audio(
+            handle: 789,
+            dependencies: .init(
+                audioService: AudioService(
+                    dependencies: .init(
+                        commandQueue: mockCommandQueue,
+                        messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+                    )
+                )
+            )
+        )
+
+        let firstEmission = expectation(description: "First coalesced global asset change")
+        let secondEmission = expectation(description: "Next-turn global asset change")
+        var emissionCount = 0
+        let cancellable = worker.globalAssetsDidChange.sink {
+            emissionCount += 1
+            if emissionCount == 1 {
+                firstEmission.fulfill()
+            } else if emissionCount == 2 {
+                secondEmission.fulfill()
+            }
+        }
+
+        worker.addGlobalImageAsset(image, name: "image")
+        worker.removeGlobalImageAsset(name: "image")
+        worker.addGlobalFontAsset(font, name: "font")
+        worker.removeGlobalFontAsset("font")
+        worker.addGlobalAudioAsset(audio, name: "audio")
+        worker.removeGlobalAudioAsset(name: "audio")
+
+        await fulfillment(of: [firstEmission], timeout: 1.0)
+        XCTAssertEqual(emissionCount, 1)
+
+        worker.addGlobalImageAsset(image, name: "image")
+
+        await fulfillment(of: [secondEmission], timeout: 1.0)
+        XCTAssertEqual(emissionCount, 2)
+        withExtendedLifetime(cancellable) {}
     }
 }

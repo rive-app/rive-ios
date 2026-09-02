@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 #if canImport(UIKit) || RIVE_MAC_CATALYST
 import UIKit
 #else
@@ -71,9 +72,15 @@ public final class Worker {
 
     let dependencies: Dependencies
 
+    @MainActor
+    let globalAssetsDidChange = PassthroughSubject<Void, Never>()
+
     private var images: [String: Image] = [:]
     private var fonts: [String: Font] = [:]
     private var audios: [String: Audio] = [:]
+
+    @MainActor
+    private var hasPendingGlobalAssetsDidChange = false
 
     /// Selects the worker's rendering strategy once, before command processing
     /// or file import begins. The selected context is reused by both the command
@@ -264,6 +271,7 @@ public final class Worker {
         RiveLog.debug(tag: .worker, "[Worker] Adding global image asset '\(name)'")
         dependencies.workerService.set(image: image.handle, name: name)
         images[name] = image
+        notifyGlobalAssetsDidChange()
     }
 
     /// Removes a global image asset by name.
@@ -278,6 +286,7 @@ public final class Worker {
         RiveLog.debug(tag: .worker, "[Worker] Removing global image asset '\(name)'")
         dependencies.workerService.remove(image: name)
         images.removeValue(forKey: name)
+        notifyGlobalAssetsDidChange()
     }
 
     /// Creates a font from the provided font data by decoding it into a `Font` instance
@@ -345,6 +354,7 @@ public final class Worker {
         RiveLog.debug(tag: .worker, "[Worker] Adding global font asset '\(name)'")
         dependencies.workerService.set(font: font.handle, name: name)
         fonts[name] = font
+        notifyGlobalAssetsDidChange()
     }
 
     /// Removes a global font asset by name.
@@ -359,6 +369,7 @@ public final class Worker {
         RiveLog.debug(tag: .worker, "[Worker] Removing global font asset '\(name)'")
         dependencies.workerService.remove(font: name)
         fonts.removeValue(forKey: name)
+        notifyGlobalAssetsDidChange()
     }
 
     /// Creates an audio source from the provided audio data by decoding it into an `Audio` instance
@@ -399,6 +410,7 @@ public final class Worker {
         RiveLog.debug(tag: .worker, "[Worker] Adding global audio asset '\(name)'")
         dependencies.workerService.set(audio: audio.handle, name: name)
         audios[name] = audio
+        notifyGlobalAssetsDidChange()
     }
 
     /// Removes a global audio asset by name.
@@ -413,6 +425,7 @@ public final class Worker {
         RiveLog.debug(tag: .worker, "[Worker] Removing global audio asset '\(name)'")
         dependencies.workerService.remove(audio: name)
         audios.removeValue(forKey: name)
+        notifyGlobalAssetsDidChange()
     }
 
     @MainActor
@@ -425,6 +438,22 @@ public final class Worker {
                 )
             )
         )
+    }
+
+    @MainActor
+    private func notifyGlobalAssetsDidChange() {
+        guard !hasPendingGlobalAssetsDidChange else {
+            return
+        }
+
+        hasPendingGlobalAssetsDidChange = true
+        DispatchQueue.main.async { [weak self] in
+            guard let self else {
+                return
+            }
+            self.hasPendingGlobalAssetsDidChange = false
+            self.globalAssetsDidChange.send()
+        }
     }
 }
 

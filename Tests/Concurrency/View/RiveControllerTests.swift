@@ -189,6 +189,42 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
+    func test_globalAssetChange_whenSettled_producesAnotherFrame() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+        let drawableSize = CGSize(width: 100, height: 200)
+
+        let firstConfiguration = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: drawableSize,
+            scaleProvider: MockScaleProvider()
+        )
+        let unchangedConfiguration = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: drawableSize,
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNotNil(firstConfiguration)
+        XCTAssertNil(unchangedConfiguration)
+
+        await expectIsSettled(false, within: fixture) {
+            fixture.rive.file.worker.globalAssetsDidChange.send()
+        }
+
+        let changedConfiguration = fixture.controller.advance(
+            now: 11,
+            isOnscreen: true,
+            drawableSize: drawableSize,
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertNotNil(changedConfiguration)
+    }
+
+    @MainActor
     func test_advance_whenSettledAndTransitionsOffscreenToOnscreen_returnsConfiguration_andDoesNotAdvance() async throws {
         let fixture = try await makeController(dataBind: .none)
 
