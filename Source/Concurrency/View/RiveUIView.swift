@@ -462,21 +462,25 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 return
             }
 
+            let drawableLifetime = DrawableLifetime(currentDrawable, token: token)
+
             renderer.draw(
                 configuration,
                 to: currentDrawable.texture,
                 from: device,
                 onDraw: { commandBuffer in
+                    guard let drawable = drawableLifetime.drawable else {
+                        assertionFailure("Drawable must remain alive while its callback executes")
+                        return
+                    }
+                    drawableLifetime.markPresented()
                     commandBuffer.addCompletedHandler { _ in
                         token.signal()
                     }
-                    commandBuffer.present(currentDrawable)
+                    commandBuffer.present(drawable)
                 },
-                onSkipped: {
-                    token.signal()
-                },
+                onSkipped: nil,
                 onError: { [weak self] error in
-                    token.signal()
                     self?.notifyDelegateOfRendererError(error)
                 }
             )
@@ -702,16 +706,56 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 }
 
 extension RiveUIView {
+    /// Retires our drawable reference on main, including when a queued callback
+    /// is discarded without executing.
+    final class DrawableLifetime: @unchecked Sendable {
+        // Accessed by the owning callback, then retired on main after its
+        // deinit starts. Separate storage lets main clear the sole drawable slot
+        // even if the worker has not finished releasing its storage reference.
+        private final class Storage: @unchecked Sendable {
+            var drawable: CAMetalDrawable?
+            let token: DrawableToken
+            var wasPresented = false
+
+            init(_ drawable: CAMetalDrawable, token: DrawableToken) {
+                self.drawable = drawable
+                self.token = token
+            }
+        }
+
+        private let storage: Storage
+
+        init(_ drawable: CAMetalDrawable, token: DrawableToken) {
+            storage = Storage(drawable, token: token)
+        }
+
+        var drawable: CAMetalDrawable? {
+            storage.drawable
+        }
+
+        func markPresented() {
+            storage.wasPresented = true
+        }
+
+        deinit {
+            let storage = storage
+            DispatchQueue.main.async {
+                storage.drawable = nil
+                if !storage.wasPresented {
+                    storage.token.signal()
+                }
+            }
+        }
+    }
+
     /// A one-shot guard that ensures a `DispatchSemaphore` is signaled exactly once
     /// for each corresponding `wait()`.
     ///
-    /// Created per draw cycle in `draw(in:)` after `drawableSemaphore.wait()` succeeds.
-    /// `onSkipped` and `onError` signal the token directly. `onDraw` transfers it to the
-    /// command buffer's completion handler. If no callback executes — e.g. when
-    /// `CommandServer` processes a `disconnect` before the draw loop runs — the closures
-    /// are destroyed, the token's `deinit` fires, and the semaphore is signaled
-    /// automatically, preventing a `SIGTRAP` from libdispatch's "Semaphore object
-    /// deallocated while in use" assertion.
+    /// Created after a successful semaphore wait. Before submission, acquisition
+    /// failures signal immediately. DrawableLifetime retains the token through
+    /// main-queue retirement for skipped, failed, or discarded submissions.
+    /// Presented submissions signal from the command buffer completion handler.
+    /// The deinit fallback ensures an otherwise abandoned permit is returned.
     ///
     /// See: https://github.com/rive-app/rive-ios/issues/442
     final class DrawableToken: @unchecked Sendable {
