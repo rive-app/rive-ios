@@ -1,0 +1,39 @@
+# Symbols hidden from RiveRuntime's export table via
+# -unexported_symbols_list (UNEXPORTED_SYMBOLS_FILE on the RiveRuntime
+# target in every configuration except Testing, where white-box tests need to
+# link internals).
+# These are C++ and vendored-C internals; exporting them bloats LINKEDIT and
+# pins otherwise dead-strippable code. The public surface (ObjC classes,
+# Swift symbols, and the C constants declared in public headers such as
+# _RiveErrorDomain, _RiveRuntimeVersionNumber/String,
+# _CGSizeMaximum2DTextureSize, _MTLRiveColorPixelFormat) stays exported.
+
+# C++ (rive:: and all other mangled internals)
+__Z*
+
+# rive-prefixed vendored C (rive_hb_*, rive_YG*)
+_rive_*
+
+# HarfBuzz
+_hb_*
+
+# miniaudio
+_ma_*
+
+# SheenBidi
+_SB*
+
+# Luau (lua_*, luaL_*, luau*, luaopen_*, ...)
+_lua*
+
+# libhydrogen
+_hydro_*
+
+# Yoga
+_YG*
+_gConfigInstanceCount
+_gCurrentGenerationCount
+_gPrintChanges
+_gPrintSkips
+_leading
+_trailing
