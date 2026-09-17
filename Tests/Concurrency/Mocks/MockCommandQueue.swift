@@ -67,6 +67,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var setViewModelInstanceColorCalls: [SetViewModelInstanceColorCall] = []
     private(set) var setViewModelInstanceEnumCalls: [SetViewModelInstanceEnumCall] = []
     private(set) var setViewModelInstanceImageCalls: [SetViewModelInstanceImageCall] = []
+    private(set) var setViewModelInstanceFontCalls: [SetViewModelInstanceFontCall] = []
     private(set) var setViewModelInstanceArtboardCalls: [SetViewModelInstanceArtboardCall] = []
     private(set) var setViewModelInstanceNestedViewModelCalls: [SetViewModelInstanceNestedViewModelCall] = []
     private(set) var fireViewModelTriggerCalls: [FireViewModelTriggerCall] = []
@@ -894,7 +895,16 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
             requestID: requestID
         ))
     }
-    
+
+    func setViewModelInstanceFont(_ viewModelInstanceHandle: UInt64, path: String, value: UInt64, requestID: UInt64) {
+        setViewModelInstanceFontCalls.append(SetViewModelInstanceFontCall(
+            viewModelInstanceHandle: viewModelInstanceHandle,
+            path: path,
+            value: value,
+            requestID: requestID
+        ))
+    }
+
     func setViewModelInstanceArtboard(_ viewModelInstanceHandle: UInt64, path: String, value: UInt64, requestID: UInt64) {
         setViewModelInstanceArtboardCalls.append(SetViewModelInstanceArtboardCall(
             viewModelInstanceHandle: viewModelInstanceHandle,
@@ -1401,7 +1411,14 @@ extension MockCommandQueue {
         let value: UInt64
         let requestID: UInt64
     }
-    
+
+    struct SetViewModelInstanceFontCall {
+        let viewModelInstanceHandle: UInt64
+        let path: String
+        let value: UInt64
+        let requestID: UInt64
+    }
+
     struct SetViewModelInstanceArtboardCall {
         let viewModelInstanceHandle: UInt64
         let path: String

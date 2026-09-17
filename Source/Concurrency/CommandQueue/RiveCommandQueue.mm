@@ -2513,6 +2513,21 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     }];
 }
 
+- (void)setViewModelInstanceFont:(uint64_t)viewModelInstanceHandle
+                            path:(NSString*)path
+                           value:(uint64_t)value
+                       requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+          viewModelInstanceHandle);
+      auto stdPath = std::string([path UTF8String]);
+      auto fontHandle = reinterpret_cast<rive::FontHandle>(value);
+      self->_commandQueue->setViewModelInstanceFont(
+          handle, stdPath, fontHandle, requestID);
+    }];
+}
+
 - (void)setViewModelInstanceArtboard:(uint64_t)viewModelInstanceHandle
                                 path:(NSString*)path
                                value:(uint64_t)value

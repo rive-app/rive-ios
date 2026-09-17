@@ -94,6 +94,7 @@ class ViewModelPropertyTests: XCTestCase {
             (.integer, "Integer", .integer),
             (.symbolListIndex, "SymbolListIndex", .symbolListIndex),
             (.assetImage, "AssetImage", .assetImage),
+            (.assetFont, "AssetFont", .assetFont),
             (.artboard, "Artboard", .artboard),
             (.input, "Input", .input),
             (.any, "Any", .any)
@@ -219,6 +220,7 @@ class ViewModelPropertyTests: XCTestCase {
             (.integer, .integer),
             (.symbolListIndex, .symbolListIndex),
             (.assetImage, .assetImage),
+            (.assetFont, .assetFont),
             (.artboard, .artboard),
             (.input, .input),
             (.any, .any)
@@ -260,6 +262,7 @@ class ViewModelPropertyTests: XCTestCase {
             (.integer, .integer),
             (.symbolListIndex, .symbolListIndex),
             (.assetImage, .assetImage),
+            (.assetFont, .assetFont),
             (.artboard, .artboard),
             (.input, .input),
             (.any, .any)
@@ -271,4 +274,3 @@ class ViewModelPropertyTests: XCTestCase {
         }
     }
 }
-

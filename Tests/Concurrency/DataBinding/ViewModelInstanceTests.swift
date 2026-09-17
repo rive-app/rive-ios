@@ -1023,6 +1023,172 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(mockCommandQueue.deleteImageCalls.count, 2)
     }
 
+    // MARK: - Font
+
+    @MainActor
+    func test_setValue_withFontProperty_sendsFontHandleAndZeroForNilToCommandQueue() {
+        let mockCommandQueue = MockCommandQueue()
+        let fontService = FontService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let font = Font(
+            handle: 42,
+            dependencies: .init(fontService: fontService)
+        )
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let property = FontProperty(path: "font")
+
+        viewModelInstance.setValue(of: property, to: font)
+        viewModelInstance.setValue(of: property, to: nil)
+
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceFontCalls.count, 2)
+        let setCall = mockCommandQueue.setViewModelInstanceFontCalls[0]
+        XCTAssertEqual(setCall.viewModelInstanceHandle, 99)
+        XCTAssertEqual(setCall.path, "font")
+        XCTAssertEqual(setCall.value, 42)
+        let clearCall = mockCommandQueue.setViewModelInstanceFontCalls[1]
+        XCTAssertEqual(clearCall.viewModelInstanceHandle, 99)
+        XCTAssertEqual(clearCall.path, "font")
+        XCTAssertEqual(clearCall.value, 0)
+    }
+
+    @MainActor
+    func test_setValue_withFontProperty_retainsFontAfterExternalReferenceIsDropped() async {
+        let mockCommandQueue = MockCommandQueue()
+        let messageGate = CommandQueueMessageGate(driver: mockCommandQueue)
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+        let fontService = FontService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+
+        let deleteVMExpectation = expectation(description: "deleteViewModelInstance called")
+        deleteVMExpectation.expectedFulfillmentCount = 1
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            deleteVMExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+
+        let deleteFontExpectation = expectation(description: "deleteFont called")
+        mockCommandQueue.stubDeleteFont { handle in
+            XCTAssertEqual(handle, 42)
+            deleteFontExpectation.fulfill()
+            let requestID = mockCommandQueue.deleteFontCalls.last!.requestID
+            fontService.onFontDeleted(handle, requestID: requestID)
+        }
+
+        let property = FontProperty(path: "font")
+        weak var retainedFont: Font?
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+            )
+
+            autoreleasepool {
+                let font = Font(
+                    handle: 42,
+                    dependencies: .init(fontService: fontService)
+                )
+                retainedFont = font
+                viewModelInstance!.setValue(of: property, to: font)
+            }
+
+            XCTAssertNotNil(retainedFont)
+
+            viewModelInstance = nil
+        }
+
+        XCTAssertNil(retainedFont)
+        await fulfillment(of: [deleteVMExpectation, deleteFontExpectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteFontCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteFontCalls.first?.fontHandle, 42)
+    }
+
+    @MainActor
+    func test_setValue_withFontProperty_replacingFont_releasesPrevious() async {
+        let mockCommandQueue = MockCommandQueue()
+        let messageGate = CommandQueueMessageGate(driver: mockCommandQueue)
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+        let fontService = FontService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+
+        let deleteVMExpectation = expectation(description: "deleteViewModelInstance called")
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            XCTAssertEqual(
+                mockCommandQueue.deleteFontCalls.count,
+                1,
+                "Replaced font (42) should be deleted before ViewModelInstance is deleted"
+            )
+            XCTAssertEqual(mockCommandQueue.deleteFontCalls.first?.fontHandle, 42)
+            deleteVMExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteViewModelInstanceListener { _ in }
+
+        let deleteFontAExpectation = expectation(description: "deleteFont called for fontA")
+        let deleteFontBExpectation = expectation(description: "deleteFont called for fontB")
+        mockCommandQueue.stubDeleteFont { handle in
+            if handle == 42 {
+                XCTAssertTrue(
+                    mockCommandQueue.deleteViewModelInstanceCalls.isEmpty,
+                    "Replaced font should be deleted while ViewModelInstance is still alive"
+                )
+                deleteFontAExpectation.fulfill()
+            } else if handle == 77 {
+                XCTAssertEqual(
+                    mockCommandQueue.deleteViewModelInstanceCalls.count,
+                    1,
+                    "Current font should only be deleted after ViewModelInstance is deleted"
+                )
+                deleteFontBExpectation.fulfill()
+            }
+            let requestID = mockCommandQueue.deleteFontCalls.last!.requestID
+            fontService.onFontDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteFontListener { _ in }
+
+        let property = FontProperty(path: "font")
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+            )
+
+            autoreleasepool {
+                let fontA = Font(
+                    handle: 42,
+                    dependencies: .init(fontService: fontService)
+                )
+                viewModelInstance!.setValue(of: property, to: fontA)
+
+                let fontB = Font(
+                    handle: 77,
+                    dependencies: .init(fontService: fontService)
+                )
+                viewModelInstance!.setValue(of: property, to: fontB)
+            }
+
+            viewModelInstance = nil
+        }
+
+        await fulfillment(
+            of: [deleteFontAExpectation, deleteVMExpectation, deleteFontBExpectation],
+            timeout: 1
+        )
+        XCTAssertEqual(mockCommandQueue.deleteFontCalls.count, 2)
+    }
+
     // MARK: - Artboard
     
     @MainActor
@@ -1228,10 +1394,69 @@ class ViewModelInstanceTests: XCTestCase {
         let mockCommandQueue = MockCommandQueue()
         let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
 
-        let stream = viewModelInstance.dirtyStream()
-        let expectedDirtyEvents = 14
-        let dirtyExpectation = expectation(description: "Dirty stream emits for all mutating APIs")
+        // Assets used by the mutations below
+        let imageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let imageDependencies = Image.Dependencies(imageService: imageService)
+        let imageDecodeExpectation = expectation(description: "Image decoded")
+        mockCommandQueue.stubDecodeImage { _, listener, requestID in
+            listener.onRenderImageDecoded(42, requestID: requestID)
+            imageDecodeExpectation.fulfill()
+            return 42
+        }
+        let image = try await Image(data: Data([0x89, 0x50, 0x4E, 0x47]), dependencies: imageDependencies)
+        await fulfillment(of: [imageDecodeExpectation], timeout: 1.0)
 
+        let fontService = FontService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let font = Font(
+            handle: 42,
+            dependencies: .init(fontService: fontService)
+        )
+
+        let artboard = Artboard(
+            dependencies: .init(
+                artboardService: .init(
+                    dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue))
+                )
+            ),
+            artboardHandle: 42
+        )
+
+        let nestedService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let nestedInstance = ViewModelInstance(
+            handle: 200,
+            dependencies: .init(viewModelInstanceService: nestedService)
+        )
+
+        let listProperty = ListProperty(path: "test.list")
+        let mutations: [() -> Void] = [
+            // Value properties
+            { viewModelInstance.setValue(of: StringProperty(path: "test.path"), to: "updated") },
+            { viewModelInstance.setValue(of: NumberProperty(path: "test.number"), to: 1.0) },
+            { viewModelInstance.setValue(of: BoolProperty(path: "test.bool"), to: true) },
+            { viewModelInstance.setValue(of: ColorProperty(path: "test.color"), to: Color(red: 0, green: 255, blue: 0, alpha: 255)) },
+            { viewModelInstance.setValue(of: EnumProperty(path: "test.enum"), to: "enum_value") },
+            // Assets and nested view models
+            { viewModelInstance.setValue(of: ImageProperty(path: "test.image"), to: image) },
+            { viewModelInstance.setValue(of: FontProperty(path: "font"), to: font) },
+            { viewModelInstance.setValue(of: ArtboardProperty(path: "test.artboard"), to: artboard) },
+            { viewModelInstance.setValue(of: ViewModelInstanceProperty(path: "test.nested"), to: nestedInstance) },
+            // Lists
+            { viewModelInstance.appendInstance(nestedInstance, to: listProperty) },
+            { viewModelInstance.insertInstance(nestedInstance, to: listProperty, at: 0) },
+            { viewModelInstance.removeInstance(at: 0, from: listProperty) },
+            { viewModelInstance.removeInstance(nestedInstance, from: listProperty) },
+            { viewModelInstance.swapInstance(atIndex: 0, withIndex: 1, in: listProperty) },
+            // Triggers
+            { viewModelInstance.fire(trigger: TriggerProperty(path: "test.trigger")) }
+        ]
+        let stream = viewModelInstance.dirtyStream()
+        let expectedDirtyEvents = mutations.count
+        let dirtyExpectation = expectation(description: "Dirty stream emits for all mutating APIs")
         let task = Task {
             var eventCount = 0
             for await _ in stream {
@@ -1243,54 +1468,9 @@ class ViewModelInstanceTests: XCTestCase {
             }
         }
 
-        // Value-property mutations
-        viewModelInstance.setValue(of: StringProperty(path: "test.path"), to: "updated")
-        viewModelInstance.setValue(of: NumberProperty(path: "test.number"), to: 1.0)
-        viewModelInstance.setValue(of: BoolProperty(path: "test.bool"), to: true)
-        viewModelInstance.setValue(of: ColorProperty(path: "test.color"), to: Color(red: 0, green: 255, blue: 0, alpha: 255))
-        viewModelInstance.setValue(of: EnumProperty(path: "test.enum"), to: "enum_value")
-
-        // Image + artboard mutations
-        let imageService = ImageService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let imageDependencies = Image.Dependencies(imageService: imageService)
-        let imageDecodeExpectation = expectation(description: "Image decoded")
-        mockCommandQueue.stubDecodeImage { _, listener, requestID in
-            listener.onRenderImageDecoded(42, requestID: requestID)
-            imageDecodeExpectation.fulfill()
-            return 42
+        for mutate in mutations {
+            mutate()
         }
-        let image = try await Image(data: Data([0x89, 0x50, 0x4E, 0x47]), dependencies: imageDependencies)
-        await fulfillment(of: [imageDecodeExpectation], timeout: 1.0)
-        viewModelInstance.setValue(of: ImageProperty(path: "test.image"), to: image)
-
-        let artboard = Artboard(
-            dependencies: .init(
-                artboardService: .init(
-                    dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue))
-                )
-            ),
-            artboardHandle: 42
-        )
-        viewModelInstance.setValue(of: ArtboardProperty(path: "test.artboard"), to: artboard)
-
-        // Nested-view-model mutation
-        let nestedService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let nestedInstance = ViewModelInstance(
-            handle: 200,
-            dependencies: .init(viewModelInstanceService: nestedService)
-        )
-        viewModelInstance.setValue(of: ViewModelInstanceProperty(path: "test.nested"), to: nestedInstance)
-
-        // List mutations
-        let listProperty = ListProperty(path: "test.list")
-        viewModelInstance.appendInstance(nestedInstance, to: listProperty)
-        viewModelInstance.insertInstance(nestedInstance, to: listProperty, at: 0)
-        viewModelInstance.removeInstance(at: 0, from: listProperty)
-        viewModelInstance.removeInstance(nestedInstance, from: listProperty)
-        viewModelInstance.swapInstance(atIndex: 0, withIndex: 1, in: listProperty)
-
-        // Trigger mutation
-        viewModelInstance.fire(trigger: TriggerProperty(path: "test.trigger"))
 
         await fulfillment(of: [dirtyExpectation], timeout: 1.0)
         task.cancel()

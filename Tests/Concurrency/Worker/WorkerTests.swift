@@ -246,6 +246,76 @@ class WorkerTests: XCTestCase {
     }
     
     @MainActor
+    func test_removeGlobalFontAsset_withFontBoundToViewModel_retainsFontUntilPropertyIsCleared() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let mockCommandServer = MockCommandServer()
+        let device = await MetalDevice.shared.defaultDevice()!.value
+        let workerService = WorkerService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                commandServer: mockCommandServer,
+                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                messagePumpDriver: mockCommandQueue
+            )
+        )
+        let worker = Worker(dependencies: .init(workerService: workerService))
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: workerService.messageGate
+            )
+        )
+        let viewModelInstance = ViewModelInstance(
+            handle: 99,
+            dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+        )
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDecodeFont { _, listener, requestID in
+            listener.onFontDecoded(42, requestID: requestID)
+            return 42
+        }
+        mockCommandQueue.stubDeleteFont { handle in
+            let call = mockCommandQueue.deleteFontCalls.last!
+            mockCommandQueue.decodeFontCalls.first!.listener.onFontDeleted(handle, requestID: call.requestID)
+        }
+        let deleteFontListenerExpectation = expectation(description: "font cleanup completed")
+        mockCommandQueue.stubDeleteFontListener { _ in
+            deleteFontListenerExpectation.fulfill()
+        }
+
+        let property = FontProperty(path: "font")
+        var font: Font? = try await worker.decodeFont(from: Data([0x00, 0x01, 0x02, 0x03]))
+        weak var retainedFont = font
+
+        autoreleasepool {
+            worker.addGlobalFontAsset(font!, name: "font")
+            viewModelInstance.setValue(of: property, to: font)
+            font = nil
+        }
+        XCTAssertNotNil(retainedFont)
+
+        autoreleasepool {
+            worker.removeGlobalFontAsset("font")
+        }
+        XCTAssertEqual(mockCommandQueue.removeGlobalFontAssetCalls.count, 1)
+        XCTAssertNotNil(retainedFont, "The view model should retain the font after it is unregistered")
+        XCTAssertTrue(mockCommandQueue.deleteFontCalls.isEmpty)
+
+        autoreleasepool {
+            viewModelInstance.setValue(of: property, to: nil)
+        }
+        XCTAssertNil(retainedFont)
+
+        await fulfillment(of: [deleteFontListenerExpectation], timeout: 1)
+        XCTAssertTrue(mockCommandQueue.deleteViewModelInstanceCalls.isEmpty)
+        XCTAssertEqual(mockCommandQueue.deleteFontCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteFontCalls.first?.fontHandle, 42)
+        XCTAssertEqual(mockCommandQueue.deleteFontListenerCalls.count, 1)
+    }
+
+    @MainActor
     func test_setAndRemoveAudio_callsCommandQueueWithCorrectArguments() async {
         let mockCommandQueue = MockCommandQueue()
         let mockCommandServer = MockCommandServer()

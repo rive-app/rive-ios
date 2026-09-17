@@ -894,6 +894,21 @@ NS_SWIFT_NAME(CommandQueueProtocol)
                         requestID:(uint64_t)requestID;
 
 /**
+ * Sets the font value of a view model property.
+ *
+ * @param viewModelInstanceHandle The handle of the view model instance
+ * @param path The property path
+ * @param value The handle of a decoded font, or 0 to clear the property
+ * @param requestID The request ID for this operation
+ * @note The property must be of type assetFont. Changes are applied
+ * asynchronously.
+ */
+- (void)setViewModelInstanceFont:(uint64_t)viewModelInstanceHandle
+                            path:(NSString*)path
+                           value:(uint64_t)value
+                       requestID:(uint64_t)requestID;
+
+/**
  * Sets the artboard value of a view model property.
  *
  * @param viewModelInstanceHandle The handle of the view model instance

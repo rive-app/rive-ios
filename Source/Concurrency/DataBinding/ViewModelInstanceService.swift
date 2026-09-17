@@ -450,6 +450,18 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         emitDirty(for: instance)
     }
 
+    // MARK: - FontProperty
+
+    /// Sets a font property value.
+    ///
+    /// Delegates to the command queue. No listener callback is invoked for this operation.
+    @MainActor
+    func setFontValue(_ value: Font.FontHandle, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.setViewModelInstanceFont(instance, path: path, value: value, requestID: requestID)
+        emitDirty(for: instance)
+    }
+
     // MARK: - ArtboardProperty
 
     /// Sets an artboard property value.
