@@ -109,6 +109,9 @@ void CoreGraphicsRenderPaint::blendMode(BlendMode value)
         case BlendMode::srcOver:
             currentBlendMode = CoreGraphicsBlendMode::SrcOver;
             break;
+        case BlendMode::additive:
+            currentBlendMode = CoreGraphicsBlendMode::Additive;
+            break;
         case BlendMode::screen:
             currentBlendMode = CoreGraphicsBlendMode::Screen;
             break;
@@ -351,6 +354,9 @@ void CoreGraphicsRenderer::drawPath(RenderPath* path, RenderPaint* paint)
 
             case CoreGraphicsBlendMode::SrcOver:
                 CGContextSetBlendMode(ctx, kCGBlendModeNormal);
+                break;
+            case CoreGraphicsBlendMode::Additive:
+                CGContextSetBlendMode(ctx, kCGBlendModePlusLighter);
                 break;
             case CoreGraphicsBlendMode::Screen:
                 CGContextSetBlendMode(ctx, kCGBlendModeScreen);

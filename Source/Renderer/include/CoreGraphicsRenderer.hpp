@@ -55,6 +55,7 @@ enum class CoreGraphicsBlendMode : unsigned int
 {
     None = 0,
     SrcOver = static_cast<int>(BlendMode::srcOver),
+    Additive = static_cast<int>(BlendMode::additive),
     Screen = static_cast<int>(BlendMode::screen),
     Overlay = static_cast<int>(BlendMode::overlay),
     Darken = static_cast<int>(BlendMode::darken),
