@@ -46,7 +46,7 @@ final class ImageService: NSObject, RenderImageListener {
         cancelledError: Error,
         operation: @escaping (UInt64) -> Void
     ) async throws -> UInt64 {
-        try Task.checkCancellation()
+        guard !Task.isCancelled else { throw cancelledError }
         let requestID = dependencies.commandQueue.nextRequestID
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
@@ -74,8 +74,21 @@ final class ImageService: NSObject, RenderImageListener {
     /// - Throws: `ImageError.failedDecoding` if the image data cannot be decoded
     func decodeImage(from data: Data) async throws -> Image.ImageHandle {
         RiveLog.debug(tag: .image, "[Image] Decoding image data (\(data.count) bytes)")
-        return try await withCancellableContinuation(cancelledError: ImageError.cancelled) { requestID in
-            self.dependencies.commandQueue.decodeImage(data, listener: self, requestID: requestID)
+        var pendingHandle: Image.ImageHandle?
+        do {
+            return try await withCancellableContinuation(cancelledError: ImageError.cancelled) { requestID in
+                pendingHandle = self.dependencies.commandQueue.decodeImage(data, listener: self, requestID: requestID)
+            }
+        } catch {
+            if let pendingHandle {
+                // Keep the service alive until deletion completes, even if the caller
+                // cancelled before decoding finished. Commands execute in queue order.
+                Task { @MainActor in
+                    guard let deletedHandle = try? await self.deleteImage(pendingHandle) else { return }
+                    self.deleteImageListener(deletedHandle)
+                }
+            }
+            throw error
         }
     }
 

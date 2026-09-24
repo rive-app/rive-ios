@@ -46,7 +46,7 @@ final class AudioService: NSObject, AudioListener {
         cancelledError: Error,
         operation: @escaping (UInt64) -> Void
     ) async throws -> UInt64 {
-        try Task.checkCancellation()
+        guard !Task.isCancelled else { throw cancelledError }
         let requestID = dependencies.commandQueue.nextRequestID
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
@@ -75,8 +75,21 @@ final class AudioService: NSObject, AudioListener {
     @MainActor
     func decodeAudio(from data: Data) async throws -> Audio.AudioHandle {
         RiveLog.debug(tag: .audio, "[Audio] Decoding audio data (\(data.count) bytes)")
-        return try await withCancellableContinuation(cancelledError: AudioError.cancelled) { requestID in
-            self.dependencies.commandQueue.decodeAudio(data, listener: self, requestID: requestID)
+        var pendingHandle: Audio.AudioHandle?
+        do {
+            return try await withCancellableContinuation(cancelledError: AudioError.cancelled) { requestID in
+                pendingHandle = self.dependencies.commandQueue.decodeAudio(data, listener: self, requestID: requestID)
+            }
+        } catch {
+            if let pendingHandle {
+                // Keep the service alive until deletion completes, even if the caller
+                // cancelled before decoding finished. Commands execute in queue order.
+                Task { @MainActor in
+                    guard let deletedHandle = try? await self.deleteAudio(pendingHandle) else { return }
+                    self.deleteAudioListener(deletedHandle)
+                }
+            }
+            throw error
         }
     }
 

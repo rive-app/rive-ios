@@ -44,20 +44,29 @@ class ImageTests: XCTestCase {
         let commandQueue = MockCommandQueue()
         let imageService = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Image.Dependencies(imageService: imageService)
-        
+
         let testData = Data([0x00, 0x01, 0x02, 0x03])
         let errorMessage = "Failed to decode image"
         let expectedRequestID: UInt64 = 0
-        
+
+        let listenerDeleted = expectation(description: "failed decode listener deleted")
+        commandQueue.stubDeleteImage { handle, _ in
+            XCTAssertEqual(handle, 42)
+            imageService.onRenderImageDeleted(handle, requestID: commandQueue.deleteImageCalls.last!.requestID)
+        }
+        commandQueue.stubDeleteImageListener { handle in
+            XCTAssertEqual(handle, 42)
+            listenerDeleted.fulfill()
+        }
         let expectation = expectation(description: "decodeImage called with error")
         commandQueue.stubDecodeImage { data, listener, requestID in
             XCTAssertEqual(data, testData)
             XCTAssertEqual(requestID, expectedRequestID)
             expectation.fulfill()
-            listener.onRenderImageError(0, requestID: requestID, message: errorMessage)
-            return 0
+            listener.onRenderImageError(42, requestID: requestID, message: errorMessage)
+            return 42
         }
-        
+
         do {
             _ = try await Image(data: testData, dependencies: dependencies)
             XCTFail("Error should be thrown")
@@ -68,43 +77,126 @@ class ImageTests: XCTestCase {
             await fulfillment(of: [expectation], timeout: 1)
             XCTFail("Expected ImageError.failedDecoding, got \(type(of: error)): \(error)")
         }
-        
+
+        await fulfillment(of: [listenerDeleted], timeout: 1)
+        XCTAssertEqual(commandQueue.deleteImageCalls.count, 1)
+        XCTAssertEqual(commandQueue.deleteImageListenerCalls.count, 1)
         XCTAssertEqual(commandQueue.decodeImageCalls.count, 1)
         XCTAssertEqual(commandQueue.decodeImageCalls.first?.data, testData)
     }
-    
+
     // MARK: - Cancellation
 
     @MainActor
-    func test_decodeImage_whenCancelled_throwsCancelledError() async throws {
+    func test_deleteImage_whenAlreadyCancelled_throwsImageErrorWithoutEnqueuing() async {
         let commandQueue = MockCommandQueue()
-        let imageService = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
-
-        let testData = Data([0x89, 0x50, 0x4E, 0x47])
-
-        let enteredContinuation = expectation(description: "entered continuation")
-        commandQueue.stubDecodeImage { data, listener, requestID in
-            enteredContinuation.fulfill()
-            return 0
+        let service = ImageService(dependencies: .init(
+            commandQueue: commandQueue,
+            messageGate: CommandQueueMessageGate(driver: commandQueue)
+        ))
+        commandQueue.stubDeleteImage { handle, _ in
+            service.onRenderImageDeleted(handle, requestID: commandQueue.deleteImageCalls.last!.requestID)
         }
 
         let task = Task { @MainActor in
-            try await imageService.decodeImage(from: testData)
+            try await service.deleteImage(42)
         }
-
-        await fulfillment(of: [enteredContinuation], timeout: 1)
         task.cancel()
 
         do {
             _ = try await task.value
-            XCTFail("Expected ImageError.cancelled to be thrown")
-        } catch let error as ImageError {
-            guard case .cancelled = error else {
-                XCTFail("Expected ImageError.cancelled, got \(error)")
-                return
-            }
+            XCTFail("Expected ImageError.cancelled")
+        } catch ImageError.cancelled {
+            // Expected for cancellation before the operation starts.
         } catch {
-            XCTFail("Expected ImageError.cancelled, got \(type(of: error)): \(error)")
+            XCTFail("Expected ImageError.cancelled, got \(error)")
+        }
+        XCTAssertTrue(commandQueue.deleteImageCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_decodeImage_whenAlreadyCancelled_throwsImageErrorWithoutEnqueuing() async {
+        let commandQueue = MockCommandQueue()
+        let service = ImageService(dependencies: .init(
+            commandQueue: commandQueue,
+            messageGate: CommandQueueMessageGate(driver: commandQueue)
+        ))
+        commandQueue.stubDecodeImage { _, listener, requestID in
+            listener.onRenderImageDecoded(42, requestID: requestID)
+            return 42
+        }
+
+        let task = Task { @MainActor in
+            try await service.decodeImage(from: Data([1, 2, 3]))
+        }
+        // The task cannot enter the main actor until this test suspends.
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ImageError.cancelled")
+        } catch ImageError.cancelled {
+            // Expected for cancellation before the operation starts.
+        } catch {
+            XCTFail("Expected ImageError.cancelled, got \(error)")
+        }
+        XCTAssertTrue(commandQueue.decodeImageCalls.isEmpty)
+        XCTAssertTrue(commandQueue.deleteImageCalls.isEmpty)
+        XCTAssertTrue(commandQueue.deleteImageListenerCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_decodeImage_whenCancelled_throwsCancelledErrorAndCleansUp() async throws {
+        for decodeFails in [false, true] {
+            let commandQueue = MockCommandQueue()
+            let imageService = ImageService(dependencies: .init(
+                commandQueue: commandQueue,
+                messageGate: CommandQueueMessageGate(driver: commandQueue)
+            ))
+            let enteredContinuation = expectation(description: "decode enqueued")
+            commandQueue.stubDecodeImage { _, _, _ in
+                enteredContinuation.fulfill()
+                return 42
+            }
+            let deletionEnqueued = expectation(description: "cancelled image deletion enqueued")
+            commandQueue.stubDeleteImage { handle, _ in
+                XCTAssertEqual(handle, 42)
+                deletionEnqueued.fulfill()
+            }
+            let listenerDeleted = expectation(description: "cancelled image listener deleted")
+            commandQueue.stubDeleteImageListener { handle in
+                XCTAssertEqual(handle, 42)
+                listenerDeleted.fulfill()
+            }
+
+            let task = Task { @MainActor in
+                try await imageService.decodeImage(from: Data([0, 1, 2, 3]))
+            }
+            await fulfillment(of: [enteredContinuation], timeout: 1)
+            task.cancel()
+
+            do {
+                _ = try await task.value
+                XCTFail("Expected ImageError.cancelled")
+            } catch ImageError.cancelled {
+                // Expected while the native decode is still pending.
+            } catch {
+                XCTFail("Expected ImageError.cancelled, got \(error)")
+            }
+
+            await fulfillment(of: [deletionEnqueued], timeout: 1)
+            XCTAssertTrue(commandQueue.deleteImageListenerCalls.isEmpty)
+            let decodeCall = try XCTUnwrap(commandQueue.decodeImageCalls.first)
+            if decodeFails {
+                imageService.onRenderImageError(42, requestID: decodeCall.requestID, message: "Late decode failure")
+            } else {
+                imageService.onRenderImageDecoded(42, requestID: decodeCall.requestID)
+            }
+            let deleteCall = try XCTUnwrap(commandQueue.deleteImageCalls.first)
+            imageService.onRenderImageDeleted(42, requestID: deleteCall.requestID)
+            await fulfillment(of: [listenerDeleted], timeout: 1)
+            XCTAssertEqual(commandQueue.deleteImageCalls.count, 1)
+            XCTAssertEqual(commandQueue.deleteImageListenerCalls.count, 1)
         }
     }
 

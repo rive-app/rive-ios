@@ -51,7 +51,7 @@ final class FontService: NSObject, FontListener {
         cancelledError: Error,
         operation: @escaping (UInt64) -> Void
     ) async throws -> UInt64 {
-        try Task.checkCancellation()
+        guard !Task.isCancelled else { throw cancelledError }
         let requestID = dependencies.commandQueue.nextRequestID
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
@@ -79,8 +79,8 @@ final class FontService: NSObject, FontListener {
     /// - Throws: `FontError.failedDecoding` if the font data cannot be decoded
     func decodeFont(from data: Data) async throws -> Font.FontHandle {
         RiveLog.debug(tag: .font, "[Font] Decoding font data (\(data.count) bytes)")
-        return try await withCancellableContinuation(cancelledError: FontError.cancelled) { requestID in
-            _ = self.dependencies.commandQueue.decodeFont(data, listener: self, requestID: requestID)
+        return try await decodeFont { requestID in
+            self.dependencies.commandQueue.decodeFont(data, listener: self, requestID: requestID)
         }
     }
 
@@ -88,19 +88,38 @@ final class FontService: NSObject, FontListener {
     /// Creates a font handle from a UIKit font.
     func decodeFont(from font: UIFont) async throws -> Font.FontHandle {
         RiveLog.debug(tag: .font, "[Font] Decoding UIFont")
-        return try await withCancellableContinuation(cancelledError: FontError.cancelled) { requestID in
-            _ = self.dependencies.commandQueue.decodeFont(font, listener: self, requestID: requestID)
+        return try await decodeFont { requestID in
+            self.dependencies.commandQueue.decodeFont(font, listener: self, requestID: requestID)
         }
     }
     #else
     /// Creates a font handle from an AppKit font.
     func decodeFont(from font: NSFont) async throws -> Font.FontHandle {
         RiveLog.debug(tag: .font, "[Font] Decoding NSFont")
-        return try await withCancellableContinuation(cancelledError: FontError.cancelled) { requestID in
-            _ = self.dependencies.commandQueue.decodeFont(font, listener: self, requestID: requestID)
+        return try await decodeFont { requestID in
+            self.dependencies.commandQueue.decodeFont(font, listener: self, requestID: requestID)
         }
     }
     #endif
+
+    private func decodeFont(operation: @escaping (UInt64) -> Font.FontHandle) async throws -> Font.FontHandle {
+        var pendingHandle: Font.FontHandle?
+        do {
+            return try await withCancellableContinuation(cancelledError: FontError.cancelled) { requestID in
+                pendingHandle = operation(requestID)
+            }
+        } catch {
+            if let pendingHandle {
+                // Keep the service alive until deletion completes, even if the caller
+                // cancelled before decoding finished. Commands execute in queue order.
+                Task { @MainActor in
+                    guard let deletedHandle = try? await self.deleteFont(pendingHandle) else { return }
+                    self.deleteFontListener(deletedHandle)
+                }
+            }
+            throw error
+        }
+    }
 
     /// Deletes a font via the command queue.
     ///

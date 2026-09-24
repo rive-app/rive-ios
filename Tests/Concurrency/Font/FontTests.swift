@@ -45,20 +45,29 @@ class FontTests: XCTestCase {
         let commandQueue = MockCommandQueue()
         let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let dependencies = Font.Dependencies(fontService: fontService)
-        
+
         let testData = Data([0x00, 0x01, 0x02, 0x03])
         let errorMessage = "Failed to decode font"
         let expectedRequestID: UInt64 = 0
-        
+
+        let listenerDeleted = expectation(description: "failed decode listener deleted")
+        commandQueue.stubDeleteFont { handle in
+            XCTAssertEqual(handle, 42)
+            fontService.onFontDeleted(handle, requestID: commandQueue.deleteFontCalls.last!.requestID)
+        }
+        commandQueue.stubDeleteFontListener { handle in
+            XCTAssertEqual(handle, 42)
+            listenerDeleted.fulfill()
+        }
         let expectation = expectation(description: "decodeFont called with error")
         commandQueue.stubDecodeFont { data, listener, requestID in
             XCTAssertEqual(data, testData)
             XCTAssertEqual(requestID, expectedRequestID)
             expectation.fulfill()
-            listener.onFontError(0, requestID: requestID, message: errorMessage)
-            return 0
+            listener.onFontError(42, requestID: requestID, message: errorMessage)
+            return 42
         }
-        
+
         do {
             _ = try await Font(data: testData, dependencies: dependencies)
             XCTFail("Error should be thrown")
@@ -69,7 +78,10 @@ class FontTests: XCTestCase {
             await fulfillment(of: [expectation], timeout: 1)
             XCTFail("Expected FontError.failedDecoding, got \(type(of: error)): \(error)")
         }
-        
+
+        await fulfillment(of: [listenerDeleted], timeout: 1)
+        XCTAssertEqual(commandQueue.deleteFontCalls.count, 1)
+        XCTAssertEqual(commandQueue.deleteFontListenerCalls.count, 1)
         XCTAssertEqual(commandQueue.decodeFontCalls.count, 1)
         XCTAssertEqual(commandQueue.decodeFontCalls.first?.data, testData)
     }
@@ -108,6 +120,16 @@ class FontTests: XCTestCase {
         let dependencies = Font.Dependencies(fontService: fontService)
         let errorMessage = "Failed to decode native font"
 
+        let listenerDeleted = expectation(description: "failed native font listener deleted")
+        commandQueue.stubDeleteFont { handle in
+            XCTAssertEqual(handle, 1)
+            fontService.onFontDeleted(handle, requestID: commandQueue.deleteFontCalls.last!.requestID)
+        }
+        commandQueue.stubDeleteFontListener { handle in
+            XCTAssertEqual(handle, 1)
+            listenerDeleted.fulfill()
+        }
+
         let nativeFont = UIFont.systemFont(ofSize: 16)
         commandQueue.stubDecodeUIFont { _, listener, requestID in
             listener.onFontError(1, requestID: requestID, message: errorMessage)
@@ -122,72 +144,178 @@ class FontTests: XCTestCase {
         } catch {
             XCTFail("Expected FontError.failedDecoding, got \(type(of: error)): \(error)")
         }
+        await fulfillment(of: [listenerDeleted], timeout: 1)
+        XCTAssertEqual(commandQueue.deleteFontCalls.count, 1)
+        XCTAssertEqual(commandQueue.deleteFontListenerCalls.count, 1)
     }
     
     // MARK: - Cancellation
 
     @MainActor
-    func test_decodeFont_whenCancelled_throwsCancelledError() async throws {
+    func test_deleteFont_whenAlreadyCancelled_throwsFontErrorWithoutEnqueuing() async {
         let commandQueue = MockCommandQueue()
-        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
-
-        let testData = Data([0x00, 0x01, 0x02, 0x03])
-
-        let enteredContinuation = expectation(description: "entered continuation")
-        commandQueue.stubDecodeFont { data, listener, requestID in
-            enteredContinuation.fulfill()
-            return 0
+        let service = FontService(dependencies: .init(
+            commandQueue: commandQueue,
+            messageGate: CommandQueueMessageGate(driver: commandQueue)
+        ))
+        commandQueue.stubDeleteFont { handle in
+            service.onFontDeleted(handle, requestID: commandQueue.deleteFontCalls.last!.requestID)
         }
 
         let task = Task { @MainActor in
-            try await fontService.decodeFont(from: testData)
+            try await service.deleteFont(42)
         }
-
-        await fulfillment(of: [enteredContinuation], timeout: 1)
         task.cancel()
 
         do {
             _ = try await task.value
-            XCTFail("Expected FontError.cancelled to be thrown")
-        } catch let error as FontError {
-            guard case .cancelled = error else {
-                XCTFail("Expected FontError.cancelled, got \(error)")
-                return
-            }
+            XCTFail("Expected FontError.cancelled")
+        } catch FontError.cancelled {
+            // Expected for cancellation before the operation starts.
         } catch {
-            XCTFail("Expected FontError.cancelled, got \(type(of: error)): \(error)")
+            XCTFail("Expected FontError.cancelled, got \(error)")
+        }
+        XCTAssertTrue(commandQueue.deleteFontCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_decodeFont_whenAlreadyCancelled_throwsFontErrorWithoutEnqueuing() async {
+        let commandQueue = MockCommandQueue()
+        let service = FontService(dependencies: .init(
+            commandQueue: commandQueue,
+            messageGate: CommandQueueMessageGate(driver: commandQueue)
+        ))
+        commandQueue.stubDecodeFont { _, listener, requestID in
+            listener.onFontDecoded(42, requestID: requestID)
+            return 42
+        }
+
+        let task = Task { @MainActor in
+            try await service.decodeFont(from: Data([1, 2, 3]))
+        }
+        // The task cannot enter the main actor until this test suspends.
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected FontError.cancelled")
+        } catch FontError.cancelled {
+            // Expected for cancellation before the operation starts.
+        } catch {
+            XCTFail("Expected FontError.cancelled, got \(error)")
+        }
+        XCTAssertTrue(commandQueue.decodeFontCalls.isEmpty)
+        XCTAssertTrue(commandQueue.deleteFontCalls.isEmpty)
+        XCTAssertTrue(commandQueue.deleteFontListenerCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_decodeFont_whenCancelled_throwsCancelledErrorAndCleansUp() async throws {
+        for decodeFails in [false, true] {
+            let commandQueue = MockCommandQueue()
+            let fontService = FontService(dependencies: .init(
+                commandQueue: commandQueue,
+                messageGate: CommandQueueMessageGate(driver: commandQueue)
+            ))
+            let enteredContinuation = expectation(description: "decode enqueued")
+            commandQueue.stubDecodeFont { _, _, _ in
+                enteredContinuation.fulfill()
+                return 42
+            }
+            let deletionEnqueued = expectation(description: "cancelled font deletion enqueued")
+            commandQueue.stubDeleteFont { handle in
+                XCTAssertEqual(handle, 42)
+                deletionEnqueued.fulfill()
+            }
+            let listenerDeleted = expectation(description: "cancelled font listener deleted")
+            commandQueue.stubDeleteFontListener { handle in
+                XCTAssertEqual(handle, 42)
+                listenerDeleted.fulfill()
+            }
+
+            let task = Task { @MainActor in
+                try await fontService.decodeFont(from: Data([0, 1, 2, 3]))
+            }
+            await fulfillment(of: [enteredContinuation], timeout: 1)
+            task.cancel()
+
+            do {
+                _ = try await task.value
+                XCTFail("Expected FontError.cancelled")
+            } catch FontError.cancelled {
+                // Expected while the native decode is still pending.
+            } catch {
+                XCTFail("Expected FontError.cancelled, got \(error)")
+            }
+
+            await fulfillment(of: [deletionEnqueued], timeout: 1)
+            XCTAssertTrue(commandQueue.deleteFontListenerCalls.isEmpty)
+            let decodeCall = try XCTUnwrap(commandQueue.decodeFontCalls.first)
+            if decodeFails {
+                fontService.onFontError(42, requestID: decodeCall.requestID, message: "Late decode failure")
+            } else {
+                fontService.onFontDecoded(42, requestID: decodeCall.requestID)
+            }
+            let deleteCall = try XCTUnwrap(commandQueue.deleteFontCalls.first)
+            fontService.onFontDeleted(42, requestID: deleteCall.requestID)
+            await fulfillment(of: [listenerDeleted], timeout: 1)
+            XCTAssertEqual(commandQueue.deleteFontCalls.count, 1)
+            XCTAssertEqual(commandQueue.deleteFontListenerCalls.count, 1)
         }
     }
 
     @MainActor
-    func test_decodeFont_withUIFont_whenCancelled_throwsCancelledError() async throws {
-        let commandQueue = MockCommandQueue()
-        let fontService = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
-        let enteredContinuation = expectation(description: "entered native font continuation")
-
-        let nativeFont = UIFont.systemFont(ofSize: 16)
-        commandQueue.stubDecodeUIFont { _, _, _ in
-            enteredContinuation.fulfill()
-            return 1
-        }
-
-        let task = Task { @MainActor in
-            try await fontService.decodeFont(from: nativeFont)
-        }
-
-        await fulfillment(of: [enteredContinuation], timeout: 1)
-        task.cancel()
-
-        do {
-            _ = try await task.value
-            XCTFail("Expected FontError.cancelled to be thrown")
-        } catch let error as FontError {
-            guard case .cancelled = error else {
-                XCTFail("Expected FontError.cancelled, got \(error)")
-                return
+    func test_decodeFont_withUIFont_whenCancelled_throwsCancelledErrorAndCleansUp() async throws {
+        for decodeFails in [false, true] {
+            let commandQueue = MockCommandQueue()
+            let fontService = FontService(dependencies: .init(
+                commandQueue: commandQueue,
+                messageGate: CommandQueueMessageGate(driver: commandQueue)
+            ))
+            let enteredContinuation = expectation(description: "decode enqueued")
+            commandQueue.stubDecodeUIFont { _, _, _ in
+                enteredContinuation.fulfill()
+                return 42
             }
-        } catch {
-            XCTFail("Expected FontError.cancelled, got \(type(of: error)): \(error)")
+            let deletionEnqueued = expectation(description: "cancelled font deletion enqueued")
+            commandQueue.stubDeleteFont { handle in
+                XCTAssertEqual(handle, 42)
+                deletionEnqueued.fulfill()
+            }
+            let listenerDeleted = expectation(description: "cancelled font listener deleted")
+            commandQueue.stubDeleteFontListener { handle in
+                XCTAssertEqual(handle, 42)
+                listenerDeleted.fulfill()
+            }
+
+            let task = Task { @MainActor in
+                try await fontService.decodeFont(from: UIFont.systemFont(ofSize: 16))
+            }
+            await fulfillment(of: [enteredContinuation], timeout: 1)
+            task.cancel()
+
+            do {
+                _ = try await task.value
+                XCTFail("Expected FontError.cancelled")
+            } catch FontError.cancelled {
+                // Expected while the native decode is still pending.
+            } catch {
+                XCTFail("Expected FontError.cancelled, got \(error)")
+            }
+
+            await fulfillment(of: [deletionEnqueued], timeout: 1)
+            XCTAssertTrue(commandQueue.deleteFontListenerCalls.isEmpty)
+            let decodeCall = try XCTUnwrap(commandQueue.decodeUIFontCalls.first)
+            if decodeFails {
+                fontService.onFontError(42, requestID: decodeCall.requestID, message: "Late decode failure")
+            } else {
+                fontService.onFontDecoded(42, requestID: decodeCall.requestID)
+            }
+            let deleteCall = try XCTUnwrap(commandQueue.deleteFontCalls.first)
+            fontService.onFontDeleted(42, requestID: deleteCall.requestID)
+            await fulfillment(of: [listenerDeleted], timeout: 1)
+            XCTAssertEqual(commandQueue.deleteFontCalls.count, 1)
+            XCTAssertEqual(commandQueue.deleteFontListenerCalls.count, 1)
         }
     }
 
