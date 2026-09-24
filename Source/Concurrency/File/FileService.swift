@@ -189,6 +189,21 @@ final class FileService: NSObject, FileListener {
         }
     }
 
+    /// Requests global view model names for a loaded file asynchronously.
+    ///
+    /// The continuation is resumed when `onGlobalViewModelsListed` is called.
+    ///
+    /// - Parameter fileHandle: The file handle of the loaded file
+    /// - Returns: An array of global view model names in the file
+    /// - Throws: `FileError` if the request fails
+    @MainActor
+    func getGlobalViewModelNames(fileHandle: File.FileHandle) async throws -> [String] {
+        RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Requesting global view model names")
+        return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
+            self.dependencies.commandQueue.requestGlobalViewModelNames(fileHandle, requestID: requestID)
+        }
+    }
+
     /// Requests instance names for a view model asynchronously.
     ///
     /// The continuation is resumed when `onViewModelInstanceNamesListed` is called.
@@ -335,6 +350,19 @@ final class FileService: NSObject, FileListener {
             finishImmediateRequest(requestID)
             guard let request = continuations.removeValue(forKey: requestID) else { return }
             RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) view model names")
+            try request.continuation.resume(returning: names)
+        }
+    }
+
+    /// Called when global view model names are listed for a file.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to resume
+    /// the continuation with the global view model names.
+    nonisolated func onGlobalViewModelsListed(_ fileHandle: UInt64, requestID: UInt64, names: [String]) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let request = continuations.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .file, "\(Self.context(fileHandle)) Received \(names.count) global view model names")
             try request.continuation.resume(returning: names)
         }
     }

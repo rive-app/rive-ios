@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 /// A service class that manages view model instance operations and coordinates with the command queue.
 ///
@@ -24,6 +25,12 @@ import Foundation
 /// explicit handling, a cancelled task leaks its continuation indefinitely.
 @MainActor
 final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
+    struct DirtyEvent: Equatable, Sendable {
+        let id: UInt64
+    }
+
+    private static var nextDirtyEventID: UInt64 = 0
+
     let dependencies: Dependencies
     /// Regular continuations for one-time value requests (e.g., `stringValue`, `numberValue`).
     /// Resumed when `onViewModelDataReceived` is called.
@@ -31,8 +38,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// Stream continuations for property subscriptions (e.g., `stringValueStream`, `numberValueStream`).
     /// Yielded values when `onViewModelDataReceived` is called. Cleaned up when streams terminate.
     private var streamContinuations: [UInt64: AnyAsyncThrowingStreamContinuation] = [:]
-    /// Continuations for per-instance dirty streams.
-    private var dirtyStreamContinuations: [ViewModelInstance.ViewModelInstanceHandle: [UUID: AsyncStream<Void>.Continuation]] = [:]
+    /// Publishers for per-instance dirty events.
+    private var dirtySubjects: [ViewModelInstance.ViewModelInstanceHandle: PassthroughSubject<DirtyEvent, Never>] = [:]
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -51,10 +58,12 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         cancelledError: Error,
         operation: @escaping (UInt64) -> Void
     ) async throws -> T {
-        try Task.checkCancellation()
         let requestID = dependencies.commandQueue.nextRequestID
         return try await withTaskCancellationHandler {
-            try await withCheckedThrowingContinuation { continuation in
+            guard !Task.isCancelled else {
+                throw cancelledError
+            }
+            return try await withCheckedThrowingContinuation { continuation in
                 continuations[requestID] = AnyContinuation(continuation)
                 beginImmediateRequest(requestID)
                 operation(requestID)
@@ -71,25 +80,10 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     }
 
     @MainActor
-    func dirtyStream(for instance: ViewModelInstance.ViewModelInstanceHandle) -> AsyncStream<Void> {
-        return AsyncStream<Void> { continuation in
-            let continuationID = UUID()
-            var continuationsForInstance = dirtyStreamContinuations[instance] ?? [:]
-            continuationsForInstance[continuationID] = continuation
-            dirtyStreamContinuations[instance] = continuationsForInstance
-            continuation.onTermination = { [weak self] _ in
-                Task { @MainActor in
-                    guard let self else { return }
-                    guard var continuations = self.dirtyStreamContinuations[instance] else { return }
-                    continuations.removeValue(forKey: continuationID)
-                    if continuations.isEmpty {
-                        self.dirtyStreamContinuations.removeValue(forKey: instance)
-                    } else {
-                        self.dirtyStreamContinuations[instance] = continuations
-                    }
-                }
-            }
-        }
+    func dirtyPublisher(for instance: ViewModelInstance.ViewModelInstanceHandle) -> AnyPublisher<DirtyEvent, Never> {
+        let subject = dirtySubjects[instance] ?? PassthroughSubject<DirtyEvent, Never>()
+        dirtySubjects[instance] = subject
+        return subject.eraseToAnyPublisher()
     }
 
     @MainActor
@@ -99,7 +93,10 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
 
     @MainActor
     private func emitDirty(for instance: ViewModelInstance.ViewModelInstanceHandle) {
-        dirtyStreamContinuations[instance]?.values.forEach { $0.yield(()) }
+        guard let subject = dirtySubjects[instance] else { return }
+        let event = DirtyEvent(id: Self.nextDirtyEventID)
+        Self.nextDirtyEventID &+= 1
+        subject.send(event)
     }
     
     private static func context(_ instance: ViewModelInstance.ViewModelInstanceHandle) -> String {
@@ -126,7 +123,7 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     @MainActor
     func deleteViewModelInstanceListener(_ instance: ViewModelInstance.ViewModelInstanceHandle) {
         dependencies.commandQueue.deleteViewModelInstanceListener(instance)
-        dirtyStreamContinuations.removeValue(forKey: instance)
+        dirtySubjects.removeValue(forKey: instance)?.send(completion: .finished)
     }
 
     // MARK: - Names
@@ -663,7 +660,9 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
             finishImmediateRequest(requestID)
             RiveLog.error(tag: .viewModelInstance, "\(Self.context(viewModelInstanceHandle)) Operation failed: \(message)")
             if let continuation = continuations.removeValue(forKey: requestID) {
-                continuation.resume(throwing: ViewModelInstanceError.message(message))
+                continuation.resume(
+                    throwing: ViewModelInstanceError.message(message)
+                )
             }
         }
     }

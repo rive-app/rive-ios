@@ -10,17 +10,22 @@ import Foundation
 
 /// A service class that manages state machine operations and coordinates with the command queue.
 ///
-/// Handles state machine creation, advancement, deletion, and view model binding. All operations
-/// are fire-and-forget (no listener callbacks). All command queue operations must be performed
-/// on the main thread (either marked `@MainActor` or dispatched to the main queue).
+/// Handles state machine creation, advancement, deletion, and view model binding. All command queue
+/// operations must be performed on the main thread (either marked `@MainActor` or dispatched to the
+/// main queue).
 ///
 /// All continuation-based methods are wrapped with `withTaskCancellationHandler` because
 /// `withCheckedThrowingContinuation` does not auto-resume on task cancellation. Without
 /// explicit handling, a cancelled task leaks its continuation indefinitely.
 @MainActor
 final class StateMachineService: NSObject, StateMachineListener {
-    private let dependencies: Dependencies
-    private var continuations: [UInt64: CheckedContinuation<UInt64, Error>] = [:]
+    let dependencies: Dependencies
+    private struct PendingRequest {
+        let continuation: CheckedContinuation<UInt64, Error>
+        var handle: UInt64?
+    }
+
+    private var requests: [UInt64: PendingRequest] = [:]
     private var settledContinuations: [UInt64: [UUID: AsyncStream<Void>.Continuation]] = [:]
     private var semanticsDiffContinuations: [UInt64: [UUID: AsyncStream<SemanticsDiff>.Continuation]] = [:]
 
@@ -49,22 +54,32 @@ final class StateMachineService: NSObject, StateMachineListener {
     /// Wraps a continuation-based command queue operation with cancellation support.
     private func withCancellableContinuation(
         cancelledError: Error,
-        operation: @escaping (UInt64) -> Void
+        operation: @escaping (UInt64) -> UInt64?
     ) async throws -> UInt64 {
-        try Task.checkCancellation()
         let requestID = dependencies.commandQueue.nextRequestID
         return try await withTaskCancellationHandler {
-            try await withCheckedThrowingContinuation { continuation in
-                continuations[requestID] = continuation
+            guard Task.isCancelled == false else {
+                throw cancelledError
+            }
+            return try await withCheckedThrowingContinuation { continuation in
+                requests[requestID] = PendingRequest(
+                    continuation: continuation,
+                    handle: nil
+                )
                 beginImmediateRequest(requestID)
-                operation(requestID)
+                requests[requestID]?.handle = operation(requestID)
             }
         } onCancel: { [weak self] in
             Task { @MainActor in
                 guard let self else { return }
-                if let continuation = self.continuations.removeValue(forKey: requestID) {
+                if let request = self.requests.removeValue(forKey: requestID) {
                     self.finishImmediateRequest(requestID)
-                    continuation.resume(throwing: cancelledError)
+                    if let handle = request.handle {
+                        let deletionRequestID = self.dependencies.commandQueue.nextRequestID
+                        self.dependencies.commandQueue.deleteViewModelInstance(handle, requestID: deletionRequestID)
+                        self.dependencies.commandQueue.deleteViewModelInstanceListener(handle)
+                    }
+                    request.continuation.resume(throwing: cancelledError)
                 }
             }
         }
@@ -180,6 +195,7 @@ final class StateMachineService: NSObject, StateMachineListener {
         RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Deleting state machine")
         return try await withCancellableContinuation(cancelledError: StateMachineError.cancelled) { requestID in
             self.dependencies.commandQueue.deleteStateMachine(stateMachine, requestID: requestID)
+            return nil
         }
     }
 
@@ -202,27 +218,101 @@ final class StateMachineService: NSObject, StateMachineListener {
         dependencies.commandQueue.bindViewModelInstance(stateMachine, toViewModelInstance: viewModelInstance, requestID: requestID)
     }
 
+    /// Updates the main view model instance without running the final bind pass.
+    @MainActor
+    func setViewModelInstance(_ stateMachine: StateMachine.StateMachineHandle, to viewModelInstance: ViewModelInstance.ViewModelInstanceHandle) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Setting main view model instance")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.setViewModelInstance(stateMachine, toViewModelInstance: viewModelInstance, requestID: requestID)
+    }
+
+    /// Retrieves the main view model instance currently bound to a state machine.
+    ///
+    /// The observer is registered for subsequent operations on the returned view model instance.
+    @MainActor
+    func mainViewModelInstance(
+        for stateMachine: StateMachine.StateMachineHandle,
+        observer: ViewModelInstanceListener
+    ) async throws -> ViewModelInstance.ViewModelInstanceHandle {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Requesting main view model instance")
+        return try await withCancellableContinuation(cancelledError: StateMachineError.cancelled) { requestID in
+            return self.dependencies.commandQueue.mainViewModelInstance(
+                stateMachine,
+                observer: observer,
+                requestID: requestID
+            )
+        }
+    }
+
+    /// Updates a global view model instance without running the final bind pass.
+    @MainActor
+    func setGlobalViewModelInstance(
+        _ stateMachine: StateMachine.StateMachineHandle,
+        named name: String,
+        to viewModelInstance: ViewModelInstance.ViewModelInstanceHandle
+    ) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Setting global view model instance '\(name)'")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.setGlobalViewModelInstance(
+            stateMachine,
+            named: name,
+            toViewModelInstance: viewModelInstance,
+            requestID: requestID
+        )
+    }
+
+    /// Retrieves the view model instance currently bound to a named global slot.
+    ///
+    /// The observer is registered for subsequent operations on the returned view model instance.
+    @MainActor
+    func globalViewModelInstance(
+        for stateMachine: StateMachine.StateMachineHandle,
+        named name: String,
+        observer: ViewModelInstanceListener
+    ) async throws -> ViewModelInstance.ViewModelInstanceHandle {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Requesting global view model instance '\(name)'")
+        return try await withCancellableContinuation(cancelledError: StateMachineError.cancelled) { requestID in
+            return self.dependencies.commandQueue.globalViewModelInstance(
+                stateMachine,
+                named: name,
+                observer: observer,
+                requestID: requestID
+            )
+        }
+    }
+
+    /// Completes and applies the current main and global view model instances.
+    @MainActor
+    func bind(_ stateMachine: StateMachine.StateMachineHandle) {
+        RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachine)) Binding view model instances")
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.bind(stateMachine, requestID: requestID)
+    }
+
     nonisolated func onStateMachineError(_ stateMachineHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
-            finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else {
+            RiveLog.error(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Operation failed: \(message)")
+            guard let request = requests.removeValue(forKey: requestID) else {
                 return
             }
 
-            RiveLog.error(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Operation failed: \(message)")
-            continuation.resume(throwing: StateMachineError.error(message))
+            finishImmediateRequest(requestID)
+            if let handle = request.handle {
+                dependencies.commandQueue.deleteViewModelInstanceListener(handle)
+            }
+            request.continuation.resume(throwing: StateMachineError.error(message))
         }
     }
 
     nonisolated func onStateMachineDeleted(_ stateMachineHandle: UInt64, requestID: UInt64) {
         Task { @MainActor in
-            finishImmediateRequest(requestID)
-            guard let continuation = continuations.removeValue(forKey: requestID) else {
+            guard let request = requests.removeValue(forKey: requestID) else {
                 return
             }
 
+            finishImmediateRequest(requestID)
             RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Deleted state machine")
-            continuation.resume(returning: stateMachineHandle)
+            request.continuation.resume(returning: stateMachineHandle)
         }
     }
 
@@ -230,6 +320,22 @@ final class StateMachineService: NSObject, StateMachineListener {
         Task { @MainActor in
             RiveLog.trace(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Settled state machine")
             settledContinuations[stateMachineHandle]?.values.forEach { $0.yield(()) }
+        }
+    }
+
+    nonisolated func onViewModelInstanceReceived(
+        _ stateMachineHandle: UInt64,
+        requestID: UInt64,
+        viewModelInstanceHandle: UInt64
+    ) {
+        Task { @MainActor in
+            guard let request = requests.removeValue(forKey: requestID) else {
+                return
+            }
+
+            finishImmediateRequest(requestID)
+            RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Received view model instance (\(viewModelInstanceHandle))")
+            request.continuation.resume(returning: viewModelInstanceHandle)
         }
     }
 
@@ -241,6 +347,7 @@ final class StateMachineService: NSObject, StateMachineListener {
         }
     }
 }
+
 
 extension StateMachineService {
     /// Container for all dependencies required by the state machine service.
@@ -256,4 +363,3 @@ extension StateMachineService {
         }
     }
 }
-

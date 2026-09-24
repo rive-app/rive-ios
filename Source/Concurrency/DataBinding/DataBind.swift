@@ -8,6 +8,7 @@
 
 import Foundation
 
+@available(*, deprecated, message: "DataBind will be removed in a future release. Use a Rive initializer without dataBind, or create a state machine with explicit bindings.")
 public enum DataBind: Equatable {
     /// Automatically data bind the default view model instance for a Rive object
     case auto

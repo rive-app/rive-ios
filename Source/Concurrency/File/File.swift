@@ -36,6 +36,9 @@ public final class File: Equatable {
     @MainActor
     private var cachedAssets: [Asset]?
 
+    @MainActor
+    private var cachedGlobalViewModelNames: [String]?
+
     private static func logContext(for handle: FileHandle) -> String {
         "[File (\(handle))]"
     }
@@ -153,7 +156,8 @@ public final class File: Equatable {
         )
         return Artboard(
             dependencies: .init(artboardService: artboardService),
-            artboardHandle: handle
+            artboardHandle: handle,
+            sourceFile: self
         )
     }
 
@@ -198,6 +202,22 @@ public final class File: Equatable {
     @MainActor
     public func getViewModelNames() async throws -> [String] {
         return try await dependencies.fileService.getViewModelNames(fileHandle: fileHandle)
+    }
+
+    /// Retrieves the names of all global view models defined in this Rive file.
+    ///
+    /// Successful results are cached for the lifetime of the file.
+    ///
+    /// - Returns: An array of global view model names
+    /// - Throws: `FileError` if the global view model names cannot be retrieved
+    @MainActor
+    public func getGlobalViewModelNames() async throws -> [String] {
+        if let cachedGlobalViewModelNames {
+            return cachedGlobalViewModelNames
+        }
+        let names = try await dependencies.fileService.getGlobalViewModelNames(fileHandle: fileHandle)
+        cachedGlobalViewModelNames = names
+        return names
     }
 
     /// Retrieves the names of all instances for a specific view model.

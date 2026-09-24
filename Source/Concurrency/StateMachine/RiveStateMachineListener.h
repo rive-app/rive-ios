@@ -27,6 +27,10 @@ NS_SWIFT_NAME(StateMachineListener)
 - (void)onStateMachineSettled:(uint64_t)stateMachineHandle
                     requestID:(uint64_t)requestID;
 
+- (void)onViewModelInstanceReceived:(uint64_t)stateMachineHandle
+                          requestID:(uint64_t)requestID
+            viewModelInstanceHandle:(uint64_t)viewModelInstanceHandle;
+
 - (void)onSemanticsDiffReceived:(uint64_t)stateMachineHandle
                       requestID:(uint64_t)requestID
                            diff:(RiveSemanticsDiff*)diff;

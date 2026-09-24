@@ -116,6 +116,31 @@ class FileTests: XCTestCase {
         _ = try await file.getArtboardNames()
         await fulfillment(of: [expectation], timeout: 1)
     }
+
+    @MainActor
+    func test_getGlobalViewModelNames_resumesWithNames() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 42)
+        let fileService = file.dependencies.fileService
+        let expectedNames = ["Theme", "Localization"]
+
+        let expectation = expectation(description: "global view model names received")
+        mockCommandQueue.stubRequestGlobalViewModelNames { fileHandle, requestID in
+            XCTAssertEqual(fileHandle, 42)
+            fileService.onGlobalViewModelsListed(
+                fileHandle,
+                requestID: requestID,
+                names: expectedNames
+            )
+            expectation.fulfill()
+        }
+
+        let names = try await file.getGlobalViewModelNames()
+        await fulfillment(of: [expectation], timeout: 1)
+
+        XCTAssertEqual(names, expectedNames)
+        XCTAssertEqual(mockCommandQueue.requestGlobalViewModelNamesCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.requestGlobalViewModelNamesCalls.first?.requestID, 0)
+    }
     
     @MainActor
     func test_createDefaultArtboard_resumesOnInstantiatedCallback() async throws {
@@ -135,6 +160,7 @@ class FileTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 1)
         XCTAssertEqual(capturedFileHandle, 123)
         XCTAssertEqual(artboard.artboardHandle, 42)
+        XCTAssertTrue(artboard.sourceFile === file)
     }
 
     @MainActor
@@ -158,6 +184,7 @@ class FileTests: XCTestCase {
         XCTAssertEqual(capturedName, "Test Artboard")
         XCTAssertEqual(capturedFileHandle, 123)
         XCTAssertEqual(artboard.artboardHandle, 42)
+        XCTAssertTrue(artboard.sourceFile === file)
     }
 
     @MainActor
@@ -1153,6 +1180,20 @@ class FileTests: XCTestCase {
         
         _ = try await file.getDefaultViewModelInfo(for: artboard)
         await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_getGlobalViewModelNames_cachesEmptyMetadata() async throws {
+        let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
+        let service = file.dependencies.fileService
+        commandQueue.stubRequestGlobalViewModelNames { handle, requestID in
+            service.onGlobalViewModelsListed(handle, requestID: requestID, names: [])
+        }
+        let first = try await file.getGlobalViewModelNames()
+        let second = try await file.getGlobalViewModelNames()
+        XCTAssertTrue(first.isEmpty)
+        XCTAssertTrue(second.isEmpty)
+        XCTAssertEqual(commandQueue.requestGlobalViewModelNamesCalls.count, 1)
     }
 
 }

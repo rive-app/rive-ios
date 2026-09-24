@@ -565,6 +565,11 @@ public:
     virtual void onStateMachineSettled(const rive::StateMachineHandle handle,
                                        uint64_t requestId) override;
 
+    virtual void onViewModelInstanceReceived(
+        const rive::StateMachineHandle stateMachineHandle,
+        uint64_t requestId,
+        rive::ViewModelInstanceHandle viewModelInstanceHandle) override;
+
     virtual void onSemanticsDiffReceived(const rive::StateMachineHandle handle,
                                          uint64_t requestId,
                                          rive::SemanticsDiff diff) override;
@@ -605,6 +610,21 @@ void _StateMachineListener::onStateMachineSettled(
     {
         [_observer onStateMachineSettled:reinterpret_cast<uint64_t>(handle)
                                requestID:requestId];
+    }
+}
+
+void _StateMachineListener::onViewModelInstanceReceived(
+    const rive::StateMachineHandle stateMachineHandle,
+    uint64_t requestId,
+    rive::ViewModelInstanceHandle viewModelInstanceHandle)
+{
+    if (_observer)
+    {
+        [_observer onViewModelInstanceReceived:reinterpret_cast<uint64_t>(
+                                                   stateMachineHandle)
+                                     requestID:requestId
+                       viewModelInstanceHandle:reinterpret_cast<uint64_t>(
+                                                   viewModelInstanceHandle)];
     }
 }
 
@@ -725,6 +745,18 @@ public:
         const rive::FileHandle handle,
         uint64_t requestId,
         std::vector<std::string> viewModelNames) override;
+
+    /**
+     * Called when global view model names are listed for a file.
+     *
+     * @param handle The unique identifier of the file
+     * @param requestId The identifier of the listing request
+     * @param globalViewModelNames Vector of global view model names in the file
+     */
+    virtual void onGlobalViewModelNamesListed(
+        const rive::FileHandle handle,
+        uint64_t requestId,
+        std::vector<std::string> globalViewModelNames) override;
 
     /**
      * Called when view model instance names are listed for a file.
@@ -873,6 +905,26 @@ void _FileListener::onViewModelsListed(const rive::FileHandle handle,
         [_observer onViewModelsListed:reinterpret_cast<uint64_t>(handle)
                             requestID:requestId
                                 names:names];
+    }
+}
+
+void _FileListener::onGlobalViewModelNamesListed(
+    const rive::FileHandle handle,
+    uint64_t requestId,
+    std::vector<std::string> globalViewModelNames)
+{
+    if (_observer)
+    {
+        NSMutableArray<NSString*>* names =
+            [NSMutableArray arrayWithCapacity:globalViewModelNames.size()];
+        for (const auto& name : globalViewModelNames)
+        {
+            [names addObject:[NSString stringWithUTF8String:name.c_str()]];
+        }
+
+        [_observer onGlobalViewModelsListed:reinterpret_cast<uint64_t>(handle)
+                                  requestID:requestId
+                                      names:names];
     }
 }
 
@@ -1787,6 +1839,15 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     }];
 }
 
+- (void)requestGlobalViewModelNames:(uint64_t)fileHandle
+                          requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+      self->_commandQueue->requestGlobalViewModelNames(handle, requestID);
+    }];
+}
+
 - (void)requestViewModelEnums:(uint64_t)fileHandle requestID:(uint64_t)requestID
 {
     [self executeCommand:^{
@@ -2123,6 +2184,86 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
           viewModelInstanceHandle);
       self->_commandQueue->bindViewModelInstance(
           smHandle, vmiHandle, requestID);
+    }];
+}
+
+- (void)setViewModelInstance:(uint64_t)stateMachineHandle
+         toViewModelInstance:(uint64_t)viewModelInstanceHandle
+                   requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto smHandle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+          viewModelInstanceHandle);
+      self->_commandQueue->setViewModelInstance(smHandle, vmiHandle, requestID);
+    }];
+}
+
+- (uint64_t)mainViewModelInstance:(uint64_t)stateMachineHandle
+                         observer:(id<RiveViewModelInstanceListener>)observer
+                        requestID:(uint64_t)requestID
+{
+    return [self executeCommandWithReturn:^uint64_t {
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto smHandle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      rive::ViewModelInstanceHandle handle =
+          self->_commandQueue->mainViewModelInstance(
+              smHandle, listener.get(), requestID);
+
+      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+      self->_viewModelInstanceListeners[@(vmiHandle)] =
+          [NSValue valueWithPointer:listener.release()];
+
+      return vmiHandle;
+    }];
+}
+
+- (void)setGlobalViewModelInstance:(uint64_t)stateMachineHandle
+                             named:(NSString*)name
+               toViewModelInstance:(uint64_t)viewModelInstanceHandle
+                         requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto smHandle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+          viewModelInstanceHandle);
+      auto stdName = std::string([name UTF8String]);
+      self->_commandQueue->setGlobalViewModelInstance(
+          smHandle, std::move(stdName), vmiHandle, requestID);
+    }];
+}
+
+- (uint64_t)globalViewModelInstance:(uint64_t)stateMachineHandle
+                              named:(NSString*)name
+                           observer:(id<RiveViewModelInstanceListener>)observer
+                          requestID:(uint64_t)requestID
+{
+    return [self executeCommandWithReturn:^uint64_t {
+      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+      auto smHandle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      auto stdName = std::string([name UTF8String]);
+      rive::ViewModelInstanceHandle handle =
+          self->_commandQueue->globalViewModelInstance(
+              smHandle, std::move(stdName), listener.get(), requestID);
+
+      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+      self->_viewModelInstanceListeners[@(vmiHandle)] =
+          [NSValue valueWithPointer:listener.release()];
+
+      return vmiHandle;
+    }];
+}
+
+- (void)bind:(uint64_t)stateMachineHandle requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle =
+          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+      self->_commandQueue->bind(handle, requestID);
     }];
 }
 

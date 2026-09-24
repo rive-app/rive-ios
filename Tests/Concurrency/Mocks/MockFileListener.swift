@@ -14,6 +14,7 @@ class MockFileListener: NSObject, FileListener {
     private(set) var capturedMessage: String = ""
     private(set) var capturedArtboardNames: [String]?
     private(set) var capturedViewModelNames: [String]?
+    private(set) var capturedGlobalViewModelNames: [String]?
     private(set) var capturedViewModelInstanceNames: [String]?
     private(set) var capturedViewModelName: String?
     private(set) var capturedViewModelEnums: [[String: Any]]?
@@ -60,6 +61,12 @@ class MockFileListener: NSObject, FileListener {
         capturedFileHandle = fileHandle
         capturedRequestID = requestID
         capturedViewModelNames = names
+    }
+
+    func onGlobalViewModelsListed(_ fileHandle: UInt64, requestID: UInt64, names: [String]) {
+        capturedFileHandle = fileHandle
+        capturedRequestID = requestID
+        capturedGlobalViewModelNames = names
     }
 
     func onViewModelInstanceNamesListed(_ fileHandle: UInt64, requestID: UInt64, viewModelName: String, names: [String]) {

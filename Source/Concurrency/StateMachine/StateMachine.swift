@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 /// A class that represents a Rive state machine, managing animation states and transitions.
 ///
@@ -23,12 +24,19 @@ public final class StateMachine: Equatable {
     typealias StateMachineHandle = UInt64
 
     let stateMachineHandle: StateMachineHandle
+    let sourceArtboard: Artboard
     private let dependencies: Dependencies
+
+    @MainActor private(set) var mainBinding: ViewModelInstance?
+    @MainActor private(set) var globalBindings: [String: ViewModelInstance] = [:]
+
+    @MainActor let bindingsDidChange = PassthroughSubject<Void, Never>()
     
     @MainActor
-    init(dependencies: Dependencies, stateMachineHandle: StateMachineHandle) {
+    init(dependencies: Dependencies, stateMachineHandle: StateMachineHandle, sourceArtboard: Artboard) {
         self.dependencies = dependencies
         self.stateMachineHandle = stateMachineHandle
+        self.sourceArtboard = sourceArtboard
     }
 
     deinit {
@@ -49,7 +57,7 @@ public final class StateMachine: Equatable {
     /// - Parameters:
     ///   - lhs: The left-hand side state machine instance.
     ///   - rhs: The right-hand side state machine instance.
-    /// - Returns: `true` if both artboards reference the same underlying artboard handle.
+    /// - Returns: `true` if both state machines reference the same underlying state machine handle.
     public static func ==(lhs: StateMachine, rhs: StateMachine) -> Bool {
         return lhs.stateMachineHandle == rhs.stateMachineHandle
     }
@@ -153,9 +161,109 @@ public final class StateMachine: Equatable {
     /// properties during state transitions and animations, enabling data-driven animations.
     ///
     /// - Parameter viewModelInstance: The view model instance to bind to this state machine
+    @available(*, deprecated, message: "bindViewModelInstance(_:) will be removed in a future release. Use bindViewModelInstances(main:globals:) instead.")
     @MainActor
     public func bindViewModelInstance(_ viewModelInstance: ViewModelInstance) {
-        dependencies.stateMachineService.bindViewModelInstance(stateMachineHandle, to: viewModelInstance.viewModelInstanceHandle)
+        applyViewModelInstanceBindings(main: viewModelInstance, globals: [])
+    }
+
+    /// Binds main and global view model instances to this state machine.
+    ///
+    /// Each instance accepted by the runtime replaces the instance currently bound in the same
+    /// slot. Main and global instances that are not provided are preserved. If a required slot has
+    /// neither a provided nor an existing instance, the runtime creates its authored default when
+    /// available.
+    ///
+    /// All supplied global names are validated against the source file before any bindings are
+    /// applied. Use ``File.getGlobalViewModelNames()`` to discover the available global names.
+    ///
+    /// Retain references to any view model instances you need to read or modify after binding.
+    /// Bound instances cannot be retrieved through the state machine. Each supplied instance is
+    /// retained until it is replaced in its slot or the state machine is deallocated.
+    ///
+    /// - Parameters:
+    ///   - main: The main view model instance to apply, or `nil` to preserve the current instance
+    ///   - globals: The global view model instance bindings to apply
+    /// - Throws: ``StateMachineError.duplicateGlobalViewModelInstance(_:)`` if the same global name
+    ///   appears more than once in one binding call, ``StateMachineError.invalidGlobalViewModelName(_:)``
+    ///   if a name is not a global in the source file, ``StateMachineError.error(_:)`` if metadata
+    ///   cannot be read, or ``StateMachineError.cancelled`` if the operation is cancelled
+    @MainActor
+    public func bindViewModelInstances(
+        main: ViewModelInstance? = nil,
+        @GlobalViewModelInstanceBindingsBuilder globals: () -> [(String, ViewModelInstance)] = { [] }
+    ) async throws {
+        let globals = globals()
+        try GlobalViewModelInstanceBindingsBuilder.validate(globals)
+        if globals.isEmpty == false {
+            let names: Set<String>
+            do {
+                names = Set(try await sourceArtboard.sourceFile.getGlobalViewModelNames())
+            } catch FileError.cancelled {
+                throw StateMachineError.cancelled
+            } catch is CancellationError {
+                throw StateMachineError.cancelled
+            } catch {
+                throw StateMachineError.error(error.localizedDescription)
+            }
+            for (name, _) in globals {
+                guard names.contains(name) else {
+                    throw StateMachineError.invalidGlobalViewModelName(name)
+                }
+            }
+        }
+        guard Task.isCancelled == false else {
+            throw StateMachineError.cancelled
+        }
+        applyViewModelInstanceBindings(main: main, globals: globals)
+    }
+
+    @MainActor
+    private func applyViewModelInstanceBindings(
+        main: ViewModelInstance?,
+        globals: [(String, ViewModelInstance)]
+    ) {
+        if let main {
+            setViewModelInstance(main)
+        }
+        for (name, viewModelInstance) in globals {
+            setGlobalViewModelInstance(named: name, to: viewModelInstance)
+        }
+
+        bind()
+
+        if let main {
+            mainBinding = main
+        }
+        for (name, viewModelInstance) in globals {
+            globalBindings[name] = viewModelInstance
+        }
+        bindingsDidChange.send()
+    }
+
+    @MainActor
+    private func setViewModelInstance(_ viewModelInstance: ViewModelInstance) {
+        dependencies.stateMachineService.setViewModelInstance(
+            stateMachineHandle,
+            to: viewModelInstance.viewModelInstanceHandle
+        )
+    }
+
+    @MainActor
+    private func setGlobalViewModelInstance(
+        named name: String,
+        to viewModelInstance: ViewModelInstance
+    ) {
+        dependencies.stateMachineService.setGlobalViewModelInstance(
+            stateMachineHandle,
+            named: name,
+            to: viewModelInstance.viewModelInstanceHandle
+        )
+    }
+
+    @MainActor
+    private func bind() {
+        dependencies.stateMachineService.bind(stateMachineHandle)
     }
 }
 

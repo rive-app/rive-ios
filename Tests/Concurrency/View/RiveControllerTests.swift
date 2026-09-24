@@ -130,6 +130,120 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
+    func test_init_observesUniqueBoundViewModelInstances() async throws {
+        let fixture = try await makeController(dataBind: .none) { stateMachine, commandQueue in
+            let shared = self.makeViewModelInstance(handle: 1, commandQueue: commandQueue)
+            let theme = self.makeViewModelInstance(handle: 2, commandQueue: commandQueue)
+            try await stateMachine.bindViewModelInstances(main: shared) {
+                ("Shared", shared)
+                ("Theme", theme)
+            }
+        }
+
+        XCTAssertEqual(fixture.controller.dirtyObservationHandlesForTesting, Set([1, 2]))
+    }
+
+    @MainActor
+    func test_bindViewModelInstances_observesGlobalAndMarksDirty() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        let theme = makeViewModelInstance(handle: 1, commandQueue: fixture.commandQueue)
+        await expectSettled(within: fixture)
+
+        await expectIsSettled(false, within: fixture) {
+            try! await fixture.stateMachine.bindViewModelInstances {
+                ("Theme", theme)
+            }
+        }
+
+        XCTAssertEqual(fixture.controller.dirtyObservationHandlesForTesting, Set([1]))
+
+        await expectSettledAfterDirty(within: fixture)
+        await expectIsSettled(false, within: fixture) {
+            theme.setValue(of: StringProperty(path: "value"), to: "updated")
+        }
+    }
+
+    @MainActor
+    func test_replacingViewModelInstance_updatesDirtyObservation() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        let first = makeViewModelInstance(handle: 1, commandQueue: fixture.commandQueue)
+        let second = makeViewModelInstance(handle: 2, commandQueue: fixture.commandQueue)
+
+        try await fixture.stateMachine.bindViewModelInstances {
+            ("Theme", first)
+        }
+        await expectSettledAfterDirty(within: fixture)
+
+        var started: [UInt64] = []
+        var cancelled: [UInt64] = []
+        fixture.controller.onDirtyObservationStartedForTesting = { started.append($0) }
+        fixture.controller.onDirtyObservationCancelledForTesting = { cancelled.append($0) }
+
+        try await fixture.stateMachine.bindViewModelInstances {
+            ("Theme", second)
+        }
+
+        XCTAssertEqual(started, [2])
+        XCTAssertEqual(cancelled, [1])
+        XCTAssertEqual(fixture.controller.dirtyObservationHandlesForTesting, Set([2]))
+
+        await expectSettledAfterDirty(within: fixture)
+        first.setValue(of: StringProperty(path: "value"), to: "old")
+        await Task.yield()
+        await Task.yield()
+        XCTAssertTrue(fixture.controller.isSettled)
+
+        await expectIsSettled(false, within: fixture) {
+            second.setValue(of: StringProperty(path: "value"), to: "new")
+        }
+    }
+
+    @MainActor
+    func test_swappingViewModelInstanceBindings_preservesDirtyObservations() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        let first = makeViewModelInstance(handle: 1, commandQueue: fixture.commandQueue)
+        let second = makeViewModelInstance(handle: 2, commandQueue: fixture.commandQueue)
+
+        try await fixture.stateMachine.bindViewModelInstances(main: first) {
+            ("First", first)
+            ("Second", second)
+        }
+
+        var started: [UInt64] = []
+        var cancelled: [UInt64] = []
+        fixture.controller.onDirtyObservationStartedForTesting = { started.append($0) }
+        fixture.controller.onDirtyObservationCancelledForTesting = { cancelled.append($0) }
+
+        try await fixture.stateMachine.bindViewModelInstances {
+            ("First", second)
+            ("Second", first)
+        }
+
+        XCTAssertTrue(started.isEmpty)
+        XCTAssertTrue(cancelled.isEmpty)
+        XCTAssertEqual(fixture.controller.dirtyObservationHandlesForTesting, Set([1, 2]))
+    }
+
+    @MainActor
+    func test_deinit_cancelsAllDirtyObservations() async throws {
+        var fixture: ControllerFixture? = try await makeController(dataBind: .none) { stateMachine, commandQueue in
+            let main = self.makeViewModelInstance(handle: 1, commandQueue: commandQueue)
+            let theme = self.makeViewModelInstance(handle: 2, commandQueue: commandQueue)
+            try await stateMachine.bindViewModelInstances(main: main) {
+                ("Theme", theme)
+            }
+        }
+        var cancelled = Set<UInt64>()
+        fixture?.controller.onDirtyObservationCancelledForTesting = { cancelled.insert($0) }
+        weak let controller = fixture?.controller
+
+        fixture = nil
+
+        XCTAssertNil(controller)
+        XCTAssertEqual(cancelled, Set([1, 2]))
+    }
+
+    @MainActor
     func test_handleInput_setsIsSettledFalse() async throws {
         let fixture = try await makeController(dataBind: .none)
         await expectSettled(within: fixture)
@@ -1136,7 +1250,8 @@ final class RiveControllerTests: XCTestCase {
     private func makeController(
         dataBind: DataBind = .none,
         fit: Fit = .contain(alignment: .center),
-        delegate: MockControllerDelegate? = nil
+        delegate: MockControllerDelegate? = nil,
+        prepareStateMachine: (@MainActor (StateMachine, MockCommandQueue) async throws -> Void)? = nil
     ) async throws -> ControllerFixture {
         let delegate = delegate ?? MockControllerDelegate()
         let (file, commandQueue, _, _) = await File.mock(fileHandle: 123)
@@ -1144,14 +1259,23 @@ final class RiveControllerTests: XCTestCase {
         let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let artboard = Artboard(
             dependencies: .init(artboardService: artboardService),
-            artboardHandle: 42
+            artboardHandle: 42,
+            sourceFile: file
         )
 
         let stateMachineService = StateMachineService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let stateMachine = StateMachine(
             dependencies: .init(stateMachineService: stateMachineService),
-            stateMachineHandle: 123
+            stateMachineHandle: 123,
+            sourceArtboard: artboard
         )
+
+        let fileService = file.dependencies.fileService
+        commandQueue.stubRequestGlobalViewModelNames { handle, requestID in
+            fileService.onGlobalViewModelsListed(handle, requestID: requestID, names: ["Theme", "Shared", "First", "Second"])
+        }
+
+        try await prepareStateMachine?(stateMachine, commandQueue)
 
         if case .auto = dataBind {
             let fileService = file.dependencies.fileService
@@ -1177,11 +1301,25 @@ final class RiveControllerTests: XCTestCase {
             rive: rive,
             stateMachine: stateMachine,
             stateMachineService: stateMachineService,
-            dirtyFlow: rive.viewModelInstance.map { viewModelInstance in
-                return { @MainActor in viewModelInstance.dirtyStream() }
-            },
-            viewModelInstance: rive.viewModelInstance,
+            viewModelInstance: rive.stateMachine.mainBinding,
             commandQueue: commandQueue
+        )
+    }
+
+    @MainActor
+    private func makeViewModelInstance(
+        handle: ViewModelInstance.ViewModelInstanceHandle,
+        commandQueue: MockCommandQueue
+    ) -> ViewModelInstance {
+        let service = ViewModelInstanceService(
+            dependencies: .init(
+                commandQueue: commandQueue,
+                messageGate: CommandQueueMessageGate(driver: commandQueue)
+            )
+        )
+        return ViewModelInstance(
+            handle: handle,
+            dependencies: .init(viewModelInstanceService: service)
         )
     }
 
@@ -1195,13 +1333,15 @@ final class RiveControllerTests: XCTestCase {
         let artboardService = ArtboardService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let artboard = Artboard(
             dependencies: .init(artboardService: artboardService),
-            artboardHandle: 42
+            artboardHandle: 42,
+            sourceFile: file
         )
 
         let stateMachineService = StateMachineService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
         let stateMachine = StateMachine(
             dependencies: .init(stateMachineService: stateMachineService),
-            stateMachineHandle: 123
+            stateMachineHandle: 123,
+            sourceArtboard: artboard
         )
 
         let rive = try await Rive(
@@ -1254,6 +1394,17 @@ final class RiveControllerTests: XCTestCase {
         await emitSettledAndAwaitPending(within: fixture, requestID: 1)
         fixture.controller.resolveForTesting()
         XCTAssertTrue(fixture.controller.isSettled)
+    }
+
+    @MainActor
+    private func expectSettledAfterDirty(within fixture: ControllerFixture) async {
+        _ = fixture.controller.advance(
+            now: 0,
+            isOnscreen: true,
+            drawableSize: fixture.delegate.drawableSize,
+            scaleProvider: fixture.delegate
+        )
+        await expectSettled(within: fixture)
     }
 
     #if !os(macOS) || RIVE_MAC_CATALYST
@@ -1311,7 +1462,7 @@ final class RiveControllerTests: XCTestCase {
     private func expectIsSettled(
         _ expectedValue: Bool,
         within fixture: ControllerFixture,
-        trigger: (@MainActor () -> Void)? = nil
+        trigger: (@MainActor () async -> Void)? = nil
     ) async {
         guard let trigger else {
             XCTAssertEqual(fixture.controller.isSettled, expectedValue)
@@ -1324,7 +1475,7 @@ final class RiveControllerTests: XCTestCase {
             settledExpectation.fulfill()
         }
 
-        trigger()
+        await trigger()
 
         await fulfillment(of: [settledExpectation], timeout: 1.0)
 
@@ -1338,7 +1489,6 @@ private struct ControllerFixture {
     let rive: Rive
     let stateMachine: StateMachine
     let stateMachineService: StateMachineService
-    let dirtyFlow: (@MainActor () -> AsyncStream<Void>)?
     let viewModelInstance: ViewModelInstance?
     let commandQueue: MockCommandQueue
 }

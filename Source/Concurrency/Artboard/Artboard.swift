@@ -24,6 +24,7 @@ public final class Artboard: Equatable {
 
     /// The internal handle that identifies this artboard instance.
     let artboardHandle: ArtboardHandle
+    let sourceFile: File
 
     /// The dependencies required for artboard operations.
     let dependencies: Dependencies
@@ -43,9 +44,10 @@ public final class Artboard: Equatable {
     ///
     /// - Note: This initializer is not public, and should only be used by File or in tests.
     @MainActor
-    init(dependencies: Dependencies, artboardHandle: ArtboardHandle) {
+    init(dependencies: Dependencies, artboardHandle: ArtboardHandle, sourceFile: File) {
         self.dependencies = dependencies
         self.artboardHandle = artboardHandle
+        self.sourceFile = sourceFile
     }
 
     deinit {
@@ -83,7 +85,7 @@ public final class Artboard: Equatable {
         return try await dependencies.artboardService.getStateMachineNames(from: artboardHandle)
     }
 
-    /// Creates a state machine from this artboard.
+    /// Creates and binds a state machine from this artboard using its authored defaults.
     ///
     /// If a name is provided, creates the state machine with that specific name. If `nil` is provided,
     /// creates the default state machine from the artboard.
@@ -93,6 +95,48 @@ public final class Artboard: Equatable {
     /// - Throws: `ArtboardError.invalidStateMachine` if the specified state machine name does not exist
     @MainActor
     public func createStateMachine(_ name: String? = nil) async throws -> StateMachine {
+        return try await createStateMachine(name, binding: nil)
+    }
+
+    /// Creates and binds a state machine from this artboard with optional view model instances.
+    ///
+    /// If a name is provided, creates the state machine with that specific name. If `nil` is provided,
+    /// creates the default state machine from the artboard. Supplied main and global view model
+    /// instances are applied before binding. When an instance is not supplied, the runtime creates
+    /// and binds its authored default when available.
+    ///
+    /// Retain references to any supplied instances you need to read or modify after binding.
+    /// Bound instances cannot be retrieved through the state machine.
+    ///
+    /// - Parameters:
+    ///   - name: The name of the state machine to create, or `nil` for the default state machine
+    ///   - main: The main view model instance to bind, or `nil` to use the authored default
+    ///   - globals: The global view model instances to bind
+    /// - Returns: A new `StateMachine` instance
+    /// - Throws: `ArtboardError.invalidStateMachine` if the specified state machine name does not
+    ///   exist, or ``StateMachineError.duplicateGlobalViewModelInstance(_:)`` if the same global name
+    ///   appears more than once. Throws ``StateMachineError.invalidGlobalViewModelName(_:)`` for
+    ///   names not defined as globals in the source file, or ``StateMachineError.error(_:)`` if
+    ///   metadata cannot be read
+    @MainActor
+    public func createStateMachine(
+        _ name: String? = nil,
+        binding main: ViewModelInstance? = nil,
+        @GlobalViewModelInstanceBindingsBuilder globals: () -> [(String, ViewModelInstance)] = { [] }
+    ) async throws -> StateMachine {
+        let globals = globals()
+        try GlobalViewModelInstanceBindingsBuilder.validate(globals)
+        let stateMachine = try await instantiateStateMachine(name)
+        try await stateMachine.bindViewModelInstances(main: main) {
+            for binding in globals {
+                binding
+            }
+        }
+        return stateMachine
+    }
+
+    @MainActor
+    func instantiateStateMachine(_ name: String? = nil) async throws -> StateMachine {
         let logContext = Self.logContext(for: artboardHandle)
         if let name {
             RiveLog.debug(tag: .artboard, "\(logContext) Creating state machine '\(name)'")
@@ -112,7 +156,8 @@ public final class Artboard: Equatable {
         )
         return StateMachine(
             dependencies: .init(stateMachineService: stateMachineService),
-            stateMachineHandle: handle
+            stateMachineHandle: handle,
+            sourceArtboard: self
         )
     }
 

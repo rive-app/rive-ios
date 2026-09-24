@@ -126,6 +126,17 @@ NS_SWIFT_NAME(FileListener)
                      names:(NSArray<NSString*>*)names;
 
 /**
+ * Called when global view model names are listed for a file.
+ *
+ * @param fileHandle The unique identifier of the file
+ * @param requestID The identifier of the listing request
+ * @param names Array of global view model names in the file
+ */
+- (void)onGlobalViewModelsListed:(uint64_t)fileHandle
+                       requestID:(uint64_t)requestID
+                           names:(NSArray<NSString*>*)names;
+
+/**
  * Called when view model instance names are listed for a file.
  *
  * @param fileHandle The unique identifier of the file

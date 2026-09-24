@@ -58,7 +58,7 @@ final class RiveController {
 
     private var cancellables = Set<AnyCancellable>()
     private var settledStreamTask: Task<Void, Never>?
-    private var dirtyStreamTask: Task<Void, Never>?
+    private var dirtyStreamTasks: [ViewModelInstance.ViewModelInstanceHandle: Task<Void, Never>] = [:]
     private let inputHandler: InputHandler
     private let messageGate: CommandQueueMessageGate
     private weak var delegate: RiveControllerDelegate?
@@ -80,6 +80,11 @@ final class RiveController {
     #if TESTING
     var onIsSettledChangedForTesting: ((Bool) -> Void)?
     var onHasPendingSettleForTesting: (() -> Void)?
+    var onDirtyObservationStartedForTesting: ((ViewModelInstance.ViewModelInstanceHandle) -> Void)?
+    var onDirtyObservationCancelledForTesting: ((ViewModelInstance.ViewModelInstanceHandle) -> Void)?
+    var dirtyObservationHandlesForTesting: Set<ViewModelInstance.ViewModelInstanceHandle> {
+        return Set(dirtyStreamTasks.keys)
+    }
     #endif
 
     // MARK: -
@@ -133,7 +138,12 @@ final class RiveController {
 
     deinit {
         settledStreamTask?.cancel()
-        dirtyStreamTask?.cancel()
+        for (handle, task) in dirtyStreamTasks {
+            task.cancel()
+            #if TESTING
+            onDirtyObservationCancelledForTesting?(handle)
+            #endif
+        }
     }
 
     func handleInput(_ input: Input) {
@@ -325,6 +335,16 @@ final class RiveController {
             }
             .store(in: &cancellables)
 
+        rive
+            .stateMachine
+            .bindingsDidChange
+            .sink { [weak self] in
+                guard let self else { return }
+                updateDirtyStreamTasks()
+                markDirty()
+            }
+            .store(in: &cancellables)
+
         rive.file.worker.globalAssetsDidChange
             .sink { [weak self] in
                 self?.markDirty()
@@ -352,16 +372,40 @@ final class RiveController {
             }
         }
 
-        if let viewModelInstance = rive.viewModelInstance {
-            dirtyStreamTask?.cancel()
-            let dirtyStream = viewModelInstance.dirtyStream()
-            dirtyStreamTask = Task { @MainActor [weak self] in
+        updateDirtyStreamTasks()
+    }
+
+    private func updateDirtyStreamTasks() {
+        var viewModelInstances: [ViewModelInstance.ViewModelInstanceHandle: ViewModelInstance] = [:]
+        if let mainBinding = rive.stateMachine.mainBinding {
+            viewModelInstances[mainBinding.viewModelInstanceHandle] = mainBinding
+        }
+        for globalBinding in rive.stateMachine.globalBindings.values {
+            viewModelInstances[globalBinding.viewModelInstanceHandle] = globalBinding
+        }
+
+        let observedHandles = Set(dirtyStreamTasks.keys)
+        let currentHandles = Set(viewModelInstances.keys)
+
+        for handle in observedHandles.subtracting(currentHandles) {
+            dirtyStreamTasks.removeValue(forKey: handle)?.cancel()
+            #if TESTING
+            onDirtyObservationCancelledForTesting?(handle)
+            #endif
+        }
+
+        for (handle, viewModelInstance) in viewModelInstances where observedHandles.contains(handle) == false {
+            let dirtyStream = viewModelInstance._dirtyStream()
+            dirtyStreamTasks[handle] = Task { @MainActor [weak self] in
                 for await _ in dirtyStream {
                     guard let self else { break }
                     if Task.isCancelled { break }
                     markDirty()
                 }
             }
+            #if TESTING
+            onDirtyObservationStartedForTesting?(handle)
+            #endif
         }
     }
 }

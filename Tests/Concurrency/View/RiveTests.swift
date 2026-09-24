@@ -10,7 +10,6 @@ import XCTest
 @preconcurrency @testable import RiveRuntime
 
 class RiveTests: XCTestCase {
-    
     // MARK: - Initialization Tests
     
     @MainActor
@@ -103,6 +102,7 @@ class RiveTests: XCTestCase {
         XCTAssertEqual(capturedArtboardHandle, 42)
         XCTAssertEqual(rive.artboard.artboardHandle, 42)
         XCTAssertEqual(rive.stateMachine.stateMachineHandle, 99)
+        XCTAssertTrue(mockCommandQueue.bindCalls.isEmpty)
     }
     
     @MainActor
@@ -162,15 +162,6 @@ class RiveTests: XCTestCase {
             dependencies: .init(viewModelInstanceService: viewModelInstanceService)
         )
 
-        let bindExpectation = expectation(description: "bindViewModelInstance called")
-        var capturedStateMachineHandle: UInt64 = 0
-        var capturedViewModelInstanceHandle: UInt64 = 0
-        mockCommandQueue.stubBindViewModelInstance { stateMachineHandle, viewModelInstanceHandle, _ in
-            capturedStateMachineHandle = stateMachineHandle
-            capturedViewModelInstanceHandle = viewModelInstanceHandle
-            bindExpectation.fulfill()
-        }
-        
         let rive = try await Rive(
             file: file,
             artboard: artboard,
@@ -178,12 +169,134 @@ class RiveTests: XCTestCase {
             dataBind: .instance(viewModelInstance)
         )
         
-        await fulfillment(of: [bindExpectation], timeout: 1)
-        XCTAssertEqual(capturedStateMachineHandle, 99)
-        XCTAssertEqual(capturedViewModelInstanceHandle, 200)
-        XCTAssertEqual(rive.viewModelInstance?.viewModelInstanceHandle, 200)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.stateMachineHandle, 99)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.viewModelInstanceHandle, 200)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertTrue(rive.stateMachine.mainBinding === viewModelInstance)
+        XCTAssertTrue(rive.viewModelInstance === viewModelInstance)
+        XCTAssertTrue(mockCommandQueue.mainViewModelInstanceCalls.isEmpty)
+
+        let modernRive = try await Rive(file: file, artboard: artboard, stateMachine: stateMachine)
+        let unboundRive = try await Rive(file: file, artboard: artboard, stateMachine: stateMachine, dataBind: .none)
+
+        XCTAssertNil(modernRive.viewModelInstance)
+        XCTAssertNil(unboundRive.viewModelInstance)
+        XCTAssertTrue(rive.viewModelInstance === viewModelInstance)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
     }
-    
+
+    @MainActor
+    func test_init_withFile_createsBoundDefaultsWithoutLookingUpInstances() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+
+        var artboardObserver: (any ArtboardListener)?
+        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, observer, requestID in
+            artboardObserver = observer
+            fileService.onArtboardInstantiated(fileHandle, requestID: requestID, artboardHandle: 42)
+            return 42
+        }
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, observer, requestID in
+            artboardObserver?.onStateMachineInstantiated(artboardHandle, requestID: requestID, stateMachineHandle: 99)
+            return 99
+        }
+        var didCreateDefaultViewModelInstance = false
+        mockCommandQueue.stubCreateDefaultViewModelInstance { _, fileHandle, _, requestID in
+            didCreateDefaultViewModelInstance = true
+            fileService.onViewModelInstanceInstantiated(
+                fileHandle,
+                requestID: requestID,
+                viewModelInstanceHandle: 300
+            )
+            return 300
+        }
+
+        let rive = try await Rive(file: file)
+
+        XCTAssertEqual(rive.artboard.artboardHandle, 42)
+        XCTAssertEqual(rive.stateMachine.stateMachineHandle, 99)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertTrue(mockCommandQueue.mainViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.globalViewModelInstanceCalls.isEmpty)
+        XCTAssertFalse(didCreateDefaultViewModelInstance)
+        XCTAssertNil(rive.viewModelInstance)
+    }
+
+    @MainActor
+    func test_init_withArtboard_createsBoundDefaultStateMachineWithoutLookingUpInstances() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, observer, requestID in
+            artboardService.onStateMachineInstantiated(artboardHandle, requestID: requestID, stateMachineHandle: 99)
+            return 99
+        }
+        var didCreateDefaultViewModelInstance = false
+        mockCommandQueue.stubCreateDefaultViewModelInstance { _, fileHandle, _, requestID in
+            didCreateDefaultViewModelInstance = true
+            fileService.onViewModelInstanceInstantiated(
+                fileHandle,
+                requestID: requestID,
+                viewModelInstanceHandle: 300
+            )
+            return 300
+        }
+
+        let rive = try await Rive(file: file, artboard: artboard)
+
+        XCTAssertTrue(rive.artboard === artboard)
+        XCTAssertEqual(rive.stateMachine.stateMachineHandle, 99)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertTrue(mockCommandQueue.mainViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.globalViewModelInstanceCalls.isEmpty)
+        XCTAssertFalse(didCreateDefaultViewModelInstance)
+        XCTAssertNil(rive.viewModelInstance)
+    }
+
+    @MainActor
+    func test_init_withStateMachine_doesNotRebindOrLookUpInstances() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let stateMachine = StateMachine(dependencies: .init(stateMachineService: stateMachineService), stateMachineHandle: 99)
+
+        let rive = try await Rive(file: file, artboard: artboard, stateMachine: stateMachine)
+
+        XCTAssertTrue(rive.artboard === artboard)
+        XCTAssertTrue(rive.stateMachine === stateMachine)
+        XCTAssertTrue(mockCommandQueue.bindCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.mainViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.globalViewModelInstanceCalls.isEmpty)
+        XCTAssertNil(rive.viewModelInstance)
+    }
+
+    @MainActor
+    func test_init_withStateMachineAndCachedMain_doesNotExposeCachedInstanceThroughLegacyGetter() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let stateMachine = StateMachine(dependencies: .init(stateMachineService: stateMachineService), stateMachineHandle: 99)
+        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let viewModelInstance = ViewModelInstance(
+            handle: 200,
+            dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+        )
+        try await stateMachine.bindViewModelInstances(main: viewModelInstance)
+
+        let rive = try await Rive(file: file, artboard: artboard, stateMachine: stateMachine)
+
+        XCTAssertNil(rive.viewModelInstance)
+        XCTAssertTrue(stateMachine.mainBinding === viewModelInstance)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertTrue(mockCommandQueue.mainViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.globalViewModelInstanceCalls.isEmpty)
+    }
+
     // MARK: - DataBind Tests
     
     @MainActor
@@ -210,15 +323,6 @@ class RiveTests: XCTestCase {
             return 200
         }
         
-        let bindExpectation = expectation(description: "bindViewModelInstance called")
-        var capturedStateMachineHandle: UInt64 = 0
-        var capturedViewModelInstanceHandle: UInt64 = 0
-        mockCommandQueue.stubBindViewModelInstance { stateMachineHandle, viewModelInstanceHandle, _ in
-            capturedStateMachineHandle = stateMachineHandle
-            capturedViewModelInstanceHandle = viewModelInstanceHandle
-            bindExpectation.fulfill()
-        }
-        
         let rive = try await Rive(
             file: file,
             artboard: artboard,
@@ -226,11 +330,13 @@ class RiveTests: XCTestCase {
             dataBind: .auto
         )
         
-        await fulfillment(of: [createViewModelInstanceExpectation, bindExpectation], timeout: 1)
+        await fulfillment(of: [createViewModelInstanceExpectation], timeout: 1)
         XCTAssertEqual(capturedArtboardHandle, 42)
         XCTAssertEqual(capturedFileHandle, 123)
-        XCTAssertEqual(capturedStateMachineHandle, 99)
-        XCTAssertEqual(capturedViewModelInstanceHandle, 200)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.stateMachineHandle, 99)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.viewModelInstanceHandle, 200)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
         XCTAssertEqual(rive.viewModelInstance?.viewModelInstanceHandle, 200)
     }
     
@@ -246,12 +352,6 @@ class RiveTests: XCTestCase {
         let stateMachineDependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
         let stateMachine = StateMachine(dependencies: stateMachineDependencies, stateMachineHandle: 99)
         
-        let bindExpectation = expectation(description: "bindViewModelInstance should not be called")
-        bindExpectation.isInverted = true
-        mockCommandQueue.stubBindViewModelInstance { _, _, _ in
-            bindExpectation.fulfill()
-        }
-        
         let createViewModelInstanceExpectation = expectation(description: "createViewModelInstance should not be called")
         createViewModelInstanceExpectation.isInverted = true
         mockCommandQueue.stubCreateDefaultViewModelInstance { _, _, _, _ in
@@ -266,12 +366,14 @@ class RiveTests: XCTestCase {
             dataBind: .none
         )
         
-        await fulfillment(of: [bindExpectation, createViewModelInstanceExpectation], timeout: 1)
+        await fulfillment(of: [createViewModelInstanceExpectation], timeout: 1)
+        XCTAssertTrue(mockCommandQueue.setViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.bindCalls.isEmpty)
         XCTAssertNil(rive.viewModelInstance)
     }
     
     @MainActor
-    func test_init_withDefaultDataBind_usesAuto() async throws {
+    func test_init_withoutDataBind_usesNewInitializer() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
         let fileService = file.dependencies.fileService
 
@@ -283,27 +385,28 @@ class RiveTests: XCTestCase {
         let stateMachineDependencies = StateMachine.Dependencies(stateMachineService: stateMachineService)
         let stateMachine = StateMachine(dependencies: stateMachineDependencies, stateMachineHandle: 99)
 
-        let createViewModelInstanceExpectation = expectation(description: "view model instance created")
+        var didCreateDefaultViewModelInstance = false
         mockCommandQueue.stubCreateDefaultViewModelInstance { _, fileHandle, _, requestID in
-            fileService.onViewModelInstanceInstantiated(fileHandle, requestID: requestID, viewModelInstanceHandle: 200)
-            createViewModelInstanceExpectation.fulfill()
-            return 200
+            didCreateDefaultViewModelInstance = true
+            fileService.onViewModelInstanceInstantiated(
+                fileHandle,
+                requestID: requestID,
+                viewModelInstanceHandle: 300
+            )
+            return 300
         }
-        
-        let bindExpectation = expectation(description: "bindViewModelInstance called")
-        mockCommandQueue.stubBindViewModelInstance { _, _, _ in
-            bindExpectation.fulfill()
-        }
-        
-        // Don't specify dataBind parameter - should default to .auto
+
         let rive = try await Rive(
             file: file,
             artboard: artboard,
             stateMachine: stateMachine
         )
-        
-        await fulfillment(of: [createViewModelInstanceExpectation, bindExpectation], timeout: 1)
-        XCTAssertNotNil(rive.viewModelInstance)
-        XCTAssertEqual(rive.viewModelInstance?.viewModelInstanceHandle, 200)
+
+        XCTAssertFalse(didCreateDefaultViewModelInstance)
+        XCTAssertTrue(mockCommandQueue.setViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.bindCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.mainViewModelInstanceCalls.isEmpty)
+        XCTAssertNil(rive.viewModelInstance)
+        XCTAssertTrue(mockCommandQueue.globalViewModelInstanceCalls.isEmpty)
     }
 }

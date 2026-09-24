@@ -23,6 +23,51 @@ import XCTest
 /// - Resource cleanup and memory management
 class StateMachineTests: XCTestCase {
     @MainActor
+    private func makeStateMachine(
+        handle: StateMachine.StateMachineHandle,
+        commandQueue: MockCommandQueue
+    ) -> StateMachine {
+        return makeStateMachineAndService(handle: handle, commandQueue: commandQueue).stateMachine
+    }
+
+    @MainActor
+    private func makeStateMachineAndService(
+        handle: StateMachine.StateMachineHandle,
+        commandQueue: MockCommandQueue
+    ) -> (stateMachine: StateMachine, service: StateMachineService) {
+        let service = StateMachineService(
+            dependencies: .init(
+                commandQueue: commandQueue,
+                messageGate: CommandQueueMessageGate(driver: commandQueue)
+            )
+        )
+        return (
+            StateMachine(
+                dependencies: .init(stateMachineService: service),
+                stateMachineHandle: handle
+            ),
+            service
+        )
+    }
+
+    @MainActor
+    private func makeViewModelInstance(
+        handle: ViewModelInstance.ViewModelInstanceHandle,
+        commandQueue: MockCommandQueue
+    ) -> ViewModelInstance {
+        let service = ViewModelInstanceService(
+            dependencies: .init(
+                commandQueue: commandQueue,
+                messageGate: CommandQueueMessageGate(driver: commandQueue)
+            )
+        )
+        return ViewModelInstance(
+            handle: handle,
+            dependencies: .init(viewModelInstanceService: service)
+        )
+    }
+
+    @MainActor
     func test_advance_callsServiceWithCorrectParameters() {
         let mockCommandQueue = MockCommandQueue()
         let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
@@ -55,44 +100,271 @@ class StateMachineTests: XCTestCase {
     }
 
     @MainActor
-    func test_bindViewModelInstance_callsServiceWithCorrectParameters() async {
+    func test_bindViewModelInstance_appliesMainBinding() {
         let mockCommandQueue = MockCommandQueue()
-        let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-
-        let stateMachineDependencies = StateMachine.Dependencies(
-            stateMachineService: stateMachineService
-        )
-
-        let viewModelInstanceDependencies = ViewModelInstance.Dependencies(
-            viewModelInstanceService: viewModelInstanceService
-        )
-
-        let stateMachine = StateMachine(dependencies: stateMachineDependencies, stateMachineHandle: 123)
-
-        let viewModelInstance = ViewModelInstance(handle: 456, dependencies: viewModelInstanceDependencies)
-
-        let expectation = expectation(description: "bindViewModelInstance called")
-        var capturedStateMachineHandle: UInt64 = 0
-        var capturedViewModelInstanceHandle: UInt64 = 0
-
-        mockCommandQueue.stubBindViewModelInstance { stateMachineHandle, viewModelInstanceHandle, _ in
-            capturedStateMachineHandle = stateMachineHandle
-            capturedViewModelInstanceHandle = viewModelInstanceHandle
-            expectation.fulfill()
-        }
+        let stateMachine = makeStateMachine(handle: 123, commandQueue: mockCommandQueue)
+        let viewModelInstance = makeViewModelInstance(handle: 456, commandQueue: mockCommandQueue)
 
         stateMachine.bindViewModelInstance(viewModelInstance)
 
-        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertTrue(mockCommandQueue.bindViewModelInstanceCalls.isEmpty)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.stateMachineHandle, 123)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.viewModelInstanceHandle, 456)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.bindCalls.first?.stateMachineHandle, 123)
+        XCTAssertTrue(stateMachine.mainBinding === viewModelInstance)
+    }
 
-        XCTAssertEqual(capturedStateMachineHandle, 123)
-        XCTAssertEqual(capturedViewModelInstanceHandle, 456)
+    @MainActor
+    func test_setViewModelInstance_callsCommandQueueWithCorrectParameters() {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
 
-        // Verify that the request was tracked
-        XCTAssertEqual(mockCommandQueue.bindViewModelInstanceCalls.count, 1)
-        XCTAssertEqual(mockCommandQueue.bindViewModelInstanceCalls.first?.stateMachineHandle, 123)
-        XCTAssertEqual(mockCommandQueue.bindViewModelInstanceCalls.first?.viewModelInstanceHandle, 456)
+        stateMachineService.setViewModelInstance(123, to: 456)
+
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.stateMachineHandle, 123)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.viewModelInstanceHandle, 456)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.requestID, 0)
+    }
+
+    @MainActor
+    func test_mainViewModelInstance_returnsReceivedHandle() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let observer = ViewModelInstanceService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+
+        mockCommandQueue.stubMainViewModelInstance { stateMachineHandle, receivedObserver, requestID in
+            XCTAssertEqual(stateMachineHandle, 123)
+            XCTAssertTrue((receivedObserver as AnyObject) === observer)
+            stateMachineService.onViewModelInstanceReceived(
+                stateMachineHandle,
+                requestID: requestID,
+                viewModelInstanceHandle: 789
+            )
+            return 456
+        }
+
+        let handle = try await stateMachineService.mainViewModelInstance(
+            for: 123,
+            observer: observer
+        )
+
+        XCTAssertEqual(handle, 789)
+        XCTAssertEqual(mockCommandQueue.mainViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.mainViewModelInstanceCalls.first?.requestID, 0)
+    }
+
+    @MainActor
+    func test_mainViewModelInstance_withServerError_throwsStateMachineError() async {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let observer = ViewModelInstanceService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+
+        mockCommandQueue.stubMainViewModelInstance { stateMachineHandle, _, requestID in
+            stateMachineService.onStateMachineError(
+                stateMachineHandle,
+                requestID: requestID,
+                message: "No main view model instance"
+            )
+            return 456
+        }
+
+        do {
+            _ = try await stateMachineService.mainViewModelInstance(
+                for: 123,
+                observer: observer
+            )
+            XCTFail("Expected StateMachineError.error to be thrown")
+        } catch let error as StateMachineError {
+            guard case .error = error else {
+                XCTFail("Expected StateMachineError.error, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected StateMachineError.error, got \(type(of: error)): \(error)")
+        }
+
+        XCTAssertTrue(mockCommandQueue.deleteViewModelInstanceCalls.isEmpty)
+        XCTAssertEqual(mockCommandQueue.deleteViewModelInstanceListenerCalls.map(\.viewModelInstanceHandle), [456])
+    }
+
+    @MainActor
+    func test_setGlobalViewModelInstance_callsCommandQueueWithCorrectParameters() {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+
+        stateMachineService.setGlobalViewModelInstance(
+            123,
+            named: "Theme",
+            to: 456
+        )
+
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.first?.stateMachineHandle, 123)
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.first?.name, "Theme")
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.first?.viewModelInstanceHandle, 456)
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.first?.requestID, 0)
+    }
+
+    @MainActor
+    func test_globalViewModelInstance_returnsReceivedHandle() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let observer = ViewModelInstanceService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+
+        mockCommandQueue.stubGlobalViewModelInstance { stateMachineHandle, name, receivedObserver, requestID in
+            XCTAssertEqual(stateMachineHandle, 123)
+            XCTAssertEqual(name, "Theme")
+            XCTAssertTrue((receivedObserver as AnyObject) === observer)
+            stateMachineService.onViewModelInstanceReceived(
+                stateMachineHandle,
+                requestID: requestID,
+                viewModelInstanceHandle: 789
+            )
+            return 456
+        }
+
+        let handle = try await stateMachineService.globalViewModelInstance(
+            for: 123,
+            named: "Theme",
+            observer: observer
+        )
+
+        XCTAssertEqual(handle, 789)
+        XCTAssertEqual(mockCommandQueue.globalViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.globalViewModelInstanceCalls.first?.requestID, 0)
+    }
+
+    @MainActor
+    func test_globalViewModelInstance_withServerError_throwsStateMachineError() async {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let observer = ViewModelInstanceService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+
+        mockCommandQueue.stubGlobalViewModelInstance { stateMachineHandle, _, _, requestID in
+            stateMachineService.onStateMachineError(
+                stateMachineHandle,
+                requestID: requestID,
+                message: "No matching global view model instance"
+            )
+            return 456
+        }
+
+        do {
+            _ = try await stateMachineService.globalViewModelInstance(
+                for: 123,
+                named: "Unknown",
+                observer: observer
+            )
+            XCTFail("Expected StateMachineError.error to be thrown")
+        } catch let error as StateMachineError {
+            guard case .error = error else {
+                XCTFail("Expected StateMachineError.error, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected StateMachineError.error, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_setGlobalViewModelInstance_withServerError_logsError() async {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let logger = StateMachineErrorLogger()
+        RiveLog.logger = logger
+        defer { RiveLog.logger = RiveLog.none }
+
+        mockCommandQueue.stubSetGlobalViewModelInstance { stateMachineHandle, _, _, requestID in
+            stateMachineService.onStateMachineError(
+                stateMachineHandle,
+                requestID: requestID,
+                message: "Invalid global view model name"
+            )
+        }
+
+        stateMachineService.setGlobalViewModelInstance(
+            123,
+            named: "Unknown",
+            to: 456
+        )
+        await Task.yield()
+
+        XCTAssertEqual(logger.errorTags, [.stateMachine])
+    }
+
+    @MainActor
+    func test_bind_callsCommandQueueWithCorrectParameters() {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+
+        stateMachineService.bind(123)
+
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.bindCalls.first?.stateMachineHandle, 123)
+        XCTAssertEqual(mockCommandQueue.bindCalls.first?.requestID, 0)
     }
 
     @MainActor
@@ -229,3 +501,26 @@ class StateMachineTests: XCTestCase {
 
 }
 
+private final class StateMachineErrorLogger: RiveLog.Logger, @unchecked Sendable {
+    private let lock = NSLock()
+    private var _errorTags: [RiveLog.Tag] = []
+
+    var errorTags: [RiveLog.Tag] {
+        lock.withLock { _errorTags }
+    }
+
+    func notice(tag: RiveLog.Tag, _ message: @escaping () -> String) {}
+    func debug(tag: RiveLog.Tag, _ message: @escaping () -> String) {}
+    func trace(tag: RiveLog.Tag, _ message: @escaping () -> String) {}
+    func info(tag: RiveLog.Tag, _ message: @escaping () -> String) {}
+
+    func error(tag: RiveLog.Tag, error: (any Error)?, _ message: @escaping () -> String) {
+        lock.withLock {
+            _errorTags.append(tag)
+        }
+    }
+
+    func warning(tag: RiveLog.Tag, _ message: @escaping () -> String) {}
+    func fault(tag: RiveLog.Tag, _ message: @escaping () -> String) {}
+    func critical(tag: RiveLog.Tag, _ message: @escaping () -> String) {}
+}

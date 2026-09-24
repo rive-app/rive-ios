@@ -31,6 +31,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private var deleteFileListenerStub: ((UInt64) -> Void)?
     private var requestArtboardNamesStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelNamesStub: ((UInt64, UInt64) -> Void)?
+    private var requestGlobalViewModelNamesStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelEnumsStub: ((UInt64, UInt64) -> Void)?
     private var requestViewModelInstanceNamesStub: ((UInt64, String, UInt64) -> Void)?
     private var requestFileAssetsStub: ((UInt64, UInt64) -> Void)?
@@ -93,6 +94,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var deleteFileListenerCalls: [DeleteFileListenerCall] = []
     private(set) var requestArtboardNamesCalls: [RequestArtboardNamesCall] = []
     private(set) var requestViewModelNamesCalls: [RequestViewModelNamesCall] = []
+    private(set) var requestGlobalViewModelNamesCalls: [RequestGlobalViewModelNamesCall] = []
     private(set) var requestViewModelEnumsCalls: [RequestViewModelEnumsCall] = []
     private(set) var requestViewModelInstanceNamesCalls: [RequestViewModelInstanceNamesCall] = []
     private(set) var requestFileAssetsCalls: [RequestFileAssetsCall] = []
@@ -126,6 +128,16 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var deleteStateMachineListenerCalls: [DeleteStateMachineListenerCall] = []
     private var bindViewModelInstanceStub: ((UInt64, UInt64, UInt64) -> Void)?
     private(set) var bindViewModelInstanceCalls: [BindViewModelInstanceCall] = []
+    private var setViewModelInstanceStub: ((UInt64, UInt64, UInt64) -> Void)?
+    private(set) var setViewModelInstanceCalls: [SetViewModelInstanceCall] = []
+    private var mainViewModelInstanceStub: ((UInt64, any ViewModelInstanceListener, UInt64) -> UInt64)?
+    private(set) var mainViewModelInstanceCalls: [MainViewModelInstanceCall] = []
+    private var setGlobalViewModelInstanceStub: ((UInt64, String, UInt64, UInt64) -> Void)?
+    private(set) var setGlobalViewModelInstanceCalls: [SetGlobalViewModelInstanceCall] = []
+    private var globalViewModelInstanceStub: ((UInt64, String, any ViewModelInstanceListener, UInt64) -> UInt64)?
+    private(set) var globalViewModelInstanceCalls: [GlobalViewModelInstanceCall] = []
+    private var bindStub: ((UInt64, UInt64) -> Void)?
+    private(set) var bindCalls: [BindCall] = []
 
     private var enableSemanticsStub: ((UInt64, UInt64) -> Void)?
     private(set) var enableSemanticsCalls: [EnableSemanticsCall] = []
@@ -248,6 +260,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     
     func stubRequestViewModelNames(_ stub: @escaping (UInt64, UInt64) -> Void) {
         requestViewModelNamesStub = stub
+    }
+
+    func stubRequestGlobalViewModelNames(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        requestGlobalViewModelNamesStub = stub
     }
     
     func stubRequestViewModelEnums(_ stub: @escaping (UInt64, UInt64) -> Void) {
@@ -386,6 +402,26 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         bindViewModelInstanceStub = stub
     }
 
+    func stubSetViewModelInstance(_ stub: @escaping (UInt64, UInt64, UInt64) -> Void) {
+        setViewModelInstanceStub = stub
+    }
+
+    func stubMainViewModelInstance(_ stub: @escaping (UInt64, any ViewModelInstanceListener, UInt64) -> UInt64) {
+        mainViewModelInstanceStub = stub
+    }
+
+    func stubSetGlobalViewModelInstance(_ stub: @escaping (UInt64, String, UInt64, UInt64) -> Void) {
+        setGlobalViewModelInstanceStub = stub
+    }
+
+    func stubGlobalViewModelInstance(_ stub: @escaping (UInt64, String, any ViewModelInstanceListener, UInt64) -> UInt64) {
+        globalViewModelInstanceStub = stub
+    }
+
+    func stubBind(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        bindStub = stub
+    }
+
     func stubEnableSemantics(_ stub: @escaping (UInt64, UInt64) -> Void) {
         enableSemanticsStub = stub
     }
@@ -490,6 +526,16 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     func requestViewModelNames(_ fileHandle: UInt64, requestID: UInt64) {
         requestViewModelNamesCalls.append(RequestViewModelNamesCall(fileHandle: fileHandle, requestID: requestID))
         requestViewModelNamesStub?(fileHandle, requestID)
+    }
+
+    func requestGlobalViewModelNames(_ fileHandle: UInt64, requestID: UInt64) {
+        requestGlobalViewModelNamesCalls.append(
+            RequestGlobalViewModelNamesCall(
+                fileHandle: fileHandle,
+                requestID: requestID
+            )
+        )
+        requestGlobalViewModelNamesStub?(fileHandle, requestID)
     }
     
     func requestViewModelEnums(_ fileHandle: UInt64, requestID: UInt64) {
@@ -633,6 +679,90 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
             requestID: requestID
         ))
         bindViewModelInstanceStub?(stateMachineHandle, viewModelInstanceHandle, requestID)
+    }
+
+    func setViewModelInstance(_ stateMachineHandle: UInt64, toViewModelInstance viewModelInstanceHandle: UInt64, requestID: UInt64) {
+        setViewModelInstanceCalls.append(
+            SetViewModelInstanceCall(
+                stateMachineHandle: stateMachineHandle,
+                viewModelInstanceHandle: viewModelInstanceHandle,
+                requestID: requestID
+            )
+        )
+        setViewModelInstanceStub?(
+            stateMachineHandle,
+            viewModelInstanceHandle,
+            requestID
+        )
+    }
+
+    func mainViewModelInstance(_ stateMachineHandle: UInt64, observer: any ViewModelInstanceListener, requestID: UInt64) -> UInt64 {
+        mainViewModelInstanceCalls.append(
+            MainViewModelInstanceCall(
+                stateMachineHandle: stateMachineHandle,
+                observer: observer,
+                requestID: requestID
+            )
+        )
+        if let mainViewModelInstanceStub {
+            return mainViewModelInstanceStub(
+                stateMachineHandle,
+                observer,
+                requestID
+            )
+        }
+        viewModelInstanceHandle += 1
+        viewModelInstanceObservers[viewModelInstanceHandle] = observer
+        return viewModelInstanceHandle
+    }
+
+    func setGlobalViewModelInstance(_ stateMachineHandle: UInt64, named name: String, toViewModelInstance viewModelInstanceHandle: UInt64, requestID: UInt64) {
+        setGlobalViewModelInstanceCalls.append(
+            SetGlobalViewModelInstanceCall(
+                stateMachineHandle: stateMachineHandle,
+                name: name,
+                viewModelInstanceHandle: viewModelInstanceHandle,
+                requestID: requestID
+            )
+        )
+        setGlobalViewModelInstanceStub?(
+            stateMachineHandle,
+            name,
+            viewModelInstanceHandle,
+            requestID
+        )
+    }
+
+    func globalViewModelInstance(_ stateMachineHandle: UInt64, named name: String, observer: any ViewModelInstanceListener, requestID: UInt64) -> UInt64 {
+        globalViewModelInstanceCalls.append(
+            GlobalViewModelInstanceCall(
+                stateMachineHandle: stateMachineHandle,
+                name: name,
+                observer: observer,
+                requestID: requestID
+            )
+        )
+        if let globalViewModelInstanceStub {
+            return globalViewModelInstanceStub(
+                stateMachineHandle,
+                name,
+                observer,
+                requestID
+            )
+        }
+        viewModelInstanceHandle += 1
+        viewModelInstanceObservers[viewModelInstanceHandle] = observer
+        return viewModelInstanceHandle
+    }
+
+    func bind(_ stateMachineHandle: UInt64, requestID: UInt64) {
+        bindCalls.append(
+            BindCall(
+                stateMachineHandle: stateMachineHandle,
+                requestID: requestID
+            )
+        )
+        bindStub?(stateMachineHandle, requestID)
     }
 
     func enableSemantics(_ stateMachineHandle: UInt64, requestID: UInt64) {
@@ -1232,6 +1362,11 @@ extension MockCommandQueue {
         let fileHandle: UInt64
         let requestID: UInt64
     }
+
+    struct RequestGlobalViewModelNamesCall {
+        let fileHandle: UInt64
+        let requestID: UInt64
+    }
     
     struct RequestViewModelEnumsCall {
         let fileHandle: UInt64
@@ -1348,6 +1483,37 @@ extension MockCommandQueue {
     struct BindViewModelInstanceCall {
         let stateMachineHandle: UInt64
         let viewModelInstanceHandle: UInt64
+        let requestID: UInt64
+    }
+
+    struct SetViewModelInstanceCall {
+        let stateMachineHandle: UInt64
+        let viewModelInstanceHandle: UInt64
+        let requestID: UInt64
+    }
+
+    struct MainViewModelInstanceCall {
+        let stateMachineHandle: UInt64
+        let observer: any ViewModelInstanceListener
+        let requestID: UInt64
+    }
+
+    struct SetGlobalViewModelInstanceCall {
+        let stateMachineHandle: UInt64
+        let name: String
+        let viewModelInstanceHandle: UInt64
+        let requestID: UInt64
+    }
+
+    struct GlobalViewModelInstanceCall {
+        let stateMachineHandle: UInt64
+        let name: String
+        let observer: any ViewModelInstanceListener
+        let requestID: UInt64
+    }
+
+    struct BindCall {
+        let stateMachineHandle: UInt64
         let requestID: UInt64
     }
 

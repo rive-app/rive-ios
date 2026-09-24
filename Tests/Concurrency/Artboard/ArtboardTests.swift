@@ -23,6 +23,23 @@ import XCTest
 /// - Resource cleanup and memory management
 class ArtboardTests: XCTestCase {
     @MainActor
+    private func makeViewModelInstance(
+        handle: ViewModelInstance.ViewModelInstanceHandle,
+        commandQueue: MockCommandQueue
+    ) -> ViewModelInstance {
+        let service = ViewModelInstanceService(
+            dependencies: .init(
+                commandQueue: commandQueue,
+                messageGate: CommandQueueMessageGate(driver: commandQueue)
+            )
+        )
+        return ViewModelInstance(
+            handle: handle,
+            dependencies: .init(viewModelInstanceService: service)
+        )
+    }
+
+    @MainActor
     func test_equality_withSameArtboardHandle_returnsTrue() {
         let mockCommandQueue = MockCommandQueue()
         let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
@@ -216,6 +233,10 @@ class ArtboardTests: XCTestCase {
         XCTAssertEqual(capturedArtboardHandle, 123)
         XCTAssertEqual(stateMachine.stateMachineHandle, 42)
         XCTAssertTrue(mockCommandQueue.requestStateMachineNamesCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.setViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.setGlobalViewModelInstanceCalls.isEmpty)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.bindCalls.first?.stateMachineHandle, 42)
     }
 
     @MainActor
@@ -246,6 +267,112 @@ class ArtboardTests: XCTestCase {
         XCTAssertEqual(capturedArtboardHandle, 123)
         XCTAssertEqual(stateMachine.stateMachineHandle, 42)
         XCTAssertTrue(mockCommandQueue.requestStateMachineNamesCalls.isEmpty)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.bindCalls.first?.stateMachineHandle, 42)
+    }
+
+    @MainActor
+    func test_createStateMachine_preservesOriginalFunctionType() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 123)
+
+        mockCommandQueue.stubCreateStateMachineNamed { _, artboardHandle, _, requestID in
+            artboardService.onStateMachineInstantiated(artboardHandle, requestID: requestID, stateMachineHandle: 42)
+            return 42
+        }
+
+        let createStateMachine: (String?) async throws -> StateMachine = artboard.createStateMachine
+        let stateMachine = try await createStateMachine("Test State Machine")
+
+        XCTAssertEqual(stateMachine.stateMachineHandle, 42)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+    }
+
+    @MainActor
+    func test_createStateMachine_withBindings_stagesInstancesAndBindsOnce() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let artboard = Artboard(
+            dependencies: .init(artboardService: artboardService),
+            artboardHandle: 123
+        )
+        let main = makeViewModelInstance(handle: 1, commandQueue: mockCommandQueue)
+        let theme = makeViewModelInstance(handle: 2, commandQueue: mockCommandQueue)
+
+        mockCommandQueue.stubCreateDefaultStateMachine { artboardHandle, _, requestID in
+            artboardService.onStateMachineInstantiated(
+                artboardHandle,
+                requestID: requestID,
+                stateMachineHandle: 42
+            )
+            return 42
+        }
+
+        let fileService = artboard.sourceFile.dependencies.fileService
+        mockCommandQueue.stubRequestGlobalViewModelNames { handle, requestID in
+            fileService.onGlobalViewModelsListed(handle, requestID: requestID, names: ["Theme"])
+        }
+
+        let stateMachine = try await artboard.createStateMachine(binding: main) {
+            ("Theme", theme)
+        }
+
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.stateMachineHandle, 42)
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceCalls.first?.viewModelInstanceHandle, 1)
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.first?.stateMachineHandle, 42)
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.first?.name, "Theme")
+        XCTAssertEqual(mockCommandQueue.setGlobalViewModelInstanceCalls.first?.viewModelInstanceHandle, 2)
+        XCTAssertEqual(mockCommandQueue.bindCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.bindCalls.first?.stateMachineHandle, 42)
+        XCTAssertTrue(stateMachine.sourceArtboard === artboard)
+        XCTAssertTrue(stateMachine.mainBinding === main)
+        XCTAssertTrue(stateMachine.globalBindings["Theme"] === theme)
+    }
+
+    @MainActor
+    func test_createStateMachine_withDuplicateGlobalBindings_throwsBeforeCreatingStateMachine() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let artboard = Artboard(
+            dependencies: .init(artboardService: artboardService),
+            artboardHandle: 123
+        )
+        let first = makeViewModelInstance(handle: 1, commandQueue: mockCommandQueue)
+        let second = makeViewModelInstance(handle: 2, commandQueue: mockCommandQueue)
+
+        do {
+            _ = try await artboard.createStateMachine {
+                ("Theme", first)
+                ("Theme", second)
+            }
+            XCTFail("Expected StateMachineError.duplicateGlobalViewModelInstance to be thrown")
+        } catch let error as StateMachineError {
+            guard case .duplicateGlobalViewModelInstance = error else {
+                XCTFail("Expected StateMachineError.duplicateGlobalViewModelInstance, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected StateMachineError.duplicateGlobalViewModelInstance, got \(type(of: error)): \(error)")
+        }
+
+        XCTAssertTrue(mockCommandQueue.createDefaultStateMachineCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.createStateMachineNamedCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.setViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.setGlobalViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(mockCommandQueue.bindCalls.isEmpty)
     }
 
     @MainActor
@@ -620,4 +747,32 @@ class ArtboardTests: XCTestCase {
             XCTFail("Expected ArtboardError.cancelled, got \(type(of: error)): \(error)")
         }
     }
+    @MainActor
+    func test_createStateMachine_withUnknownGlobal_doesNotApplyBindings() async throws {
+        let commandQueue = MockCommandQueue()
+        let service = ArtboardService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: service), artboardHandle: 123)
+        let main = makeViewModelInstance(handle: 1, commandQueue: commandQueue)
+        commandQueue.stubCreateDefaultStateMachine { handle, _, requestID in
+            service.onStateMachineInstantiated(handle, requestID: requestID, stateMachineHandle: 42)
+            return 42
+        }
+        let fileService = artboard.sourceFile.dependencies.fileService
+        commandQueue.stubRequestGlobalViewModelNames { handle, requestID in
+            fileService.onGlobalViewModelsListed(handle, requestID: requestID, names: [])
+        }
+
+        do {
+            _ = try await artboard.createStateMachine(binding: main) {
+                ("Theme", main)
+            }
+            XCTFail("Expected invalid global name")
+        } catch StateMachineError.invalidGlobalViewModelName(let name) {
+            XCTAssertEqual(name, "Theme")
+        }
+        XCTAssertTrue(commandQueue.setViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(commandQueue.setGlobalViewModelInstanceCalls.isEmpty)
+        XCTAssertTrue(commandQueue.bindCalls.isEmpty)
+    }
+
 }

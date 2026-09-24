@@ -6,6 +6,7 @@
 //  Copyright © 2025 Rive. All rights reserved.
 //
 
+import Metal
 @testable import RiveRuntime
 
 extension File {
@@ -41,5 +42,43 @@ extension File {
         let file = File(dependencies: fileDependencies, fileHandle: fileHandle, worker: worker)
         
         return (file: file, commandQueue: mockCommandQueue, commandServer: mockCommandServer, fileLoader: mockFileLoader)
+    }
+}
+
+// Supply parents for tests that construct handles directly rather than through File creation.
+extension Artboard {
+    @MainActor
+    convenience init(dependencies: Dependencies, artboardHandle: ArtboardHandle) {
+        let commandQueue = dependencies.artboardService.dependencies.commandQueue as! MockCommandQueue
+        let workerService = WorkerService(dependencies: .init(
+            commandQueue: commandQueue,
+            commandServer: MockCommandServer(),
+            renderingMode: .immediate(RiveUIRenderContext(device: MTLCreateSystemDefaultDevice()!)),
+            messagePumpDriver: commandQueue
+        ))
+        let file = File(
+            dependencies: .init(
+                fileLoader: MockFileLoader(),
+                fileService: FileService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+            ),
+            fileHandle: 1,
+            worker: Worker(dependencies: .init(workerService: workerService))
+        )
+        self.init(dependencies: dependencies, artboardHandle: artboardHandle, sourceFile: file)
+    }
+}
+
+extension StateMachine {
+    @MainActor
+    convenience init(dependencies: Dependencies, stateMachineHandle: StateMachineHandle) {
+        let service = dependencies.stateMachineService
+        let artboard = Artboard(
+            dependencies: .init(artboardService: ArtboardService(dependencies: .init(
+                commandQueue: service.dependencies.commandQueue,
+                messageGate: service.dependencies.messageGate
+            ))),
+            artboardHandle: 1
+        )
+        self.init(dependencies: dependencies, stateMachineHandle: stateMachineHandle, sourceArtboard: artboard)
     }
 }

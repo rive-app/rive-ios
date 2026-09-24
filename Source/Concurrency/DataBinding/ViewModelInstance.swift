@@ -7,6 +7,7 @@
 //
 
 import Foundation
+@preconcurrency import Combine
 
 /// Specifies the source view model to use when creating a view model instance.
 public enum ViewModelSource {
@@ -46,6 +47,29 @@ public final class ViewModelInstance: Equatable {
     private var fontPropertyValues: [String: Font] = [:]
     private var blobPropertyValues: [String: Blob] = [:]
     private var imagePropertyValues: [String: Image] = [:]
+    @Published private var childInstances: [String: [WeakReference<ViewModelInstance>]] = [:]
+    private let dirtySubject = PassthroughSubject<ViewModelInstanceService.DirtyEvent, Never>()
+    @MainActor private var dirtyObservation: AnyCancellable?
+    @MainActor private lazy var dirtyPublisher: AnyPublisher<ViewModelInstanceService.DirtyEvent, Never> = {
+        return dirtySubject
+            .removeDuplicates()
+            .share()
+            .eraseToAnyPublisher()
+    }()
+    @MainActor private lazy var childDirtyPublisher: AnyPublisher<ViewModelInstanceService.DirtyEvent, Never> = {
+        return $childInstances
+            .map { instancesByProperty in
+                var instancesByHandle: [ViewModelInstanceHandle: ViewModelInstance] = [:]
+                for reference in instancesByProperty.values.flatMap({ $0 }) {
+                    guard let instance = reference.value else { continue }
+                    instancesByHandle[instance.viewModelInstanceHandle] = instance
+                }
+                return Publishers.MergeMany(instancesByHandle.values.map(\.dirtyPublisher))
+                    .eraseToAnyPublisher()
+            }
+            .switchToLatest()
+            .eraseToAnyPublisher()
+    }()
     /// The view model (definition) name, cached after first fetch since it is immutable for the
     /// instance's lifetime.
     private var cachedViewModelName: String?
@@ -61,6 +85,12 @@ public final class ViewModelInstance: Equatable {
     init(handle: ViewModelInstanceHandle, dependencies: Dependencies) {
         self.viewModelInstanceHandle = handle
         self.dependencies = dependencies
+        dirtyObservation = Publishers.Merge(
+            dependencies.viewModelInstanceService.dirtyPublisher(for: handle),
+            childDirtyPublisher
+        ).sink { [weak self] event in
+            self?.dirtySubject.send(event)
+        }
     }
 
     deinit {
@@ -86,12 +116,28 @@ public final class ViewModelInstance: Equatable {
         return lhs.viewModelInstanceHandle == rhs.viewModelInstanceHandle
     }
 
-    /// Creates a stream that emits whenever this instance is mutated.
+    /// Creates a stream that emits when a mutation is submitted for this instance or one of its
+    /// observed child view model instances.
     ///
+    /// Child wrappers returned or assigned by this instance are observed while they remain alive.
+    /// Mutations originating exclusively from the runtime or scripting are not reported.
     /// The stream yields `Void` to indicate a dirty event with no payload.
+    @available(*, deprecated, message: "dirtyStream() will be removed in a future release.")
     @MainActor
     public func dirtyStream() -> AsyncStream<Void> {
-        return dependencies.viewModelInstanceService.dirtyStream(for: viewModelInstanceHandle)
+        return _dirtyStream()
+    }
+
+    @MainActor
+    func _dirtyStream() -> AsyncStream<Void> {
+        return AsyncStream { continuation in
+            let cancellable = dirtyPublisher.sink { _ in
+                continuation.yield(())
+            }
+            continuation.onTermination = { _ in
+                cancellable.cancel()
+            }
+        }
     }
 
     @MainActor
@@ -419,12 +465,14 @@ public final class ViewModelInstance: Equatable {
             path: property.path,
             observer: service
         )
-        return ViewModelInstance(
+        let instance = ViewModelInstance(
             handle: handle,
             dependencies: .init(
                 viewModelInstanceService: service
             )
         )
+        appendChildInstance(instance, for: property.path)
+        return instance
     }
 
     /// Sets the value of a view model instance property.
@@ -437,6 +485,7 @@ public final class ViewModelInstance: Equatable {
         let handle = viewModelInstanceHandle
         RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting view model instance property '\(property.path)'")
         dependencies.viewModelInstanceService.setViewModelInstanceValue(instance.viewModelInstanceHandle, for: viewModelInstanceHandle, path: property.path)
+        replaceChildInstance(instance, for: property.path)
     }
 
     // MARK: - ListProperty
@@ -465,6 +514,7 @@ public final class ViewModelInstance: Equatable {
             path: list.path,
             value: instance.viewModelInstanceHandle
         )
+        appendChildInstance(instance, for: list.path)
     }
 
     /// Inserts a view model instance into a list property at the specified index.
@@ -483,6 +533,7 @@ public final class ViewModelInstance: Equatable {
             value: instance.viewModelInstanceHandle,
             index: index
         )
+        appendChildInstance(instance, for: list.path)
     }
 
     /// Removes a view model instance from a list property at the specified index.
@@ -516,6 +567,7 @@ public final class ViewModelInstance: Equatable {
             path: list.path,
             value: instance.viewModelInstanceHandle
         )
+        removeChildInstance(instance, for: list.path)
     }
 
     /// Swaps two view model instances in a list property at the specified indices.
@@ -551,12 +603,55 @@ public final class ViewModelInstance: Equatable {
             index: index,
             observer: service
         )
-        return ViewModelInstance(
+        let instance = ViewModelInstance(
             handle: handle,
             dependencies: .init(
                 viewModelInstanceService: service
             )
         )
+        appendChildInstance(instance, for: property.path)
+        return instance
+    }
+
+    @MainActor
+    private func replaceChildInstance(
+        _ instance: ViewModelInstance,
+        for path: String
+    ) {
+        updateChildInstances { childInstances in
+            childInstances[path] = [WeakReference(instance)]
+        }
+    }
+
+    @MainActor
+    private func appendChildInstance(
+        _ instance: ViewModelInstance,
+        for path: String
+    ) {
+        updateChildInstances { childInstances in
+            childInstances[path, default: []].append(WeakReference(instance))
+        }
+    }
+
+    @MainActor
+    private func removeChildInstance(
+        _ instance: ViewModelInstance,
+        for path: String
+    ) {
+        updateChildInstances { childInstances in
+            childInstances[path]?.removeAll { $0.value == instance }
+        }
+    }
+
+    @MainActor
+    private func updateChildInstances(
+        _ update: (inout [String: [WeakReference<ViewModelInstance>]]) -> Void
+    ) {
+        var childInstances = childInstances.mapValues { references in
+            references.filter { $0.value != nil }
+        }
+        update(&childInstances)
+        self.childInstances = childInstances.filter { $0.value.isEmpty == false }
     }
 }
 

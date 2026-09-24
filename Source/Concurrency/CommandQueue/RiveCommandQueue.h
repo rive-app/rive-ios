@@ -136,6 +136,17 @@ NS_SWIFT_NAME(CommandQueueProtocol)
                     requestID:(uint64_t)requestID;
 
 /**
+ * Requests the names of all global view models defined in a Rive file.
+ *
+ * @param fileHandle The file handle of the file to query
+ * @param requestID The request ID for this operation
+ * @note The response will be delivered via the file listener observer's
+ *       onGlobalViewModelsListed:requestID:names: method
+ */
+- (void)requestGlobalViewModelNames:(uint64_t)fileHandle
+                          requestID:(uint64_t)requestID;
+
+/**
  * Requests the enum definitions for all enums defined in a Rive file.
  *
  * @param fileHandle The file handle of the file to query
@@ -390,12 +401,90 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @param stateMachineHandle The handle of the state machine to bind
  * @param viewModelInstanceHandle The handle of the view model instance to bind
  * @param requestID The request ID for this operation
- * @note Only one view model instance can be bound to a state machine at a time.
- *       Binding a new instance will replace any previously bound instance.
+ * @note Only one main view model instance can be bound to a state machine at a
+ *       time. Binding a new main instance replaces the previous main instance
+ *       and preserves any existing global instances.
  */
 - (void)bindViewModelInstance:(uint64_t)stateMachineHandle
           toViewModelInstance:(uint64_t)viewModelInstanceHandle
                     requestID:(uint64_t)requestID;
+
+/**
+ * Updates the main view model instance in the state machine's current data
+ * context without running the final bind pass.
+ *
+ * Call bind:requestID: after updating the main and any global view model
+ * instances that should be completed and applied together.
+ *
+ * @param stateMachineHandle The handle of the state machine to update
+ * @param viewModelInstanceHandle The handle of the main view model instance
+ * @param requestID The request ID for this operation
+ */
+- (void)setViewModelInstance:(uint64_t)stateMachineHandle
+         toViewModelInstance:(uint64_t)viewModelInstanceHandle
+                   requestID:(uint64_t)requestID;
+
+/**
+ * Gets the main view model instance currently bound to a state machine.
+ *
+ * This operation never creates a default instance. If no main instance is
+ * bound, the state machine observer receives a state machine error.
+ *
+ * @param stateMachineHandle The handle of the state machine to query
+ * @param observer The listener that will receive callbacks for the returned
+ *                 view model instance
+ * @param requestID The request ID for this operation
+ * @return The provisional view model instance handle for this request
+ */
+- (uint64_t)mainViewModelInstance:(uint64_t)stateMachineHandle
+                         observer:(id<RiveViewModelInstanceListener>)observer
+                        requestID:(uint64_t)requestID;
+
+/**
+ * Updates a global view model instance in the state machine's current data
+ * context without running the final bind pass.
+ *
+ * Call bind:requestID: after updating the main and any global view model
+ * instances that should be completed and applied together.
+ *
+ * @param stateMachineHandle The handle of the state machine to update
+ * @param name The name of the global view model slot
+ * @param viewModelInstanceHandle The handle of the view model instance
+ * @param requestID The request ID for this operation
+ */
+- (void)setGlobalViewModelInstance:(uint64_t)stateMachineHandle
+                             named:(NSString*)name
+               toViewModelInstance:(uint64_t)viewModelInstanceHandle
+                         requestID:(uint64_t)requestID;
+
+/**
+ * Gets the view model instance currently occupying a global view model slot.
+ *
+ * This operation never creates a default instance. If the slot is empty or
+ * invalid, the state machine observer receives a state machine error.
+ *
+ * @param stateMachineHandle The handle of the state machine to query
+ * @param name The name of the global view model slot
+ * @param observer The listener that will receive callbacks for the returned
+ *                 view model instance
+ * @param requestID The request ID for this operation
+ * @return The provisional view model instance handle for this request
+ */
+- (uint64_t)globalViewModelInstance:(uint64_t)stateMachineHandle
+                              named:(NSString*)name
+                           observer:(id<RiveViewModelInstanceListener>)observer
+                          requestID:(uint64_t)requestID;
+
+/**
+ * Applies the state machine's current main and global view model instances.
+ *
+ * Missing instances are completed with their authored defaults before the
+ * data context is applied.
+ *
+ * @param stateMachineHandle The handle of the state machine to bind
+ * @param requestID The request ID for this operation
+ */
+- (void)bind:(uint64_t)stateMachineHandle requestID:(uint64_t)requestID;
 
 #pragma mark - Semantics
 

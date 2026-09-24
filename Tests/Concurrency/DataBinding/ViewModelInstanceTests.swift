@@ -16,13 +16,14 @@ class ViewModelInstanceTests: XCTestCase {
     @MainActor
     func makeViewModelInstance(
         mockCommandQueue: MockCommandQueue,
+        handle: ViewModelInstance.ViewModelInstanceHandle = 99,
         captureObserver: ((ViewModelInstanceListener?) -> Void)? = nil
     ) -> ViewModelInstance {
         let viewModelInstanceService = ViewModelInstanceService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
-        mockCommandQueue.setObserver(viewModelInstanceService, for: 99)
+        mockCommandQueue.setObserver(viewModelInstanceService, for: handle)
         captureObserver?(viewModelInstanceService)
         return ViewModelInstance(
-            handle: 99,
+            handle: handle,
             dependencies: .init(viewModelInstanceService: viewModelInstanceService)
         )
     }
@@ -1717,6 +1718,456 @@ class ViewModelInstanceTests: XCTestCase {
     }
 
     @MainActor
+    func test_dirtyStream_withNestedViewModelInstance_emitsChildDirtyEvents() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let nestedInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits for the relationship and child mutation")
+        dirtyExpectation.expectedFulfillmentCount = 2
+
+        let task = Task {
+            for await _ in stream {
+                dirtyExpectation.fulfill()
+            }
+        }
+
+        viewModelInstance.setValue(
+            of: ViewModelInstanceProperty(path: "nested"),
+            to: nestedInstance
+        )
+        nestedInstance.setValue(of: StringProperty(path: "value"), to: "updated")
+
+        await fulfillment(of: [dirtyExpectation], timeout: 1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withRetrievedNestedViewModelInstance_emitsChildDirtyEvents() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        mockCommandQueue.stubReferenceNestedViewModelInstance { _, _, _, _ in
+            200
+        }
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits for retrieved child mutation")
+
+        let task = Task {
+            for await _ in stream {
+                dirtyExpectation.fulfill()
+                break
+            }
+        }
+
+        let nestedInstance = viewModelInstance.value(
+            of: ViewModelInstanceProperty(path: "nested")
+        )
+        nestedInstance.setValue(of: StringProperty(path: "value"), to: "updated")
+
+        await fulfillment(of: [dirtyExpectation], timeout: 1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withRepeatedNestedViewModelInstanceLookups_observesEveryInstance() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        var nextHandle: UInt64 = 200
+        mockCommandQueue.stubReferenceNestedViewModelInstance { _, _, _, _ in
+            defer { nextHandle += 1 }
+            return nextHandle
+        }
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits for mutations through both retrieved instances")
+        dirtyExpectation.expectedFulfillmentCount = 2
+
+        let task = Task {
+            for await _ in stream {
+                dirtyExpectation.fulfill()
+            }
+        }
+
+        let property = ViewModelInstanceProperty(path: "nested")
+        let firstInstance = viewModelInstance.value(of: property)
+        let secondInstance = viewModelInstance.value(of: property)
+        firstInstance.setValue(of: StringProperty(path: "value"), to: "first")
+        secondInstance.setValue(of: StringProperty(path: "value"), to: "second")
+
+        await fulfillment(of: [dirtyExpectation], timeout: 1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withRetrievedListViewModelInstance_emitsChildDirtyEvents() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        mockCommandQueue.stubReferenceListViewModelInstance { _, _, _, _, _ in
+            200
+        }
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits for retrieved list child mutation")
+
+        let task = Task {
+            for await _ in stream {
+                dirtyExpectation.fulfill()
+                break
+            }
+        }
+
+        let listInstance = viewModelInstance.value(
+            of: ListProperty(path: "items"),
+            at: 0
+        )
+        listInstance.setValue(of: StringProperty(path: "value"), to: "updated")
+
+        await fulfillment(of: [dirtyExpectation], timeout: 1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withNestedViewModelInstanceReplacement_observesOnlyReplacement() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let originalInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        let replacementInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 201)
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits for relationship changes and current children")
+        dirtyExpectation.expectedFulfillmentCount = 4
+        dirtyExpectation.assertForOverFulfill = true
+        let unexpectedDirtyExpectation = expectation(description: "Dirty stream does not emit for replaced child")
+        unexpectedDirtyExpectation.isInverted = true
+        var eventCount = 0
+
+        let task = Task {
+            for await _ in stream {
+                eventCount += 1
+                if eventCount <= 4 {
+                    dirtyExpectation.fulfill()
+                } else {
+                    unexpectedDirtyExpectation.fulfill()
+                }
+            }
+        }
+
+        let property = ViewModelInstanceProperty(path: "nested")
+        viewModelInstance.setValue(of: property, to: originalInstance)
+        originalInstance.setValue(of: StringProperty(path: "value"), to: "original")
+        viewModelInstance.setValue(of: property, to: replacementInstance)
+        originalInstance.setValue(of: StringProperty(path: "value"), to: "ignored")
+        replacementInstance.setValue(of: StringProperty(path: "value"), to: "replacement")
+
+        await fulfillment(of: [dirtyExpectation, unexpectedDirtyExpectation], timeout: 0.1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withNestedViewModelInstances_emitsDescendantDirtyEvents() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let nestedInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        let descendantInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 201)
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits through nested relationships")
+        dirtyExpectation.expectedFulfillmentCount = 3
+
+        let task = Task {
+            for await _ in stream {
+                dirtyExpectation.fulfill()
+            }
+        }
+
+        viewModelInstance.setValue(
+            of: ViewModelInstanceProperty(path: "nested"),
+            to: nestedInstance
+        )
+        nestedInstance.setValue(
+            of: ViewModelInstanceProperty(path: "descendant"),
+            to: descendantInstance
+        )
+        descendantInstance.setValue(of: StringProperty(path: "value"), to: "updated")
+
+        await fulfillment(of: [dirtyExpectation], timeout: 1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withRemovedListInstance_stopsObservingRemovedInstance() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let listInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits for list changes and current list instance")
+        dirtyExpectation.expectedFulfillmentCount = 3
+        dirtyExpectation.assertForOverFulfill = true
+        let unexpectedDirtyExpectation = expectation(description: "Dirty stream does not emit for removed list instance")
+        unexpectedDirtyExpectation.isInverted = true
+        var eventCount = 0
+
+        let task = Task {
+            for await _ in stream {
+                eventCount += 1
+                if eventCount <= 3 {
+                    dirtyExpectation.fulfill()
+                } else {
+                    unexpectedDirtyExpectation.fulfill()
+                }
+            }
+        }
+
+        let list = ListProperty(path: "items")
+        viewModelInstance.appendInstance(listInstance, to: list)
+        listInstance.setValue(of: StringProperty(path: "value"), to: "included")
+        viewModelInstance.removeInstance(listInstance, from: list)
+        listInstance.setValue(of: StringProperty(path: "value"), to: "removed")
+
+        await fulfillment(of: [dirtyExpectation, unexpectedDirtyExpectation], timeout: 0.1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withDuplicateListInstances_removedByValue_stopsObservingInstance() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let listInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits for list changes and the included instance")
+        dirtyExpectation.expectedFulfillmentCount = 4
+        dirtyExpectation.assertForOverFulfill = true
+        let unexpectedDirtyExpectation = expectation(description: "Dirty stream does not emit for the removed duplicate instance")
+        unexpectedDirtyExpectation.isInverted = true
+        var eventCount = 0
+
+        let task = Task {
+            for await _ in stream {
+                eventCount += 1
+                if eventCount <= 4 {
+                    dirtyExpectation.fulfill()
+                } else {
+                    unexpectedDirtyExpectation.fulfill()
+                }
+            }
+        }
+
+        let list = ListProperty(path: "items")
+        viewModelInstance.appendInstance(listInstance, to: list)
+        viewModelInstance.appendInstance(listInstance, to: list)
+        listInstance.setValue(of: StringProperty(path: "value"), to: "included")
+        viewModelInstance.removeInstance(listInstance, from: list)
+        listInstance.setValue(of: StringProperty(path: "value"), to: "removed")
+
+        await fulfillment(of: [dirtyExpectation, unexpectedDirtyExpectation], timeout: 0.1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withInstanceInMultipleLists_continuesObservingRemainingRelationship() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let listInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream observes the child once")
+        dirtyExpectation.expectedFulfillmentCount = 6
+
+        let task = Task {
+            for await _ in stream {
+                dirtyExpectation.fulfill()
+            }
+        }
+
+        let firstList = ListProperty(path: "first")
+        let secondList = ListProperty(path: "second")
+        viewModelInstance.appendInstance(listInstance, to: firstList)
+        viewModelInstance.appendInstance(listInstance, to: firstList)
+        viewModelInstance.appendInstance(listInstance, to: secondList)
+        listInstance.setValue(of: StringProperty(path: "value"), to: "both")
+        viewModelInstance.removeInstance(listInstance, from: firstList)
+        listInstance.setValue(of: StringProperty(path: "value"), to: "second")
+
+        await fulfillment(of: [dirtyExpectation], timeout: 1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withDescendantReachableThroughMultipleChildren_emitsOnce() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let firstChild = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        let secondChild = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 201)
+        let descendant = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 202)
+
+        viewModelInstance.setValue(of: ViewModelInstanceProperty(path: "first"), to: firstChild)
+        viewModelInstance.setValue(of: ViewModelInstanceProperty(path: "second"), to: secondChild)
+        firstChild.setValue(of: ViewModelInstanceProperty(path: "descendant"), to: descendant)
+        secondChild.setValue(of: ViewModelInstanceProperty(path: "descendant"), to: descendant)
+
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits once for the descendant mutation")
+        let unexpectedDirtyExpectation = expectation(description: "Dirty stream does not emit again for another path")
+        unexpectedDirtyExpectation.isInverted = true
+        var eventCount = 0
+
+        let task = Task {
+            for await _ in stream {
+                eventCount += 1
+                if eventCount == 1 {
+                    dirtyExpectation.fulfill()
+                } else {
+                    unexpectedDirtyExpectation.fulfill()
+                }
+            }
+        }
+
+        descendant.setValue(of: StringProperty(path: "value"), to: "updated")
+
+        await fulfillment(of: [dirtyExpectation, unexpectedDirtyExpectation], timeout: 0.1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withConsecutiveChildMutations_emitsEachMutation() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let child = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        viewModelInstance.setValue(of: ViewModelInstanceProperty(path: "child"), to: child)
+
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits for each child mutation")
+        dirtyExpectation.expectedFulfillmentCount = 2
+
+        let task = Task {
+            for await _ in stream {
+                dirtyExpectation.fulfill()
+            }
+        }
+
+        child.setValue(of: StringProperty(path: "value"), to: "first")
+        child.setValue(of: StringProperty(path: "value"), to: "second")
+
+        await fulfillment(of: [dirtyExpectation], timeout: 1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withSelfReference_emitsOnce() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        viewModelInstance.setValue(
+            of: ViewModelInstanceProperty(path: "self"),
+            to: viewModelInstance
+        )
+
+        let stream = viewModelInstance.dirtyStream()
+        let dirtyExpectation = expectation(description: "Dirty stream emits once for a self-reference")
+        let unexpectedDirtyExpectation = expectation(description: "Dirty stream does not repeat through a self-reference")
+        unexpectedDirtyExpectation.isInverted = true
+        var eventCount = 0
+
+        let task = Task {
+            for await _ in stream {
+                eventCount += 1
+                if eventCount == 1 {
+                    dirtyExpectation.fulfill()
+                } else {
+                    unexpectedDirtyExpectation.fulfill()
+                }
+            }
+        }
+
+        viewModelInstance.setValue(of: StringProperty(path: "value"), to: "updated")
+
+        await fulfillment(of: [dirtyExpectation, unexpectedDirtyExpectation], timeout: 0.1)
+        task.cancel()
+    }
+
+    @MainActor
+    func test_dirtyStream_withCyclicReferences_emitsEachMutationOnce() async {
+        let mockCommandQueue = MockCommandQueue()
+        let firstInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 100)
+        let secondInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        firstInstance.setValue(
+            of: ViewModelInstanceProperty(path: "second"),
+            to: secondInstance
+        )
+        secondInstance.setValue(
+            of: ViewModelInstanceProperty(path: "first"),
+            to: firstInstance
+        )
+
+        let firstStream = firstInstance.dirtyStream()
+        let secondStream = secondInstance.dirtyStream()
+        let firstDirtyExpectation = expectation(description: "First dirty stream emits once for each mutation")
+        firstDirtyExpectation.expectedFulfillmentCount = 2
+        let secondDirtyExpectation = expectation(description: "Second dirty stream emits once for each mutation")
+        secondDirtyExpectation.expectedFulfillmentCount = 2
+        let unexpectedFirstDirtyExpectation = expectation(description: "First dirty stream does not repeat through the cycle")
+        unexpectedFirstDirtyExpectation.isInverted = true
+        let unexpectedSecondDirtyExpectation = expectation(description: "Second dirty stream does not repeat through the cycle")
+        unexpectedSecondDirtyExpectation.isInverted = true
+        var firstEventCount = 0
+        var secondEventCount = 0
+
+        let firstTask = Task {
+            for await _ in firstStream {
+                firstEventCount += 1
+                if firstEventCount <= 2 {
+                    firstDirtyExpectation.fulfill()
+                } else {
+                    unexpectedFirstDirtyExpectation.fulfill()
+                }
+            }
+        }
+        let secondTask = Task {
+            for await _ in secondStream {
+                secondEventCount += 1
+                if secondEventCount <= 2 {
+                    secondDirtyExpectation.fulfill()
+                } else {
+                    unexpectedSecondDirtyExpectation.fulfill()
+                }
+            }
+        }
+
+        firstInstance.setValue(of: StringProperty(path: "value"), to: "first")
+        secondInstance.setValue(of: StringProperty(path: "value"), to: "second")
+
+        await fulfillment(
+            of: [
+                firstDirtyExpectation,
+                secondDirtyExpectation,
+                unexpectedFirstDirtyExpectation,
+                unexpectedSecondDirtyExpectation,
+            ],
+            timeout: 0.1
+        )
+        firstTask.cancel()
+        secondTask.cancel()
+    }
+
+    @MainActor
+    func test_cyclicReferences_doNotRetainViewModelInstances() {
+        let mockCommandQueue = MockCommandQueue()
+        var firstInstance: ViewModelInstance? = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 100)
+        var secondInstance: ViewModelInstance? = makeViewModelInstance(mockCommandQueue: mockCommandQueue, handle: 200)
+        weak let weakFirstInstance = firstInstance
+        weak let weakSecondInstance = secondInstance
+
+        firstInstance?.setValue(
+            of: ViewModelInstanceProperty(path: "second"),
+            to: secondInstance!
+        )
+        secondInstance?.setValue(
+            of: ViewModelInstanceProperty(path: "first"),
+            to: firstInstance!
+        )
+
+        firstInstance = nil
+        secondInstance = nil
+
+        XCTAssertNil(weakFirstInstance)
+        XCTAssertNil(weakSecondInstance)
+    }
+
+    @MainActor
     func test_stream_withTriggerProperty_receivesEvents() async throws {
         let mockCommandQueue = MockCommandQueue()
         
@@ -1838,6 +2289,50 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(setCall.path, "test.set.path")
         XCTAssertEqual(setCall.value, "set value")
     }
+
+    @MainActor
+    func test_value_withViewModelInstanceProperty_repeatedLookupsReleaseReturnedInstances() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        var observers: [UInt64: ViewModelInstanceListener] = [:]
+        var nextHandle: UInt64 = 200
+        let deleteExpectation = expectation(description: "Released nested instances are deleted")
+        deleteExpectation.expectedFulfillmentCount = 2
+
+        mockCommandQueue.stubReferenceNestedViewModelInstance { _, _, observer, _ in
+            let handle = nextHandle
+            nextHandle += 1
+            observers[handle] = observer
+            return handle
+        }
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            observers.removeValue(forKey: handle)?.onViewModelDeleted(
+                handle,
+                requestID: requestID
+            )
+            if handle == 200 || handle == 201 {
+                deleteExpectation.fulfill()
+            }
+        }
+
+        let property = ViewModelInstanceProperty(path: "nested")
+        weak var firstInstance: ViewModelInstance?
+        autoreleasepool {
+            let instance = viewModelInstance.value(of: property)
+            firstInstance = instance
+        }
+
+        weak var secondInstance: ViewModelInstance?
+        autoreleasepool {
+            let instance = viewModelInstance.value(of: property)
+            secondInstance = instance
+        }
+
+        XCTAssertNil(firstInstance)
+        XCTAssertNil(secondInstance)
+        await fulfillment(of: [deleteExpectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteViewModelInstanceCalls.map(\.viewModelInstanceHandle).sorted(), [200, 201])
+    }
     
     @MainActor
     func test_setValue_withViewModelInstanceProperty_sendsCorrectValuesToCommandQueue() async {
@@ -1886,6 +2381,55 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(size, expectedSize)
     }
     
+    @MainActor
+    func test_value_withListProperty_repeatedLookupsReleaseReturnedInstances() async {
+        let mockCommandQueue = MockCommandQueue()
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        var observers: [UInt64: ViewModelInstanceListener] = [:]
+        var nextHandle: UInt64 = 200
+        let deleteExpectation = expectation(description: "Released list instances are deleted")
+        deleteExpectation.expectedFulfillmentCount = 2
+
+        mockCommandQueue.stubReferenceListViewModelInstance { _, _, _, observer, _ in
+            let handle = nextHandle
+            nextHandle += 1
+            observers[handle] = observer
+            return handle
+        }
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            observers.removeValue(forKey: handle)?.onViewModelDeleted(
+                handle,
+                requestID: requestID
+            )
+            if handle == 200 || handle == 201 {
+                deleteExpectation.fulfill()
+            }
+        }
+
+        weak var firstInstance: ViewModelInstance?
+        autoreleasepool {
+            let instance = viewModelInstance.value(
+                of: ListProperty(path: "items"),
+                at: 0
+            )
+            firstInstance = instance
+        }
+
+        weak var secondInstance: ViewModelInstance?
+        autoreleasepool {
+            let instance = viewModelInstance.value(
+                of: ListProperty(path: "items"),
+                at: 0
+            )
+            secondInstance = instance
+        }
+
+        XCTAssertNil(firstInstance)
+        XCTAssertNil(secondInstance)
+        await fulfillment(of: [deleteExpectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteViewModelInstanceCalls.map(\.viewModelInstanceHandle).sorted(), [200, 201])
+    }
+
     @MainActor
     func test_value_withListProperty_returnsNestedViewModelInstance() async throws {
         let mockCommandQueue = MockCommandQueue()

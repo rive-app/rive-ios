@@ -9,10 +9,9 @@
 import Foundation
 import Combine
 
-/// A class that represents a complete Rive configuration for rendering.
+/// A class that combines the components and presentation options needed to render Rive content.
 ///
-/// Rive combines a file, artboard, and state machine into a single configuration that can be
-/// used for rendering. It manages the relationship between these components and provides
+/// A Rive object manages the relationship between a file, artboard, and state machine and provides
 /// properties for controlling how the artboard is displayed, including fit mode and background color.
 @MainActor
 public final class Rive: ObservableObject, Equatable {
@@ -22,9 +21,14 @@ public final class Rive: ObservableObject, Equatable {
     public let artboard: Artboard
     /// The state machine that controls animations and state transitions.
     public let stateMachine: StateMachine
-    /// The view model instance that handles data binding in the state machine.
-    /// This is the result of processing the dataBind argument when initializing a Rive object.
-    public let viewModelInstance: ViewModelInstance?
+    /// The main view model instance supplied or created by the deprecated initializer with `dataBind`.
+    ///
+    /// Returns `nil` when using an initializer without `dataBind`. Create, retain, and explicitly
+    /// bind view model instances when you need to read or modify their properties.
+    @available(*, deprecated, message: "viewModelInstance will be removed in a future release. Create and retain a view model instance, then bind it explicitly to access its properties.")
+    public var viewModelInstance: ViewModelInstance? {
+        return legacyViewModelInstance
+    }
     /// The background color to use when rendering the artboard.
     public var backgroundColor: Color {
         didSet {
@@ -38,12 +42,14 @@ public final class Rive: ObservableObject, Equatable {
         }
     }
 
+    private var legacyViewModelInstance: ViewModelInstance?
+
     // Publishers for various mutable properties, so that RiveUIView can
     // listen to these changes and react appropriately
     let backgroundColorDidChange = PassthroughSubject<Color, Never>()
     let fitDidChange = PassthroughSubject<Fit, Never>()
 
-    /// Creates a new Rive configuration with the specified components.
+    /// Creates a Rive object with the specified components and legacy data-binding behavior.
     ///
     /// - Parameters:
     ///   - file: The Rive file containing the artboard and state machine
@@ -52,6 +58,7 @@ public final class Rive: ObservableObject, Equatable {
     ///   - dataBind: How data binding should be initialized
     ///   - fit: The fit mode for scaling and positioning, defaults to `.contain(alignment: .center)`
     ///   - backgroundColor: The background color, defaults to clear
+    @available(*, deprecated, message: "This initializer will be removed in a future release. Use a Rive initializer without dataBind. Retain and explicitly bind view model instances you need to access.")
     @MainActor
     public init(
         file: File,
@@ -72,22 +79,105 @@ public final class Rive: ObservableObject, Equatable {
             RiveLog.debug(tag: .rive, "[Rive] Resolving data binding mode: auto")
             if let instance = try? await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(self.artboard))) {
                 RiveLog.debug(tag: .rive, "[Rive] Binding auto-resolved view model instance")
-                self.viewModelInstance = instance
-                self.stateMachine.bindViewModelInstance(instance)
+                try await self.stateMachine.bindViewModelInstances(main: instance)
+                legacyViewModelInstance = instance
             } else {
                 RiveLog.warning(tag: .rive, "[Rive] Auto data binding did not resolve a default view model instance")
-                self.viewModelInstance = nil
             }
         case .instance(let instance):
             RiveLog.debug(tag: .rive, "[Rive] Resolving data binding mode: instance")
             RiveLog.debug(tag: .rive, "[Rive] Binding provided view model instance")
-            self.viewModelInstance = instance
-            self.stateMachine.bindViewModelInstance(instance)
+            try await self.stateMachine.bindViewModelInstances(main: instance)
+            legacyViewModelInstance = instance
         case .none:
             RiveLog.debug(tag: .rive, "[Rive] Resolving data binding mode: none")
-            self.viewModelInstance = nil
             break
         }
+    }
+
+    /// Creates a Rive object using the default artboard and state machine.
+    ///
+    /// The state machine binds its authored default view model instances during creation.
+    /// These default instances cannot be retrieved. To observe or modify view model instances,
+    /// create an artboard from the file, create a state machine from that artboard, and bind
+    /// instances you retain. Then use the initializer that accepts the explicit artboard and
+    /// state machine.
+    ///
+    /// - Parameters:
+    ///   - file: The Rive file containing the artboard and state machine
+    ///   - fit: The fit mode for scaling and positioning, defaults to `.contain(alignment: .center)`
+    ///   - backgroundColor: The background color, defaults to clear
+    @MainActor
+    public convenience init(
+        file: File,
+        fit: Fit = .contain(alignment: .center),
+        backgroundColor: Color = Color(red: 0, green: 0, blue: 0, alpha: 0)
+    ) async throws {
+        let artboard = try await file.createArtboard()
+        let stateMachine = try await artboard.createStateMachine()
+        try await self.init(
+            file: file,
+            artboard: artboard,
+            stateMachine: stateMachine,
+            fit: fit,
+            backgroundColor: backgroundColor
+        )
+    }
+
+    /// Creates a Rive object using the specified artboard and its default state machine.
+    ///
+    /// The default state machine binds its authored default view model instances during creation.
+    /// These default instances cannot be retrieved. To observe or modify view model instances,
+    /// create a state machine, bind instances you retain, and use the initializer that accepts
+    /// an explicit state machine.
+    ///
+    /// - Parameters:
+    ///   - file: The Rive file containing the artboard
+    ///   - artboard: The artboard to render
+    ///   - fit: The fit mode for scaling and positioning, defaults to `.contain(alignment: .center)`
+    ///   - backgroundColor: The background color, defaults to clear
+    @MainActor
+    public convenience init(
+        file: File,
+        artboard: Artboard,
+        fit: Fit = .contain(alignment: .center),
+        backgroundColor: Color = Color(red: 0, green: 0, blue: 0, alpha: 0)
+    ) async throws {
+        let stateMachine = try await artboard.createStateMachine()
+        try await self.init(
+            file: file,
+            artboard: artboard,
+            stateMachine: stateMachine,
+            fit: fit,
+            backgroundColor: backgroundColor
+        )
+    }
+
+    /// Creates a Rive object using the specified artboard and state machine.
+    ///
+    /// The supplied state machine is used as configured and is not rebound during initialization.
+    /// To read or modify properties of view model instances bound to the supplied state machine,
+    /// retain references to those instances when binding them.
+    ///
+    /// - Parameters:
+    ///   - file: The Rive file containing the artboard and state machine
+    ///   - artboard: The artboard to render
+    ///   - stateMachine: The state machine that controls animations
+    ///   - fit: The fit mode for scaling and positioning, defaults to `.contain(alignment: .center)`
+    ///   - backgroundColor: The background color, defaults to clear
+    @MainActor
+    public init(
+        file: File,
+        artboard: Artboard,
+        stateMachine: StateMachine,
+        fit: Fit = .contain(alignment: .center),
+        backgroundColor: Color = Color(red: 0, green: 0, blue: 0, alpha: 0)
+    ) async throws {
+        self.file = file
+        self.artboard = artboard
+        self.stateMachine = stateMachine
+        self.fit = fit
+        self.backgroundColor = backgroundColor
     }
 
     nonisolated public static func ==(lhs: Rive, rhs: Rive) -> Bool {
@@ -99,7 +189,6 @@ public final class Rive: ObservableObject, Equatable {
             return lhs.file == rhs.file
             && lhs.artboard == rhs.artboard
             && lhs.stateMachine == rhs.stateMachine
-            && lhs.viewModelInstance == rhs.viewModelInstance
             && lhs.backgroundColor == rhs.backgroundColor
             && lhs.fit == rhs.fit
         }
@@ -123,7 +212,7 @@ public final class Rive: ObservableObject, Equatable {
         if let stateMachine {
             return stateMachine
         } else {
-            return try await artboard.createStateMachine()
+            return try await artboard.instantiateStateMachine()
         }
     }
 }
