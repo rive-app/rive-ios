@@ -1189,6 +1189,204 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(mockCommandQueue.deleteFontCalls.count, 2)
     }
 
+    // MARK: - Blob
+
+    @MainActor
+    func test_setValue_withBlobProperty_sendsBlobHandleAndZeroForNilToCommandQueue() {
+        let mockCommandQueue = MockCommandQueue()
+        let blobService = BlobService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let blob = Blob(
+            handle: 42,
+            dependencies: .init(blobService: blobService)
+        )
+        let viewModelInstance = makeViewModelInstance(mockCommandQueue: mockCommandQueue)
+        let property = BlobProperty(path: "blob")
+
+        viewModelInstance.setValue(of: property, to: blob)
+        viewModelInstance.setValue(of: property, to: nil)
+
+        XCTAssertEqual(mockCommandQueue.setViewModelInstanceBlobCalls.count, 2)
+        let setCall = mockCommandQueue.setViewModelInstanceBlobCalls[0]
+        XCTAssertEqual(setCall.viewModelInstanceHandle, 99)
+        XCTAssertEqual(setCall.path, "blob")
+        XCTAssertEqual(setCall.value, 42)
+        let clearCall = mockCommandQueue.setViewModelInstanceBlobCalls[1]
+        XCTAssertEqual(clearCall.viewModelInstanceHandle, 99)
+        XCTAssertEqual(clearCall.path, "blob")
+        XCTAssertEqual(clearCall.value, 0)
+    }
+
+    @MainActor
+    func test_setValue_withBlobProperty_clearingReleasesBlob() async {
+        let queue = MockCommandQueue()
+        let service = BlobService(dependencies: .init(
+            commandQueue: queue, messageGate: CommandQueueMessageGate(driver: queue)
+        ))
+        let instance = makeViewModelInstance(mockCommandQueue: queue)
+        let property = BlobProperty(path: "nested/blob")
+        let deleted = expectation(description: "cleared blob deleted")
+        queue.stubDeleteBlob { handle in
+            XCTAssertEqual(handle, 42)
+            service.onBlobDeleted(handle, requestID: queue.deleteBlobCalls.last!.requestID)
+        }
+        queue.stubDeleteBlobListener { handle in
+            XCTAssertEqual(handle, 42)
+            deleted.fulfill()
+        }
+        weak var retainedBlob: Blob?
+        autoreleasepool {
+            let blob = Blob(handle: 42, dependencies: .init(blobService: service))
+            retainedBlob = blob
+            instance.setValue(of: property, to: blob)
+        }
+        XCTAssertNotNil(retainedBlob)
+        instance.setValue(of: property, to: nil)
+        XCTAssertNil(retainedBlob)
+        XCTAssertEqual(queue.setViewModelInstanceBlobCalls.last?.path, "nested/blob")
+        XCTAssertEqual(queue.setViewModelInstanceBlobCalls.last?.value, 0)
+        await fulfillment(of: [deleted], timeout: 1)
+    }
+
+    @MainActor
+    func test_setValue_withBlobProperty_retainsBlobAfterExternalReferenceIsDropped() async {
+        let mockCommandQueue = MockCommandQueue()
+        let messageGate = CommandQueueMessageGate(driver: mockCommandQueue)
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+        let blobService = BlobService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+
+        let deleteVMExpectation = expectation(description: "deleteViewModelInstance called")
+        deleteVMExpectation.expectedFulfillmentCount = 1
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            deleteVMExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+
+        let deleteBlobExpectation = expectation(description: "deleteBlob called")
+        mockCommandQueue.stubDeleteBlob { handle in
+            XCTAssertEqual(handle, 42)
+            deleteBlobExpectation.fulfill()
+            let requestID = mockCommandQueue.deleteBlobCalls.last!.requestID
+            blobService.onBlobDeleted(handle, requestID: requestID)
+        }
+
+        let property = BlobProperty(path: "blob")
+        weak var retainedBlob: Blob?
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+            )
+
+            autoreleasepool {
+                let blob = Blob(
+                    handle: 42,
+                    dependencies: .init(blobService: blobService)
+                )
+                retainedBlob = blob
+                viewModelInstance!.setValue(of: property, to: blob)
+            }
+
+            XCTAssertNotNil(retainedBlob)
+            XCTAssertEqual(mockCommandQueue.deleteBlobCalls.count, 0)
+
+            viewModelInstance = nil
+        }
+
+        XCTAssertNil(retainedBlob)
+        await fulfillment(of: [deleteVMExpectation, deleteBlobExpectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteViewModelInstanceCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteBlobCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteBlobCalls.first?.blobHandle, 42)
+    }
+
+    @MainActor
+    func test_setValue_withBlobProperty_replacingBlob_releasesPrevious() async {
+        let mockCommandQueue = MockCommandQueue()
+        let messageGate = CommandQueueMessageGate(driver: mockCommandQueue)
+        let viewModelInstanceService = ViewModelInstanceService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+        let blobService = BlobService(
+            dependencies: .init(commandQueue: mockCommandQueue, messageGate: messageGate)
+        )
+
+        let deleteVMExpectation = expectation(description: "deleteViewModelInstance called")
+        mockCommandQueue.stubDeleteViewModelInstance { handle, requestID in
+            XCTAssertEqual(
+                mockCommandQueue.deleteBlobCalls.count,
+                1,
+                "Replaced blob (42) should be deleted before ViewModelInstance is deleted"
+            )
+            XCTAssertEqual(mockCommandQueue.deleteBlobCalls.first?.blobHandle, 42)
+            deleteVMExpectation.fulfill()
+            viewModelInstanceService.onViewModelDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteViewModelInstanceListener { _ in }
+
+        let deleteBlobAExpectation = expectation(description: "deleteBlob called for blobA")
+        let deleteBlobBExpectation = expectation(description: "deleteBlob called for blobB")
+        mockCommandQueue.stubDeleteBlob { handle in
+            if handle == 42 {
+                XCTAssertTrue(
+                    mockCommandQueue.deleteViewModelInstanceCalls.isEmpty,
+                    "Replaced blob should be deleted while ViewModelInstance is still alive"
+                )
+                deleteBlobAExpectation.fulfill()
+            } else if handle == 77 {
+                XCTAssertEqual(
+                    mockCommandQueue.deleteViewModelInstanceCalls.count,
+                    1,
+                    "Current blob should only be deleted after ViewModelInstance is deleted"
+                )
+                deleteBlobBExpectation.fulfill()
+            }
+            let requestID = mockCommandQueue.deleteBlobCalls.last!.requestID
+            blobService.onBlobDeleted(handle, requestID: requestID)
+        }
+        mockCommandQueue.stubDeleteBlobListener { _ in }
+
+        let property = BlobProperty(path: "blob")
+
+        autoreleasepool {
+            var viewModelInstance: ViewModelInstance? = ViewModelInstance(
+                handle: 99,
+                dependencies: .init(viewModelInstanceService: viewModelInstanceService)
+            )
+
+            autoreleasepool {
+                let blobA = Blob(
+                    handle: 42,
+                    dependencies: .init(blobService: blobService)
+                )
+                viewModelInstance!.setValue(of: property, to: blobA)
+
+                let blobB = Blob(
+                    handle: 77,
+                    dependencies: .init(blobService: blobService)
+                )
+                viewModelInstance!.setValue(of: property, to: blobB)
+            }
+
+            viewModelInstance = nil
+        }
+
+        await fulfillment(
+            of: [deleteBlobAExpectation, deleteVMExpectation, deleteBlobBExpectation],
+            timeout: 1
+        )
+        XCTAssertEqual(mockCommandQueue.deleteBlobCalls.count, 2)
+    }
+
     // MARK: - Artboard
     
     @MainActor
@@ -1416,6 +1614,16 @@ class ViewModelInstanceTests: XCTestCase {
             handle: 42,
             dependencies: .init(fontService: fontService)
         )
+        let blobService = BlobService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let blob = Blob(
+            handle: 42,
+            dependencies: .init(blobService: blobService)
+        )
 
         let artboard = Artboard(
             dependencies: .init(
@@ -1443,6 +1651,7 @@ class ViewModelInstanceTests: XCTestCase {
             // Assets and nested view models
             { viewModelInstance.setValue(of: ImageProperty(path: "test.image"), to: image) },
             { viewModelInstance.setValue(of: FontProperty(path: "font"), to: font) },
+            { viewModelInstance.setValue(of: BlobProperty(path: "blob"), to: blob) },
             { viewModelInstance.setValue(of: ArtboardProperty(path: "test.artboard"), to: artboard) },
             { viewModelInstance.setValue(of: ViewModelInstanceProperty(path: "test.nested"), to: nestedInstance) },
             // Lists

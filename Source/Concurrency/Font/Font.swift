@@ -13,13 +13,15 @@ import UIKit
 import AppKit
 #endif
 
-/// A class that represents a decoded font that can be used as a global asset.
+/// A class that represents a decoded font that can be used as a global asset or assigned to view model properties.
 ///
 /// Font instances are created from font data (e.g., TTF, OTF) or a platform-native font and can
 /// be registered as global assets with a worker, allowing them to be provided dynamically at runtime.
 ///
-/// Lifetime: Font instances are guaranteed to exist while registered as a global asset with a worker.
-/// When not used as a global asset, you must maintain a strong reference to the instance to keep it alive.
+/// Lifetime: Font instances are retained while registered as a global asset with a worker
+/// or assigned to a view model property. A view model instance retains assigned fonts
+/// until they are replaced, cleared, or the instance is released. Otherwise, maintain a
+/// strong reference to the font to keep it alive.
 public final class Font: Equatable {
     /// The underlying type for the font handle identifier.
     ///

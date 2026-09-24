@@ -128,6 +128,52 @@ class WorkerTests: XCTestCase {
     }
 
     @MainActor
+    func test_decodeBlob_usesWorkerCommandQueueForDecodingAndCleanup() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let mockCommandServer = MockCommandServer()
+        let device = await MetalDevice.shared.defaultDevice()!.value
+        let workerService = WorkerService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                commandServer: mockCommandServer,
+                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                messagePumpDriver: mockCommandQueue
+            )
+        )
+        let worker = Worker(dependencies: .init(workerService: workerService))
+        let expectedData = Data([0, 255, 1, 0])
+        let expectedHandle: UInt64 = 42
+
+        mockCommandQueue.stubDecodeBlob { data, listener, requestID in
+            XCTAssertEqual(data, expectedData)
+            listener.onBlobDecoded(expectedHandle, requestID: requestID)
+            return expectedHandle
+        }
+        mockCommandQueue.stubDeleteBlob { handle in
+            XCTAssertEqual(handle, expectedHandle)
+            XCTAssertTrue(mockCommandQueue.deleteBlobListenerCalls.isEmpty)
+            let call = mockCommandQueue.deleteBlobCalls.last!
+            mockCommandQueue.decodeBlobCalls.first!.listener.onBlobDeleted(handle, requestID: call.requestID)
+        }
+        let cleanupCompleted = expectation(description: "blob cleanup completed")
+        mockCommandQueue.stubDeleteBlobListener { handle in
+            XCTAssertEqual(handle, expectedHandle)
+            cleanupCompleted.fulfill()
+        }
+
+        var blob: Blob? = try await worker.decodeBlob(from: expectedData)
+        XCTAssertEqual(blob?.handle, expectedHandle)
+        XCTAssertEqual(mockCommandQueue.decodeBlobCalls.count, 1)
+        XCTAssertTrue(mockCommandQueue.deleteBlobCalls.isEmpty)
+
+        blob = nil
+
+        await fulfillment(of: [cleanupCompleted], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.deleteBlobCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.deleteBlobListenerCalls.count, 1)
+    }
+
+    @MainActor
     func test_decodeFont_withUIFont_usesUIFontCommandQueueOverload() async throws {
         let mockCommandQueue = MockCommandQueue()
         let mockCommandServer = MockCommandServer()

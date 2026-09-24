@@ -65,7 +65,7 @@ public final class Audio: Equatable {
     /// - Parameters:
     ///   - lhs: The left-hand side audio instance.
     ///   - rhs: The right-hand side audio instance.
-    /// - Returns: `true` if both artboards reference the same underlying artboard handle.
+    /// - Returns: `true` if both audio instances reference the same underlying audio handle.
     public static func ==(lhs: Audio, rhs: Audio) -> Bool {
         return lhs.handle == rhs.handle
     }

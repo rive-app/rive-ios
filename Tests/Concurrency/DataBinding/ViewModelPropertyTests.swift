@@ -221,6 +221,7 @@ class ViewModelPropertyTests: XCTestCase {
             (.symbolListIndex, .symbolListIndex),
             (.assetImage, .assetImage),
             (.assetFont, .assetFont),
+            (.assetBlob, .assetBlob),
             (.artboard, .artboard),
             (.input, .input),
             (.any, .any)
@@ -263,6 +264,7 @@ class ViewModelPropertyTests: XCTestCase {
             (.symbolListIndex, .symbolListIndex),
             (.assetImage, .assetImage),
             (.assetFont, .assetFont),
+            (.assetBlob, .assetBlob),
             (.artboard, .artboard),
             (.input, .input),
             (.any, .any)

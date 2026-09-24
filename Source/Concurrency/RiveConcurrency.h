@@ -60,6 +60,7 @@ extern "C"
 #import <RiveRuntime/RiveStateMachineListener.h>
 #import <RiveRuntime/RiveRenderImageListener.h>
 #import <RiveRuntime/RiveFontListener.h>
+#import <RiveRuntime/RiveBlobListener.h>
 #import <RiveRuntime/RiveAudioListener.h>
 #import <RiveRuntime/RiveUIRenderer.h>
 #import <RiveRuntime/_RiveUIDeferredRenderer.h>

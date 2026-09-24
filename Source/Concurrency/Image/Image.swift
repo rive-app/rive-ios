@@ -13,8 +13,10 @@ import Foundation
 /// Image instances are created by decoding image data (e.g., PNG, JPEG, WebP) and can be registered
 /// as global assets with a worker, allowing them to be provided dynamically at runtime.
 ///
-/// Lifetime: Image instances are guaranteed to exist while registered as a global asset with a worker.
-/// When not used as a global asset, you must maintain a strong reference to the instance to keep it alive.
+/// Lifetime: Image instances are retained while registered as a global asset with a worker
+/// or assigned to a view model property. A view model instance retains assigned images
+/// until they are replaced, cleared, or the instance is released. Otherwise, maintain a
+/// strong reference to the image to keep it alive.
 public final class Image: Equatable {
     /// The underlying type for the image handle identifier.
     ///
@@ -65,7 +67,7 @@ public final class Image: Equatable {
     /// - Parameters:
     ///   - lhs: The left-hand side image instance.
     ///   - rhs: The right-hand side image instance.
-    /// - Returns: `true` if both artboards reference the same underlying artboard handle.
+    /// - Returns: `true` if both images reference the same underlying image handle.
     public static func ==(lhs: Image, rhs: Image) -> Bool {
         return lhs.handle == rhs.handle
     }

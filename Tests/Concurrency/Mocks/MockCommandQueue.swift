@@ -68,6 +68,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var setViewModelInstanceEnumCalls: [SetViewModelInstanceEnumCall] = []
     private(set) var setViewModelInstanceImageCalls: [SetViewModelInstanceImageCall] = []
     private(set) var setViewModelInstanceFontCalls: [SetViewModelInstanceFontCall] = []
+    private(set) var setViewModelInstanceBlobCalls: [SetViewModelInstanceBlobCall] = []
     private(set) var setViewModelInstanceArtboardCalls: [SetViewModelInstanceArtboardCall] = []
     private(set) var setViewModelInstanceNestedViewModelCalls: [SetViewModelInstanceNestedViewModelCall] = []
     private(set) var fireViewModelTriggerCalls: [FireViewModelTriggerCall] = []
@@ -169,7 +170,16 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var removeGlobalFontAssetCalls: [RemoveGlobalFontAssetCall] = []
     private var fontHandle: UInt64 = 0
     private var fontListeners: [UInt64: FontListener] = [:]
-    
+
+    private var decodeBlobStub: ((Data, any BlobListener, UInt64) -> UInt64)?
+    private(set) var decodeBlobCalls: [DecodeBlobCall] = []
+    private var deleteBlobStub: ((UInt64) -> Void)?
+    private var deleteBlobListenerStub: ((UInt64) -> Void)?
+    private(set) var deleteBlobCalls: [DeleteBlobCall] = []
+    private(set) var deleteBlobListenerCalls: [DeleteBlobListenerCall] = []
+    private var blobHandle: UInt64 = 0
+    private var blobListeners: [UInt64: BlobListener] = [:]
+
     private var decodeAudioStub: ((Data, any AudioListener, UInt64) -> UInt64)?
     private(set) var decodeAudioCalls: [DecodeAudioCall] = []
     private var deleteAudioStub: ((UInt64) -> Void)?
@@ -428,6 +438,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         decodeFontStub = stub
     }
 
+    func stubDecodeBlob(_ stub: @escaping (Data, any BlobListener, UInt64) -> UInt64) {
+        decodeBlobStub = stub
+    }
+
     func stubDecodeUIFont(_ stub: @escaping (UIFont, any FontListener, UInt64) -> UInt64) {
         decodeUIFontStub = stub
     }
@@ -436,8 +450,16 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         deleteFontStub = stub
     }
 
+    func stubDeleteBlob(_ stub: @escaping (UInt64) -> Void) {
+        deleteBlobStub = stub
+    }
+
     func stubDeleteFontListener(_ stub: @escaping (UInt64) -> Void) {
         deleteFontListenerStub = stub
+    }
+
+    func stubDeleteBlobListener(_ stub: @escaping (UInt64) -> Void) {
+        deleteBlobListenerStub = stub
     }
     
     func stubDecodeAudio(_ stub: @escaping (Data, any AudioListener, UInt64) -> UInt64) {
@@ -905,6 +927,15 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         ))
     }
 
+    func setViewModelInstanceBlob(_ viewModelInstanceHandle: UInt64, path: String, value: UInt64, requestID: UInt64) {
+        setViewModelInstanceBlobCalls.append(SetViewModelInstanceBlobCall(
+            viewModelInstanceHandle: viewModelInstanceHandle,
+            path: path,
+            value: value,
+            requestID: requestID
+        ))
+    }
+
     func setViewModelInstanceArtboard(_ viewModelInstanceHandle: UInt64, path: String, value: UInt64, requestID: UInt64) {
         setViewModelInstanceArtboardCalls.append(SetViewModelInstanceArtboardCall(
             viewModelInstanceHandle: viewModelInstanceHandle,
@@ -1019,6 +1050,18 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         return fontHandle
     }
 
+    func decodeBlob(_ data: Data, listener: any BlobListener, requestID: UInt64) -> UInt64 {
+        decodeBlobCalls.append(DecodeBlobCall(data: data, listener: listener, requestID: requestID))
+        if let stub = decodeBlobStub {
+            let handle = stub(data, listener, requestID)
+            blobListeners[handle] = listener
+            return handle
+        }
+        blobHandle += 1
+        blobListeners[blobHandle] = listener
+        return blobHandle
+    }
+
     func decodeFont(_ font: UIFont, listener: any FontListener, requestID: UInt64) -> UInt64 {
         decodeUIFontCalls.append(DecodeUIFontCall(font: font, listener: listener, requestID: requestID))
         if let stub = decodeUIFontStub {
@@ -1036,9 +1079,19 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         deleteFontStub?(font)
     }
 
+    func deleteBlob(_ blob: UInt64, requestID: UInt64) {
+        deleteBlobCalls.append(DeleteBlobCall(blobHandle: blob, requestID: requestID))
+        deleteBlobStub?(blob)
+    }
+
     func deleteFontListener(_ font: UInt64) {
         deleteFontListenerCalls.append(DeleteFontListenerCall(fontHandle: font))
         deleteFontListenerStub?(font)
+    }
+
+    func deleteBlobListener(_ blob: UInt64) {
+        deleteBlobListenerCalls.append(DeleteBlobListenerCall(blobHandle: blob))
+        deleteBlobListenerStub?(blob)
     }
     
     func addGlobalFontAsset(_ name: String, fontHandle: UInt64, requestID: UInt64) {
@@ -1133,6 +1186,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     
     func getFontListener(for handle: UInt64) -> FontListener? {
         return fontListeners[handle]
+    }
+
+    func getBlobListener(for handle: UInt64) -> BlobListener? {
+        return blobListeners[handle]
     }
     
     func getAudioListener(for handle: UInt64) -> AudioListener? {
@@ -1419,6 +1476,13 @@ extension MockCommandQueue {
         let requestID: UInt64
     }
 
+    struct SetViewModelInstanceBlobCall {
+        let viewModelInstanceHandle: UInt64
+        let path: String
+        let value: UInt64
+        let requestID: UInt64
+    }
+
     struct SetViewModelInstanceArtboardCall {
         let viewModelInstanceHandle: UInt64
         let path: String
@@ -1538,6 +1602,12 @@ extension MockCommandQueue {
         let requestID: UInt64
     }
 
+    struct DecodeBlobCall {
+        let data: Data
+        let listener: any BlobListener
+        let requestID: UInt64
+    }
+
     struct DecodeUIFontCall {
         let font: UIFont
         let listener: any FontListener
@@ -1549,8 +1619,17 @@ extension MockCommandQueue {
         let requestID: UInt64
     }
 
+    struct DeleteBlobCall {
+        let blobHandle: UInt64
+        let requestID: UInt64
+    }
+
     struct DeleteFontListenerCall {
         let fontHandle: UInt64
+    }
+
+    struct DeleteBlobListenerCall {
+        let blobHandle: UInt64
     }
     
     struct AddGlobalFontAssetCall {

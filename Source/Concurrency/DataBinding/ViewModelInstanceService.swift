@@ -462,6 +462,18 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         emitDirty(for: instance)
     }
 
+    // MARK: - BlobProperty
+
+    /// Sets a blob property value.
+    ///
+    /// Delegates to the command queue. No listener callback is invoked for this operation.
+    @MainActor
+    func setBlobValue(_ value: Blob.BlobHandle, for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) {
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.setViewModelInstanceBlob(instance, path: path, value: value, requestID: requestID)
+        emitDirty(for: instance)
+    }
+
     // MARK: - ArtboardProperty
 
     /// Sets an artboard property value.

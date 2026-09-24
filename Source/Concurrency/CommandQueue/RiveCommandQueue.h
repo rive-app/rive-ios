@@ -27,6 +27,7 @@
 @protocol RiveViewModelInstanceListener;
 @protocol RiveRenderImageListener;
 @protocol RiveFontListener;
+@protocol RiveBlobListener;
 @protocol RiveAudioListener;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -909,6 +910,21 @@ NS_SWIFT_NAME(CommandQueueProtocol)
                        requestID:(uint64_t)requestID;
 
 /**
+ * Sets the blob value of a view model property.
+ *
+ * @param viewModelInstanceHandle The handle of the view model instance
+ * @param path The property path
+ * @param value The handle of a decoded blob, or 0 to clear the property
+ * @param requestID The request ID for this operation
+ * @note The property must be of type assetBlob. Changes are applied
+ * asynchronously.
+ */
+- (void)setViewModelInstanceBlob:(uint64_t)viewModelInstanceHandle
+                            path:(NSString*)path
+                           value:(uint64_t)value
+                       requestID:(uint64_t)requestID;
+
+/**
  * Sets the artboard value of a view model property.
  *
  * @param viewModelInstanceHandle The handle of the view model instance
@@ -1190,6 +1206,43 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @param requestID The request ID for this operation
  */
 - (void)removeGlobalImageAsset:(NSString*)name requestID:(uint64_t)requestID;
+
+#pragma mark - Blob
+
+/**
+ * Decodes blob data and creates a blob resource.
+ *
+ * @param data The blob data to decode
+ * @param listener The listener that will receive decode completion
+ * notifications
+ * @param requestID The request ID for correlating the response
+ * @return The handle allocated for the pending blob resource
+ * @note The same blob handle is delivered via the listener's
+ *       onBlobDecoded:requestID: method when decoding succeeds. If it fails,
+ *       onBlobError:requestID:message: is called instead.
+ */
+- (uint64_t)decodeBlob:(NSData*)data
+              listener:(id<RiveBlobListener>)listener
+             requestID:(uint64_t)requestID;
+
+/**
+ * Deletes a previously decoded blob resource.
+ *
+ * This frees the blob resources. After deletion, the blob handle becomes
+ * invalid and should not be used for any further operations.
+ *
+ * @param blob The handle of the blob to delete
+ * @param requestID The request ID for this operation
+ */
+- (void)deleteBlob:(uint64_t)blob requestID:(uint64_t)requestID;
+
+/**
+ * Deletes the blob listener associated with a blob handle.
+ *
+ * @param blob The blob handle whose listener should be removed
+ * @note This only removes the listener bridge and does not delete the blob.
+ */
+- (void)deleteBlobListener:(uint64_t)blob;
 
 #pragma mark - Font
 

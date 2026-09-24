@@ -8,10 +8,11 @@
 
 import Foundation
 
-/// Errors that can occur when decoding images.
+/// Errors that can occur during image operations.
 ///
-/// These errors are thrown when image decoding fails in the C++ runtime and
-/// `ImageService.onRenderImageError` is called.
+/// `failedDecoding` is reported when image decoding fails in the C++ runtime and
+/// `ImageService.onRenderImageError` is called. `cancelled` is reported when a pending
+/// image decoding or deletion operation is cancelled.
 public enum ImageError: LocalizedError {
     case failedDecoding(String)
     case cancelled

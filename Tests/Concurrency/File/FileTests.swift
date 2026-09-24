@@ -557,7 +557,12 @@ class FileTests: XCTestCase {
             let assets: [[String: Any]] = [
                 ["name": "hero.png", "uniqueName": "hero-1", "assetID": UInt32(1), "cdnUUID": "uuid-1", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "png", "type": RiveFileAssetType.image.rawValue, "rawType": UInt16(105)],
                 ["name": "body.ttf", "uniqueName": "body-2", "assetID": UInt32(2), "cdnUUID": "uuid-2", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "ttf", "type": RiveFileAssetType.font.rawValue, "rawType": UInt16(141)],
-                ["name": "click.mp3", "uniqueName": "click-3", "assetID": UInt32(3), "cdnUUID": "uuid-3", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "mp3", "type": RiveFileAssetType.audio.rawValue, "rawType": UInt16(406)]
+                ["name": "click.mp3", "uniqueName": "click-3", "assetID": UInt32(3), "cdnUUID": "uuid-3", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "mp3", "type": RiveFileAssetType.audio.rawValue, "rawType": UInt16(406)],
+                ["name": "data.bin", "uniqueName": "data-4", "assetID": UInt32(4), "cdnUUID": "", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "bin", "type": RiveFileAssetType.blob.rawValue, "rawType": UInt16(649)],
+                ["name": "script.luau", "uniqueName": "script-5", "assetID": UInt32(5), "cdnUUID": "", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "luau", "type": RiveFileAssetType.unknown.rawValue, "rawType": UInt16(529)],
+                ["name": "module.wasm", "uniqueName": "module-6", "assetID": UInt32(6), "cdnUUID": "", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "wasm", "type": RiveFileAssetType.unknown.rawValue, "rawType": UInt16(1071)],
+                ["name": "shader.rstb", "uniqueName": "shader-7", "assetID": UInt32(7), "cdnUUID": "", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "rstb", "type": RiveFileAssetType.unknown.rawValue, "rawType": UInt16(970)],
+                ["name": "manifest", "uniqueName": "manifest-8", "assetID": UInt32(8), "cdnUUID": "", "cdnBaseURL": "https://cdn.example.com", "fileExtension": "", "type": RiveFileAssetType.unknown.rawValue, "rawType": UInt16(642)]
             ]
             fileService.onFileAssetsListed(1, requestID: requestID, assets: assets)
             expectation.fulfill()
@@ -565,7 +570,12 @@ class FileTests: XCTestCase {
 
         let assets = try await file.getAssets()
         await fulfillment(of: [expectation], timeout: 1)
-        XCTAssertEqual(assets.count, 3)
+        let expectedTypes: [File.Asset.AssetType] = [
+            .image, .font, .audio, .blob,
+            .unknown(529), .unknown(1071), .unknown(970), .unknown(642)
+        ]
+        XCTAssertEqual(assets.count, expectedTypes.count)
+        XCTAssertEqual(assets.map(\.type), expectedTypes)
         XCTAssertEqual(assets[0].name, "hero.png")
         XCTAssertEqual(assets[0].uniqueName, "hero-1")
         XCTAssertEqual(assets[0].assetID, 1)

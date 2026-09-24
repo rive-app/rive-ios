@@ -8,10 +8,11 @@
 
 import Foundation
 
-/// Errors that can occur when decoding fonts.
+/// Errors that can occur during font operations.
 ///
-/// These errors are thrown when font decoding fails in the C++ runtime and
-/// `FontService.onFontError` is called.
+/// `failedDecoding` is reported when font decoding fails in the C++ runtime and
+/// `FontService.onFontError` is called. `cancelled` is reported when a pending
+/// font decoding or deletion operation is cancelled.
 public enum FontError: LocalizedError {
     case failedDecoding(String)
     case cancelled

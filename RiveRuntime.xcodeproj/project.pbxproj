@@ -308,6 +308,7 @@
 				DataBinding/RiveViewModelInstanceListener.h,
 				File/RiveFileListener.h,
 				Font/RiveFontListener.h,
+				Blob/RiveBlobListener.h,
 				Image/RiveRenderImageListener.h,
 				Renderer/_RiveUIDeferredRenderContext.h,
 				Renderer/_RiveUIDeferredRenderer.h,

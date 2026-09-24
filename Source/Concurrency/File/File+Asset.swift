@@ -12,7 +12,7 @@ extension File {
             public let uuid: String
         }
 
-        /// The concrete kind of file asset.
+        /// Asset kinds supported by global asset registration or data binding.
         public enum AssetType: Sendable, Equatable {
             /// An image asset.
             case image
@@ -23,7 +23,10 @@ extension File {
             /// An audio asset.
             case audio
 
-            /// An asset kind that is not recognized by this runtime version.
+            /// A blob asset containing arbitrary binary data.
+            case blob
+
+            /// An asset kind without a supported high-level asset API.
             case unknown(UInt16)
         }
 
@@ -87,6 +90,8 @@ extension File {
                 self.type = .font
             case .audio:
                 self.type = .audio
+            case .blob:
+                self.type = .blob
             default:
                 self.type = .unknown(rawType.uint16Value)
             }

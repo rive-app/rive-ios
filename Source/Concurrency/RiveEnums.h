@@ -254,7 +254,10 @@ typedef NS_ENUM(uint16_t, RiveFileAssetType) {
     RiveFileAssetTypeAudio,
 
     /// Unknown asset type.
-    RiveFileAssetTypeUnknown
+    RiveFileAssetTypeUnknown,
+
+    /// Blob asset.
+    RiveFileAssetTypeBlob
 };
 
 #endif /* RiveEnums_h */

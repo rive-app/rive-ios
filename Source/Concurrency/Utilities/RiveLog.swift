@@ -138,6 +138,7 @@ extension RiveLog {
         case viewModelInstance
         case image
         case font
+        case blob
         case audio
         case view
         case custom(String)
@@ -152,6 +153,7 @@ extension RiveLog {
             case .viewModelInstance: return "ViewModelInstance"
             case .image: return "Image"
             case .font: return "Font"
+            case .blob: return "Blob"
             case .audio: return "Audio"
             case .view: return "RiveUIView"
             case .custom(let value): return value

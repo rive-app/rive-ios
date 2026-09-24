@@ -289,6 +289,23 @@ public final class Worker {
         notifyGlobalAssetsDidChange()
     }
 
+    /// Creates a blob from the provided blob data by decoding it into a `Blob` instance
+    /// that can be assigned to a view model blob property.
+    ///
+    /// - Parameter data: The blob data to decode (arbitrary binary data)
+    /// - Returns: A decoded `Blob` instance
+    /// - Throws: An error if the blob data cannot be decoded
+    @MainActor
+    public func decodeBlob(from data: Data) async throws -> Blob {
+        RiveLog.debug(tag: .worker, "[Worker] Decoding blob data (\(data.count) bytes)")
+        let blob = try await Blob(
+            data: data,
+            dependencies: makeBlobDependencies()
+        )
+        RiveLog.debug(tag: .worker, "[Worker] Decoded blob")
+        return blob
+    }
+
     /// Creates a font from the provided font data by decoding it into a `Font` instance
     /// that can be used as a global asset.
     ///
@@ -432,6 +449,18 @@ public final class Worker {
     private func makeFontDependencies() -> Font.Dependencies {
         .init(
             fontService: .init(
+                dependencies: .init(
+                    commandQueue: dependencies.workerService.dependencies.commandQueue,
+                    messageGate: dependencies.workerService.messageGate
+                )
+            )
+        )
+    }
+
+    @MainActor
+    private func makeBlobDependencies() -> Blob.Dependencies {
+        .init(
+            blobService: .init(
                 dependencies: .init(
                     commandQueue: dependencies.workerService.dependencies.commandQueue,
                     messageGate: dependencies.workerService.messageGate

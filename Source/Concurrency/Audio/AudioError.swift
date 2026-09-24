@@ -8,10 +8,11 @@
 
 import Foundation
 
-/// Errors that can occur when decoding audio.
+/// Errors that can occur during audio operations.
 ///
-/// These errors are thrown when audio decoding fails in the C++ runtime and
-/// `AudioService.onAudioSourceError` is called.
+/// `failedDecoding` is reported when audio decoding fails in the C++ runtime and
+/// `AudioService.onAudioSourceError` is called. `cancelled` is reported when a pending
+/// audio decoding or deletion operation is cancelled.
 public enum AudioError: LocalizedError {
     case failedDecoding(String)
     case cancelled

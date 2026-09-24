@@ -44,6 +44,7 @@ public final class ViewModelInstance: Equatable {
     let viewModelInstanceHandle: ViewModelInstanceHandle
     private var artboardPropertyValues: [String: Artboard] = [:]
     private var fontPropertyValues: [String: Font] = [:]
+    private var blobPropertyValues: [String: Blob] = [:]
     private var imagePropertyValues: [String: Image] = [:]
     /// The view model (definition) name, cached after first fetch since it is immutable for the
     /// instance's lifetime.
@@ -372,6 +373,23 @@ public final class ViewModelInstance: Equatable {
         fontPropertyValues[property.path] = font
     }
 
+    // MARK: - BlobProperty
+
+    /// Sets the value of a blob property, or clears it if `nil` is passed.
+    ///
+    /// The target view model property must be of type `assetBlob`.
+    ///
+    /// - Parameters:
+    ///   - property: The blob property to modify
+    ///   - blob: The blob to assign to the property, or `nil` to clear it
+    @MainActor
+    public func setValue(of property: BlobProperty, to blob: Blob?) {
+        let handle = viewModelInstanceHandle
+        RiveLog.trace(tag: .viewModelInstance, "\(Self.logContext(for: handle)) Setting blob property '\(property.path)'")
+        dependencies.viewModelInstanceService.setBlobValue(blob?.handle ?? 0, for: viewModelInstanceHandle, path: property.path)
+        blobPropertyValues[property.path] = blob
+    }
+
     // MARK: - ArtboardProperty
 
     /// Sets the value of an artboard property, or clears it if `nil` is passed.
@@ -658,6 +676,17 @@ public struct ImageProperty: Property {
 public struct FontProperty: Property {
     public let path: String
     /// Creates a font property with the specified path.
+    ///
+    /// - Parameter path: The path that identifies this property in the view model
+    public init(path: String) {
+        self.path = path
+    }
+}
+
+/// A property that holds a blob value.
+public struct BlobProperty: Property {
+    public let path: String
+    /// Creates a blob property with the specified path.
     ///
     /// - Parameter path: The path that identifies this property in the view model
     public init(path: String) {

@@ -15,6 +15,7 @@
 #import "RiveStateMachineListener.h"
 #import "RiveRenderImageListener.h"
 #import "RiveFontListener.h"
+#import "RiveBlobListener.h"
 #import "RiveAudioListener.h"
 #import "_RiveCommandQueueMessagePumpDriver.h"
 #import <RiveRuntime/RiveRuntime-Swift.h>
@@ -122,6 +123,8 @@ static RiveFileAssetType RiveFileAssetTypeFromCpp(uint16_t cppType)
         return RiveFileAssetTypeFont;
     if (cppType == rive::AudioAssetBase::typeKey)
         return RiveFileAssetTypeAudio;
+    if (cppType == rive::BlobAssetBase::typeKey)
+        return RiveFileAssetTypeBlob;
     return RiveFileAssetTypeUnknown;
 }
 
@@ -1356,6 +1359,60 @@ void _FontListener::onFontDeleted(const rive::FontHandle handle,
 
 namespace
 {
+class _BlobListener : public rive::CommandQueue::BlobAssetListener
+{
+public:
+    _BlobListener(id<RiveBlobListener> observer) { _observer = observer; }
+
+    virtual void onBlobAssetDecoded(const rive::BlobAssetHandle handle,
+                                    uint64_t requestId) override;
+
+    virtual void onBlobAssetError(const rive::BlobAssetHandle handle,
+                                  uint64_t requestId,
+                                  std::string error) override;
+
+    virtual void onBlobAssetDeleted(const rive::BlobAssetHandle handle,
+                                    uint64_t requestId) override;
+
+private:
+    __weak id<RiveBlobListener> _observer;
+};
+} // namespace
+
+void _BlobListener::onBlobAssetDecoded(const rive::BlobAssetHandle handle,
+                                       uint64_t requestId)
+{
+    if (_observer)
+    {
+        [_observer onBlobDecoded:reinterpret_cast<uint64_t>(handle)
+                       requestID:requestId];
+    }
+}
+
+void _BlobListener::onBlobAssetError(const rive::BlobAssetHandle handle,
+                                     uint64_t requestId,
+                                     std::string error)
+{
+    if (_observer)
+    {
+        [_observer onBlobError:reinterpret_cast<uint64_t>(handle)
+                     requestID:requestId
+                       message:[NSString stringWithUTF8String:error.c_str()]];
+    }
+}
+
+void _BlobListener::onBlobAssetDeleted(const rive::BlobAssetHandle handle,
+                                       uint64_t requestId)
+{
+    if (_observer)
+    {
+        [_observer onBlobDeleted:reinterpret_cast<uint64_t>(handle)
+                       requestID:requestId];
+    }
+}
+
+namespace
+{
 class _AudioListener : public rive::CommandQueue::AudioSourceListener
 {
 public:
@@ -1433,6 +1490,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     NSMutableDictionary<NSNumber*, NSValue*>* _renderImageListeners;
     /** Dictionary mapping font handles to their listeners for proper cleanup */
     NSMutableDictionary<NSNumber*, NSValue*>* _fontListeners;
+    NSMutableDictionary<NSNumber*, NSValue*>* _blobListeners;
     /** Dictionary mapping audio handles to their listeners for proper cleanup
      */
     NSMutableDictionary<NSNumber*, NSValue*>* _audioListeners;
@@ -1467,6 +1525,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         _viewModelInstanceListeners = [[NSMutableDictionary alloc] init];
         _renderImageListeners = [[NSMutableDictionary alloc] init];
         _fontListeners = [[NSMutableDictionary alloc] init];
+        _blobListeners = [[NSMutableDictionary alloc] init];
         _audioListeners = [[NSMutableDictionary alloc] init];
         _nextRequestID = 0;
         _isProcessTimerArmed = NO;
@@ -1535,6 +1594,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         delete listener;
     }
 
+    for (NSValue* listenerValue in _blobListeners.allValues)
+    {
+        _BlobListener* listener =
+            static_cast<_BlobListener*>(listenerValue.pointerValue);
+        delete listener;
+    }
+
     // Clean up all render image listeners
     for (NSValue* listenerValue in _audioListeners.allValues)
     {
@@ -1550,6 +1616,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     _viewModelInstanceListeners = nil;
     _renderImageListeners = nil;
     _fontListeners = nil;
+    _blobListeners = nil;
     _audioListeners = nil;
     _processTimer = nil;
     _isProcessTimerArmed = NO;
@@ -2528,6 +2595,21 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     }];
 }
 
+- (void)setViewModelInstanceBlob:(uint64_t)viewModelInstanceHandle
+                            path:(NSString*)path
+                           value:(uint64_t)value
+                       requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+          viewModelInstanceHandle);
+      auto stdPath = std::string([path UTF8String]);
+      auto blobHandle = reinterpret_cast<rive::BlobAssetHandle>(value);
+      self->_commandQueue->setViewModelInstanceBlob(
+          handle, stdPath, blobHandle, requestID);
+    }];
+}
+
 - (void)setViewModelInstanceArtboard:(uint64_t)viewModelInstanceHandle
                                 path:(NSString*)path
                                value:(uint64_t)value
@@ -2695,6 +2777,55 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     [self executeCommand:^{
       auto stdName = std::string([name UTF8String]);
       self->_commandQueue->removeGlobalImageAsset(stdName, requestID);
+    }];
+}
+
+#pragma mark - Blob
+
+- (uint64_t)decodeBlob:(NSData*)data
+              listener:(id<RiveBlobListener>)listener
+             requestID:(uint64_t)requestID
+{
+    return [self executeCommandWithReturn:^uint64_t {
+      auto blobListener = std::make_unique<_BlobListener>(listener);
+
+      std::vector<uint8_t> blobBytes;
+      if (data.length != 0)
+      {
+          const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
+          blobBytes.assign(bytes, bytes + data.length);
+      }
+
+      auto handle = self->_commandQueue->decodeBlob(
+          std::move(blobBytes), blobListener.get(), requestID);
+
+      uint64_t blobHandle = reinterpret_cast<uint64_t>(handle);
+      self->_blobListeners[@(blobHandle)] =
+          [NSValue valueWithPointer:blobListener.release()];
+
+      return blobHandle;
+    }];
+}
+
+- (void)deleteBlob:(uint64_t)blob requestID:(uint64_t)requestID
+{
+    [self executeCommand:^{
+      auto handle = reinterpret_cast<rive::BlobAssetHandle>(blob);
+      self->_commandQueue->deleteBlob(handle, requestID);
+    }];
+}
+
+- (void)deleteBlobListener:(uint64_t)blob
+{
+    [self executeCommand:^{
+      NSValue* listenerValue = self->_blobListeners[@(blob)];
+      if (listenerValue)
+      {
+          _BlobListener* listener =
+              static_cast<_BlobListener*>(listenerValue.pointerValue);
+          delete listener;
+          [self->_blobListeners removeObjectForKey:@(blob)];
+      }
     }];
 }
 
