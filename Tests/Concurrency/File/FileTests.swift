@@ -1196,4 +1196,51 @@ class FileTests: XCTestCase {
         XCTAssertEqual(commandQueue.requestGlobalViewModelNamesCalls.count, 1)
     }
 
+
+    // MARK: - Allocation errors
+
+    @MainActor
+    func test_loadFile_whenCopyThrowsBadAlloc_throwsError() async throws {
+        try await assertCopyError(.badAlloc)
+    }
+
+    @MainActor
+    func test_loadFile_whenCopyThrowsLengthError_throwsError() async throws {
+        try await assertCopyError(.lengthError)
+    }
+
+    @MainActor
+    func test_loadFile_withValidData_succeeds() async throws {
+        let worker = try await Worker()
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(
+            forResource: "empty", withExtension: "riv"
+        ))
+        let validData = try Data(contentsOf: url)
+        let asset = try await File(source: .data(validData), worker: worker)
+        XCTAssertNotEqual(asset.fileHandle, 0)
+    }
+
+    @MainActor
+    private func assertCopyError(_ failure: AssetCopyFailure) async throws {
+        let copier = TestAssetDataCopier(failure: failure)
+        let worker = try await Worker(assetDataCopier: copier)
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(
+            forResource: "empty", withExtension: "riv"
+        ))
+        let validData = try Data(contentsOf: url)
+        let finished = expectation(description: "Swift receives copy error")
+        let task = Task { @MainActor in
+            defer { finished.fulfill() }
+            do {
+                _ = try await File(source: .data(validData), worker: worker)
+                XCTFail("Expected FileError.invalidFile")
+            } catch FileError.invalidFile {
+            } catch {
+                XCTFail("Expected FileError.invalidFile, got \(error)")
+            }
+        }
+        await fulfillment(of: [finished], timeout: 1)
+        task.cancel()
+    }
+
 }

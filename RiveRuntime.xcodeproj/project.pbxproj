@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA110CA71000000000000003 /* racket1-59343.wav in Resources */ = {isa = PBXBuildFile; fileRef = FA110CA71000000000000004 /* racket1-59343.wav */; };
+		FA110CA71000000000000001 /* Inter-45562.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FA110CA71000000000000002 /* Inter-45562.ttf */; };
 		CDNTEST002A01E3D2FAEAB9 /* CDNFileAssetLoaderTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDNTEST001913C0541E001B /* CDNFileAssetLoaderTest.mm */; };
 		041265262B0CB41E009400EC /* OutOfBandAssetTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */; };
 		041265282B0CC387009400EC /* hosted_assets.riv in Resources */ = {isa = PBXBuildFile; fileRef = 041265272B0CC387009400EC /* hosted_assets.riv */; };
@@ -154,6 +156,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FA110CA71000000000000004 /* racket1-59343.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Example-iOS/Assets/racket1-59343.wav"; sourceTree = SOURCE_ROOT; };
+		FA110CA71000000000000002 /* Inter-45562.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Example-iOS/Assets/Inter-45562.ttf"; sourceTree = SOURCE_ROOT; };
 		CDNTEST001913C0541E001B /* CDNFileAssetLoaderTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CDNFileAssetLoaderTest.mm; sourceTree = "<group>"; };
 		041265252B0CB41E009400EC /* OutOfBandAssetTest.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OutOfBandAssetTest.mm; sourceTree = "<group>"; };
 		041265272B0CC387009400EC /* hosted_assets.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hosted_assets.riv; sourceTree = "<group>"; };
@@ -294,11 +298,15 @@
 		F2ECC2382C66B920008B20E5 /* RiveFontTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveFontTests.swift; sourceTree = "<group>"; };
 		F2FD94022CC9492B00C1FC85 /* RiveFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiveFont.h; sourceTree = "<group>"; };
 		F2FD94032CC9492B00C1FC85 /* RiveFont.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RiveFont.m; sourceTree = "<group>"; };
+		E7A940000000000000000002 /* RiveRuntimeTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RiveRuntimeTests-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		F2D1D5282F6B1B6E00DF0B68 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			additionalCompilerFlagsByRelativePath = {
+				"CommandQueue/RiveCommandQueue.mm" = "-fexceptions -frtti";
+			};
 			publicHeaders = (
 				Artboard/RiveArtboardListener.h,
 				Audio/RiveAudioListener.h,
@@ -322,11 +330,18 @@
 			);
 			target = C9C73ED024FC478800EF9516 /* RiveRuntime */;
 		};
+		E7A940000000000000000001 /* Asset copier helper flags */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			additionalCompilerFlagsByRelativePath = {
+				TestAssetDataCopier.mm = "-fexceptions -frtti";
+			};
+			target = C9C73ED924FC478900EF9516 /* RiveRuntimeTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F2C675292ECE33F500CAAEFD /* Concurrency */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F2D1D5282F6B1B6E00DF0B68 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Concurrency; sourceTree = "<group>"; };
-		F2C814C82ED4F64400C96BAC /* Concurrency */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Concurrency; sourceTree = "<group>"; };
+		F2C814C82ED4F64400C96BAC /* Concurrency */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (E7A940000000000000000001 /* Asset copier helper flags */, ); explicitFileTypes = {}; explicitFolders = (); path = Concurrency; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -433,6 +448,8 @@
 		2E54F2382BE428750013016C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				FA110CA71000000000000002 /* Inter-45562.ttf */,
+				FA110CA71000000000000004 /* racket1-59343.wav */,
 				2E54F2392BE428990013016C /* PrivacyInfo.xcprivacy */,
 			);
 			path = Resources;
@@ -527,6 +544,7 @@
 				C9C73EE124FC478900EF9516 /* Info.plist */,
 				04BE54102649434900427B39 /* RiveFileLoadTest.mm */,
 				04BE5412264943BB00427B39 /* util.mm */,
+				E7A940000000000000000002 /* RiveRuntimeTests-Bridging-Header.h */,
 				04BE541526497D4100427B39 /* util.h */,
 				04BE5417264A818F00427B39 /* RiveAnimationConfigurationsTest.mm */,
 				04BE541B264A90D600427B39 /* RiveAnimationLoadTest.mm */,
@@ -757,6 +775,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA110CA71000000000000001 /* Inter-45562.ttf in Resources */,
+				FA110CA71000000000000003 /* racket1-59343.wav in Resources */,
 				04BE540A2649403600427B39 /* noanimation.riv in Resources */,
 				04BE54042649403600427B39 /* shapes.riv in Resources */,
 				04BE540F2649403600427B39 /* sample6.riv in Resources */,
@@ -1295,6 +1315,7 @@
 			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
@@ -1305,6 +1326,7 @@
 					"@loader_path/Frameworks",
 				);
 				OTHER_SWIFT_FLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/RiveRuntimeTests-Bridging-Header.h";
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
@@ -1323,6 +1345,7 @@
 			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
@@ -1333,6 +1356,7 @@
 					"@loader_path/Frameworks",
 				);
 				OTHER_SWIFT_FLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/RiveRuntimeTests-Bridging-Header.h";
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
@@ -1554,6 +1578,7 @@
 			baseConfigurationReference = F2BD96D62DDCC7A200E7F49A /* macOS.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
@@ -1564,6 +1589,7 @@
 					"@loader_path/Frameworks",
 				);
 				OTHER_SWIFT_FLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/RiveRuntimeTests-Bridging-Header.h";
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
@@ -1785,6 +1811,7 @@
 			baseConfigurationReference = F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
@@ -1799,6 +1826,7 @@
 					"${PROJECT_DIR}/dependencies/release",
 				);
 				OTHER_SWIFT_FLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/RiveRuntimeTests-Bridging-Header.h";
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
@@ -2018,6 +2046,7 @@
 			baseConfigurationReference = F2BD96D52DDCC7A200E7F49A /* Catalyst.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
@@ -2032,6 +2061,7 @@
 					"${PROJECT_DIR}/dependencies/release",
 				);
 				OTHER_SWIFT_FLAGS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/RiveRuntimeTests-Bridging-Header.h";
 				PRODUCT_BUNDLE_IDENTIFIER = rive.app.ios.runtime.RiveRuntimeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";

@@ -17,6 +17,7 @@
 #import "RiveFontListener.h"
 #import "RiveBlobListener.h"
 #import "RiveAudioListener.h"
+#import "RiveAssetDataCopier.h"
 #import "_RiveCommandQueueMessagePumpDriver.h"
 #import <RiveRuntime/RiveRuntime-Swift.h>
 #import "RivePrivateHeaders.h"
@@ -28,8 +29,59 @@
 #include "rive/semantic/semantic_role.hpp"
 #include "rive/semantic/semantic_trait.hpp"
 #include "rive/semantic/semantic_state.hpp"
+#include <new>
+#include <stdexcept>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@implementation RiveCommandQueueAssetDataCopier
+
+- (std::vector<uint8_t>)copyData:(NSData*)data
+{
+    const size_t length = data.length;
+    std::vector<uint8_t> bytes;
+    if (length == 0)
+    {
+        return bytes;
+    }
+    if (length > bytes.max_size())
+    {
+        throw std::length_error("Asset data exceeds vector max_size");
+    }
+    // Use the range constructor because reserve shares a symbol with the
+    // exception-disabled version in librive_decoders (decode_ktx2.o),
+    // preventing allocation failures from reaching our catch.
+    // Cast away const to select libc++'s faster copy implementation in our
+    // C++17 build.
+    // The vector constructor only reads this data.
+    auto* source =
+        const_cast<uint8_t*>(static_cast<const uint8_t*>(data.bytes));
+    return std::vector<uint8_t>(source, source + length);
+}
+
+@end
+
+/// With uint8_t elements and the default allocator, the vector's expected
+/// exceptions are length_error and bad_alloc (including its subclasses).
+/// Invalid memory access is not recoverable through these catches.
+static NSString* _Nullable copyAssetData(id<RiveAssetDataCopier> copier,
+                                         NSData* data,
+                                         std::vector<uint8_t>& bytes)
+{
+    try
+    {
+        bytes = [copier copyData:data];
+        return nil;
+    }
+    catch (const std::bad_alloc&)
+    {
+        return @"Not enough memory to copy the data";
+    }
+    catch (const std::length_error&)
+    {
+        return @"Data exceeds the maximum supported size";
+    }
+}
 
 rive::DataType RiveViewModelInstanceDataTypeToCppType(
     RiveViewModelInstanceDataType type)
@@ -1524,6 +1576,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 @implementation RiveCommandQueue
 {
+    id<RiveAssetDataCopier> _assetDataCopier;
     /** The underlying C++ command queue that handles Rive operations */
     rive::rcp<rive::CommandQueue> _commandQueue;
     /** Dictionary mapping file handles to their listeners for proper cleanup */
@@ -1566,10 +1619,17 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (instancetype)init
 {
+    return [self
+        initWithAssetDataCopier:[[RiveCommandQueueAssetDataCopier alloc] init]];
+}
+
+- (instancetype)initWithAssetDataCopier:(id<RiveAssetDataCopier>)copier
+{
     [_RiveMainActor
         assertIsolated:@"Workers must be initialized on the MainActor."];
     if (self = [super init])
     {
+        _assetDataCopier = copier;
         _commandQueue = rive::make_rcp<rive::CommandQueue>();
         _fileListeners = [[NSMutableDictionary alloc] init];
         _artboardListeners = [[NSMutableDictionary alloc] init];
@@ -1770,17 +1830,19 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
             observer:(nonnull id<RiveFileListener>)observer
            requestID:(uint64_t)requestID
 {
+    id<RiveAssetDataCopier> copier = _assetDataCopier;
     return [self executeCommandWithReturn:^uint64_t {
-      // Create a new listener for this specific observer
+      std::vector<uint8_t> fileBytes;
+      if (NSString* error = copyAssetData(copier, data, fileBytes))
+      {
+          [observer onFileError:0 requestID:requestID message:error];
+          return 0;
+      }
+
       auto listener = std::make_unique<_FileListener>(observer);
 
-      const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
-      size_t length = data.length;
-
       auto handle = self->_commandQueue->loadFile(
-          std::vector<uint8_t>(bytes, bytes + length),
-          listener.get(),
-          requestID);
+          std::move(fileBytes), listener.get(), requestID);
 
       // Store the listener so it doesn't get deallocated
       uint64_t fileHandleUInt = reinterpret_cast<uint64_t>(handle);
@@ -2860,17 +2922,20 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                listener:(id<RiveRenderImageListener>)listener
               requestID:(uint64_t)requestID
 {
+    id<RiveAssetDataCopier> copier = _assetDataCopier;
     return [self executeCommandWithReturn:^uint64_t {
+      std::vector<uint8_t> imageBytes;
+      if (NSString* error = copyAssetData(copier, data, imageBytes))
+      {
+          [listener onRenderImageError:0 requestID:requestID message:error];
+          return 0;
+      }
+
       auto renderImageListener =
           std::make_unique<_RenderImageListener>(listener);
 
-      const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
-      size_t length = data.length;
-
       auto handle = self->_commandQueue->decodeImage(
-          std::vector<uint8_t>(bytes, bytes + length),
-          renderImageListener.get(),
-          requestID);
+          std::move(imageBytes), renderImageListener.get(), requestID);
 
       uint64_t renderImageHandleUInt = reinterpret_cast<uint64_t>(handle);
       self->_renderImageListeners[@(renderImageHandleUInt)] =
@@ -2927,15 +2992,16 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
               listener:(id<RiveBlobListener>)listener
              requestID:(uint64_t)requestID
 {
+    id<RiveAssetDataCopier> copier = _assetDataCopier;
     return [self executeCommandWithReturn:^uint64_t {
-      auto blobListener = std::make_unique<_BlobListener>(listener);
-
       std::vector<uint8_t> blobBytes;
-      if (data.length != 0)
+      if (NSString* error = copyAssetData(copier, data, blobBytes))
       {
-          const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
-          blobBytes.assign(bytes, bytes + data.length);
+          [listener onBlobError:0 requestID:requestID message:error];
+          return 0;
       }
+
+      auto blobListener = std::make_unique<_BlobListener>(listener);
 
       auto handle = self->_commandQueue->decodeBlob(
           std::move(blobBytes), blobListener.get(), requestID);
@@ -2976,16 +3042,20 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
               listener:(id<RiveFontListener>)listener
              requestID:(uint64_t)requestID
 {
+    id<RiveAssetDataCopier> copier = _assetDataCopier;
     return [self executeCommandWithReturn:^uint64_t {
+      std::vector<uint8_t> fontBytes;
+      if (NSString* error = copyAssetData(copier, data, fontBytes))
+      {
+          [listener onFontError:0 requestID:requestID message:error];
+          return 0;
+      }
+
       auto fontListener = std::make_unique<_FontListener>(listener);
 
-      const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
-      size_t length = data.length;
-
+      // Submission mutates the queue and cannot safely be rolled back here.
       auto handle = self->_commandQueue->decodeFont(
-          std::vector<uint8_t>(bytes, bytes + length),
-          fontListener.get(),
-          requestID);
+          std::move(fontBytes), fontListener.get(), requestID);
 
       uint64_t fontHandle = reinterpret_cast<uint64_t>(handle);
       self->_fontListeners[@(fontHandle)] =
@@ -3065,16 +3135,19 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                listener:(id<RiveAudioListener>)listener
               requestID:(uint64_t)requestID
 {
+    id<RiveAssetDataCopier> copier = _assetDataCopier;
     return [self executeCommandWithReturn:^uint64_t {
+      std::vector<uint8_t> audioBytes;
+      if (NSString* error = copyAssetData(copier, data, audioBytes))
+      {
+          [listener onAudioSourceError:0 requestID:requestID message:error];
+          return 0;
+      }
+
       auto audioListener = std::make_unique<_AudioListener>(listener);
 
-      const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
-      size_t length = data.length;
-
       auto handle = self->_commandQueue->decodeAudio(
-          std::vector<uint8_t>(bytes, bytes + length),
-          audioListener.get(),
-          requestID);
+          std::move(audioBytes), audioListener.get(), requestID);
 
       uint64_t audioHandleUInt = reinterpret_cast<uint64_t>(handle);
       self->_audioListeners[@(audioHandleUInt)] =

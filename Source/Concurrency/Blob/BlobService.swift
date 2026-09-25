@@ -81,7 +81,7 @@ final class BlobService: NSObject, BlobListener {
                 pendingHandle = self.dependencies.commandQueue.decodeBlob(data, listener: self, requestID: requestID)
             }
         } catch {
-            if let pendingHandle {
+            if let pendingHandle, pendingHandle != 0 {
                 // Keep the service alive until deletion completes, even if the caller
                 // cancelled before decoding finished. Commands execute in queue order.
                 Task { @MainActor in

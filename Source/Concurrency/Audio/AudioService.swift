@@ -81,7 +81,7 @@ final class AudioService: NSObject, AudioListener {
                 pendingHandle = self.dependencies.commandQueue.decodeAudio(data, listener: self, requestID: requestID)
             }
         } catch {
-            if let pendingHandle {
+            if let pendingHandle, pendingHandle != 0 {
                 // Keep the service alive until deletion completes, even if the caller
                 // cancelled before decoding finished. Commands execute in queue order.
                 Task { @MainActor in

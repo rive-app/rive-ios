@@ -399,4 +399,81 @@ class FontTests: XCTestCase {
         XCTAssertEqual(commandQueue.deleteFontCalls.first?.fontHandle, 100)
         XCTAssertEqual(commandQueue.deleteFontListenerCalls.first?.fontHandle, 100)
     }
+
+    // MARK: - Allocation errors
+
+    @MainActor
+    func test_decodeFont_whenNoHandleIsCreated_doesNotDeleteHandle() async {
+        let commandQueue = MockCommandQueue()
+        var service: FontService? = FontService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+        weak var releasedService = service
+        commandQueue.stubDecodeFont { _, listener, requestID in
+            listener.onFontError(0, requestID: requestID, message: "Allocation failed")
+            return 0
+        }
+        do {
+            _ = try await service!.decodeFont(from: Data())
+            XCTFail("Expected FontError.failedDecoding")
+        } catch FontError.failedDecoding {
+        } catch {
+            XCTFail("Expected FontError.failedDecoding, got \(error)")
+        }
+        commandQueue.releaseAssetListeners()
+        service = nil
+
+        // Deletion runs in a scheduled MainActor task, but that task strongly
+        // captures the service when it is created, before its body runs.
+        // After releasing the mock's and test's references, a pending cleanup
+        // task would keep releasedService non-nil. Handle 0 must skip creating
+        // that task, so this checks ownership without waiting for deletion.
+        // The call records also catch deletion if the task has already run.
+        XCTAssertNil(releasedService)
+        XCTAssertTrue(commandQueue.deleteFontCalls.isEmpty)
+        XCTAssertTrue(commandQueue.deleteFontListenerCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_decodeFont_whenCopyThrowsBadAlloc_throwsError() async throws {
+        try await assertCopyError(.badAlloc)
+    }
+
+    @MainActor
+    func test_decodeFont_whenCopyThrowsLengthError_throwsError() async throws {
+        try await assertCopyError(.lengthError)
+    }
+
+    @MainActor
+    func test_decodeFont_withValidData_succeeds() async throws {
+        let worker = try await Worker()
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(
+            forResource: "Inter-45562", withExtension: "ttf"
+        ))
+        let validData = try Data(contentsOf: url)
+        let asset = try await worker.decodeFont(from: validData)
+        XCTAssertNotEqual(asset.handle, 0)
+    }
+
+    @MainActor
+    private func assertCopyError(_ failure: AssetCopyFailure) async throws {
+        let copier = TestAssetDataCopier(failure: failure)
+        let worker = try await Worker(assetDataCopier: copier)
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(
+            forResource: "Inter-45562", withExtension: "ttf"
+        ))
+        let validData = try Data(contentsOf: url)
+        let finished = expectation(description: "Swift receives copy error")
+        let task = Task { @MainActor in
+            defer { finished.fulfill() }
+            do {
+                _ = try await worker.decodeFont(from: validData)
+                XCTFail("Expected FontError.failedDecoding")
+            } catch FontError.failedDecoding {
+            } catch {
+                XCTFail("Expected FontError.failedDecoding, got \(error)")
+            }
+        }
+        await fulfillment(of: [finished], timeout: 1)
+        task.cancel()
+    }
+
 }

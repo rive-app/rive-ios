@@ -203,6 +203,18 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private var audioHandle: UInt64 = 0
     private var audioListeners: [UInt64: AudioListener] = [:]
 
+    func releaseAssetListeners() {
+        decodeImageCalls.removeAll()
+        decodeFontCalls.removeAll()
+        decodeUIFontCalls.removeAll()
+        decodeBlobCalls.removeAll()
+        decodeAudioCalls.removeAll()
+        renderImageListeners.removeAll()
+        fontListeners.removeAll()
+        blobListeners.removeAll()
+        audioListeners.removeAll()
+    }
+
     func stubStart(_ stub: @escaping () -> Void) {
         startStub = stub
     }

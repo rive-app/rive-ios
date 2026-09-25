@@ -276,5 +276,82 @@ class ImageTests: XCTestCase {
         XCTAssertEqual(commandQueue.deleteImageCalls.first?.renderImageHandle, 100)
         XCTAssertEqual(commandQueue.deleteImageListenerCalls.first?.renderImageHandle, 100)
     }
+
+    // MARK: - Allocation errors
+
+    @MainActor
+    func test_decodeImage_whenNoHandleIsCreated_doesNotDeleteHandle() async {
+        let commandQueue = MockCommandQueue()
+        var service: ImageService? = ImageService(dependencies: .init(commandQueue: commandQueue, messageGate: CommandQueueMessageGate(driver: commandQueue)))
+        weak var releasedService = service
+        commandQueue.stubDecodeImage { _, listener, requestID in
+            listener.onRenderImageError(0, requestID: requestID, message: "Allocation failed")
+            return 0
+        }
+        do {
+            _ = try await service!.decodeImage(from: Data())
+            XCTFail("Expected ImageError.failedDecoding")
+        } catch ImageError.failedDecoding {
+        } catch {
+            XCTFail("Expected ImageError.failedDecoding, got \(error)")
+        }
+        commandQueue.releaseAssetListeners()
+        service = nil
+
+        // Deletion runs in a scheduled MainActor task, but that task strongly
+        // captures the service when it is created, before its body runs.
+        // After releasing the mock's and test's references, a pending cleanup
+        // task would keep releasedService non-nil. Handle 0 must skip creating
+        // that task, so this checks ownership without waiting for deletion.
+        // The call records also catch deletion if the task has already run.
+        XCTAssertNil(releasedService)
+        XCTAssertTrue(commandQueue.deleteImageCalls.isEmpty)
+        XCTAssertTrue(commandQueue.deleteImageListenerCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_decodeImage_whenCopyThrowsBadAlloc_throwsError() async throws {
+        try await assertCopyError(.badAlloc)
+    }
+
+    @MainActor
+    func test_decodeImage_whenCopyThrowsLengthError_throwsError() async throws {
+        try await assertCopyError(.lengthError)
+    }
+
+    @MainActor
+    func test_decodeImage_withValidData_succeeds() async throws {
+        let worker = try await Worker()
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(
+            forResource: "1x1_png", withExtension: "png"
+        ))
+        let validData = try Data(contentsOf: url)
+        let asset = try await worker.decodeImage(from: validData)
+        XCTAssertNotEqual(asset.handle, 0)
+    }
+
+    @MainActor
+    private func assertCopyError(_ failure: AssetCopyFailure) async throws {
+        let copier = TestAssetDataCopier(failure: failure)
+        let worker = try await Worker(assetDataCopier: copier)
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(
+            forResource: "1x1_png", withExtension: "png"
+        ))
+        let validData = try Data(contentsOf: url)
+        let finished = expectation(description: "Swift receives copy error")
+        let task = Task { @MainActor in
+            defer { finished.fulfill() }
+            do {
+                _ = try await worker.decodeImage(from: validData)
+                XCTFail("Expected ImageError.failedDecoding")
+            } catch ImageError.failedDecoding {
+            } catch {
+                XCTFail("Expected ImageError.failedDecoding, got \(error)")
+            }
+        }
+        await fulfillment(of: [finished], timeout: 1)
+        task.cancel()
+    }
+
 }
 
