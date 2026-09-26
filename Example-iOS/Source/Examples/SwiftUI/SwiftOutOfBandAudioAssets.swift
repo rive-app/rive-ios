@@ -21,7 +21,7 @@ struct SwiftOutOfBandAudioAssets: DismissableView {
         loadCdn: false,
         customLoader: { (asset: RiveFileAsset, data: Data, factory: RiveFactory) -> Bool in
             
-            if (asset is RiveAudioAsset){
+            if let asset = asset as? RiveAudioAsset {
                 guard let url = (.main as Bundle).url(forResource: asset.uniqueName(), withExtension: asset.fileExtension()) else {
                     fatalError("Failed to load asset \(asset.uniqueFilename()) from bundle.")
                 }
@@ -33,7 +33,7 @@ struct SwiftOutOfBandAudioAssets: DismissableView {
                     return false
                 }
 
-                (asset as! RiveAudioAsset).audio(decoded)
+                asset.audio(decoded)
                 return true;
 
             }
