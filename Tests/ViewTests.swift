@@ -10,6 +10,7 @@ import XCTest
 @testable import RiveRuntime
 
 import UIKit
+import MetalKit
 
 #if !RIVE_MAC_CATALYST // iOS tests run, Catalyst tests seem to require a running app to create a window
 class ViewTests: XCTestCase {
@@ -298,6 +299,72 @@ class ViewTests: XCTestCase {
         container1.isHidden = true
         
         XCTAssertFalse(view.isOnscreen())
+    }
+
+    // MARK: - Drawable Size Tests
+
+    private static let ancestorTransforms: [CGAffineTransform] = [
+        CGAffineTransform(rotationAngle: 14 * .pi / 180),
+        CGAffineTransform(scaleX: 0, y: 0),
+    ]
+
+    private func makeWindow() throws -> UIWindow {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 400, height: 400))
+        window.isHidden = false
+        try XCTSkipIf(
+            window.screen.nativeScale == window.screen.scale,
+            "Only reproducible where nativeScale != scale, e.g. an iPhone mini or Plus simulator"
+        )
+        return window
+    }
+
+    private func makeContainer(in window: UIWindow, transform: CGAffineTransform) -> UIView {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 148))
+        container.transform = transform
+        window.addSubview(container)
+        return container
+    }
+
+    private func assertDrawableSize(of view: MTKView, nativeScale: CGFloat, file: StaticString = #filePath, line: UInt = #line) {
+        let expected = CGSize(
+            width: (view.bounds.width * nativeScale).rounded(),
+            height: (view.bounds.height * nativeScale).rounded()
+        )
+        XCTAssertEqual(view.drawableSize, expected, file: file, line: line)
+    }
+
+    func testRiveView_DrawableSize_UnderAncestorTransform_MatchesBoundsTimesNativeScale() throws {
+        let window = try makeWindow()
+        for transform in Self.ancestorTransforms {
+            let container = makeContainer(in: window, transform: transform)
+            let view = RiveView()
+            view.frame = container.bounds
+            container.addSubview(view)
+            view.layoutIfNeeded()
+
+            assertDrawableSize(of: view, nativeScale: window.screen.nativeScale)
+        }
+    }
+
+    @MainActor
+    func testRiveUIView_DrawableSize_UnderAncestorTransform_MatchesBoundsTimesNativeScale() async throws {
+        let window = try makeWindow()
+        for transform in Self.ancestorTransforms {
+            let container = makeContainer(in: window, transform: transform)
+            let view = RiveUIView(rive: nil)
+            view.frame = container.bounds
+            container.addSubview(view)
+
+            var mtkView: MTKView?
+            for _ in 0..<100 where mtkView == nil {
+                try await Task.sleep(nanoseconds: 10_000_000)
+                mtkView = view.subviews.compactMap { $0 as? MTKView }.first
+            }
+            let unwrapped = try XCTUnwrap(mtkView)
+            view.layoutIfNeeded()
+
+            assertDrawableSize(of: unwrapped, nativeScale: window.screen.nativeScale)
+        }
     }
 }
 #endif

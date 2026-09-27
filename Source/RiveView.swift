@@ -129,6 +129,12 @@ open class RiveView: RiveRendererView {
     }
 
     private func commonInit() {
+        #if os(iOS)
+        // MetalKit derives the drawable size through ancestor transforms when nativeScale != scale
+        // (e.g. a rotated or zero-scaled parent), so it is sized in updateDrawableSize() instead.
+        autoResizeDrawable = false
+        #endif
+
         #if os(iOS) || os(visionOS) || os(tvOS)
         if #available(iOS 17, tvOS 17, visionOS 1, *) {
             registerForTraitChanges([UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self]) { [weak self] (_: UITraitEnvironment, traitCollection: UITraitCollection) in
@@ -202,6 +208,7 @@ open class RiveView: RiveRendererView {
     open override func didMoveToWindow() {
         super.didMoveToWindow()
         updateLayoutScaleFactor()
+        updateDrawableSize()
     }
     #endif
 
@@ -498,7 +505,26 @@ open class RiveView: RiveRendererView {
     #if canImport(UIKit) || RIVE_MAC_CATALYST
     open override func layoutSubviews() {
         super.layoutSubviews()
-        drawableSizeDidChange(drawableSize)
+        if !updateDrawableSize() {
+            drawableSizeDidChange(drawableSize)
+        }
+    }
+
+    /// Returns whether `drawableSize` was assigned, which already notifies `drawableSizeDidChange`.
+    @discardableResult
+    private func updateDrawableSize() -> Bool {
+        #if os(iOS)
+        guard let nativeScale = window?.screen.nativeScale, !bounds.isEmpty else { return false }
+        let size = CGSize(
+            width: (bounds.width * nativeScale).rounded(),
+            height: (bounds.height * nativeScale).rounded()
+        )
+        guard size != drawableSize else { return false }
+        drawableSize = size
+        return true
+        #else
+        return false
+        #endif
     }
     #endif
 

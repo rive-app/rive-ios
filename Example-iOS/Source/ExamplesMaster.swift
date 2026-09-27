@@ -67,7 +67,8 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("File Assets", AnyView(FileAssetsView())),
         ("Shared Worker", AnyView(SharedWorkerView())),
         ("GPU Canvas", AnyView(GPUCanvasView())),
-        ("Video Encoder", AnyView(VideoEncoderView()))
+        ("Video Encoder", AnyView(VideoEncoderView())),
+        ("Ancestor Transforms", AnyView(AncestorTransformView()))
     ]
 }
 

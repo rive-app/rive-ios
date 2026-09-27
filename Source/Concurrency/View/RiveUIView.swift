@@ -310,6 +310,25 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         // This is also called when the view is removed (before deinit), which will
         // implicitly invalidate the display link. 
         updateDisplayLink()
+        updateDrawableSize()
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        updateDrawableSize()
+    }
+
+    private func updateDrawableSize() {
+        #if os(iOS) || RIVE_MAC_CATALYST
+        guard let mtkView, let nativeScale = window?.screen.nativeScale, !mtkView.bounds.isEmpty else { return }
+        let size = CGSize(
+            width: (mtkView.bounds.width * nativeScale).rounded(),
+            height: (mtkView.bounds.height * nativeScale).rounded()
+        )
+        if size != mtkView.drawableSize {
+            mtkView.drawableSize = size
+        }
+        #endif
     }
     #else
     public override func viewDidMoveToWindow() {
@@ -333,6 +352,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
         #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
         mtkView.isMultipleTouchEnabled = isMultipleTouchEnabled
+        #endif
+        #if os(iOS) || RIVE_MAC_CATALYST
+        // MetalKit derives the drawable size through ancestor transforms when nativeScale != scale
+        // (e.g. a rotated or zero-scaled parent), so it is sized in updateDrawableSize() instead.
+        mtkView.autoResizeDrawable = false
         #endif
         self.mtkView = mtkView
         addSubview(mtkView)
@@ -552,7 +576,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         else { return }
 
         let drawableSize = mtkView.drawableSize
-        let scale = CGFloat(mtkView.contentScaleFactor)
+        let bounds = mtkView.bounds
+        guard !bounds.isEmpty else { return }
+        let scaleX = drawableSize.width / bounds.width
+        let scaleY = drawableSize.height / bounds.height
 
         for touch in touches {
             let fitBridge = rive.fit.bridged(from: self)
@@ -560,7 +587,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
             let event = PointerEvent(
                 id: AnyHashable(touch),
-                position: CGPoint(x: location.x * scale, y: location.y * scale),
+                position: CGPoint(x: location.x * scaleX, y: location.y * scaleY),
                 bounds: drawableSize,
                 fit: fitBridge.fit,
                 alignment: fitBridge.alignment,
