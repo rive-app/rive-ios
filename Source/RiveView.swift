@@ -60,6 +60,9 @@ open class RiveView: RiveRendererView {
     public var drawOptimization: DrawOptimization = .drawOnChanged
     private var forceDraw: Bool = false
     private var wasOnscreen: Bool = false
+    #if os(macOS) && !RIVE_MAC_CATALYST
+    private var contentsScaleObservation: NSKeyValueObservation?
+    #endif
 
     // MARK: Render Loop
     internal private(set) var isPlaying: Bool = false
@@ -129,6 +132,17 @@ open class RiveView: RiveRendererView {
     }
 
     private func commonInit() {
+        #if os(macOS) && !RIVE_MAC_CATALYST
+        contentsScaleObservation = observe(\.layer?.contentsScale, options: [.old, .new]) { view, change in
+            guard view.autoResizeDrawable, change.oldValue != change.newValue else { return }
+            // Layer scale changes do not invalidate MetalKit's drawable size.
+            // Reapply the point size to refresh its automatic pixel sizing.
+            view.setFrameSize(view.frame.size)
+            // A scale change also needs a frame when the artboard is unchanged.
+            view.forceDraw = true
+            view.needsDisplay = true
+        }
+        #endif
         #if os(iOS) || os(visionOS) || os(tvOS)
         if #available(iOS 17, tvOS 17, visionOS 1, *) {
             registerForTraitChanges([UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self]) { [weak self] (_: UITraitEnvironment, traitCollection: UITraitCollection) in

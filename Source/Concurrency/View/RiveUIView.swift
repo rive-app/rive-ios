@@ -53,7 +53,41 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         }
     }
 
+    private final class MetalView: MTKView {
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        override func willMove(toWindow newWindow: UIWindow?) {
+            #if !os(visionOS)
+            if autoResizeDrawable, let screen = newWindow?.screen {
+                // Avoid MetalKit's transform-dependent contentScaleFactor setter.
+                layer.contentsScale = screen.nativeScale
+                // Layer scale changes alone do not invalidate the drawable size.
+                setNeedsLayout()
+            }
+            #endif
+            super.willMove(toWindow: newWindow)
+        }
+        #else
+        override func convertToBacking(_ size: NSSize) -> NSSize {
+            guard autoResizeDrawable else { return super.convertToBacking(size) }
+            // MetalKit uses this conversion for automatic drawable sizing. The
+            // backing texture uses layer coordinates, before ancestor transforms.
+            let scale = layer?.contentsScale ?? window?.backingScaleFactor ?? 1
+            let localSize = convertToLayer(size)
+            return NSSize(width: localSize.width * scale, height: localSize.height * scale)
+        }
+
+        override func convertFromBacking(_ size: NSSize) -> NSSize {
+            guard autoResizeDrawable else { return super.convertFromBacking(size) }
+            let scale = layer?.contentsScale ?? window?.backingScaleFactor ?? 1
+            return convertFromLayer(NSSize(width: size.width / scale, height: size.height / scale))
+        }
+        #endif
+    }
+
     private var mtkView: MTKView?
+    #if os(macOS) && !RIVE_MAC_CATALYST
+    private var contentsScaleObservation: NSKeyValueObservation?
+    #endif
     /// Guards drawable acquisition to avoid blocking the main thread.
     /// `currentDrawable` blocks if all drawables are in use; the semaphore
     /// lets `draw(in:)` bail early with a non-blocking `wait(timeout: .now())`
@@ -326,7 +360,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             RiveLog.error(tag: .view, "[RiveUIView] Failed to set up MTKView: missing Metal device")
             return
         }
-        let mtkView = MTKView(frame: bounds, device: device)
+        let mtkView = MetalView(frame: bounds, device: device)
         mtkView.delegate = self
         mtkView.isPaused = true
         mtkView.enableSetNeedsDisplay = true
@@ -335,6 +369,22 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         mtkView.isMultipleTouchEnabled = isMultipleTouchEnabled
         #endif
         self.mtkView = mtkView
+        #if os(macOS) && !RIVE_MAC_CATALYST
+        contentsScaleObservation = mtkView.observe(\.layer?.contentsScale, options: [.old, .new]) { view, change in
+            MainActor.assumeIsolated {
+                guard view.autoResizeDrawable, change.oldValue != change.newValue else { return }
+                // Layer scale changes do not invalidate MetalKit's drawable size.
+                // Reapply the point size to refresh its automatic pixel sizing.
+                view.setFrameSize(view.frame.size)
+                if view.enableSetNeedsDisplay {
+                    view.needsDisplay = true
+                } else if view.isPaused {
+                    // The macOS 13 display-link fallback needs an explicit frame while paused.
+                    view.draw()
+                }
+            }
+        }
+        #endif
         addSubview(mtkView)
 
         mtkView.translatesAutoresizingMaskIntoConstraints = false

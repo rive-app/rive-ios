@@ -20,6 +20,51 @@
 #endif
 
 @implementation RiveMTKView
+#if TARGET_OS_IPHONE || TARGET_OS_VISION || TARGET_OS_TV
+- (void)willMoveToWindow:(UIWindow*)newWindow
+{
+#if !TARGET_OS_VISION
+    if (newWindow != nil && self.autoResizeDrawable)
+    {
+        // Prime the backing layer before MetalKit updates to native scale.
+        // Its contentScaleFactor setter otherwise incorporates ancestor
+        // transforms.
+        self.layer.contentsScale = newWindow.screen.nativeScale;
+        // Layer scale changes alone do not invalidate the drawable size.
+        [self setNeedsLayout];
+    }
+#endif
+    [super willMoveToWindow:newWindow];
+}
+#else
+- (NSSize)convertSizeToBacking:(NSSize)size
+{
+    if (!self.autoResizeDrawable)
+    {
+        return [super convertSizeToBacking:size];
+    }
+    // MetalKit uses this conversion for automatic drawable sizing. The
+    // backing texture uses layer coordinates, before ancestor transforms.
+    CGFloat scale = self.layer
+                        ? self.layer.contentsScale
+                        : (self.window ? self.window.backingScaleFactor : 1);
+    NSSize localSize = [self convertSizeToLayer:size];
+    return NSMakeSize(localSize.width * scale, localSize.height * scale);
+}
+
+- (NSSize)convertSizeFromBacking:(NSSize)size
+{
+    if (!self.autoResizeDrawable)
+    {
+        return [super convertSizeFromBacking:size];
+    }
+    CGFloat scale = self.layer
+                        ? self.layer.contentsScale
+                        : (self.window ? self.window.backingScaleFactor : 1);
+    return [self convertSizeFromLayer:NSMakeSize(size.width / scale,
+                                                 size.height / scale)];
+}
+#endif
 - (void)setDrawableSize:(CGSize)drawableSize
 {
     [super setDrawableSize:drawableSize];
