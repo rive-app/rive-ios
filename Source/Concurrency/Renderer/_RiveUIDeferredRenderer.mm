@@ -53,6 +53,11 @@ public:
         return m_renderContext;
     }
 
+    rive::gpu::RenderTarget* targetRenderTarget() override
+    {
+        return m_renderTarget.get();
+    }
+
     rive::Renderer* beginScreen(uint64_t, bool clear, uint32_t color) override
     {
         m_renderTarget->setTargetTexture(m_texture);
@@ -73,6 +78,22 @@ private:
     id<MTLTexture> m_texture;
     std::unique_ptr<rive::RiveRenderer> m_renderer;
 };
+
+// Scripts may draw into the frame's texture when Ore speaks its format.
+rive::ore::Context::TargetDesc oreTargetDesc(
+    const rive::gpu::RenderTargetMetal* renderTarget)
+{
+    MTLPixelFormat format = renderTarget->pixelFormat();
+    if (format != MTLPixelFormatBGRA8Unorm &&
+        format != MTLPixelFormatRGBA8Unorm)
+    {
+        return {};
+    }
+    return rive::ore::Context::TargetDesc::color8(renderTarget->width(),
+                                                  renderTarget->height(),
+                                                  format ==
+                                                      MTLPixelFormatBGRA8Unorm);
+}
 } // namespace
 
 @implementation _RiveUIDeferredRenderer
@@ -103,7 +124,8 @@ private:
               auto host = [renderContext deferredHost];
               auto riveContext = [renderContext renderContext];
 
-              host->beginRecord(true, configuration.color);
+              host->beginRecord(
+                  true, configuration.color, oreTargetDesc(renderTarget));
               RiveUIDrawArtboard(host->screenRenderer(),
                                  artboard,
                                  renderTarget,
