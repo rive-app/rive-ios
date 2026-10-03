@@ -2137,6 +2137,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
     }];
 }
 
+- (void)advanceStateMachineFromAnyThread:(uint64_t)stateMachineHandle
+                                      by:(NSTimeInterval)time
+{
+    auto handle =
+        reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+    _commandQueue->advanceStateMachine(handle, float(time), 0);
+}
+
 - (void)deleteStateMachine:(uint64_t)stateMachineHandle
                  requestID:(uint64_t)requestID
 {
@@ -3402,3 +3410,17 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 @end
 
 NS_ASSUME_NONNULL_END
+
+void _RiveCommandQueueAdvanceStateMachineFromAnyThread(
+    id<RiveCommandQueueProtocol> commandQueue,
+    uint64_t stateMachineHandle,
+    NSTimeInterval time)
+{
+    if (![(id)commandQueue isKindOfClass:[RiveCommandQueue class]])
+    {
+        return;
+    }
+    [(RiveCommandQueue*)commandQueue
+        advanceStateMachineFromAnyThread:stateMachineHandle
+                                      by:time];
+}
