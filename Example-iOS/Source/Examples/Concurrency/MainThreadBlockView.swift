@@ -12,7 +12,7 @@ import RiveRuntime
 /// Blocks the main thread in bursts and shows how fast each RiveUIView keeps presenting.
 ///
 /// Launch arguments, for scripted measurement:
-/// `-blockDemoMode main|offMain|both|spinner`, `-blockDemoAutorun 62|8`, `-blockDemoFile <name>`,
+/// `-blockDemoMode main|offMain|both|spinner`, `-blockDemoAutorun 62|8|freeze`, `-blockDemoFile <name>`,
 /// `-blockDemoChurn YES` (set a view model number every 50 ms from main).
 struct MainThreadBlockView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> MainThreadBlockViewController {
@@ -39,6 +39,15 @@ final class MainThreadBlockViewController: UIViewController {
     private struct Load {
         let busy: TimeInterval
         let free: TimeInterval
+        var duration: TimeInterval = 10
+
+        static let freeze = Load(busy: 3, free: 0, duration: 3)
+
+        var title: String {
+            free == 0
+                ? String(format: "frozen %.0f s", busy)
+                : String(format: "blocking %.0f/%.0f ms", busy * 1000, free * 1000)
+        }
     }
 
     private let defaults = UserDefaults.standard
@@ -83,6 +92,7 @@ final class MainThreadBlockViewController: UIViewController {
 
         let run62 = button("Block 62 ms / free 50 ms") { [weak self] in self?.run(Load(busy: 0.062, free: 0.050)) }
         let run8 = button("Block 8 ms / free 8 ms") { [weak self] in self?.run(Load(busy: 0.008, free: 0.008)) }
+        let freeze = button("Freeze 3 s (single block)") { [weak self] in self?.run(.freeze) }
         let churn = UISwitch()
         churn.isOn = defaults.bool(forKey: "blockDemoChurn")
         churn.addAction(UIAction { [weak self] action in
@@ -91,7 +101,7 @@ final class MainThreadBlockViewController: UIViewController {
         let churnRow = UIStackView(arrangedSubviews: [label("Data-binding churn (50 ms)"), churn])
         churnRow.spacing = 8
 
-        let column = UIStackView(arrangedSubviews: [modeControl, stage, phaseLabel, statsLabel, run62, run8, churnRow])
+        let column = UIStackView(arrangedSubviews: [modeControl, stage, phaseLabel, statsLabel, run62, run8, freeze, churnRow])
         column.axis = .vertical
         column.spacing = 12
         column.alignment = .fill
@@ -122,6 +132,7 @@ final class MainThreadBlockViewController: UIViewController {
         switch defaults.string(forKey: "blockDemoAutorun") {
         case "62": run(Load(busy: 0.062, free: 0.050))
         case "8": run(Load(busy: 0.008, free: 0.008))
+        case "freeze": run(.freeze)
         default: break
         }
     }
@@ -246,7 +257,7 @@ final class MainThreadBlockViewController: UIViewController {
         runID += 1
         let id = runID
         let start = CACurrentMediaTime()
-        let label = String(format: "blocking %.0f/%.0f ms", load.busy * 1000, load.free * 1000)
+        let label = load.title
         phase("idle (before)", id: id)
         print("[blockDemo] t=0 idle start=\(start)")
 
@@ -254,7 +265,7 @@ final class MainThreadBlockViewController: UIViewController {
             guard let self, runID == id else { return }
             phase(label, id: id)
             print("[blockDemo] t=\(CACurrentMediaTime() - start) \(label)")
-            block(load, until: CACurrentMediaTime() + 10, id: id) { [weak self] in
+            block(load, until: CACurrentMediaTime() + load.duration, id: id) { [weak self] in
                 guard let self else { return }
                 phase("idle (after)", id: id)
                 print("[blockDemo] t=\(CACurrentMediaTime() - start) idle after")
