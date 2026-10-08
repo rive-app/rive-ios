@@ -14,6 +14,9 @@ import Foundation
 final class _RiveMainActor: NSObject {
     @objc static func assertIsolated(_ message: String) {
         assert({
+            // Off-main rendering POC: the render thread submits draws through
+            // the main-actor command queue API. See OffMainRenderLoop.
+            if OffMainRenderThread.isCurrent { return true }
             MainActor.assertIsolated(message)
             return true
         }())

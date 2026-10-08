@@ -1525,6 +1525,14 @@ NS_SWIFT_NAME(CommandQueue)
 
 @end
 
+/// Enqueues a state machine advance from any thread, without a request ID.
+/// Used by the experimental off-main render loop; the C++ command stream is
+/// mutex-guarded, but no main-actor bookkeeping is touched.
+FOUNDATION_EXPORT void _RiveCommandQueueAdvanceStateMachineFromAnyThread(
+    id<RiveCommandQueueProtocol> commandQueue,
+    uint64_t stateMachineHandle,
+    NSTimeInterval time);
+
 NS_ASSUME_NONNULL_END
 
 #endif /* RiveCommandQueue_h */

@@ -67,7 +67,8 @@ class ExamplesMasterTableViewController: UITableViewController {
         ("File Assets", AnyView(FileAssetsView())),
         ("Shared Worker", AnyView(SharedWorkerView())),
         ("GPU Canvas", AnyView(GPUCanvasView())),
-        ("Video Encoder", AnyView(VideoEncoderView()))
+        ("Video Encoder", AnyView(VideoEncoderView())),
+        ("Busy Main Thread", AnyView(MainThreadBlockView()))
     ]
 }
 
@@ -154,6 +155,10 @@ extension ExamplesMasterTableViewController {
     
     override func viewDidLoad() {
         addFPSToggleButton()
+        if UserDefaults.standard.string(forKey: "blockDemoMode") != nil {
+            let index = concurrency.firstIndex { $0.0 == "Busy Main Thread" }!
+            tableView(tableView, didSelectRowAt: IndexPath(row: index, section: 0))
+        }
     }
     
     @objc private func toggleFPSCounter() {
