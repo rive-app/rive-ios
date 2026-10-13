@@ -99,6 +99,12 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     private var controller: RiveController?
     private var setupTask: Task<Void, Never>?
 
+    private let prefersOffMainRendering: Bool
+    private let offMainState = OffMainRenderState()
+    let presentedFrames = FrameCounter()
+    // Typed as AnyObject because OffMainRenderLoop requires iOS 15.
+    private var offMainLoop: AnyObject?
+
     // MARK: ScaleProvider
     var nativeScale: CGFloat? {
 #if canImport(UIKit) || RIVE_MAC_CATALYST
@@ -157,6 +163,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         didSet {
             let newValue = _isPaused
             controller?.isPaused = newValue
+            offMainTick()
             #if !os(macOS) || RIVE_MAC_CATALYST
             displayLink?.isPaused = newValue
             #else
@@ -223,6 +230,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             } else {
                 // Otherwise, forward the frame rate to the display link (i.e DefaultDisplayLink)
                 displayLink?.frameRate = frameRate
+                #if !os(macOS) || RIVE_MAC_CATALYST
+                if #available(iOS 15, tvOS 15, macCatalyst 15, *) {
+                    (offMainLoop as? OffMainRenderLoop)?.setFrameRate(frameRate)
+                }
+                #endif
             }
         }
     }
@@ -311,6 +323,15 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
         self.rive = rive
         self.delegate = delegate
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        if #available(iOS 15, tvOS 15, macCatalyst 15, *) {
+            prefersOffMainRendering = Experimental.offMainRendering
+        } else {
+            prefersOffMainRendering = false
+        }
+        #else
+        prefersOffMainRendering = false
+        #endif
         super.init(frame: .zero)
 
         #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
@@ -336,6 +357,9 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     #if !os(macOS) || RIVE_MAC_CATALYST
     deinit {
         Notifications.unobserve()
+        if #available(iOS 15, tvOS 15, macCatalyst 15, *) {
+            (offMainLoop as? OffMainRenderLoop)?.stop()
+        }
     }
     #endif
 
@@ -429,11 +453,19 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             controller?.semantics = semantics
             #endif
 
-            mtkView?.draw()
+            if prefersOffMainRendering {
+                offMainState.update { frame in
+                    frame.renderer = renderer
+                    frame.commandQueue = rive.file.worker.dependencies.workerService.dependencies.commandQueue
+                }
+            } else {
+                mtkView?.draw()
+            }
         } else {
             RiveLog.debug(tag: .view, "[RiveUIView] Clearing Rive renderer and controller")
             renderer = nil
             controller = nil
+            offMainState.update { $0 = OffMainRenderState.Frame() }
         }
 
         updateDisplayLink()
@@ -446,6 +478,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         // detect the new drawableSize and emit a fresh configuration even if
         // the state machine has settled.
         #if !os(macOS) || RIVE_MAC_CATALYST
+        if prefersOffMainRendering {
+            offMainTick()
+            return
+        }
         view.setNeedsDisplay()
         #else
         view.needsDisplay = true
@@ -459,7 +495,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     ///
     /// - Parameter view: The Metal view to render into
     public func draw(in view: MTKView) {
-        guard let controller else {
+        guard let controller, prefersOffMainRendering == false else {
             return
         }
 
@@ -513,6 +549,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             }
 
             let drawableLifetime = DrawableLifetime(currentDrawable, token: token)
+            let presentedFrames = presentedFrames
 
             renderer.draw(
                 configuration,
@@ -528,6 +565,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                         token.signal()
                     }
                     commandBuffer.present(drawable)
+                    presentedFrames.increment()
                 },
                 onSkipped: nil,
                 onError: { [weak self] error in
@@ -704,6 +742,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     // MARK: - Private
 
     private func updateDisplayLink() {
+        updateOffMainRenderLoop()
         guard window != nil else {
             RiveLog.debug(tag: .view, "[RiveUIView] Clearing display link; view is off-window")
             displayLink = nil
@@ -745,7 +784,53 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         self.displayLink = displayLink
     }
 
+    private func updateOffMainRenderLoop() {
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        guard prefersOffMainRendering,
+              #available(iOS 15, tvOS 15, macCatalyst 15, *)
+        else { return }
+
+        guard window != nil, let metalLayer = mtkView?.layer as? CAMetalLayer else {
+            (offMainLoop as? OffMainRenderLoop)?.stop()
+            offMainLoop = nil
+            return
+        }
+        guard offMainLoop == nil else { return }
+
+        RiveLog.debug(tag: .view, "[RiveUIView] Starting off-main render loop")
+        let loop = OffMainRenderLoop(layer: metalLayer, state: offMainState, presentedFrames: presentedFrames)
+        loop.start(frameRate: frameRate)
+        offMainLoop = loop
+        offMainTick()
+        #endif
+    }
+
+    private func offMainTick() {
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        guard prefersOffMainRendering,
+              #available(iOS 15, tvOS 15, macCatalyst 15, *),
+              let loop = offMainLoop as? OffMainRenderLoop,
+              let controller,
+              let mtkView
+        else { return }
+
+        let hasNewWork = controller.prepareOffMainFrame(
+            isOnscreen: isOnscreen(),
+            drawableSize: mtkView.drawableSize,
+            scaleProvider: self,
+            into: offMainState
+        )
+        if hasNewWork {
+            loop.wake()
+        }
+        #endif
+    }
+
     private func tick() {
+        if prefersOffMainRendering {
+            offMainTick()
+            return
+        }
         #if !os(macOS) || RIVE_MAC_CATALYST
         mtkView?.setNeedsDisplay()
         #else

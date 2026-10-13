@@ -276,6 +276,64 @@ final class RiveController {
         return configuration
     }
 
+    /// Main-thread half of a frame when an `OffMainRenderLoop` advances and draws.
+    /// Runs the bookkeeping that `advance` does and publishes what the render thread needs.
+    func prepareOffMainFrame(
+        isOnscreen: Bool,
+        drawableSize: CGSize,
+        scaleProvider: ScaleProvider,
+        into state: OffMainRenderState
+    ) -> Bool {
+        let becameOnscreen = wasOnscreen == false && isOnscreen
+        defer { wasOnscreen = isOnscreen }
+        let drawableSizeChanged = lastDrawnDrawableSize != drawableSize
+
+        if case .layout = rive.fit, drawableSizeChanged {
+            let fitBridge = rive.fit.bridged(from: scaleProvider)
+            rive.artboard.setSize(drawableSize, scale: Float(fitBridge.scaleFactor))
+        }
+
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        semanticsController.commitDiffs()
+        #endif
+
+        resolvePendingEvents()
+        messageGate.processMessagesForFrame()
+
+        let isAdvancing = isPaused == false && isSettled == false
+        if isAdvancing {
+            isDirty = false
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            let semanticsFitBridge = rive.fit.bridged(from: scaleProvider)
+            semanticsController.drainDiffs(
+                fit: semanticsFitBridge.fit,
+                alignment: semanticsFitBridge.alignment,
+                scaleFactor: Float(semanticsFitBridge.scaleFactor),
+                viewBounds: drawableSize
+            )
+            #endif
+        }
+
+        let needsRedraw = hasProcessedFirstDraw == false || becameOnscreen || drawableSizeChanged
+        hasProcessedFirstDraw = true
+        lastDrawnDrawableSize = drawableSize
+
+        let fitBridge = rive.fit.bridged(from: scaleProvider)
+        return state.update { frame in
+            frame.artboardHandle = rive.artboard.artboardHandle
+            frame.stateMachineHandle = rive.stateMachine.stateMachineHandle
+            frame.fit = fitBridge.fit
+            frame.alignment = fitBridge.alignment
+            frame.layoutScale = fitBridge.scaleFactor
+            frame.color = rive.backgroundColor.argbValue
+            frame.isAdvancing = isAdvancing
+            frame.isOnscreen = isOnscreen
+            if needsRedraw {
+                frame.redrawGeneration &+= 1
+            }
+        }
+    }
+
     // MARK: - Private
 
     private func markDirty() {
