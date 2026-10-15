@@ -54,6 +54,15 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
 
     private final class MetalView: MTKView {
+        /// Uses this view's layer capacity to coordinate drawable acquisition and retirement.
+        private(set) lazy var drawableCoordinator: DrawableCoordinator? = {
+            guard let metalLayer = layer as? CAMetalLayer else {
+                RiveLog.error(tag: .view, "[RiveUIView] Cannot coordinate drawables: expected a Metal layer")
+                return nil
+            }
+            return DrawableCoordinator(layer: metalLayer)
+        }()
+
         #if !os(macOS) || RIVE_MAC_CATALYST
         override func willMove(toWindow newWindow: UIWindow?) {
             #if !os(visionOS)
@@ -88,12 +97,6 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     #if os(macOS) && !RIVE_MAC_CATALYST
     private var contentsScaleObservation: NSKeyValueObservation?
     #endif
-    /// Guards drawable acquisition to avoid blocking the main thread.
-    /// `currentDrawable` blocks if all drawables are in use; the semaphore
-    /// lets `draw(in:)` bail early with a non-blocking `wait(timeout: .now())`
-    /// instead. Signaled via ``DrawableToken`` when the draw completes.
-    private var drawableSemaphore: DispatchSemaphore?
-
     private var renderer: (any RiveUIRendererProtocol)?
 
     private var controller: RiveController?
@@ -407,15 +410,6 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
         // Capture defaults once so `.default` does not rely on undocumented resets.
         defaultFramesPerSecond = mtkView.preferredFramesPerSecond
-
-        // Limit per-view in-flight rendering to the layer drawable budget.
-        let maxDrawableCount: Int
-        if let metalLayer = mtkView.layer as? CAMetalLayer {
-            maxDrawableCount = metalLayer.maximumDrawableCount
-        } else {
-            maxDrawableCount = 1
-        }
-        drawableSemaphore = DispatchSemaphore(value: maxDrawableCount)
     }
 
     private func setupRive() {
@@ -462,6 +456,17 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         guard let controller else {
             return
         }
+        guard let view = view as? MetalView else {
+            RiveLog.error(tag: .view, "[RiveUIView] Draw failed: unexpected Metal view type")
+            return
+        }
+
+        // Setup can request a draw before layout sizes the Metal view. Wait for
+        // a valid drawable size without consuming the controller's first draw.
+        guard view.drawableSize.width > 0, view.drawableSize.height > 0 else {
+            RiveLog.trace(tag: .view, "[RiveUIView] Skipping draw: drawable size is empty")
+            return
+        }
 
         let now = displayLink?.timestamp ?? CACurrentMediaTime()
         let isOnscreenValue = isOnscreen()
@@ -486,48 +491,34 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 return
             }
 
-            guard let drawableSemaphore else {
-                return
-            }
-
-            guard drawableSemaphore.wait(timeout: .now()) == .success else {
-                return
-            }
-
-            // Token guarantees signal() for this wait(), even if the draw
-            // callback is never executed (e.g. CommandServer disconnects first).
-            let token = DrawableToken(drawableSemaphore)
-
-            guard let currentDrawable = view.currentDrawable else {
-                token.signal()
-                RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing drawable")
-                delegate?.view(self, didReceiveError: .noDrawable)
-                return
-            }
-
             guard let renderer else {
-                token.signal()
                 RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing renderer")
                 delegate?.view(self, didReceiveError: .noRenderer)
                 return
             }
 
-            let drawableLifetime = DrawableLifetime(currentDrawable, token: token)
+            guard let frame = view.drawableCoordinator?.beginFrame({
+                guard let drawable = view.currentDrawable else {
+                    RiveLog.error(tag: .view, "[RiveUIView] Draw failed: missing drawable")
+                    delegate?.view(self, didReceiveError: .noDrawable)
+                    return nil
+                }
+                return drawable
+            }) else {
+                return
+            }
+            guard let currentDrawable = frame.drawable else {
+                RiveLog.error(tag: .view, "[RiveUIView] Draw failed: acquired frame has no drawable")
+                delegate?.view(self, didReceiveError: .noDrawable)
+                return
+            }
 
             renderer.draw(
                 configuration,
                 to: currentDrawable.texture,
                 from: device,
                 onDraw: { commandBuffer in
-                    guard let drawable = drawableLifetime.drawable else {
-                        assertionFailure("Drawable must remain alive while its callback executes")
-                        return
-                    }
-                    drawableLifetime.markPresented()
-                    commandBuffer.addCompletedHandler { _ in
-                        token.signal()
-                    }
-                    commandBuffer.present(drawable)
+                    frame.present(on: commandBuffer)
                 },
                 onSkipped: nil,
                 onError: { [weak self] error in
@@ -756,84 +747,181 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 }
 
 extension RiveUIView {
-    /// Retires our drawable reference on main, including when a queued callback
-    /// is discarded without executing.
-    final class DrawableLifetime: @unchecked Sendable {
-        // Accessed by the owning callback, then retired on main after its
-        // deinit starts. Separate storage lets main clear the sole drawable slot
-        // even if the worker has not finished releasing its storage reference.
-        private final class Storage: @unchecked Sendable {
-            var drawable: CAMetalDrawable?
-            let token: DrawableToken
-            var wasPresented = false
+    /// Coordinates drawable ownership separately from permission to submit a frame.
+    ///
+    /// `beginFrame` drains queued main-thread releases, then takes a permit without
+    /// waiting. If no permit is available, it never calls the drawable provider.
+    /// A provider returning nil immediately returns its permit.
+    ///
+    /// Rendering and GPU callbacks keep the frame alive. Its final owner queues
+    /// `endFrame`; `drain` releases our drawable reference on main and sets
+    /// `isReleased`. Presentation independently clears `isAwaitingPresentation`.
+    /// These events may happen in either order; capacity returns only after both.
+    /// The presentation handler captures storage, not the frame, so it cannot
+    /// prevent the frame's deinit from scheduling main-thread release.
+    ///
+    /// Skipped frames never wait for presentation. Command-buffer errors end that
+    /// wait, with late presentation callbacks ignored for permit accounting.
+    /// Simulator SDKs omit presentation handlers, so they use the GPU-completion
+    /// and main-thread-release path only.
+    final class DrawableCoordinator: @unchecked Sendable {
+        private let semaphore: DispatchSemaphore
+        private let lock = NSLock()
+        private var pending: [DrawableFrame.Storage] = []
 
-            init(_ drawable: CAMetalDrawable, token: DrawableToken) {
+        @MainActor
+        init(layer: CAMetalLayer) {
+            // Each slot stays occupied until both main-thread release and
+            // presentation complete. Do not subtract a reserved onscreen slot:
+            // presentation tracking already holds permits for pending frames.
+            // A two-slot budget on a three-drawable layer caused avoidable skips
+            // at 60 Hz when presentation took nearly two refresh intervals.
+            // This is submission accounting, not a guarantee that Metal's next
+            // drawable is immediately available (especially during resizing).
+            semaphore = DispatchSemaphore(value: layer.maximumDrawableCount)
+        }
+
+        /// Drains pending releases before acquiring a drawable. Does not call
+        /// the provider when the budget is exhausted; a failed provider returns
+        /// its permit immediately.
+        @MainActor
+        func beginFrame(_ acquireDrawable: () -> CAMetalDrawable?) -> DrawableFrame? {
+            drain()
+            guard semaphore.wait(timeout: .now()) == .success else {
+                RiveLog.debug(tag: .view, "[RiveUIView] Skipping draw: drawable budget exhausted")
+                return nil
+            }
+            guard let drawable = acquireDrawable() else {
+                semaphore.signal()
+                return nil
+            }
+            return DrawableFrame(drawable, coordinator: self)
+        }
+
+        /// Ends the frame by queuing drawable release on main. Capacity also waits
+        /// for presentation to finish.
+        fileprivate func endFrame(_ storage: DrawableFrame.Storage) {
+            let needsDrain = lock.withLock {
+                pending.append(storage)
+                return pending.count == 1
+            }
+            if needsDrain {
+                DispatchQueue.main.async { self.drain() }
+            }
+        }
+
+        fileprivate func willPresent(_ storage: DrawableFrame.Storage) {
+            lock.withLock { storage.isAwaitingPresentation = true }
+        }
+
+        fileprivate func didPresent(_ storage: DrawableFrame.Storage) {
+            finishPresentation(storage)
+        }
+
+        fileprivate func didFailToPresent(_ storage: DrawableFrame.Storage) {
+            finishPresentation(storage)
+        }
+
+        private func finishPresentation(_ storage: DrawableFrame.Storage) {
+            lock.withLock {
+                // An error and a late presentation callback may both arrive.
+                guard storage.isAwaitingPresentation else { return }
+                storage.isAwaitingPresentation = false
+                signalIfReady(storage)
+            }
+        }
+
+        /// Called under the lock when either retirement or presentation completes.
+        private func signalIfReady(_ storage: DrawableFrame.Storage) {
+            if storage.isReleased && !storage.isAwaitingPresentation {
+                semaphore.signal()
+            }
+        }
+
+        /// Releases each drawable on main. Its permit also waits for presentation
+        /// (or failure); skipped frames have no presentation to wait for.
+        @MainActor
+        func drain() {
+            let retirements = lock.withLock {
+                let retirements = pending
+                pending.removeAll()
+                return retirements
+            }
+            for storage in retirements {
+                storage.drawable = nil
+                lock.withLock {
+                    // Each frame enqueues retirement exactly once, in deinit.
+                    storage.isReleased = true
+                    signalIfReady(storage)
+                }
+            }
+        }
+    }
+
+    /// Keeps a drawable alive through its rendering and GPU completion callbacks,
+    /// then hands it back to its coordinator for main-thread retirement.
+    final class DrawableFrame: @unchecked Sendable {
+        // A shared slot lets main release the drawable even while the worker
+        // finishes releasing its reference to this storage.
+        fileprivate final class Storage: @unchecked Sendable {
+            var drawable: CAMetalDrawable?
+            // Protected by the coordinator's lock.
+            var isAwaitingPresentation = false
+            var isReleased = false
+
+            init(_ drawable: CAMetalDrawable) {
                 self.drawable = drawable
-                self.token = token
             }
         }
 
         private let storage: Storage
+        private let coordinator: DrawableCoordinator
 
-        init(_ drawable: CAMetalDrawable, token: DrawableToken) {
-            storage = Storage(drawable, token: token)
+        fileprivate init(_ drawable: CAMetalDrawable, coordinator: DrawableCoordinator) {
+            storage = Storage(drawable)
+            self.coordinator = coordinator
         }
 
         var drawable: CAMetalDrawable? {
             storage.drawable
         }
 
-        func markPresented() {
-            storage.wasPresented = true
-        }
-
-        deinit {
-            let storage = storage
-            DispatchQueue.main.async {
-                storage.drawable = nil
-                if !storage.wasPresented {
-                    storage.token.signal()
+        /// Wires retirement and schedules presentation. The renderer owns commit.
+        func present(on commandBuffer: MTLCommandBuffer) {
+            guard let drawable else {
+                assertionFailure("Drawable must remain alive while its callback executes")
+                return
+            }
+            #if !targetEnvironment(simulator)
+            // Simulator SDKs do not expose drawable presentation handlers.
+            drawable.addPresentedHandler(presentationHandler())
+            #endif
+            commandBuffer.addCompletedHandler { [self] commandBuffer in
+                if commandBuffer.status == .error {
+                    didFailToPresent()
                 }
+                // Keep the frame alive through GPU completion. The renderer
+                // commits the buffer after its onDraw callback returns.
+                withExtendedLifetime(self) {}
             }
-        }
-    }
-
-    /// A one-shot guard that ensures a `DispatchSemaphore` is signaled exactly once
-    /// for each corresponding `wait()`.
-    ///
-    /// Created after a successful semaphore wait. Before submission, acquisition
-    /// failures signal immediately. DrawableLifetime retains the token through
-    /// main-queue retirement for skipped, failed, or discarded submissions.
-    /// Presented submissions signal from the command buffer completion handler.
-    /// The deinit fallback ensures an otherwise abandoned permit is returned.
-    ///
-    /// See: https://github.com/rive-app/rive-ios/issues/442
-    final class DrawableToken: @unchecked Sendable {
-        private let semaphore: DispatchSemaphore
-        private let lock = NSLock()
-        private var didSignal = false
-
-        init(_ semaphore: DispatchSemaphore) {
-            self.semaphore = semaphore
+            commandBuffer.present(drawable)
         }
 
-        /// Signals the semaphore. Safe to call multiple times — only the first call signals.
-        func signal() {
-            let shouldSignal = lock.withLock {
-                guard !didSignal else { return false }
-                didSignal = true
-                return true
-            }
-            if shouldSignal {
-                semaphore.signal()
+        func presentationHandler() -> MTLDrawablePresentedHandler {
+            coordinator.willPresent(storage)
+            // Do not capture the frame: its deinit must remain free to
+            // enqueue main-thread release of storage.drawable after GPU completion.
+            return { [coordinator, storage] _ in
+                coordinator.didPresent(storage)
             }
         }
 
-        /// Signals the semaphore if `signal()` was never called explicitly.
+        func didFailToPresent() {
+            coordinator.didFailToPresent(storage)
+        }
+
         deinit {
-            if !didSignal {
-                semaphore.signal()
-            }
+            coordinator.endFrame(storage)
         }
     }
 }

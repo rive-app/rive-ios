@@ -12,11 +12,12 @@ import RiveRuntime
 
 private class QuickStartViewModel: ObservableObject {
     @Published private(set) var rive: Rive?
+    private var viewModelInstance: ViewModelInstance?
 
     @Published private var healthValue: Float = 100 {
         didSet {
             Task { @MainActor in
-                rive?.viewModelInstance?.setValue(of: NumberProperty(path: "health"), to: healthValue)
+                viewModelInstance?.setValue(of: NumberProperty(path: "health"), to: healthValue)
             }
         }
     }
@@ -38,7 +39,12 @@ private class QuickStartViewModel: ObservableObject {
             do {
                 let worker = try await Worker()
                 let file = try await File(source: .local("quick_start", Bundle.main), worker: worker)
-                self.rive = try await Rive(file: file)
+                let artboard = try await file.createArtboard()
+                let stateMachine = try await artboard.createStateMachine()
+                let instance = try await file.createViewModelInstance(.viewModelDefault(from: .artboardDefault(artboard)))
+                try await stateMachine.bindViewModelInstances(main: instance)
+                self.viewModelInstance = instance
+                self.rive = try await Rive(file: file, artboard: artboard, stateMachine: stateMachine)
             } catch {
                 print(error)
             }
@@ -47,11 +53,7 @@ private class QuickStartViewModel: ObservableObject {
 
     @MainActor
     func triggerGameOver() {
-        guard let rive else {
-            return
-        }
-
-        rive.viewModelInstance?.fire(trigger: TriggerProperty(path: "gameOver"))
+        viewModelInstance?.fire(trigger: TriggerProperty(path: "gameOver"))
     }
 }
 
