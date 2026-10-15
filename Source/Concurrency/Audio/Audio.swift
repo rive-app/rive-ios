@@ -15,7 +15,7 @@ import Foundation
 ///
 /// Lifetime: Audio instances are guaranteed to exist while registered as a global asset with a worker.
 /// When not used as a global asset, you must maintain a strong reference to the instance to keep it alive.
-public final class Audio: Equatable {
+public final class Audio: Equatable, Sendable {
     /// The underlying type for the audio handle identifier.
     ///
     /// Handle to an audio source in the C++ runtime. Obtained from the command queue
@@ -73,7 +73,7 @@ public final class Audio: Equatable {
 
 extension Audio {
     /// Container for all dependencies required by an Audio instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Provides audio-level services via command queue interactions.
         /// Implements `AudioListener` to receive callbacks from the command server.
         let audioService: AudioService

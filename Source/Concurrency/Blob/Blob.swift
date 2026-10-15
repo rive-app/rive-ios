@@ -12,7 +12,7 @@ import Foundation
 /// Create instances with `Worker.decodeBlob(from:)`. A view model instance retains
 /// blobs assigned to its properties until they are replaced, cleared, or the instance
 /// is released. Keep a strong reference to any blob that is not assigned to a property.
-public final class Blob: Equatable {
+public final class Blob: Equatable, Sendable {
     /// The underlying type for the blob handle identifier.
     ///
     /// Handle to a blob in the C++ runtime. Obtained from the command queue
@@ -71,7 +71,7 @@ public final class Blob: Equatable {
 
 extension Blob {
     /// Container for all dependencies required by a Blob instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Provides blob-level services via command queue interactions.
         /// Implements `BlobListener` to receive callbacks from the command server.
         let blobService: BlobService

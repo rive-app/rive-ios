@@ -14,7 +14,7 @@ import Combine
 /// State machines control the flow of animations in an artboard, managing state transitions,
 /// inputs, and animation playback. They can be bound to view model instances to enable
 /// data-driven animations.
-public final class StateMachine: Equatable {
+public final class StateMachine: Equatable, Sendable {
     /// The underlying type for the state machine handle identifier.
     ///
     /// Handle to a state machine instance in the C++ runtime. Obtained from the command queue
@@ -269,7 +269,7 @@ public final class StateMachine: Equatable {
 
 extension StateMachine {
     /// Container for all dependencies required by a StateMachine instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Provides state machine-level services via command queue interactions.
         /// Implements `StateMachineListener` to receive callbacks from the command server.
         let stateMachineService: StateMachineService

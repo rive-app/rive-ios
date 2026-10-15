@@ -26,7 +26,7 @@ import AppKit
 /// Workers also manage global assets (images, fonts, and audio) that can be shared across
 /// multiple Rive files and artboards loaded by that worker. These assets are registered by name
 /// and can be referenced by those files during rendering.
-public final class Worker {
+public final class Worker: Sendable {
     /// Options applied when a worker is created. The resulting rendering mode
     /// and context are fixed for the worker's lifetime.
     public struct Configuration: Sendable {
@@ -75,9 +75,9 @@ public final class Worker {
     @MainActor
     let globalAssetsDidChange = PassthroughSubject<Void, Never>()
 
-    private var images: [String: Image] = [:]
-    private var fonts: [String: Font] = [:]
-    private var audios: [String: Audio] = [:]
+    @MainActor private var images: [String: Image] = [:]
+    @MainActor private var fonts: [String: Font] = [:]
+    @MainActor private var audios: [String: Audio] = [:]
 
     @MainActor
     private var hasPendingGlobalAssetsDidChange = false
@@ -488,7 +488,7 @@ public final class Worker {
 
 extension Worker {
     /// Container for all dependencies required by a Worker instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Provides worker-level services including command queue/server lifecycle management
         /// and global asset registration. All operations are fire-and-forget (no listener callbacks).
         let workerService: WorkerService

@@ -22,7 +22,7 @@ import AppKit
 /// or assigned to a view model property. A view model instance retains assigned fonts
 /// until they are replaced, cleared, or the instance is released. Otherwise, maintain a
 /// strong reference to the font to keep it alive.
-public final class Font: Equatable {
+public final class Font: Equatable, Sendable {
     /// The underlying type for the font handle identifier.
     ///
     /// Handle to a font in the C++ runtime. Obtained from the command queue
@@ -100,7 +100,7 @@ public final class Font: Equatable {
 
 extension Font {
     /// Container for all dependencies required by a Font instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Provides font-level services via command queue interactions.
         /// Implements `FontListener` to receive callbacks from the command server.
         let fontService: FontService

@@ -12,7 +12,7 @@ import Foundation
 ///
 /// Files can be loaded from local bundles or remote URLs, and provide access to artboards,
 /// state machines, and view models contained within the Rive file.
-public final class File: Equatable {
+public final class File: Equatable, Sendable {
     /// The underlying type for the file handle identifier.
     ///
     /// Handle to a file instance in the C++ runtime. Obtained from the command queue
@@ -293,7 +293,7 @@ public final class File: Equatable {
 
 extension File {
     /// Container for all dependencies required by a File instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Handles loading of Rive file data from various sources.
         /// Does not interact with the command queue; only handles data retrieval.
         let fileLoader: FileLoaderProtocol

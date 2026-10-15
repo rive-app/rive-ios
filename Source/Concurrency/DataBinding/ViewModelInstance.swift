@@ -10,7 +10,7 @@ import Foundation
 @preconcurrency import Combine
 
 /// Specifies the source view model to use when creating a view model instance.
-public enum ViewModelSource {
+public enum ViewModelSource: Sendable {
     /// Uses the default view model associated with the specified artboard.
     case artboardDefault(Artboard)
     /// Uses the view model with the specified name.
@@ -18,7 +18,7 @@ public enum ViewModelSource {
 }
 
 /// Specifies how to create a view model instance and which view model to use.
-public enum ViewModelInstanceSource {
+public enum ViewModelInstanceSource: Sendable {
     /// Creates a blank instance with no initial values from the specified view model source.
     case blank(from: ViewModelSource)
     /// Creates an instance with default values from the specified view model source.
@@ -32,7 +32,7 @@ public enum ViewModelInstanceSource {
 /// View model instances provide a type-safe interface for accessing and modifying the data structure
 /// defined in a Rive file's view model. Properties can be read, written, and observed through streams.
 /// View model instances can be bound to state machines to enable data-driven animations.
-public final class ViewModelInstance: Equatable {
+public final class ViewModelInstance: Equatable, Sendable {
     /// The underlying type for the view model instance handle identifier.
     ///
     /// Handle to a view model instance in the C++ runtime. Obtained from the command queue
@@ -43,21 +43,41 @@ public final class ViewModelInstance: Equatable {
 
     private let dependencies: Dependencies
     let viewModelInstanceHandle: ViewModelInstanceHandle
-    private var artboardPropertyValues: [String: Artboard] = [:]
-    private var fontPropertyValues: [String: Font] = [:]
-    private var blobPropertyValues: [String: Blob] = [:]
-    private var imagePropertyValues: [String: Image] = [:]
-    @Published private var childInstances: [String: [WeakReference<ViewModelInstance>]] = [:]
-    private let dirtySubject = PassthroughSubject<ViewModelInstanceService.DirtyEvent, Never>()
+    @MainActor private var artboardPropertyValues: [String: Artboard] = [:]
+    @MainActor private var fontPropertyValues: [String: Font] = [:]
+    @MainActor private var blobPropertyValues: [String: Blob] = [:]
+    @MainActor private var imagePropertyValues: [String: Image] = [:]
+    @MainActor private let childInstances: CurrentValueSubject<[String: [WeakReference<ViewModelInstance>]], Never>
+    @MainActor private let dirtySubject: PassthroughSubject<ViewModelInstanceService.DirtyEvent, Never>
     @MainActor private var dirtyObservation: AnyCancellable?
-    @MainActor private lazy var dirtyPublisher: AnyPublisher<ViewModelInstanceService.DirtyEvent, Never> = {
-        return dirtySubject
+    @MainActor private let dirtyPublisher: AnyPublisher<ViewModelInstanceService.DirtyEvent, Never>
+    /// The view model (definition) name, cached after first fetch since it is immutable for the
+    /// instance's lifetime.
+    @MainActor private var cachedViewModelName: String?
+    /// The editor-assigned instance name, cached after first fetch since it is immutable for the
+    /// instance's lifetime.
+    @MainActor private var cachedName: String?
+
+    private static func logContext(for handle: ViewModelInstanceHandle) -> String {
+        "[ViewModelInstance (\(handle))]"
+    }
+
+    @MainActor
+    init(handle: ViewModelInstanceHandle, dependencies: Dependencies) {
+        self.viewModelInstanceHandle = handle
+        self.dependencies = dependencies
+
+        // Build the publishers once without synthesized mutable wrapper or lazy
+        // storage, so their main-actor ownership is checked by Sendable.
+        let childInstances = CurrentValueSubject<[String: [WeakReference<ViewModelInstance>]], Never>([:])
+        let dirtySubject = PassthroughSubject<ViewModelInstanceService.DirtyEvent, Never>()
+        self.childInstances = childInstances
+        self.dirtySubject = dirtySubject
+        self.dirtyPublisher = dirtySubject
             .removeDuplicates()
             .share()
             .eraseToAnyPublisher()
-    }()
-    @MainActor private lazy var childDirtyPublisher: AnyPublisher<ViewModelInstanceService.DirtyEvent, Never> = {
-        return $childInstances
+        let childDirtyPublisher = childInstances
             .map { instancesByProperty in
                 var instancesByHandle: [ViewModelInstanceHandle: ViewModelInstance] = [:]
                 for reference in instancesByProperty.values.flatMap({ $0 }) {
@@ -69,22 +89,6 @@ public final class ViewModelInstance: Equatable {
             }
             .switchToLatest()
             .eraseToAnyPublisher()
-    }()
-    /// The view model (definition) name, cached after first fetch since it is immutable for the
-    /// instance's lifetime.
-    private var cachedViewModelName: String?
-    /// The editor-assigned instance name, cached after first fetch since it is immutable for the
-    /// instance's lifetime.
-    private var cachedName: String?
-
-    private static func logContext(for handle: ViewModelInstanceHandle) -> String {
-        "[ViewModelInstance (\(handle))]"
-    }
-
-    @MainActor
-    init(handle: ViewModelInstanceHandle, dependencies: Dependencies) {
-        self.viewModelInstanceHandle = handle
-        self.dependencies = dependencies
         dirtyObservation = Publishers.Merge(
             dependencies.viewModelInstanceService.dirtyPublisher(for: handle),
             childDirtyPublisher
@@ -647,17 +651,17 @@ public final class ViewModelInstance: Equatable {
     private func updateChildInstances(
         _ update: (inout [String: [WeakReference<ViewModelInstance>]]) -> Void
     ) {
-        var childInstances = childInstances.mapValues { references in
+        var childInstances = childInstances.value.mapValues { references in
             references.filter { $0.value != nil }
         }
         update(&childInstances)
-        self.childInstances = childInstances.filter { $0.value.isEmpty == false }
+        self.childInstances.value = childInstances.filter { $0.value.isEmpty == false }
     }
 }
 
 extension ViewModelInstance {
     /// Container for all dependencies required by a ViewModelInstance instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Provides view model instance-level services via command queue interactions.
         /// Implements `ViewModelInstanceListener` to receive callbacks from the command server.
         let viewModelInstanceService: ViewModelInstanceService
@@ -686,7 +690,7 @@ public protocol ValueProperty: Property {
 }
 
 /// A property that holds a string value.
-public struct StringProperty: ValueProperty {
+public struct StringProperty: ValueProperty, Sendable {
     public typealias Value = String
     public let path: String
     /// Creates a string property with the specified path.
@@ -698,7 +702,7 @@ public struct StringProperty: ValueProperty {
 }
 
 /// A property that holds a numeric (float) value.
-public struct NumberProperty: ValueProperty {
+public struct NumberProperty: ValueProperty, Sendable {
     public typealias Value = Float
     public let path: String
     /// Creates a number property with the specified path.
@@ -710,7 +714,7 @@ public struct NumberProperty: ValueProperty {
 }
 
 /// A property that holds a boolean value.
-public struct BoolProperty: ValueProperty {
+public struct BoolProperty: ValueProperty, Sendable {
     public typealias Value = Bool
     public let path: String
     /// Creates a boolean property with the specified path.
@@ -722,7 +726,7 @@ public struct BoolProperty: ValueProperty {
 }
 
 /// A property that holds a color value.
-public struct ColorProperty: ValueProperty {
+public struct ColorProperty: ValueProperty, Sendable {
     public typealias Value = Color
     public let path: String
     /// Creates a color property with the specified path.
@@ -734,7 +738,7 @@ public struct ColorProperty: ValueProperty {
 }
 
 /// A property that holds an enum value (represented as a string).
-public struct EnumProperty: ValueProperty {
+public struct EnumProperty: ValueProperty, Sendable {
     public typealias Value = String
     public let path: String
     /// Creates an enum property with the specified path.
@@ -746,7 +750,7 @@ public struct EnumProperty: ValueProperty {
 }
 
 /// A property that represents a trigger that can be fired to initiate state transitions.
-public struct TriggerProperty: Property {
+public struct TriggerProperty: Property, Sendable {
     public let path: String
     /// Creates a trigger property with the specified path.
     ///
@@ -757,7 +761,7 @@ public struct TriggerProperty: Property {
 }
 
 /// A property that holds an image value.
-public struct ImageProperty: Property {
+public struct ImageProperty: Property, Sendable {
     public let path: String
     /// Creates an image property with the specified path.
     ///
@@ -768,7 +772,7 @@ public struct ImageProperty: Property {
 }
 
 /// A property that holds a font value.
-public struct FontProperty: Property {
+public struct FontProperty: Property, Sendable {
     public let path: String
     /// Creates a font property with the specified path.
     ///
@@ -779,7 +783,7 @@ public struct FontProperty: Property {
 }
 
 /// A property that holds a blob value.
-public struct BlobProperty: Property {
+public struct BlobProperty: Property, Sendable {
     public let path: String
     /// Creates a blob property with the specified path.
     ///
@@ -790,7 +794,7 @@ public struct BlobProperty: Property {
 }
 
 /// A property that holds an artboard value.
-public struct ArtboardProperty: Property {
+public struct ArtboardProperty: Property, Sendable {
     public let path: String
     /// Creates an artboard property with the specified path.
     ///
@@ -801,7 +805,7 @@ public struct ArtboardProperty: Property {
 }
 
 /// A property that holds a nested view model instance.
-public struct ViewModelInstanceProperty: Property {
+public struct ViewModelInstanceProperty: Property, Sendable {
     public let path: String
     /// Creates a view model instance property with the specified path.
     ///
@@ -812,7 +816,7 @@ public struct ViewModelInstanceProperty: Property {
 }
 
 /// A property that holds a list of view model instances.
-public struct ListProperty: Property {
+public struct ListProperty: Property, Sendable {
     public let path: String
     /// Creates a list property with the specified path.
     ///

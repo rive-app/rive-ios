@@ -12,7 +12,7 @@ import UIKit
 // MARK: - Semantics
 
 /// Controls the VoiceOver accessibility integration mode for a Rive view.
-public enum Semantics {
+public enum Semantics: Sendable {
     /// Accessibility semantics are disabled. No accessibility elements are
     /// created regardless of VoiceOver state.
     case off
@@ -26,7 +26,8 @@ public enum Semantics {
 
 // MARK: - UIAccessibilityProtocol
 
-protocol UIAccessibilityProtocol {
+@MainActor
+protocol UIAccessibilityProtocol: Sendable {
     static var isVoiceOverRunning: Bool { get }
     static func post(notification: UIAccessibility.Notification, argument: Any?)
 }
@@ -35,7 +36,7 @@ extension UIAccessibility: UIAccessibilityProtocol {}
 
 // MARK: - NotificationCenterProtocol
 
-protocol NotificationCenterProtocol {
+protocol NotificationCenterProtocol: Sendable {
     func addObserver(forName name: NSNotification.Name?, object obj: Any?, queue: OperationQueue?, using block: @escaping @Sendable (Notification) -> Void) -> any NSObjectProtocol
     func removeObserver(_ observer: Any)
 }
@@ -67,7 +68,7 @@ protocol SemanticsControllerDelegate: AnyObject {
 /// and UIKit accessibility notifications.
 @MainActor
 final class SemanticsController {
-    struct Dependencies {
+    struct Dependencies: Sendable {
         let stateMachine: StateMachine
         let accessibility: UIAccessibilityProtocol.Type
         let notificationCenter: NotificationCenterProtocol
@@ -96,7 +97,7 @@ final class SemanticsController {
     private let dependencies: Dependencies
     private(set) var manager: SemanticsManager?
     private var diffTask: Task<Void, Never>?
-    private var voiceOverObserver: (any NSObjectProtocol)?
+    private var voiceOverObserver: UncheckedSendable<any NSObjectProtocol>?
 
     #if TESTING
     var onSemanticsDiffProcessedForTesting: (() -> Void)?
@@ -113,8 +114,8 @@ final class SemanticsController {
 
     deinit {
         diffTask?.cancel()
-        if let voiceOverObserver {
-            dependencies.notificationCenter.removeObserver(voiceOverObserver)
+        if let observer = voiceOverObserver?.value {
+            dependencies.notificationCenter.removeObserver(observer)
         }
     }
 
@@ -183,7 +184,7 @@ final class SemanticsController {
 
     private func addVoiceOverObserver() {
         guard voiceOverObserver == nil else { return }
-        voiceOverObserver = dependencies.notificationCenter.addObserver(
+        let observer = dependencies.notificationCenter.addObserver(
             forName: UIAccessibility.voiceOverStatusDidChangeNotification,
             object: nil,
             queue: .main
@@ -192,12 +193,14 @@ final class SemanticsController {
                 self?.updateSemantics()
             }
         }
+        voiceOverObserver = UncheckedSendable(value: observer)
     }
 
     private func removeVoiceOverObserver() {
-        guard let voiceOverObserver else { return }
-        dependencies.notificationCenter.removeObserver(voiceOverObserver)
-        self.voiceOverObserver = nil
+        if let observer = voiceOverObserver?.value {
+            dependencies.notificationCenter.removeObserver(observer)
+            voiceOverObserver = nil
+        }
     }
 }
 

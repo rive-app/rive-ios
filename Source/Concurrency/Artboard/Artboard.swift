@@ -13,7 +13,7 @@ import Foundation
 /// Artboards are the top-level containers in Rive files that hold all the graphics, animations,
 /// and state machines. Each artboard can have multiple state machines and can be rendered
 /// independently.
-public final class Artboard: Equatable {
+public final class Artboard: Equatable, Sendable {
     /// The underlying type for the artboard handle identifier.
     ///
     /// Handle to an artboard instance in the C++ runtime. Obtained from the command queue
@@ -212,7 +212,7 @@ public final class Artboard: Equatable {
 
 extension Artboard {
     /// Container for all dependencies required by an Artboard instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Provides artboard-level services via command queue interactions.
         /// Implements `ArtboardListener` to receive callbacks from the command server.
         let artboardService: ArtboardService

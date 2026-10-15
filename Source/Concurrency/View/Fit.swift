@@ -9,7 +9,7 @@
 import Foundation
 
 /// An enum that defines how an artboard is scaled and positioned within its rendering bounds.
-public enum Fit: Equatable {
+public enum Fit: Equatable, Sendable {
     /// Scales the artboard to fill the entire bounds, potentially cropping content.
     case fill(alignment: Alignment)
     /// Scales the artboard to fit entirely within the bounds while maintaining aspect ratio.
@@ -62,7 +62,7 @@ public enum Fit: Equatable {
 }
 
 /// An enum that defines the alignment of an artboard within its rendering bounds.
-public enum Alignment: Equatable, CaseIterable {
+public enum Alignment: Equatable, CaseIterable, Sendable {
     /// Aligns the artboard to the top-left corner.
     case topLeft
     /// Aligns the artboard to the top-center.
@@ -98,7 +98,7 @@ public enum Alignment: Equatable, CaseIterable {
 }
 
 /// An enum that defines how the scale factor is determined for layout-based fitting.
-public enum ScaleFactor: Equatable {
+public enum ScaleFactor: Equatable, Sendable {
     /// Automatically determines the scale factor based on the display's scale.
     case automatic
     /// Uses an explicit scale factor value.

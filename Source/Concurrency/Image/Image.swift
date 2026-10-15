@@ -17,7 +17,7 @@ import Foundation
 /// or assigned to a view model property. A view model instance retains assigned images
 /// until they are replaced, cleared, or the instance is released. Otherwise, maintain a
 /// strong reference to the image to keep it alive.
-public final class Image: Equatable {
+public final class Image: Equatable, Sendable {
     /// The underlying type for the image handle identifier.
     ///
     /// Handle to an image in the C++ runtime. Obtained from the command queue
@@ -75,7 +75,7 @@ public final class Image: Equatable {
 
 extension Image {
     /// Container for all dependencies required by an Image instance.
-    struct Dependencies {
+    struct Dependencies: Sendable {
         /// Provides image-level services via command queue interactions.
         /// Implements `RenderImageListener` to receive callbacks from the command server.
         let imageService: ImageService

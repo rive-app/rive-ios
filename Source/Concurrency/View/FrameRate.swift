@@ -13,7 +13,7 @@ import Foundation
 /// On platforms that support frame-rate ranges, `.range` can be applied directly.
 /// On older platforms (`< iOS 15`, `< tvOS 15`, and `< macOS 14`), range
 /// preferences are translated to a scalar FPS value, using the maximum value of the range.
-public enum FrameRate: Equatable {
+public enum FrameRate: Equatable, Sendable {
     /// Uses the display link's initial settings (prioritizing range, if available).
     case `default`
     /// Requests a fixed preferred frames-per-second value.
