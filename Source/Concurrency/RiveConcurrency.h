@@ -19,33 +19,33 @@ extern "C"
 {
 #endif
 
-    /**
-     * Returns the maximum 2D texture size supported by the current Metal
-     * device.
-     *
-     * This function queries the Metal device's GPU family to determine the
-     * maximum texture dimensions. The returned size can be used to validate
-     * texture dimensions before creating Metal textures for rendering.
-     *
-     * @return The maximum texture size as a CGSize (width and height are equal)
-     * @note The size is determined based on the GPU family. Most modern Apple
-     *       GPUs support 16384x16384, while older GPUs support 8192x8192.
-     */
-    extern CGSize CGSizeMaximum2DTextureSize(id<MTLDevice>);
+  /**
+   * Returns the maximum 2D texture size supported by the current Metal
+   * device.
+   *
+   * This function queries the Metal device's GPU family to determine the
+   * maximum texture dimensions. The returned size can be used to validate
+   * texture dimensions before creating Metal textures for rendering.
+   *
+   * @return The maximum texture size as a CGSize (width and height are equal)
+   * @note The size is determined based on the GPU family. Most modern Apple
+   *       GPUs support 16384x16384, while older GPUs support 8192x8192.
+   */
+  extern CGSize CGSizeMaximum2DTextureSize(id<MTLDevice>);
 
-    /**
-     * Returns the pixel format used for Rive color textures.
-     *
-     * This function returns the Metal pixel format used by the concurrency
-     * renderer's default color targets.
-     *
-     * @return The Metal pixel format (MTLPixelFormatBGRA8Unorm)
-     * @note This format uses 8 bits per channel in BGRA order with normalized
-     *       values (0.0 to 1.0). Use this value for
-     *       `RiveUIRendererConfiguration.pixelFormat` and for target textures
-     *       passed to a renderer.
-     */
-    extern MTLPixelFormat MTLRiveColorPixelFormat(void);
+  /**
+   * Returns the pixel format used for Rive color textures.
+   *
+   * This function returns the Metal pixel format used by the concurrency
+   * renderer's default color targets.
+   *
+   * @return The Metal pixel format (MTLPixelFormatBGRA8Unorm)
+   * @note This format uses 8 bits per channel in BGRA order with normalized
+   *       values (0.0 to 1.0). Use this value for
+   *       `RiveUIRendererConfiguration.pixelFormat` and for target textures
+   *       passed to a renderer.
+   */
+  extern MTLPixelFormat MTLRiveColorPixelFormat(void);
 
 #ifdef __cplusplus
 }

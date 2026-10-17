@@ -21,13 +21,13 @@
  */
 - (void)testLoop
 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+  RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+  RiveArtboard* artboard = [file artboard:nil];
 
-    RiveLinearAnimationInstance* animation = [artboard animationFromName:@"loop"
-                                                                   error:nil];
+  RiveLinearAnimationInstance* animation = [artboard animationFromName:@"loop"
+                                                                 error:nil];
 
-    XCTAssertEqual([animation loop], RiveLoop::loop);
+  XCTAssertEqual([animation loop], RiveLoop::loop);
 }
 
 /*
@@ -35,13 +35,14 @@
  */
 - (void)testPingPong
 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+  RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+  RiveArtboard* artboard = [file artboard:nil];
 
-    RiveLinearAnimationInstance* animation =
-        [artboard animationFromName:@"pingpong" error:nil];
+  RiveLinearAnimationInstance* animation = [artboard
+      animationFromName:@"pingpong"
+                  error:nil];
 
-    XCTAssertEqual([animation loop], RiveLoop::pingPong);
+  XCTAssertEqual([animation loop], RiveLoop::pingPong);
 }
 
 /*
@@ -49,13 +50,14 @@
  */
 - (void)testOneShot
 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+  RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+  RiveArtboard* artboard = [file artboard:nil];
 
-    RiveLinearAnimationInstance* animation =
-        [artboard animationFromName:@"oneshot" error:nil];
+  RiveLinearAnimationInstance* animation = [artboard
+      animationFromName:@"oneshot"
+                  error:nil];
 
-    XCTAssertEqual([animation loop], RiveLoop::oneShot);
+  XCTAssertEqual([animation loop], RiveLoop::oneShot);
 }
 
 /*
@@ -63,24 +65,25 @@
  */
 - (void)testDuration1sec60fps
 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+  RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+  RiveArtboard* artboard = [file artboard:nil];
 
-    RiveLinearAnimationInstance* animation =
-        [artboard animationFromName:@"1sec60fps" error:nil];
+  RiveLinearAnimationInstance* animation = [artboard
+      animationFromName:@"1sec60fps"
+                  error:nil];
 
-    XCTAssertEqual([animation duration], 60);
-    XCTAssertEqual([animation effectiveDuration], 60);
-    XCTAssertEqual([animation fps], 60);
-    XCTAssertEqual([animation workStart], UINT_MAX);
-    XCTAssertEqual([animation workEnd], UINT_MAX);
+  XCTAssertEqual([animation duration], 60);
+  XCTAssertEqual([animation effectiveDuration], 60);
+  XCTAssertEqual([animation fps], 60);
+  XCTAssertEqual([animation workStart], UINT_MAX);
+  XCTAssertEqual([animation workEnd], UINT_MAX);
 
-    // These calculations should be exact
+  // These calculations should be exact
 
-    // seconds = duation / fps = 60/60
-    XCTAssertEqual([animation effectiveDurationInSeconds], 1.0);
-    // time = effectiveDuration / fps = 60/60
-    XCTAssertEqual([animation endTime], 1.0);
+  // seconds = duation / fps = 60/60
+  XCTAssertEqual([animation effectiveDurationInSeconds], 1.0);
+  // time = effectiveDuration / fps = 60/60
+  XCTAssertEqual([animation endTime], 1.0);
 }
 
 /*
@@ -88,17 +91,18 @@
  */
 - (void)testDuration1sec120fps
 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+  RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+  RiveArtboard* artboard = [file artboard:nil];
 
-    RiveLinearAnimationInstance* animation =
-        [artboard animationFromName:@"1sec120fps" error:nil];
+  RiveLinearAnimationInstance* animation = [artboard
+      animationFromName:@"1sec120fps"
+                  error:nil];
 
-    XCTAssertEqual([animation duration], 120);
-    XCTAssertEqual([animation effectiveDuration], 120);
-    XCTAssertEqual([animation fps], 120);
-    XCTAssertEqual([animation workStart], UINT_MAX);
-    XCTAssertEqual([animation workEnd], UINT_MAX);
+  XCTAssertEqual([animation duration], 120);
+  XCTAssertEqual([animation effectiveDuration], 120);
+  XCTAssertEqual([animation fps], 120);
+  XCTAssertEqual([animation workStart], UINT_MAX);
+  XCTAssertEqual([animation workEnd], UINT_MAX);
 }
 
 /*
@@ -106,29 +110,30 @@
  */
 - (void)testDuration1sec60fpsf30f50
 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+  RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+  RiveArtboard* artboard = [file artboard:nil];
 
-    RiveLinearAnimationInstance* animation =
-        [artboard animationFromName:@"1sec60fps_f30f50" error:nil];
+  RiveLinearAnimationInstance* animation = [artboard
+      animationFromName:@"1sec60fps_f30f50"
+                  error:nil];
 
-    XCTAssertEqual([animation duration], 60);
-    XCTAssertEqual([animation effectiveDuration], 20);
-    XCTAssertEqual([animation fps], 60);
-    XCTAssertEqual([animation workStart], 30);
-    XCTAssertEqual([animation workEnd], 50);
+  XCTAssertEqual([animation duration], 60);
+  XCTAssertEqual([animation effectiveDuration], 20);
+  XCTAssertEqual([animation fps], 60);
+  XCTAssertEqual([animation workStart], 30);
+  XCTAssertEqual([animation workEnd], 50);
 
-    // These calculations may have some floating error, as they are approximate
-    const float accuracy = 0.0000001;
+  // These calculations may have some floating error, as they are approximate
+  const float accuracy = 0.0000001;
 
-    // seconds = duation / fps = 20/60
-    const float secs = 20.0 / 60.0;
-    XCTAssertEqualWithAccuracy(
-        [animation effectiveDurationInSeconds], secs, accuracy);
+  // seconds = duation / fps = 20/60
+  const float secs = 20.0 / 60.0;
+  XCTAssertEqualWithAccuracy(
+      [animation effectiveDurationInSeconds], secs, accuracy);
 
-    // time = effectiveDuration / fps = 50/60
-    const float time = 50.0 / 60.0;
-    XCTAssertEqualWithAccuracy([animation endTime], time, accuracy);
+  // time = effectiveDuration / fps = 50/60
+  const float time = 50.0 / 60.0;
+  XCTAssertEqualWithAccuracy([animation endTime], time, accuracy);
 }
 
 /*
@@ -136,17 +141,18 @@
  */
 - (void)testDuration1sec120fpsf50f80
 {
-    RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
-    RiveArtboard* artboard = [file artboard:nil];
+  RiveFile* file = [Util loadTestFile:@"animationconfigurations" error:nil];
+  RiveArtboard* artboard = [file artboard:nil];
 
-    RiveLinearAnimationInstance* animation =
-        [artboard animationFromName:@"1sec120fps_f50f80" error:nil];
+  RiveLinearAnimationInstance* animation = [artboard
+      animationFromName:@"1sec120fps_f50f80"
+                  error:nil];
 
-    XCTAssertEqual([animation duration], 120);
-    XCTAssertEqual([animation effectiveDuration], 30);
-    XCTAssertEqual([animation fps], 120);
-    XCTAssertEqual([animation workStart], 50);
-    XCTAssertEqual([animation workEnd], 80);
+  XCTAssertEqual([animation duration], 120);
+  XCTAssertEqual([animation effectiveDuration], 30);
+  XCTAssertEqual([animation fps], 120);
+  XCTAssertEqual([animation workStart], 50);
+  XCTAssertEqual([animation workEnd], 80);
 }
 
 @end

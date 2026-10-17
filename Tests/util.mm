@@ -15,25 +15,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSData*)loadTestData:(NSString*)name
 {
-    NSBundle* bundle = [NSBundle bundleForClass:[self class]];
-    NSString* path = [bundle pathForResource:name ofType:@"riv"];
-    NSData* nsData = [NSData dataWithContentsOfFile:path];
-    return nsData;
+  NSBundle* bundle = [NSBundle bundleForClass:[self class]];
+  NSString* path = [bundle pathForResource:name ofType:@"riv"];
+  NSData* nsData = [NSData dataWithContentsOfFile:path];
+  return nsData;
 }
 
 + (RiveFile*)loadTestFile:(NSString*)name error:(NSError**)error
 {
-    NSData* nsData = [self loadTestData:name];
-    RiveFile* file = [[RiveFile alloc] initWithData:nsData
-                                            loadCdn:false
-                                              error:error];
-    return file;
+  NSData* nsData = [self loadTestData:name];
+  RiveFile* file = [[RiveFile alloc] initWithData:nsData
+                                          loadCdn:false
+                                            error:error];
+  return file;
 }
 @end
 
-typedef void (^CompletionHandler)(NSURL* location,
-                                  NSURLResponse* response,
-                                  NSError* error);
+typedef void (^CompletionHandler)(
+    NSURL* location, NSURLResponse* response, NSError* error);
 
 @implementation TestSessionDownloadTask
 {}
@@ -45,22 +44,22 @@ typedef void (^CompletionHandler)(NSURL* location,
 
 @implementation TestSession
 {
-    NSMutableArray* urls;
+  NSMutableArray* urls;
 }
 
 - (instancetype)init
 {
-    TestSession* session = [super init];
-    session->urls = [[NSMutableArray alloc] init];
-    return session;
+  TestSession* session = [super init];
+  session->urls = [[NSMutableArray alloc] init];
+  return session;
 }
 
 - (NSURLSessionDownloadTask*)downloadTaskWithURL:(NSURL*)url
                                completionHandler:
                                    (CompletionHandler)completionHandler
 {
-    [urls addObject:url];
-    return [[TestSessionDownloadTask alloc] init];
+  [urls addObject:url];
+  return [[TestSessionDownloadTask alloc] init];
 }
 
 - (void)finishTasksAndInvalidate
@@ -68,7 +67,7 @@ typedef void (^CompletionHandler)(NSURL* location,
 
 - (nonnull NSMutableArray*)getUrls
 {
-    return urls;
+  return urls;
 }
 
 @end

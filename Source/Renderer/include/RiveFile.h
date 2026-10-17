@@ -19,9 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveFactory;
 @class RiveDataBindingViewModel;
 @class RiveBindableArtboard;
-typedef bool (^LoadAsset)(RiveFileAsset* asset,
-                          NSData* data,
-                          RiveFactory* factory);
+typedef bool (^LoadAsset)(
+    RiveFileAsset* asset, NSData* data, RiveFactory* factory);
 
 /*
  * RiveFile

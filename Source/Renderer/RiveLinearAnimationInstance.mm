@@ -17,7 +17,7 @@ static int animInstanceCount = 0;
 
 @implementation RiveLinearAnimationInstance
 {
-    std::unique_ptr<rive::LinearAnimationInstance> instance;
+  std::unique_ptr<rive::LinearAnimationInstance> instance;
 }
 
 // MARK: Lifecycle
@@ -25,150 +25,150 @@ static int animInstanceCount = 0;
 - (instancetype)initWithAnimation:
     (std::unique_ptr<rive::LinearAnimationInstance>)anim
 {
-    if (self = [super init])
-    {
+  if (self = [super init])
+  {
 #if RIVE_ENABLE_REFERENCE_COUNTING
-        [RiveLinearAnimationInstance raiseInstanceCount];
+    [RiveLinearAnimationInstance raiseInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
-        instance = std::move(anim);
-        return self;
-    }
-    else
-    {
-        return nil;
-    }
+    instance = std::move(anim);
+    return self;
+  }
+  else
+  {
+    return nil;
+  }
 }
 
 - (void)dealloc
 {
 #if RIVE_ENABLE_REFERENCE_COUNTING
-    [RiveLinearAnimationInstance reduceInstanceCount];
+  [RiveLinearAnimationInstance reduceInstanceCount];
 #endif // RIVE_ENABLE_REFERENCE_COUNTING
 
-    instance.reset(nullptr);
+  instance.reset(nullptr);
 }
 
 // MARK: Reference Counting
 
 + (int)instanceCount
 {
-    return animInstanceCount;
+  return animInstanceCount;
 }
 
 + (void)raiseInstanceCount
 {
-    animInstanceCount++;
-    NSLog(@"+ Animation: %d", animInstanceCount);
+  animInstanceCount++;
+  NSLog(@"+ Animation: %d", animInstanceCount);
 }
 
 + (void)reduceInstanceCount
 {
-    animInstanceCount--;
-    NSLog(@"- Animation: %d", animInstanceCount);
+  animInstanceCount--;
+  NSLog(@"- Animation: %d", animInstanceCount);
 }
 
 // MARK: C++ Bindings
 
 - (float)time
 {
-    return instance->time();
+  return instance->time();
 }
 
 - (void)setTime:(float)time
 {
-    instance->time(time);
+  instance->time(time);
 }
 
 - (bool)advanceBy:(double)elapsedSeconds
 {
-    return instance->advanceAndApply(elapsedSeconds);
+  return instance->advanceAndApply(elapsedSeconds);
 }
 
 - (void)direction:(int)direction
 {
-    instance->direction(direction);
+  instance->direction(direction);
 }
 
 - (int)direction
 {
-    return instance->direction();
+  return instance->direction();
 }
 
 - (int)loop
 {
-    return instance->loopValue();
+  return instance->loopValue();
 }
 
 - (void)loop:(int)loopType
 {
-    instance->loopValue(loopType);
+  instance->loopValue(loopType);
 }
 
 - (bool)didLoop
 {
-    return instance->didLoop();
+  return instance->didLoop();
 }
 
 - (NSString*)name
 {
-    std::string str = instance->name();
-    return [NSString stringWithCString:str.c_str()
-                              encoding:[NSString defaultCStringEncoding]];
+  std::string str = instance->name();
+  return [NSString stringWithCString:str.c_str()
+                            encoding:[NSString defaultCStringEncoding]];
 }
 
 - (NSInteger)fps
 {
-    return instance->fps();
+  return instance->fps();
 }
 
 - (NSInteger)workStart
 {
-    return instance->animation()->workStart();
+  return instance->animation()->workStart();
 }
 
 - (NSInteger)workEnd
 {
-    return instance->animation()->workEnd();
+  return instance->animation()->workEnd();
 }
 
 - (NSInteger)duration
 {
-    return instance->animation()->duration();
+  return instance->animation()->duration();
 }
 
 - (NSInteger)effectiveDuration
 {
-    if (self.workStart == UINT_MAX)
-    {
-        return instance->animation()->duration();
-    }
-    else
-    {
-        return self.workEnd - self.workStart;
-    }
+  if (self.workStart == UINT_MAX)
+  {
+    return instance->animation()->duration();
+  }
+  else
+  {
+    return self.workEnd - self.workStart;
+  }
 }
 
 - (float)effectiveDurationInSeconds
 {
-    return [self effectiveDuration] / (float)instance->fps();
+  return [self effectiveDuration] / (float)instance->fps();
 }
 
 - (float)endTime
 {
-    float fps = instance->fps();
-    auto animation = instance->animation();
-    if (animation->enableWorkArea())
-    {
-        return animation->workEnd() / fps;
-    }
-    return animation->duration() / fps;
+  float fps = instance->fps();
+  auto animation = instance->animation();
+  if (animation->enableWorkArea())
+  {
+    return animation->workEnd() / fps;
+  }
+  return animation->duration() / fps;
 }
 
 // MARK: Helpers
 
 - (bool)hasEnded
 {
-    return [self time] >= [self endTime];
+  return [self time] >= [self endTime];
 }
 
 @end

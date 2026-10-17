@@ -25,39 +25,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation RiveUIRenderContext
 {
-    std::unique_ptr<rive::gpu::RenderContext> _renderContext;
-    id<MTLCommandQueue> _metalQueue;
+  std::unique_ptr<rive::gpu::RenderContext> _renderContext;
+  id<MTLCommandQueue> _metalQueue;
 }
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device
 {
-    if (self = [super init])
-    {
-        _renderContext = rive::gpu::RenderContextMetalImpl::MakeContext(
-            device, rive::gpu::RenderContextMetalImpl::ContextOptions());
-        _metalQueue = [device newCommandQueue];
-    }
-    return self;
+  if (self = [super init])
+  {
+    _renderContext = rive::gpu::RenderContextMetalImpl::MakeContext(
+        device, rive::gpu::RenderContextMetalImpl::ContextOptions());
+    _metalQueue = [device newCommandQueue];
+  }
+  return self;
 }
 
 - (void)dealloc
 {
-    _renderContext->releaseResources();
+  _renderContext->releaseResources();
 }
 
 + (RiveUIRenderContext*)sharedContext
 {
-    static dispatch_once_t onceToken;
-    static RiveUIRenderContext* renderContext;
-    dispatch_once(&onceToken, ^{
-      renderContext = [[RiveUIRenderContext alloc] init];
-    });
-    return renderContext;
+  static dispatch_once_t onceToken;
+  static RiveUIRenderContext* renderContext;
+  dispatch_once(&onceToken, ^{
+    renderContext = [[RiveUIRenderContext alloc] init];
+  });
+  return renderContext;
 }
 
 - (rive::Factory*)beginCommandProcessing
 {
-    return _renderContext.get();
+  return _renderContext.get();
 }
 
 - (void)endCommandProcessing
@@ -65,12 +65,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (rive::gpu::RenderContext*)renderContext
 {
-    return _renderContext.get();
+  return _renderContext.get();
 }
 
 - (id<MTLCommandBuffer>)newCommandBuffer
 {
-    return [_metalQueue commandBuffer];
+  return [_metalQueue commandBuffer];
 }
 
 @end

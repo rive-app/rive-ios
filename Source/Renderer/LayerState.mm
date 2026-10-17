@@ -11,50 +11,50 @@
 
 @implementation RiveLayerState
 {
-    const rive::LayerState* instance;
+  const rive::LayerState* instance;
 }
 
 - (instancetype)initWithLayerState:(const rive::LayerState*)layerState
 {
-    if (self = [super init])
-    {
-        self->instance = layerState;
-        return self;
-    }
-    else
-    {
-        return nil;
-    }
+  if (self = [super init])
+  {
+    self->instance = layerState;
+    return self;
+  }
+  else
+  {
+    return nil;
+  }
 }
 
 - (const void*)rive_layer_state
 {
-    return instance;
+  return instance;
 }
 
 - (bool)isEntryState
 {
-    return instance->is<rive::EntryState>();
+  return instance->is<rive::EntryState>();
 }
 
 - (bool)isExitState
 {
-    return instance->is<rive::ExitState>();
+  return instance->is<rive::ExitState>();
 }
 
 - (bool)isAnyState
 {
-    return instance->is<rive::AnyState>();
+  return instance->is<rive::AnyState>();
 }
 
 - (bool)isAnimationState
 {
-    return instance->is<rive::AnimationState>();
+  return instance->is<rive::AnimationState>();
 }
 
 - (NSString*)name
 {
-    return @"RiveLayerState";
+  return @"RiveLayerState";
 }
 
 @end
@@ -63,7 +63,7 @@
 
 - (NSString*)name
 {
-    return @"AnyState";
+  return @"AnyState";
 }
 @end
 
@@ -71,7 +71,7 @@
 
 - (NSString*)name
 {
-    return @"EntryState";
+  return @"EntryState";
 }
 @end
 
@@ -79,7 +79,7 @@
 
 - (NSString*)name
 {
-    return @"ExitState";
+  return @"ExitState";
 }
 @end
 
@@ -87,16 +87,16 @@
 
 - (NSString*)name
 {
-    auto inst = [self rive_layer_state];
-    auto animation = ((const rive::AnimationState*)inst)->animation();
+  auto inst = [self rive_layer_state];
+  auto animation = ((const rive::AnimationState*)inst)->animation();
 
-    if (animation == nil)
-    {
-        return [NSString stringWithCString:"Unknown"
-                                  encoding:[NSString defaultCStringEncoding]];
-    }
-    return [NSString stringWithCString:animation->name().c_str()
+  if (animation == nil)
+  {
+    return [NSString stringWithCString:"Unknown"
                               encoding:[NSString defaultCStringEncoding]];
+  }
+  return [NSString stringWithCString:animation->name().c_str()
+                            encoding:[NSString defaultCStringEncoding]];
 }
 @end
 
@@ -104,6 +104,6 @@
 
 - (NSString*)name
 {
-    return @"UnknownState";
+  return @"UnknownState";
 }
 @end

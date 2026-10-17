@@ -16,458 +16,441 @@
 
 @implementation RiveDataBindingViewModelInstance
 {
-    rive::rcp<rive::ViewModelInstanceRuntime> _instance;
-    NSMutableDictionary<NSString*, RiveDataBindingViewModelInstanceProperty*>*
-        _properties;
-    NSMutableDictionary<NSString*, RiveDataBindingViewModelInstance*>*
-        _children;
+  rive::rcp<rive::ViewModelInstanceRuntime> _instance;
+  NSMutableDictionary<NSString*, RiveDataBindingViewModelInstanceProperty*>*
+      _properties;
+  NSMutableDictionary<NSString*, RiveDataBindingViewModelInstance*>* _children;
 }
 
 - (instancetype)initWithInstance:
     (rive::rcp<rive::ViewModelInstanceRuntime>)instance
 {
-    if (self = [super init])
-    {
-        _instance = instance;
-        _properties = [NSMutableDictionary dictionary];
-        _children = [NSMutableDictionary dictionary];
-    }
-    return self;
+  if (self = [super init])
+  {
+    _instance = instance;
+    _properties = [NSMutableDictionary dictionary];
+    _children = [NSMutableDictionary dictionary];
+  }
+  return self;
 }
 
 - (void)dealloc
 {
-    _instance = nullptr;
+  _instance = nullptr;
 }
 
 - (NSString*)name
 {
-    return [NSString stringWithCString:_instance->name().c_str()
-                              encoding:NSUTF8StringEncoding];
+  return [NSString stringWithCString:_instance->name().c_str()
+                            encoding:NSUTF8StringEncoding];
 }
 
 - (NSUInteger)propertyCount
 {
-    return _instance->propertyCount();
+  return _instance->propertyCount();
 }
 
 - (NSArray<RiveDataBindingViewModelInstancePropertyData*>*)properties
 {
-    auto properties = _instance->properties();
-    NSMutableArray<RiveDataBindingViewModelInstancePropertyData*>* mapped =
-        [NSMutableArray arrayWithCapacity:properties.size()];
-    for (auto it = properties.begin(); it != properties.end(); ++it)
-    {
-        [mapped addObject:[[RiveDataBindingViewModelInstancePropertyData alloc]
-                              initWithData:*it]];
-    }
-    return mapped;
+  auto properties = _instance->properties();
+  NSMutableArray<RiveDataBindingViewModelInstancePropertyData*>*
+      mapped = [NSMutableArray arrayWithCapacity:properties.size()];
+  for (auto it = properties.begin(); it != properties.end(); ++it)
+  {
+    [mapped addObject:[[RiveDataBindingViewModelInstancePropertyData alloc]
+                          initWithData:*it]];
+  }
+  return mapped;
 }
 
 - (nullable RiveDataBindingViewModelInstanceProperty*)propertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:[RiveDataBindingViewModelInstanceProperty
-                                        class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:[RiveDataBindingViewModelInstanceProperty
+                                      class]]))
+  {
+    return cached;
+  }
 
-    auto property = _instance->property(std::string([path UTF8String]));
-    if (property == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self propertyAtPath:path found:NO];
-        return nil;
-    }
-    [RiveLogger logWithViewModelInstance:self propertyAtPath:path found:YES];
-    RiveDataBindingViewModelInstanceProperty* value =
-        [[RiveDataBindingViewModelInstanceProperty alloc]
-            initWithValue:property];
-    value.valueDelegate = self;
+  auto property = _instance->property(std::string([path UTF8String]));
+  if (property == nullptr)
+  {
+    [RiveLogger logWithViewModelInstance:self propertyAtPath:path found:NO];
+    return nil;
+  }
+  [RiveLogger logWithViewModelInstance:self propertyAtPath:path found:YES];
+  RiveDataBindingViewModelInstanceProperty*
+      value = [[RiveDataBindingViewModelInstanceProperty alloc]
+          initWithValue:property];
+  value.valueDelegate = self;
 
-    [self cacheProperty:value withPath:path];
+  [self cacheProperty:value withPath:path];
 
-    return value;
+  return value;
 }
 
 - (nullable RiveDataBindingViewModelInstanceStringProperty*)
     stringPropertyFromPath:(NSString*)path
 {
-    RiveDataBindingViewModelInstanceStringProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceStringProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceStringProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:
+                              [RiveDataBindingViewModelInstanceStringProperty
+                                  class]]))
+  {
+    return cached;
+  }
 
-    auto string = _instance->propertyString(std::string([path UTF8String]));
-    if (string == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                        stringPropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
+  auto string = _instance->propertyString(std::string([path UTF8String]));
+  if (string == nullptr)
+  {
     [RiveLogger logWithViewModelInstance:self
                     stringPropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceStringProperty* stringValue =
-        [[RiveDataBindingViewModelInstanceStringProperty alloc]
-            initWithString:string];
-    stringValue.valueDelegate = self;
+                                   found:NO];
+    return nil;
+  }
+  [RiveLogger logWithViewModelInstance:self
+                  stringPropertyAtPath:path
+                                 found:YES];
+  RiveDataBindingViewModelInstanceStringProperty*
+      stringValue = [[RiveDataBindingViewModelInstanceStringProperty alloc]
+          initWithString:string];
+  stringValue.valueDelegate = self;
 
-    [self cacheProperty:stringValue withPath:path];
+  [self cacheProperty:stringValue withPath:path];
 
-    return stringValue;
+  return stringValue;
 }
 
 - (RiveDataBindingViewModelInstanceNumberProperty*)numberPropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceNumberProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceNumberProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceNumberProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:
+                              [RiveDataBindingViewModelInstanceNumberProperty
+                                  class]]))
+  {
+    return cached;
+  }
 
-    auto number = _instance->propertyNumber(std::string([path UTF8String]));
-    if (number == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                        numberPropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
+  auto number = _instance->propertyNumber(std::string([path UTF8String]));
+  if (number == nullptr)
+  {
     [RiveLogger logWithViewModelInstance:self
                     numberPropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceNumberProperty* numberValue =
-        [[RiveDataBindingViewModelInstanceNumberProperty alloc]
-            initWithNumber:number];
-    numberValue.valueDelegate = self;
+                                   found:NO];
+    return nil;
+  }
+  [RiveLogger logWithViewModelInstance:self
+                  numberPropertyAtPath:path
+                                 found:YES];
+  RiveDataBindingViewModelInstanceNumberProperty*
+      numberValue = [[RiveDataBindingViewModelInstanceNumberProperty alloc]
+          initWithNumber:number];
+  numberValue.valueDelegate = self;
 
-    [self cacheProperty:numberValue withPath:path];
+  [self cacheProperty:numberValue withPath:path];
 
-    return numberValue;
+  return numberValue;
 }
 
 - (RiveDataBindingViewModelInstanceBooleanProperty*)booleanPropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceBooleanProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceBooleanProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceBooleanProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:
+                              [RiveDataBindingViewModelInstanceBooleanProperty
+                                  class]]))
+  {
+    return cached;
+  }
 
-    auto boolean = _instance->propertyBoolean(std::string([path UTF8String]));
-    if (boolean == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                       booleanPropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
+  auto boolean = _instance->propertyBoolean(std::string([path UTF8String]));
+  if (boolean == nullptr)
+  {
     [RiveLogger logWithViewModelInstance:self
                    booleanPropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceBooleanProperty* boolValue =
-        [[RiveDataBindingViewModelInstanceBooleanProperty alloc]
-            initWithBoolean:boolean];
-    boolValue.valueDelegate = self;
+                                   found:NO];
+    return nil;
+  }
+  [RiveLogger logWithViewModelInstance:self
+                 booleanPropertyAtPath:path
+                                 found:YES];
+  RiveDataBindingViewModelInstanceBooleanProperty*
+      boolValue = [[RiveDataBindingViewModelInstanceBooleanProperty alloc]
+          initWithBoolean:boolean];
+  boolValue.valueDelegate = self;
 
-    [self cacheProperty:boolValue withPath:path];
+  [self cacheProperty:boolValue withPath:path];
 
-    return boolValue;
+  return boolValue;
 }
 
 - (RiveDataBindingViewModelInstanceColorProperty*)colorPropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceColorProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceColorProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceColorProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:[RiveDataBindingViewModelInstanceColorProperty
+                                      class]]))
+  {
+    return cached;
+  }
 
-    auto color = _instance->propertyColor(std::string([path UTF8String]));
-    if (color == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                         colorPropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
+  auto color = _instance->propertyColor(std::string([path UTF8String]));
+  if (color == nullptr)
+  {
     [RiveLogger logWithViewModelInstance:self
                      colorPropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceColorProperty* colorValue =
-        [[RiveDataBindingViewModelInstanceColorProperty alloc]
-            initWithColor:color];
-    colorValue.valueDelegate = self;
+                                   found:NO];
+    return nil;
+  }
+  [RiveLogger logWithViewModelInstance:self colorPropertyAtPath:path found:YES];
+  RiveDataBindingViewModelInstanceColorProperty*
+      colorValue = [[RiveDataBindingViewModelInstanceColorProperty alloc]
+          initWithColor:color];
+  colorValue.valueDelegate = self;
 
-    [self cacheProperty:colorValue withPath:path];
+  [self cacheProperty:colorValue withPath:path];
 
-    return colorValue;
+  return colorValue;
 }
 
 - (RiveDataBindingViewModelInstanceEnumProperty*)enumPropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceEnumProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceEnumProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceEnumProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:[RiveDataBindingViewModelInstanceEnumProperty
+                                      class]]))
+  {
+    return cached;
+  }
 
-    auto e = _instance->propertyEnum(std::string([path UTF8String]));
-    if (e == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                          enumPropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
-    [RiveLogger logWithViewModelInstance:self
-                      enumPropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceEnumProperty* enumProperty =
-        [[RiveDataBindingViewModelInstanceEnumProperty alloc] initWithEnum:e];
-    enumProperty.valueDelegate = self;
+  auto e = _instance->propertyEnum(std::string([path UTF8String]));
+  if (e == nullptr)
+  {
+    [RiveLogger logWithViewModelInstance:self enumPropertyAtPath:path found:NO];
+    return nil;
+  }
+  [RiveLogger logWithViewModelInstance:self enumPropertyAtPath:path found:YES];
+  RiveDataBindingViewModelInstanceEnumProperty*
+      enumProperty = [[RiveDataBindingViewModelInstanceEnumProperty alloc]
+          initWithEnum:e];
+  enumProperty.valueDelegate = self;
 
-    [self cacheProperty:enumProperty withPath:path];
+  [self cacheProperty:enumProperty withPath:path];
 
-    return enumProperty;
+  return enumProperty;
 }
 
 - (RiveDataBindingViewModelInstance*)viewModelInstancePropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
-    return
-        [parent viewModelInstanceWithName:[[path pathComponents] lastObject]];
+  RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
+  return [parent viewModelInstanceWithName:[[path pathComponents] lastObject]];
 }
 
 - (BOOL)setViewModelInstancePropertyFromPath:(NSString*)path
                                   toInstance:(RiveDataBindingViewModelInstance*)
                                                  instance
 {
-    RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
-    return [parent setViewModelInstance:instance
-                                forName:[path lastPathComponent]];
+  RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
+  return [parent setViewModelInstance:instance
+                              forName:[path lastPathComponent]];
 }
 
 - (RiveDataBindingViewModelInstanceTriggerProperty*)triggerPropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceTriggerProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceTriggerProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceTriggerProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:
+                              [RiveDataBindingViewModelInstanceTriggerProperty
+                                  class]]))
+  {
+    return cached;
+  }
 
-    auto trigger = _instance->propertyTrigger(std::string([path UTF8String]));
-    if (trigger == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                       triggerPropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
+  auto trigger = _instance->propertyTrigger(std::string([path UTF8String]));
+  if (trigger == nullptr)
+  {
     [RiveLogger logWithViewModelInstance:self
                    triggerPropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceTriggerProperty* triggerProperty =
-        [[RiveDataBindingViewModelInstanceTriggerProperty alloc]
-            initWithTrigger:trigger];
-    triggerProperty.valueDelegate = self;
+                                   found:NO];
+    return nil;
+  }
+  [RiveLogger logWithViewModelInstance:self
+                 triggerPropertyAtPath:path
+                                 found:YES];
+  RiveDataBindingViewModelInstanceTriggerProperty*
+      triggerProperty = [[RiveDataBindingViewModelInstanceTriggerProperty alloc]
+          initWithTrigger:trigger];
+  triggerProperty.valueDelegate = self;
 
-    [self cacheProperty:triggerProperty withPath:path];
+  [self cacheProperty:triggerProperty withPath:path];
 
-    return triggerProperty;
+  return triggerProperty;
 }
 
 - (RiveDataBindingViewModelInstanceImageProperty*)imagePropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceImageProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceImageProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceImageProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:[RiveDataBindingViewModelInstanceImageProperty
+                                      class]]))
+  {
+    return cached;
+  }
 
-    auto image = _instance->propertyImage(std::string([path UTF8String]));
-    if (image == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                         imagePropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
-
+  auto image = _instance->propertyImage(std::string([path UTF8String]));
+  if (image == nullptr)
+  {
     [RiveLogger logWithViewModelInstance:self
                      imagePropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceImageProperty* imageProperty =
-        [[RiveDataBindingViewModelInstanceImageProperty alloc]
-            initWithImage:image];
-    imageProperty.valueDelegate = self;
+                                   found:NO];
+    return nil;
+  }
 
-    [self cacheProperty:imageProperty withPath:path];
+  [RiveLogger logWithViewModelInstance:self imagePropertyAtPath:path found:YES];
+  RiveDataBindingViewModelInstanceImageProperty*
+      imageProperty = [[RiveDataBindingViewModelInstanceImageProperty alloc]
+          initWithImage:image];
+  imageProperty.valueDelegate = self;
 
-    return imageProperty;
+  [self cacheProperty:imageProperty withPath:path];
+
+  return imageProperty;
 }
 
 - (RiveDataBindingViewModelInstanceListProperty*)listPropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceListProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceListProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceListProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:[RiveDataBindingViewModelInstanceListProperty
+                                      class]]))
+  {
+    return cached;
+  }
 
-    auto list = _instance->propertyList(std::string([path UTF8String]));
-    if (list == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                          listPropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
+  auto list = _instance->propertyList(std::string([path UTF8String]));
+  if (list == nullptr)
+  {
+    [RiveLogger logWithViewModelInstance:self listPropertyAtPath:path found:NO];
+    return nil;
+  }
 
-    [RiveLogger logWithViewModelInstance:self
-                      listPropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceListProperty* listProperty =
-        [[RiveDataBindingViewModelInstanceListProperty alloc]
-            initWithList:list];
-    listProperty.valueDelegate = self;
+  [RiveLogger logWithViewModelInstance:self listPropertyAtPath:path found:YES];
+  RiveDataBindingViewModelInstanceListProperty*
+      listProperty = [[RiveDataBindingViewModelInstanceListProperty alloc]
+          initWithList:list];
+  listProperty.valueDelegate = self;
 
-    [self cacheProperty:listProperty withPath:path];
+  [self cacheProperty:listProperty withPath:path];
 
-    return listProperty;
+  return listProperty;
 }
 
 - (RiveDataBindingViewModelInstanceArtboardProperty*)artboardPropertyFromPath:
     (NSString*)path
 {
-    RiveDataBindingViewModelInstanceArtboardProperty* cached;
-    if ((cached = [self
-             cachedPropertyFromPath:path
-                            asClass:
-                                [RiveDataBindingViewModelInstanceArtboardProperty
-                                    class]]))
-    {
-        return cached;
-    }
+  RiveDataBindingViewModelInstanceArtboardProperty* cached;
+  if ((cached = [self
+           cachedPropertyFromPath:path
+                          asClass:
+                              [RiveDataBindingViewModelInstanceArtboardProperty
+                                  class]]))
+  {
+    return cached;
+  }
 
-    auto artboard = _instance->propertyArtboard(std::string([path UTF8String]));
-    if (artboard == nullptr)
-    {
-        [RiveLogger logWithViewModelInstance:self
-                      artboardPropertyAtPath:path
-                                       found:NO];
-        return nil;
-    }
-
+  auto artboard = _instance->propertyArtboard(std::string([path UTF8String]));
+  if (artboard == nullptr)
+  {
     [RiveLogger logWithViewModelInstance:self
                   artboardPropertyAtPath:path
-                                   found:YES];
-    RiveDataBindingViewModelInstanceArtboardProperty* artboardProperty =
-        [[RiveDataBindingViewModelInstanceArtboardProperty alloc]
-            initWithArtboard:artboard];
-    artboardProperty.valueDelegate = self;
+                                   found:NO];
+    return nil;
+  }
 
-    [self cacheProperty:artboardProperty withPath:path];
+  [RiveLogger logWithViewModelInstance:self
+                artboardPropertyAtPath:path
+                                 found:YES];
+  RiveDataBindingViewModelInstanceArtboardProperty*
+      artboardProperty = [[RiveDataBindingViewModelInstanceArtboardProperty
+          alloc] initWithArtboard:artboard];
+  artboardProperty.valueDelegate = self;
 
-    return artboardProperty;
+  [self cacheProperty:artboardProperty withPath:path];
+
+  return artboardProperty;
 }
 
 - (void)updateListeners
 {
-    [_properties enumerateKeysAndObjectsUsingBlock:^(
-                     NSString* _Nonnull key,
-                     RiveDataBindingViewModelInstanceProperty* _Nonnull obj,
-                     BOOL* _Nonnull stop) {
-      [obj handleListeners];
-    }];
-
-    [_properties enumerateKeysAndObjectsUsingBlock:^(
-                     NSString* _Nonnull key,
-                     RiveDataBindingViewModelInstanceProperty* _Nonnull obj,
-                     BOOL* _Nonnull stop) {
-      if (obj.hasChanged)
-      {
-          [obj clearChanges];
-      }
-    }];
-
-    [_children enumerateKeysAndObjectsUsingBlock:^(
+  [_properties enumerateKeysAndObjectsUsingBlock:^(
                    NSString* _Nonnull key,
-                   RiveDataBindingViewModelInstance* _Nonnull obj,
+                   RiveDataBindingViewModelInstanceProperty* _Nonnull obj,
                    BOOL* _Nonnull stop) {
-      [obj updateListeners];
-    }];
+    [obj handleListeners];
+  }];
+
+  [_properties enumerateKeysAndObjectsUsingBlock:^(
+                   NSString* _Nonnull key,
+                   RiveDataBindingViewModelInstanceProperty* _Nonnull obj,
+                   BOOL* _Nonnull stop) {
+    if (obj.hasChanged)
+    {
+      [obj clearChanges];
+    }
+  }];
+
+  [_children enumerateKeysAndObjectsUsingBlock:^(
+                 NSString* _Nonnull key,
+                 RiveDataBindingViewModelInstance* _Nonnull obj,
+                 BOOL* _Nonnull stop) {
+    [obj updateListeners];
+  }];
 }
 
 #pragma mark Private
 
 - (rive::ViewModelInstanceRuntime*)instance
 {
-    return _instance.get();
+  return _instance.get();
 }
 
 - (void)cacheProperty:(RiveDataBindingViewModelInstanceProperty*)value
              withPath:(NSString*)path
 {
-    RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
-    [parent setProperty:value forName:[path lastPathComponent]];
+  RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
+  [parent setProperty:value forName:[path lastPathComponent]];
 }
 
 - (nullable id)cachedPropertyFromPath:(NSString*)path asClass:(Class)aClass
 {
-    RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
-    id property = [parent cachedPropertyWithName:[path lastPathComponent]];
-    if (property != nil && [property isKindOfClass:aClass])
-    {
-        return property;
-    }
-    return nil;
+  RiveDataBindingViewModelInstance* parent = [self parentForPath:path];
+  id property = [parent cachedPropertyWithName:[path lastPathComponent]];
+  if (property != nil && [property isKindOfClass:aClass])
+  {
+    return property;
+  }
+  return nil;
 }
 
 #pragma mark - RiveDataBindingViewModelInstancePropertyDelegate
@@ -485,66 +468,66 @@
 
 - (nullable RiveDataBindingViewModelInstance*)parentForPath:(NSString*)path
 {
-    NSArray* pathComponents = [path pathComponents];
+  NSArray* pathComponents = [path pathComponents];
 
-    if (pathComponents.count == 0)
-    {
-        return nil;
-    }
+  if (pathComponents.count == 0)
+  {
+    return nil;
+  }
 
-    if (pathComponents.count == 1)
-    {
-        return self;
-    }
+  if (pathComponents.count == 1)
+  {
+    return self;
+  }
 
-    NSArray* subpathComponents = [pathComponents
-        subarrayWithRange:NSMakeRange(1, pathComponents.count - 1)];
-    RiveDataBindingViewModelInstance* instance =
-        [self viewModelInstanceWithName:[pathComponents firstObject]];
-    return [instance
-        parentForPath:[subpathComponents componentsJoinedByString:@"/"]];
+  NSArray* subpathComponents = [pathComponents
+      subarrayWithRange:NSMakeRange(1, pathComponents.count - 1)];
+  RiveDataBindingViewModelInstance* instance = [self
+      viewModelInstanceWithName:[pathComponents firstObject]];
+  return [instance
+      parentForPath:[subpathComponents componentsJoinedByString:@"/"]];
 }
 
 - (nullable RiveDataBindingViewModelInstance*)viewModelInstanceWithName:
     (NSString*)name
 {
-    RiveDataBindingViewModelInstance* existing;
-    if ((existing = _children[name]))
-    {
-        return existing;
-    }
-    auto i = _instance->propertyViewModel(std::string([name UTF8String]));
-    if (i == nullptr)
-    {
-        return nil;
-    }
-    RiveDataBindingViewModelInstance* instance =
-        [[RiveDataBindingViewModelInstance alloc] initWithInstance:i];
-    _children[name] = instance;
-    return instance;
+  RiveDataBindingViewModelInstance* existing;
+  if ((existing = _children[name]))
+  {
+    return existing;
+  }
+  auto i = _instance->propertyViewModel(std::string([name UTF8String]));
+  if (i == nullptr)
+  {
+    return nil;
+  }
+  RiveDataBindingViewModelInstance*
+      instance = [[RiveDataBindingViewModelInstance alloc] initWithInstance:i];
+  _children[name] = instance;
+  return instance;
 }
 
 - (BOOL)setViewModelInstance:(RiveDataBindingViewModelInstance*)instance
                      forName:(NSString*)name
 {
-    BOOL replaced = _instance->replaceViewModelByName(
-        std::string([name UTF8String]), instance.instance);
-    if (replaced)
-    {
-        _children[name] = instance;
-    }
-    return replaced;
+  BOOL replaced = _instance->replaceViewModelByName(
+      std::string([name UTF8String]), instance.instance);
+  if (replaced)
+  {
+    _children[name] = instance;
+  }
+  return replaced;
 }
 
 - (id)cachedPropertyWithName:(NSString*)name
 {
-    return [_properties objectForKey:name];
+  return [_properties objectForKey:name];
 }
 
 - (void)setProperty:(RiveDataBindingViewModelInstanceProperty*)property
             forName:(NSString*)name
 {
-    _properties[name] = property;
+  _properties[name] = property;
 }
 
 @end

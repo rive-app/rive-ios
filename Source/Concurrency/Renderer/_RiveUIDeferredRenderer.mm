@@ -35,126 +35,121 @@ namespace
 class RiveUIFrameSink final : public rive::cmd::HostFrameSink
 {
 public:
-    RiveUIFrameSink(rive::gpu::RenderContext* renderContext,
-                    rive::rcp<rive::gpu::RenderTargetMetal> renderTarget,
-                    id<MTLTexture> texture,
-                    bool clear,
-                    uint32_t color,
-                    uint64_t target,
-                    bool replayOre) :
-        HostFrameSink(clear, color, target, replayOre),
-        m_renderContext(renderContext),
-        m_renderTarget(std::move(renderTarget)),
-        m_texture(texture)
-    {}
+  RiveUIFrameSink(
+      rive::gpu::RenderContext* renderContext,
+      rive::rcp<rive::gpu::RenderTargetMetal> renderTarget,
+      id<MTLTexture> texture,
+      bool clear,
+      uint32_t color,
+      uint64_t target,
+      bool replayOre)
+      : HostFrameSink(clear, color, target, replayOre)
+      , m_renderContext(renderContext)
+      , m_renderTarget(std::move(renderTarget))
+      , m_texture(texture)
+  {}
 
-    rive::gpu::RenderContext* renderContext() override
-    {
-        return m_renderContext;
-    }
+  rive::gpu::RenderContext* renderContext() override { return m_renderContext; }
 
-    rive::gpu::RenderTarget* targetRenderTarget() override
-    {
-        return m_renderTarget.get();
-    }
+  rive::gpu::RenderTarget* targetRenderTarget() override
+  {
+    return m_renderTarget.get();
+  }
 
-    rive::Renderer* beginScreen(uint64_t, bool clear, uint32_t color) override
-    {
-        m_renderTarget->setTargetTexture(m_texture);
-        m_renderContext->beginFrame({
-            .renderTargetWidth = m_renderTarget->width(),
-            .renderTargetHeight = m_renderTarget->height(),
-            .loadAction = clear ? rive::gpu::LoadAction::clear
-                                : rive::gpu::LoadAction::preserveRenderTarget,
-            .clearColor = color,
-        });
-        m_renderer = std::make_unique<rive::RiveRenderer>(m_renderContext);
-        return m_renderer.get();
-    }
+  rive::Renderer* beginScreen(uint64_t, bool clear, uint32_t color) override
+  {
+    m_renderTarget->setTargetTexture(m_texture);
+    m_renderContext->beginFrame({
+        .renderTargetWidth = m_renderTarget->width(),
+        .renderTargetHeight = m_renderTarget->height(),
+        .loadAction = clear ? rive::gpu::LoadAction::clear
+                            : rive::gpu::LoadAction::preserveRenderTarget,
+        .clearColor = color,
+    });
+    m_renderer = std::make_unique<rive::RiveRenderer>(m_renderContext);
+    return m_renderer.get();
+  }
 
 private:
-    rive::gpu::RenderContext* m_renderContext;
-    rive::rcp<rive::gpu::RenderTargetMetal> m_renderTarget;
-    id<MTLTexture> m_texture;
-    std::unique_ptr<rive::RiveRenderer> m_renderer;
+  rive::gpu::RenderContext* m_renderContext;
+  rive::rcp<rive::gpu::RenderTargetMetal> m_renderTarget;
+  id<MTLTexture> m_texture;
+  std::unique_ptr<rive::RiveRenderer> m_renderer;
 };
 
 // Scripts may draw into the frame's texture when Ore speaks its format.
 rive::ore::Context::TargetDesc oreTargetDesc(
     const rive::gpu::RenderTargetMetal* renderTarget)
 {
-    MTLPixelFormat format = renderTarget->pixelFormat();
-    if (format != MTLPixelFormatBGRA8Unorm &&
-        format != MTLPixelFormatRGBA8Unorm)
-    {
-        return {};
-    }
-    return rive::ore::Context::TargetDesc::color8(renderTarget->width(),
-                                                  renderTarget->height(),
-                                                  format ==
-                                                      MTLPixelFormatBGRA8Unorm);
+  MTLPixelFormat format = renderTarget->pixelFormat();
+  if (format != MTLPixelFormatBGRA8Unorm && format != MTLPixelFormatRGBA8Unorm)
+  {
+    return {};
+  }
+  return rive::ore::Context::TargetDesc::color8(
+      renderTarget->width(),
+      renderTarget->height(),
+      format == MTLPixelFormatBGRA8Unorm);
 }
 } // namespace
 
 @implementation _RiveUIDeferredRenderer
 {
-    _RiveUIRendererCore* _core;
+  _RiveUIRendererCore* _core;
 }
 
 - (instancetype)initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
                        renderContext:
                            (_RiveUIDeferredRenderContext*)renderContext
 {
-    if (self = [super init])
-    {
-        _core = [[_RiveUIRendererCore alloc] initWithCommandQueue:commandQueue
-            renderContext:renderContext
-            hasPendingWork:^BOOL {
-              auto host = [renderContext deferredHost];
-              // Sample before `drawFrame` calls beginRecord. beginRecord adds
-              // an Ore replay marker and would otherwise make every request
-              // appear dirty, defeating unchanged-frame skipping.
-              return host->session()->recordedThisFrame();
-            }
-            drawFrame:^id<MTLCommandBuffer> _Nullable(
-                rive::ArtboardInstance* artboard,
-                rive::gpu::RenderTargetMetal* renderTarget,
-                id<MTLTexture> texture,
-                RiveUIRendererConfiguration configuration) {
-              auto host = [renderContext deferredHost];
-              auto riveContext = [renderContext renderContext];
+  if (self = [super init])
+  {
+    _core = [[_RiveUIRendererCore alloc] initWithCommandQueue:commandQueue
+        renderContext:renderContext
+        hasPendingWork:^BOOL {
+          auto host = [renderContext deferredHost];
+          // Sample before `drawFrame` calls beginRecord. beginRecord adds
+          // an Ore replay marker and would otherwise make every request
+          // appear dirty, defeating unchanged-frame skipping.
+          return host->session()->recordedThisFrame();
+        }
+        drawFrame:^id<MTLCommandBuffer> _Nullable(
+            rive::ArtboardInstance* artboard,
+            rive::gpu::RenderTargetMetal* renderTarget,
+            id<MTLTexture> texture,
+            RiveUIRendererConfiguration configuration) {
+          auto host = [renderContext deferredHost];
+          auto riveContext = [renderContext renderContext];
 
-              host->beginRecord(
-                  true, configuration.color, oreTargetDesc(renderTarget));
-              RiveUIDrawArtboard(host->screenRenderer(),
-                                 artboard,
-                                 renderTarget,
-                                 configuration);
+          host->beginRecord(
+              true, configuration.color, oreTargetDesc(renderTarget));
+          RiveUIDrawArtboard(
+              host->screenRenderer(), artboard, renderTarget, configuration);
 
-              RiveUIFrameSink sink(riveContext,
-                                   rive::ref_rcp(renderTarget),
-                                   texture,
-                                   host->doClear(),
-                                   host->clearColor(),
-                                   host->target(),
-                                   host->replayOre());
-              id<MTLCommandBuffer> commandBuffer =
-                  [renderContext newCommandBuffer];
-              void* externalCommandBuffer = (__bridge void*)commandBuffer;
-              BOOL didEncodeScreen = NO;
-              // replayInline replays and resets the pending frame before this
-              // callback. By then the screen frame is encoded, so flush here.
-              host->replayInline(sink, [&] {
-                  riveContext->flush({
-                      .renderTarget = renderTarget,
-                      .externalCommandBuffer = externalCommandBuffer,
-                  });
-                  didEncodeScreen = YES;
-              });
-              return didEncodeScreen ? commandBuffer : nil;
-            }];
-    }
-    return self;
+          RiveUIFrameSink sink(
+              riveContext,
+              rive::ref_rcp(renderTarget),
+              texture,
+              host->doClear(),
+              host->clearColor(),
+              host->target(),
+              host->replayOre());
+          id<MTLCommandBuffer> commandBuffer = [renderContext newCommandBuffer];
+          void* externalCommandBuffer = (__bridge void*)commandBuffer;
+          BOOL didEncodeScreen = NO;
+          // replayInline replays and resets the pending frame before this
+          // callback. By then the screen frame is encoded, so flush here.
+          host->replayInline(sink, [&] {
+            riveContext->flush({
+                .renderTarget = renderTarget,
+                .externalCommandBuffer = externalCommandBuffer,
+            });
+            didEncodeScreen = YES;
+          });
+          return didEncodeScreen ? commandBuffer : nil;
+        }];
+  }
+  return self;
 }
 
 - (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
@@ -164,16 +159,15 @@ rive::ore::Context::TargetDesc oreTargetDesc(
                 onSkipped:(nullable void (^)(void))onSkipped
                   onError:(nullable void (^)(NSError*))onError
 {
-    [_core
-        drawConfiguration:configuration
-                toTexture:texture
-               fromDevice:device
-                   onDraw:^(id<MTLCommandBuffer> commandBuffer) {
-                     onDraw(commandBuffer);
-                     RiveUIRendererCommitCommandBufferIfNeeded(commandBuffer);
-                   }
-                onSkipped:onSkipped
-                  onError:onError];
+  [_core drawConfiguration:configuration
+                 toTexture:texture
+                fromDevice:device
+                    onDraw:^(id<MTLCommandBuffer> commandBuffer) {
+                      onDraw(commandBuffer);
+                      RiveUIRendererCommitCommandBufferIfNeeded(commandBuffer);
+                    }
+                 onSkipped:onSkipped
+                   onError:onError];
 }
 
 #pragma clang diagnostic push
@@ -185,15 +179,15 @@ rive::ore::Context::TargetDesc oreTargetDesc(
                 onSkipped:(nullable void (^)(void))onSkipped
                   onError:(nullable void (^)(NSError*))onError
 {
-    [_core drawConfiguration:configuration
-                   toTexture:texture
-                  fromDevice:device
-                      onDraw:^(id<MTLCommandBuffer> commandBuffer) {
-                        RiveUIRendererInvokeLegacyFinalize(finalize,
-                                                           commandBuffer);
-                      }
-                   onSkipped:onSkipped
-                     onError:onError];
+  [_core
+      drawConfiguration:configuration
+              toTexture:texture
+             fromDevice:device
+                 onDraw:^(id<MTLCommandBuffer> commandBuffer) {
+                   RiveUIRendererInvokeLegacyFinalize(finalize, commandBuffer);
+                 }
+              onSkipped:onSkipped
+                onError:onError];
 }
 #pragma clang diagnostic pop
 

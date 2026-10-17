@@ -24,51 +24,51 @@
 - (void)willMoveToWindow:(UIWindow*)newWindow
 {
 #if !TARGET_OS_VISION
-    if (newWindow != nil && self.autoResizeDrawable)
-    {
-        // Prime the backing layer before MetalKit updates to native scale.
-        // Its contentScaleFactor setter otherwise incorporates ancestor
-        // transforms.
-        self.layer.contentsScale = newWindow.screen.nativeScale;
-        // Layer scale changes alone do not invalidate the drawable size.
-        [self setNeedsLayout];
-    }
+  if (newWindow != nil && self.autoResizeDrawable)
+  {
+    // Prime the backing layer before MetalKit updates to native scale.
+    // Its contentScaleFactor setter otherwise incorporates ancestor
+    // transforms.
+    self.layer.contentsScale = newWindow.screen.nativeScale;
+    // Layer scale changes alone do not invalidate the drawable size.
+    [self setNeedsLayout];
+  }
 #endif
-    [super willMoveToWindow:newWindow];
+  [super willMoveToWindow:newWindow];
 }
 #else
 - (NSSize)convertSizeToBacking:(NSSize)size
 {
-    if (!self.autoResizeDrawable)
-    {
-        return [super convertSizeToBacking:size];
-    }
-    // MetalKit uses this conversion for automatic drawable sizing. The
-    // backing texture uses layer coordinates, before ancestor transforms.
-    CGFloat scale = self.layer
-                        ? self.layer.contentsScale
-                        : (self.window ? self.window.backingScaleFactor : 1);
-    NSSize localSize = [self convertSizeToLayer:size];
-    return NSMakeSize(localSize.width * scale, localSize.height * scale);
+  if (!self.autoResizeDrawable)
+  {
+    return [super convertSizeToBacking:size];
+  }
+  // MetalKit uses this conversion for automatic drawable sizing. The
+  // backing texture uses layer coordinates, before ancestor transforms.
+  CGFloat scale = self.layer
+                      ? self.layer.contentsScale
+                      : (self.window ? self.window.backingScaleFactor : 1);
+  NSSize localSize = [self convertSizeToLayer:size];
+  return NSMakeSize(localSize.width * scale, localSize.height * scale);
 }
 
 - (NSSize)convertSizeFromBacking:(NSSize)size
 {
-    if (!self.autoResizeDrawable)
-    {
-        return [super convertSizeFromBacking:size];
-    }
-    CGFloat scale = self.layer
-                        ? self.layer.contentsScale
-                        : (self.window ? self.window.backingScaleFactor : 1);
-    return [self convertSizeFromLayer:NSMakeSize(size.width / scale,
-                                                 size.height / scale)];
+  if (!self.autoResizeDrawable)
+  {
+    return [super convertSizeFromBacking:size];
+  }
+  CGFloat scale = self.layer
+                      ? self.layer.contentsScale
+                      : (self.window ? self.window.backingScaleFactor : 1);
+  return [self
+      convertSizeFromLayer:NSMakeSize(size.width / scale, size.height / scale)];
 }
 #endif
 - (void)setDrawableSize:(CGSize)drawableSize
 {
-    [super setDrawableSize:drawableSize];
-    [self drawableSizeDidChange:drawableSize];
+  [super setDrawableSize:drawableSize];
+  [self drawableSizeDidChange:drawableSize];
 }
 - (void)drawableSizeDidChange:(CGSize)drawableSize
 {}
@@ -76,100 +76,100 @@
 
 @implementation RiveRendererView
 {
-    RenderContext* _renderContext;
-    rive::Renderer* _renderer;
+  RenderContext* _renderContext;
+  rive::Renderer* _renderer;
 }
 
 - (void)didEnterBackground:(NSNotification*)notification
 {
 #ifdef WITH_RIVE_AUDIO
-    [RiveAudioEngine stop];
+  [RiveAudioEngine stop];
 #endif
 }
 
 - (void)didEnterForeground:(NSNotification*)notification
 {
 #ifdef WITH_RIVE_AUDIO
-    [RiveAudioEngine start];
+  [RiveAudioEngine start];
 #endif
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder
 {
 #if TARGET_OS_IPHONE || TARGET_OS_VISION || TARGET_OS_TV
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(didEnterBackground:)
-               name:UIApplicationDidEnterBackgroundNotification
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(didEnterForeground:)
-               name:UIApplicationWillEnterForegroundNotification
-             object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didEnterBackground:)
+             name:UIApplicationDidEnterBackgroundNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didEnterForeground:)
+             name:UIApplicationWillEnterForegroundNotification
+           object:nil];
 #else
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(didEnterBackground:)
-               name:NSApplicationDidResignActiveNotification
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(didEnterForeground:)
-               name:NSApplicationWillBecomeActiveNotification
-             object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didEnterBackground:)
+             name:NSApplicationDidResignActiveNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didEnterForeground:)
+             name:NSApplicationWillBecomeActiveNotification
+           object:nil];
 #endif
-    self = [super initWithCoder:decoder];
+  self = [super initWithCoder:decoder];
 
-    _renderContext = [[RenderContextManager shared] newDefaultContext];
-    NSAssert(_renderContext, @"A render context must be available.");
-    self.device = [_renderContext metalDevice];
+  _renderContext = [[RenderContextManager shared] newDefaultContext];
+  NSAssert(_renderContext, @"A render context must be available.");
+  self.device = [_renderContext metalDevice];
 
-    [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
-    [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
-    [self setFramebufferOnly:_renderContext.framebufferOnly];
-    [self setSampleCount:1];
+  [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
+  [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
+  [self setFramebufferOnly:_renderContext.framebufferOnly];
+  [self setSampleCount:1];
 
-    return self;
+  return self;
 }
 
 - (instancetype)initWithFrame:(CGRect)frameRect
 {
 #if TARGET_OS_IPHONE
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(didEnterBackground:)
-               name:UIApplicationDidEnterBackgroundNotification
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(didEnterForeground:)
-               name:UIApplicationWillEnterForegroundNotification
-             object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didEnterBackground:)
+             name:UIApplicationDidEnterBackgroundNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didEnterForeground:)
+             name:UIApplicationWillEnterForegroundNotification
+           object:nil];
 #else
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(didEnterBackground:)
-               name:NSApplicationDidResignActiveNotification
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(didEnterForeground:)
-               name:NSApplicationWillBecomeActiveNotification
-             object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didEnterBackground:)
+             name:NSApplicationDidResignActiveNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(didEnterForeground:)
+             name:NSApplicationWillBecomeActiveNotification
+           object:nil];
 #endif
-    _renderContext = [[RenderContextManager shared] newDefaultContext];
-    NSAssert(_renderContext, @"A render context must be available.");
+  _renderContext = [[RenderContextManager shared] newDefaultContext];
+  NSAssert(_renderContext, @"A render context must be available.");
 
-    auto value = [super initWithFrame:frameRect
-                               device:_renderContext.metalDevice];
+  auto value = [super initWithFrame:frameRect
+                             device:_renderContext.metalDevice];
 
-    [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
-    [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
-    [self setFramebufferOnly:_renderContext.framebufferOnly];
-    [self setSampleCount:1];
+  [self setDepthStencilPixelFormat:_renderContext.depthStencilPixelFormat];
+  [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
+  [self setFramebufferOnly:_renderContext.framebufferOnly];
+  [self setSampleCount:1];
 
-    return value;
+  return value;
 }
 
 - (void)alignWithRect:(CGRect)rect
@@ -177,13 +177,13 @@
             alignment:(RiveAlignment)alignment
                   fit:(RiveFit)fit
 {
-    // Uses 1 as the scale factor since that is equivalent to the c++ default
-    // parameter.
-    [self alignWithRect:rect
-            contentRect:contentRect
-              alignment:alignment
-                    fit:fit
-            scaleFactor:1];
+  // Uses 1 as the scale factor since that is equivalent to the c++ default
+  // parameter.
+  [self alignWithRect:rect
+          contentRect:contentRect
+            alignment:alignment
+                  fit:fit
+          scaleFactor:1];
 }
 
 - (void)alignWithRect:(CGRect)rect
@@ -192,31 +192,33 @@
                   fit:(RiveFit)fit
           scaleFactor:(CGFloat)scaleFactor
 {
-    rive::AABB frame(rect.origin.x,
-                     rect.origin.y,
-                     rect.size.width + rect.origin.x,
-                     rect.size.height + rect.origin.y);
+  rive::AABB frame(
+      rect.origin.x,
+      rect.origin.y,
+      rect.size.width + rect.origin.x,
+      rect.size.height + rect.origin.y);
 
-    rive::AABB content(contentRect.origin.x,
-                       contentRect.origin.y,
-                       contentRect.size.width + contentRect.origin.x,
-                       contentRect.size.height + contentRect.origin.y);
+  rive::AABB content(
+      contentRect.origin.x,
+      contentRect.origin.y,
+      contentRect.size.width + contentRect.origin.x,
+      contentRect.size.height + contentRect.origin.y);
 
-    auto riveFit = [self riveFit:fit];
-    auto riveAlignment = [self riveAlignment:alignment];
+  auto riveFit = [self riveFit:fit];
+  auto riveAlignment = [self riveAlignment:alignment];
 
-    _renderer->align(riveFit, riveAlignment, frame, content, scaleFactor);
+  _renderer->align(riveFit, riveAlignment, frame, content, scaleFactor);
 }
 - (void)save
 {
-    NSAssert(_renderer != nil, @"A renderer must be available.");
-    _renderer->save();
+  NSAssert(_renderer != nil, @"A renderer must be available.");
+  _renderer->save();
 }
 
 - (void)restore
 {
-    NSAssert(_renderer != nil, @"A renderer must be available.");
-    _renderer->restore();
+  NSAssert(_renderer != nil, @"A renderer must be available.");
+  _renderer->restore();
 }
 
 - (void)transform:(float)xx
@@ -226,152 +228,152 @@
                tx:(float)tx
                ty:(float)ty
 {
-    NSAssert(_renderer != nil, @"A renderer must be available.");
-    _renderer->transform(rive::Mat2D{xx, xy, yx, yy, tx, ty});
+  NSAssert(_renderer != nil, @"A renderer must be available.");
+  _renderer->transform(rive::Mat2D{xx, xy, yx, yy, tx, ty});
 }
 
 - (void)drawWithArtboard:(RiveArtboard*)artboard
 {
-    NSAssert(_renderer != nil, @"A renderer must be available.");
-    [artboard artboardInstance]->draw(_renderer);
+  NSAssert(_renderer != nil, @"A renderer must be available.");
+  [artboard artboardInstance]->draw(_renderer);
 }
 
 - (void)drawRive:(CGRect)rect size:(CGSize)size
 {
-    // Intended to be overridden.
+  // Intended to be overridden.
 }
 
 - (bool)isPaused
 {
-    return true;
+  return true;
 }
 
 - (void)drawInRect:(CGRect)rect
     withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler
 {
-    CGFloat scale = -1;
+  CGFloat scale = -1;
 #if TARGET_OS_IPHONE
-    CGFloat displayScale = self.traitCollection.displayScale;
-    if (displayScale > 0)
-    {
-        scale = displayScale;
-    }
+  CGFloat displayScale = self.traitCollection.displayScale;
+  if (displayScale > 0)
+  {
+    scale = displayScale;
+  }
 #else
-    NSWindow* window = self.window;
-    if (self.window != nil)
-    {
-        scale = window.backingScaleFactor;
-    }
+  NSWindow* window = self.window;
+  if (self.window != nil)
+  {
+    scale = window.backingScaleFactor;
+  }
 #endif
-    if ([_renderContext canDrawInRect:rect
-                         drawableSize:self.drawableSize
-                                scale:scale] == NO)
-    {
-        return;
-    }
+  if ([_renderContext canDrawInRect:rect
+                       drawableSize:self.drawableSize
+                              scale:scale] == NO)
+  {
+    return;
+  }
 
-    if (!self.currentDrawable.texture)
-    {
-        return;
-    }
+  if (!self.currentDrawable.texture)
+  {
+    return;
+  }
 
-    _renderer = [_renderContext beginFrame:self];
-    if (_renderer != nil)
-    {
-        _renderer->save();
-        [self drawRive:rect size:self.drawableSize];
-        _renderer->restore();
-    }
-    [_renderContext endFrame:self withCompletion:completionHandler];
+  _renderer = [_renderContext beginFrame:self];
+  if (_renderer != nil)
+  {
+    _renderer->save();
+    [self drawRive:rect size:self.drawableSize];
+    _renderer->restore();
+  }
+  [_renderContext endFrame:self withCompletion:completionHandler];
 
-    _renderer = nil;
+  _renderer = nil;
 
-    bool paused = [self isPaused];
-    [self setEnableSetNeedsDisplay:paused];
-    [self setPaused:paused];
+  bool paused = [self isPaused];
+  [self setEnableSetNeedsDisplay:paused];
+  [self setPaused:paused];
 }
 
 - (void)drawRect:(CGRect)rect
 {
-    [super drawRect:rect];
+  [super drawRect:rect];
 
-    @autoreleasepool
-    {
-        [self drawInRect:rect withCompletion:NULL];
-    }
+  @autoreleasepool
+  {
+    [self drawInRect:rect withCompletion:NULL];
+  }
 }
 
 - (rive::Fit)riveFit:(RiveFit)fit
 {
-    rive::Fit riveFit;
+  rive::Fit riveFit;
 
-    switch (fit)
-    {
-        case fill:
-            riveFit = rive::Fit::fill;
-            break;
-        case contain:
-            riveFit = rive::Fit::contain;
-            break;
-        case cover:
-            riveFit = rive::Fit::cover;
-            break;
-        case fitHeight:
-            riveFit = rive::Fit::fitHeight;
-            break;
-        case fitWidth:
-            riveFit = rive::Fit::fitWidth;
-            break;
-        case scaleDown:
-            riveFit = rive::Fit::scaleDown;
-            break;
-        case layout:
-            riveFit = rive::Fit::layout;
-            break;
-        case noFit:
-            riveFit = rive::Fit::none;
-            break;
-    }
+  switch (fit)
+  {
+    case fill:
+      riveFit = rive::Fit::fill;
+      break;
+    case contain:
+      riveFit = rive::Fit::contain;
+      break;
+    case cover:
+      riveFit = rive::Fit::cover;
+      break;
+    case fitHeight:
+      riveFit = rive::Fit::fitHeight;
+      break;
+    case fitWidth:
+      riveFit = rive::Fit::fitWidth;
+      break;
+    case scaleDown:
+      riveFit = rive::Fit::scaleDown;
+      break;
+    case layout:
+      riveFit = rive::Fit::layout;
+      break;
+    case noFit:
+      riveFit = rive::Fit::none;
+      break;
+  }
 
-    return riveFit;
+  return riveFit;
 }
 
 - (rive::Alignment)riveAlignment:(RiveAlignment)alignment
 {
-    rive::Alignment riveAlignment = rive::Alignment::center;
+  rive::Alignment riveAlignment = rive::Alignment::center;
 
-    switch (alignment)
-    {
-        case topLeft:
-            riveAlignment = rive::Alignment::topLeft;
-            break;
-        case topCenter:
-            riveAlignment = rive::Alignment::topCenter;
-            break;
-        case topRight:
-            riveAlignment = rive::Alignment::topRight;
-            break;
-        case centerLeft:
-            riveAlignment = rive::Alignment::centerLeft;
-            break;
-        case center:
-            riveAlignment = rive::Alignment::center;
-            break;
-        case centerRight:
-            riveAlignment = rive::Alignment::centerRight;
-            break;
-        case bottomLeft:
-            riveAlignment = rive::Alignment::bottomLeft;
-            break;
-        case bottomCenter:
-            riveAlignment = rive::Alignment::bottomCenter;
-            break;
-        case bottomRight:
-            riveAlignment = rive::Alignment::bottomRight;
-            break;
-    }
+  switch (alignment)
+  {
+    case topLeft:
+      riveAlignment = rive::Alignment::topLeft;
+      break;
+    case topCenter:
+      riveAlignment = rive::Alignment::topCenter;
+      break;
+    case topRight:
+      riveAlignment = rive::Alignment::topRight;
+      break;
+    case centerLeft:
+      riveAlignment = rive::Alignment::centerLeft;
+      break;
+    case center:
+      riveAlignment = rive::Alignment::center;
+      break;
+    case centerRight:
+      riveAlignment = rive::Alignment::centerRight;
+      break;
+    case bottomLeft:
+      riveAlignment = rive::Alignment::bottomLeft;
+      break;
+    case bottomCenter:
+      riveAlignment = rive::Alignment::bottomCenter;
+      break;
+    case bottomRight:
+      riveAlignment = rive::Alignment::bottomRight;
+      break;
+  }
 
-    return riveAlignment;
+  return riveAlignment;
 }
 
 - (CGPoint)artboardLocationFromTouchLocation:(CGPoint)touchLocation
@@ -379,31 +381,32 @@
                                          fit:(RiveFit)fit
                                    alignment:(RiveAlignment)alignment
 {
-    // Note, we've offset the frame by the frame.origin before
-    // but in testing our touch location seems to already take this into account
-    rive::AABB frame(0, 0, self.frame.size.width, self.frame.size.height);
+  // Note, we've offset the frame by the frame.origin before
+  // but in testing our touch location seems to already take this into account
+  rive::AABB frame(0, 0, self.frame.size.width, self.frame.size.height);
 
-    rive::AABB content(artboardRect.origin.x,
-                       artboardRect.origin.y,
-                       artboardRect.size.width + artboardRect.origin.x,
-                       artboardRect.size.height + artboardRect.origin.y);
+  rive::AABB content(
+      artboardRect.origin.x,
+      artboardRect.origin.y,
+      artboardRect.size.width + artboardRect.origin.x,
+      artboardRect.size.height + artboardRect.origin.y);
 
-    auto riveFit = [self riveFit:fit];
-    auto riveAlignment = [self riveAlignment:alignment];
-    auto sf = 1.0;
-    if (riveFit == rive::Fit::layout)
-    {
-        sf = frame.width() / artboardRect.size.width;
-    }
-    rive::Mat2D forward =
-        rive::computeAlignment(riveFit, riveAlignment, frame, content, sf);
+  auto riveFit = [self riveFit:fit];
+  auto riveAlignment = [self riveAlignment:alignment];
+  auto sf = 1.0;
+  if (riveFit == rive::Fit::layout)
+  {
+    sf = frame.width() / artboardRect.size.width;
+  }
+  rive::Mat2D forward = rive::computeAlignment(
+      riveFit, riveAlignment, frame, content, sf);
 
-    rive::Mat2D inverse = forward.invertOrIdentity();
+  rive::Mat2D inverse = forward.invertOrIdentity();
 
-    rive::Vec2D frameLocation(touchLocation.x, touchLocation.y);
-    rive::Vec2D convertedLocation = inverse * frameLocation;
+  rive::Vec2D frameLocation(touchLocation.x, touchLocation.y);
+  rive::Vec2D convertedLocation = inverse * frameLocation;
 
-    return CGPointMake(convertedLocation.x, convertedLocation.y);
+  return CGPointMake(convertedLocation.x, convertedLocation.y);
 }
 
 @end

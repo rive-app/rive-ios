@@ -38,25 +38,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (std::vector<uint8_t>)copyData:(NSData*)data
 {
-    const size_t length = data.length;
-    std::vector<uint8_t> bytes;
-    if (length == 0)
-    {
-        return bytes;
-    }
-    if (length > bytes.max_size())
-    {
-        throw std::length_error("Asset data exceeds vector max_size");
-    }
-    // Use the range constructor because reserve shares a symbol with the
-    // exception-disabled version in librive_decoders (decode_ktx2.o),
-    // preventing allocation failures from reaching our catch.
-    // Cast away const to select libc++'s faster copy implementation in our
-    // C++17 build.
-    // The vector constructor only reads this data.
-    auto* source =
-        const_cast<uint8_t*>(static_cast<const uint8_t*>(data.bytes));
-    return std::vector<uint8_t>(source, source + length);
+  const size_t length = data.length;
+  std::vector<uint8_t> bytes;
+  if (length == 0)
+  {
+    return bytes;
+  }
+  if (length > bytes.max_size())
+  {
+    throw std::length_error("Asset data exceeds vector max_size");
+  }
+  // Use the range constructor because reserve shares a symbol with the
+  // exception-disabled version in librive_decoders (decode_ktx2.o),
+  // preventing allocation failures from reaching our catch.
+  // Cast away const to select libc++'s faster copy implementation in our
+  // C++17 build.
+  // The vector constructor only reads this data.
+  auto* source = const_cast<uint8_t*>(static_cast<const uint8_t*>(data.bytes));
+  return std::vector<uint8_t>(source, source + length);
 }
 
 @end
@@ -64,120 +63,119 @@ NS_ASSUME_NONNULL_BEGIN
 /// With uint8_t elements and the default allocator, the vector's expected
 /// exceptions are length_error and bad_alloc (including its subclasses).
 /// Invalid memory access is not recoverable through these catches.
-static NSString* _Nullable copyAssetData(id<RiveAssetDataCopier> copier,
-                                         NSData* data,
-                                         std::vector<uint8_t>& bytes)
+static NSString* _Nullable copyAssetData(
+    id<RiveAssetDataCopier> copier, NSData* data, std::vector<uint8_t>& bytes)
 {
-    try
-    {
-        bytes = [copier copyData:data];
-        return nil;
-    }
-    catch (const std::bad_alloc&)
-    {
-        return @"Not enough memory to copy the data";
-    }
-    catch (const std::length_error&)
-    {
-        return @"Data exceeds the maximum supported size";
-    }
+  try
+  {
+    bytes = [copier copyData:data];
+    return nil;
+  }
+  catch (const std::bad_alloc&)
+  {
+    return @"Not enough memory to copy the data";
+  }
+  catch (const std::length_error&)
+  {
+    return @"Data exceeds the maximum supported size";
+  }
 }
 
 rive::DataType RiveViewModelInstanceDataTypeToCppType(
     RiveViewModelInstanceDataType type)
 {
-    switch (type)
-    {
-        case RiveViewModelInstanceDataTypeNone:
-            return rive::DataType::none;
-        case RiveViewModelInstanceDataTypeString:
-            return rive::DataType::string;
-        case RiveViewModelInstanceDataTypeNumber:
-            return rive::DataType::number;
-        case RiveViewModelInstanceDataTypeBoolean:
-            return rive::DataType::boolean;
-        case RiveViewModelInstanceDataTypeColor:
-            return rive::DataType::color;
-        case RiveViewModelInstanceDataTypeList:
-            return rive::DataType::list;
-        case RiveViewModelInstanceDataTypeEnum:
-            return rive::DataType::enumType;
-        case RiveViewModelInstanceDataTypeTrigger:
-            return rive::DataType::trigger;
-        case RiveViewModelInstanceDataTypeViewModel:
-            return rive::DataType::viewModel;
-        case RiveViewModelInstanceDataTypeInteger:
-            return rive::DataType::integer;
-        case RiveViewModelInstanceDataTypeSymbolListIndex:
-            return rive::DataType::symbolListIndex;
-        case RiveViewModelInstanceDataTypeAssetImage:
-            return rive::DataType::assetImage;
-        case RiveViewModelInstanceDataTypeAssetFont:
-            return rive::DataType::assetFont;
-        case RiveViewModelInstanceDataTypeAssetBlob:
-            return rive::DataType::assetBlob;
-        case RiveViewModelInstanceDataTypeArtboard:
-            return rive::DataType::artboard;
-        case RiveViewModelInstanceDataTypeInput:
-            return rive::DataType::input;
-        case RiveViewModelInstanceDataTypeAny:
-            return rive::DataType::any;
-    }
+  switch (type)
+  {
+    case RiveViewModelInstanceDataTypeNone:
+      return rive::DataType::none;
+    case RiveViewModelInstanceDataTypeString:
+      return rive::DataType::string;
+    case RiveViewModelInstanceDataTypeNumber:
+      return rive::DataType::number;
+    case RiveViewModelInstanceDataTypeBoolean:
+      return rive::DataType::boolean;
+    case RiveViewModelInstanceDataTypeColor:
+      return rive::DataType::color;
+    case RiveViewModelInstanceDataTypeList:
+      return rive::DataType::list;
+    case RiveViewModelInstanceDataTypeEnum:
+      return rive::DataType::enumType;
+    case RiveViewModelInstanceDataTypeTrigger:
+      return rive::DataType::trigger;
+    case RiveViewModelInstanceDataTypeViewModel:
+      return rive::DataType::viewModel;
+    case RiveViewModelInstanceDataTypeInteger:
+      return rive::DataType::integer;
+    case RiveViewModelInstanceDataTypeSymbolListIndex:
+      return rive::DataType::symbolListIndex;
+    case RiveViewModelInstanceDataTypeAssetImage:
+      return rive::DataType::assetImage;
+    case RiveViewModelInstanceDataTypeAssetFont:
+      return rive::DataType::assetFont;
+    case RiveViewModelInstanceDataTypeAssetBlob:
+      return rive::DataType::assetBlob;
+    case RiveViewModelInstanceDataTypeArtboard:
+      return rive::DataType::artboard;
+    case RiveViewModelInstanceDataTypeInput:
+      return rive::DataType::input;
+    case RiveViewModelInstanceDataTypeAny:
+      return rive::DataType::any;
+  }
 }
 
 RiveViewModelInstanceDataType RiveViewModelInstanceDataTypeFromCpp(
     rive::DataType type)
 {
-    switch (type)
-    {
-        case rive::DataType::none:
-            return RiveViewModelInstanceDataTypeNone;
-        case rive::DataType::string:
-            return RiveViewModelInstanceDataTypeString;
-        case rive::DataType::number:
-            return RiveViewModelInstanceDataTypeNumber;
-        case rive::DataType::boolean:
-            return RiveViewModelInstanceDataTypeBoolean;
-        case rive::DataType::color:
-            return RiveViewModelInstanceDataTypeColor;
-        case rive::DataType::list:
-            return RiveViewModelInstanceDataTypeList;
-        case rive::DataType::enumType:
-            return RiveViewModelInstanceDataTypeEnum;
-        case rive::DataType::trigger:
-            return RiveViewModelInstanceDataTypeTrigger;
-        case rive::DataType::viewModel:
-            return RiveViewModelInstanceDataTypeViewModel;
-        case rive::DataType::integer:
-            return RiveViewModelInstanceDataTypeInteger;
-        case rive::DataType::symbolListIndex:
-            return RiveViewModelInstanceDataTypeSymbolListIndex;
-        case rive::DataType::assetImage:
-            return RiveViewModelInstanceDataTypeAssetImage;
-        case rive::DataType::assetFont:
-            return RiveViewModelInstanceDataTypeAssetFont;
-        case rive::DataType::assetBlob:
-            return RiveViewModelInstanceDataTypeAssetBlob;
-        case rive::DataType::artboard:
-            return RiveViewModelInstanceDataTypeArtboard;
-        case rive::DataType::input:
-            return RiveViewModelInstanceDataTypeInput;
-        case rive::DataType::any:
-            return RiveViewModelInstanceDataTypeAny;
-    }
+  switch (type)
+  {
+    case rive::DataType::none:
+      return RiveViewModelInstanceDataTypeNone;
+    case rive::DataType::string:
+      return RiveViewModelInstanceDataTypeString;
+    case rive::DataType::number:
+      return RiveViewModelInstanceDataTypeNumber;
+    case rive::DataType::boolean:
+      return RiveViewModelInstanceDataTypeBoolean;
+    case rive::DataType::color:
+      return RiveViewModelInstanceDataTypeColor;
+    case rive::DataType::list:
+      return RiveViewModelInstanceDataTypeList;
+    case rive::DataType::enumType:
+      return RiveViewModelInstanceDataTypeEnum;
+    case rive::DataType::trigger:
+      return RiveViewModelInstanceDataTypeTrigger;
+    case rive::DataType::viewModel:
+      return RiveViewModelInstanceDataTypeViewModel;
+    case rive::DataType::integer:
+      return RiveViewModelInstanceDataTypeInteger;
+    case rive::DataType::symbolListIndex:
+      return RiveViewModelInstanceDataTypeSymbolListIndex;
+    case rive::DataType::assetImage:
+      return RiveViewModelInstanceDataTypeAssetImage;
+    case rive::DataType::assetFont:
+      return RiveViewModelInstanceDataTypeAssetFont;
+    case rive::DataType::assetBlob:
+      return RiveViewModelInstanceDataTypeAssetBlob;
+    case rive::DataType::artboard:
+      return RiveViewModelInstanceDataTypeArtboard;
+    case rive::DataType::input:
+      return RiveViewModelInstanceDataTypeInput;
+    case rive::DataType::any:
+      return RiveViewModelInstanceDataTypeAny;
+  }
 }
 
 static RiveFileAssetType RiveFileAssetTypeFromCpp(uint16_t cppType)
 {
-    if (cppType == rive::ImageAssetBase::typeKey)
-        return RiveFileAssetTypeImage;
-    if (cppType == rive::FontAssetBase::typeKey)
-        return RiveFileAssetTypeFont;
-    if (cppType == rive::AudioAssetBase::typeKey)
-        return RiveFileAssetTypeAudio;
-    if (cppType == rive::BlobAssetBase::typeKey)
-        return RiveFileAssetTypeBlob;
-    return RiveFileAssetTypeUnknown;
+  if (cppType == rive::ImageAssetBase::typeKey)
+    return RiveFileAssetTypeImage;
+  if (cppType == rive::FontAssetBase::typeKey)
+    return RiveFileAssetTypeFont;
+  if (cppType == rive::AudioAssetBase::typeKey)
+    return RiveFileAssetTypeAudio;
+  if (cppType == rive::BlobAssetBase::typeKey)
+    return RiveFileAssetTypeBlob;
+  return RiveFileAssetTypeUnknown;
 }
 
 static rive::CommandQueue::PointerEvent RivePointerEventToCpp(
@@ -188,220 +186,220 @@ static rive::CommandQueue::PointerEvent RivePointerEventToCpp(
     RiveConfigurationAlignment alignment,
     float scaleFactor)
 {
-    rive::CommandQueue::PointerEvent cppEvent;
-    cppEvent.fit = RiveConfigurationFitCppValue(fit);
-    cppEvent.alignment = RiveConfigurationAlignmentCppValue(alignment);
-    cppEvent.screenBounds =
-        rive::Vec2D(screenBounds.width, screenBounds.height);
-    cppEvent.position = rive::Vec2D(position.x, position.y);
-    cppEvent.scaleFactor = scaleFactor;
-    cppEvent.pointerId = pointerId;
-    return cppEvent;
+  rive::CommandQueue::PointerEvent cppEvent;
+  cppEvent.fit = RiveConfigurationFitCppValue(fit);
+  cppEvent.alignment = RiveConfigurationAlignmentCppValue(alignment);
+  cppEvent.screenBounds = rive::Vec2D(screenBounds.width, screenBounds.height);
+  cppEvent.position = rive::Vec2D(position.x, position.y);
+  cppEvent.scaleFactor = scaleFactor;
+  cppEvent.pointerId = pointerId;
+  return cppEvent;
 }
 
 static rive::SemanticActionType RiveSemanticActionTypeToCpp(
     RiveSemanticActionType type)
 {
-    switch (type)
-    {
-        case RiveSemanticActionTypeTap:
-            return rive::SemanticActionType::tap;
-        case RiveSemanticActionTypeIncrease:
-            return rive::SemanticActionType::increase;
-        case RiveSemanticActionTypeDecrease:
-            return rive::SemanticActionType::decrease;
-        default:
-            return rive::SemanticActionType::tap;
-    }
+  switch (type)
+  {
+    case RiveSemanticActionTypeTap:
+      return rive::SemanticActionType::tap;
+    case RiveSemanticActionTypeIncrease:
+      return rive::SemanticActionType::increase;
+    case RiveSemanticActionTypeDecrease:
+      return rive::SemanticActionType::decrease;
+    default:
+      return rive::SemanticActionType::tap;
+  }
 }
 
 static RiveSemanticRole RiveSemanticRoleFromCpp(uint32_t role)
 {
-    switch ((rive::SemanticRole)role)
-    {
-        case rive::SemanticRole::none:
-            return RiveSemanticRoleNone;
-        case rive::SemanticRole::button:
-            return RiveSemanticRoleButton;
-        case rive::SemanticRole::link:
-            return RiveSemanticRoleLink;
-        case rive::SemanticRole::checkbox:
-            return RiveSemanticRoleCheckbox;
-        case rive::SemanticRole::switchControl:
-            return RiveSemanticRoleSwitchControl;
-        case rive::SemanticRole::slider:
-            return RiveSemanticRoleSlider;
-        case rive::SemanticRole::textField:
-            return RiveSemanticRoleTextField;
-        case rive::SemanticRole::text:
-            return RiveSemanticRoleText;
-        case rive::SemanticRole::image:
-            return RiveSemanticRoleImage;
-        case rive::SemanticRole::group:
-            return RiveSemanticRoleGroup;
-        case rive::SemanticRole::list:
-            return RiveSemanticRoleList;
-        case rive::SemanticRole::listItem:
-            return RiveSemanticRoleListItem;
-        case rive::SemanticRole::tab:
-            return RiveSemanticRoleTab;
-        case rive::SemanticRole::tabList:
-            return RiveSemanticRoleTabList;
-        case rive::SemanticRole::dialog:
-            return RiveSemanticRoleDialog;
-        case rive::SemanticRole::alertDialog:
-            return RiveSemanticRoleAlertDialog;
-        case rive::SemanticRole::radioGroup:
-            return RiveSemanticRoleRadioGroup;
-        case rive::SemanticRole::radioButton:
-            return RiveSemanticRoleRadioButton;
-    }
-    return RiveSemanticRoleNone;
+  switch ((rive::SemanticRole)role)
+  {
+    case rive::SemanticRole::none:
+      return RiveSemanticRoleNone;
+    case rive::SemanticRole::button:
+      return RiveSemanticRoleButton;
+    case rive::SemanticRole::link:
+      return RiveSemanticRoleLink;
+    case rive::SemanticRole::checkbox:
+      return RiveSemanticRoleCheckbox;
+    case rive::SemanticRole::switchControl:
+      return RiveSemanticRoleSwitchControl;
+    case rive::SemanticRole::slider:
+      return RiveSemanticRoleSlider;
+    case rive::SemanticRole::textField:
+      return RiveSemanticRoleTextField;
+    case rive::SemanticRole::text:
+      return RiveSemanticRoleText;
+    case rive::SemanticRole::image:
+      return RiveSemanticRoleImage;
+    case rive::SemanticRole::group:
+      return RiveSemanticRoleGroup;
+    case rive::SemanticRole::list:
+      return RiveSemanticRoleList;
+    case rive::SemanticRole::listItem:
+      return RiveSemanticRoleListItem;
+    case rive::SemanticRole::tab:
+      return RiveSemanticRoleTab;
+    case rive::SemanticRole::tabList:
+      return RiveSemanticRoleTabList;
+    case rive::SemanticRole::dialog:
+      return RiveSemanticRoleDialog;
+    case rive::SemanticRole::alertDialog:
+      return RiveSemanticRoleAlertDialog;
+    case rive::SemanticRole::radioGroup:
+      return RiveSemanticRoleRadioGroup;
+    case rive::SemanticRole::radioButton:
+      return RiveSemanticRoleRadioButton;
+  }
+  return RiveSemanticRoleNone;
 }
 
 static RiveSemanticTrait RiveSemanticTraitFromCpp(uint32_t flags)
 {
-    RiveSemanticTrait out = RiveSemanticTraitNone;
-    if (hasSemanticTrait(flags, rive::SemanticTrait::Expandable))
-        out |= RiveSemanticTraitExpandable;
-    if (hasSemanticTrait(flags, rive::SemanticTrait::Selectable))
-        out |= RiveSemanticTraitSelectable;
-    if (hasSemanticTrait(flags, rive::SemanticTrait::Checkable))
-        out |= RiveSemanticTraitCheckable;
-    if (hasSemanticTrait(flags, rive::SemanticTrait::Toggleable))
-        out |= RiveSemanticTraitToggleable;
-    if (hasSemanticTrait(flags, rive::SemanticTrait::Requirable))
-        out |= RiveSemanticTraitRequirable;
-    if (hasSemanticTrait(flags, rive::SemanticTrait::Enablable))
-        out |= RiveSemanticTraitEnablable;
-    if (hasSemanticTrait(flags, rive::SemanticTrait::Focusable))
-        out |= RiveSemanticTraitFocusable;
-    return out;
+  RiveSemanticTrait out = RiveSemanticTraitNone;
+  if (hasSemanticTrait(flags, rive::SemanticTrait::Expandable))
+    out |= RiveSemanticTraitExpandable;
+  if (hasSemanticTrait(flags, rive::SemanticTrait::Selectable))
+    out |= RiveSemanticTraitSelectable;
+  if (hasSemanticTrait(flags, rive::SemanticTrait::Checkable))
+    out |= RiveSemanticTraitCheckable;
+  if (hasSemanticTrait(flags, rive::SemanticTrait::Toggleable))
+    out |= RiveSemanticTraitToggleable;
+  if (hasSemanticTrait(flags, rive::SemanticTrait::Requirable))
+    out |= RiveSemanticTraitRequirable;
+  if (hasSemanticTrait(flags, rive::SemanticTrait::Enablable))
+    out |= RiveSemanticTraitEnablable;
+  if (hasSemanticTrait(flags, rive::SemanticTrait::Focusable))
+    out |= RiveSemanticTraitFocusable;
+  return out;
 }
 
 static RiveSemanticState RiveSemanticStateFromCpp(uint32_t flags)
 {
-    RiveSemanticState out = RiveSemanticStateNone;
-    if (hasSemanticState(flags, rive::SemanticState::Expanded))
-        out |= RiveSemanticStateExpanded;
-    if (hasSemanticState(flags, rive::SemanticState::Selected))
-        out |= RiveSemanticStateSelected;
-    // Check state is a single two-bit field rather than two flags, so the two
-    // Obj-C bits are mutually exclusive by construction. Testing them
-    // individually could previously report checked and mixed together.
-    switch (rive::checkStateOf(flags))
-    {
-        case rive::SemanticCheckState::Checked:
-            out |= RiveSemanticStateChecked;
-            break;
-        case rive::SemanticCheckState::Mixed:
-            out |= RiveSemanticStateMixed;
-            break;
-        case rive::SemanticCheckState::Unchecked:
-            break;
-    }
-    if (hasSemanticState(flags, rive::SemanticState::Toggled))
-        out |= RiveSemanticStateToggled;
-    if (hasSemanticState(flags, rive::SemanticState::Required))
-        out |= RiveSemanticStateRequired;
-    if (hasSemanticState(flags, rive::SemanticState::Disabled))
-        out |= RiveSemanticStateDisabled;
-    if (hasSemanticState(flags, rive::SemanticState::Focused))
-        out |= RiveSemanticStateFocused;
-    if (hasSemanticState(flags, rive::SemanticState::Hidden))
-        out |= RiveSemanticStateHidden;
-    if (hasSemanticState(flags, rive::SemanticState::LiveRegion))
-        out |= RiveSemanticStateLiveRegion;
-    if (hasSemanticState(flags, rive::SemanticState::ReadOnly))
-        out |= RiveSemanticStateReadOnly;
-    if (hasSemanticState(flags, rive::SemanticState::Modal))
-        out |= RiveSemanticStateModal;
-    if (hasSemanticState(flags, rive::SemanticState::Obscured))
-        out |= RiveSemanticStateObscured;
-    if (hasSemanticState(flags, rive::SemanticState::Multiline))
-        out |= RiveSemanticStateMultiline;
-    return out;
+  RiveSemanticState out = RiveSemanticStateNone;
+  if (hasSemanticState(flags, rive::SemanticState::Expanded))
+    out |= RiveSemanticStateExpanded;
+  if (hasSemanticState(flags, rive::SemanticState::Selected))
+    out |= RiveSemanticStateSelected;
+  // Check state is a single two-bit field rather than two flags, so the two
+  // Obj-C bits are mutually exclusive by construction. Testing them
+  // individually could previously report checked and mixed together.
+  switch (rive::checkStateOf(flags))
+  {
+    case rive::SemanticCheckState::Checked:
+      out |= RiveSemanticStateChecked;
+      break;
+    case rive::SemanticCheckState::Mixed:
+      out |= RiveSemanticStateMixed;
+      break;
+    case rive::SemanticCheckState::Unchecked:
+      break;
+  }
+  if (hasSemanticState(flags, rive::SemanticState::Toggled))
+    out |= RiveSemanticStateToggled;
+  if (hasSemanticState(flags, rive::SemanticState::Required))
+    out |= RiveSemanticStateRequired;
+  if (hasSemanticState(flags, rive::SemanticState::Disabled))
+    out |= RiveSemanticStateDisabled;
+  if (hasSemanticState(flags, rive::SemanticState::Focused))
+    out |= RiveSemanticStateFocused;
+  if (hasSemanticState(flags, rive::SemanticState::Hidden))
+    out |= RiveSemanticStateHidden;
+  if (hasSemanticState(flags, rive::SemanticState::LiveRegion))
+    out |= RiveSemanticStateLiveRegion;
+  if (hasSemanticState(flags, rive::SemanticState::ReadOnly))
+    out |= RiveSemanticStateReadOnly;
+  if (hasSemanticState(flags, rive::SemanticState::Modal))
+    out |= RiveSemanticStateModal;
+  if (hasSemanticState(flags, rive::SemanticState::Obscured))
+    out |= RiveSemanticStateObscured;
+  if (hasSemanticState(flags, rive::SemanticState::Multiline))
+    out |= RiveSemanticStateMultiline;
+  return out;
 }
 
 static RiveSemanticsDiffNode* RiveSemanticsDiffNodeFromCpp(
     const rive::SemanticsDiffNode& node)
 {
-    return [[RiveSemanticsDiffNode alloc]
-          initWithID:node.id
-                role:RiveSemanticRoleFromCpp(node.role)
-               label:[NSString stringWithUTF8String:node.label.c_str()]
-               value:[NSString stringWithUTF8String:node.value.c_str()]
-                hint:[NSString stringWithUTF8String:node.hint.c_str()]
-          stateFlags:RiveSemanticStateFromCpp(node.stateFlags)
-          traitFlags:RiveSemanticTraitFromCpp(node.traitFlags)
-        headingLevel:node.headingLevel
-                minX:node.minX
-                minY:node.minY
-                maxX:node.maxX
-                maxY:node.maxY
-            parentID:node.parentId
-        siblingIndex:node.siblingIndex];
+  return [[RiveSemanticsDiffNode alloc]
+        initWithID:node.id
+              role:RiveSemanticRoleFromCpp(node.role)
+             label:[NSString stringWithUTF8String:node.label.c_str()]
+             value:[NSString stringWithUTF8String:node.value.c_str()]
+              hint:[NSString stringWithUTF8String:node.hint.c_str()]
+        stateFlags:RiveSemanticStateFromCpp(node.stateFlags)
+        traitFlags:RiveSemanticTraitFromCpp(node.traitFlags)
+      headingLevel:node.headingLevel
+              minX:node.minX
+              minY:node.minY
+              maxX:node.maxX
+              maxY:node.maxY
+          parentID:node.parentId
+      siblingIndex:node.siblingIndex];
 }
 
 static NSArray<RiveSemanticsDiffNode*>* RiveSemanticsDiffNodeArrayFromCpp(
     const std::vector<rive::SemanticsDiffNode>& nodes)
 {
-    NSMutableArray* array = [NSMutableArray arrayWithCapacity:nodes.size()];
-    for (const auto& node : nodes)
-    {
-        [array addObject:RiveSemanticsDiffNodeFromCpp(node)];
-    }
-    return array;
+  NSMutableArray* array = [NSMutableArray arrayWithCapacity:nodes.size()];
+  for (const auto& node : nodes)
+  {
+    [array addObject:RiveSemanticsDiffNodeFromCpp(node)];
+  }
+  return array;
 }
 
 static RiveSemanticsDiff* RiveSemanticsDiffFromCpp(
     const rive::SemanticsDiff& diff)
 {
-    NSMutableArray<NSNumber*>* removed =
-        [NSMutableArray arrayWithCapacity:diff.removed.size()];
-    for (uint32_t nodeID : diff.removed)
-    {
-        [removed addObject:@(nodeID)];
-    }
+  NSMutableArray<NSNumber*>* removed = [NSMutableArray
+      arrayWithCapacity:diff.removed.size()];
+  for (uint32_t nodeID : diff.removed)
+  {
+    [removed addObject:@(nodeID)];
+  }
 
-    NSMutableArray<RiveSemanticsChildrenUpdate*>* childrenUpdated =
-        [NSMutableArray arrayWithCapacity:diff.childrenUpdated.size()];
-    for (const auto& update : diff.childrenUpdated)
+  NSMutableArray<RiveSemanticsChildrenUpdate*>*
+      childrenUpdated = [NSMutableArray
+          arrayWithCapacity:diff.childrenUpdated.size()];
+  for (const auto& update : diff.childrenUpdated)
+  {
+    NSMutableArray<NSNumber*>* childIDs = [NSMutableArray
+        arrayWithCapacity:update.childIds.size()];
+    for (uint32_t childID : update.childIds)
     {
-        NSMutableArray<NSNumber*>* childIDs =
-            [NSMutableArray arrayWithCapacity:update.childIds.size()];
-        for (uint32_t childID : update.childIds)
-        {
-            [childIDs addObject:@(childID)];
-        }
-        [childrenUpdated addObject:[[RiveSemanticsChildrenUpdate alloc]
-                                       initWithParentID:update.parentId
-                                               childIDs:childIDs]];
+      [childIDs addObject:@(childID)];
     }
+    [childrenUpdated addObject:[[RiveSemanticsChildrenUpdate alloc]
+                                   initWithParentID:update.parentId
+                                           childIDs:childIDs]];
+  }
 
-    NSMutableArray<RiveSemanticsBoundsUpdate*>* updatedGeometry =
-        [NSMutableArray arrayWithCapacity:diff.updatedGeometry.size()];
-    for (const auto& bounds : diff.updatedGeometry)
-    {
-        [updatedGeometry addObject:[[RiveSemanticsBoundsUpdate alloc]
-                                       initWithID:bounds.id
-                                             minX:bounds.minX
-                                             minY:bounds.minY
-                                             maxX:bounds.maxX
-                                             maxY:bounds.maxY]];
-    }
+  NSMutableArray<RiveSemanticsBoundsUpdate*>* updatedGeometry = [NSMutableArray
+      arrayWithCapacity:diff.updatedGeometry.size()];
+  for (const auto& bounds : diff.updatedGeometry)
+  {
+    [updatedGeometry
+        addObject:[[RiveSemanticsBoundsUpdate alloc] initWithID:bounds.id
+                                                           minX:bounds.minX
+                                                           minY:bounds.minY
+                                                           maxX:bounds.maxX
+                                                           maxY:bounds.maxY]];
+  }
 
-    return [[RiveSemanticsDiff alloc]
-        initWithFrameNumber:diff.frameNumber
-                treeVersion:diff.treeVersion
-                     rootID:diff.rootId
-                    removed:removed
-                      added:RiveSemanticsDiffNodeArrayFromCpp(diff.added)
-                      moved:RiveSemanticsDiffNodeArrayFromCpp(diff.moved)
-            childrenUpdated:childrenUpdated
-            updatedSemantic:RiveSemanticsDiffNodeArrayFromCpp(
-                                diff.updatedSemantic)
-            updatedGeometry:updatedGeometry];
+  return [[RiveSemanticsDiff alloc]
+      initWithFrameNumber:diff.frameNumber
+              treeVersion:diff.treeVersion
+                   rootID:diff.rootId
+                  removed:removed
+                    added:RiveSemanticsDiffNodeArrayFromCpp(diff.added)
+                    moved:RiveSemanticsDiffNodeArrayFromCpp(diff.moved)
+          childrenUpdated:childrenUpdated
+          updatedSemantic:RiveSemanticsDiffNodeArrayFromCpp(
+                              diff.updatedSemantic)
+          updatedGeometry:updatedGeometry];
 }
 
 // MARK: - Internal Artboard Listener Implementation
@@ -420,117 +418,114 @@ namespace
 class _ArtboardListener : public rive::CommandQueue::ArtboardListener
 {
 public:
-    /**
-     * Constructs a new artboard listener with the specified observer.
-     *
-     * @param observer The Objective-C observer that will receive artboard
-     * events. The observer is held as a weak reference to avoid retain cycles.
-     */
-    _ArtboardListener(id<RiveArtboardListener> observer)
-    {
-        _observer = observer;
-    }
+  /**
+   * Constructs a new artboard listener with the specified observer.
+   *
+   * @param observer The Objective-C observer that will receive artboard
+   * events. The observer is held as a weak reference to avoid retain cycles.
+   */
+  _ArtboardListener(id<RiveArtboardListener> observer) { _observer = observer; }
 
-    /**
-     * Called when an artboard encounters an error during operations.
-     *
-     * This method is invoked by the C++ command queue when an artboard
-     * operation fails. It converts the C++ error data to Objective-C objects
-     * and forwards the event to the registered observer.
-     *
-     * @param handle The artboard handle that encountered the error.
-     * @param requestId The unique identifier for the request that failed.
-     * @param error A string describing the error that occurred.
-     */
-    virtual void onArtboardError(const rive::ArtboardHandle handle,
-                                 uint64_t requestId,
-                                 std::string error) override;
+  /**
+   * Called when an artboard encounters an error during operations.
+   *
+   * This method is invoked by the C++ command queue when an artboard
+   * operation fails. It converts the C++ error data to Objective-C objects
+   * and forwards the event to the registered observer.
+   *
+   * @param handle The artboard handle that encountered the error.
+   * @param requestId The unique identifier for the request that failed.
+   * @param error A string describing the error that occurred.
+   */
+  virtual void onArtboardError(
+      const rive::ArtboardHandle handle,
+      uint64_t requestId,
+      std::string error) override;
 
-    virtual void onArtboardDeleted(const rive::ArtboardHandle handle,
-                                   uint64_t requestId) override;
+  virtual void onArtboardDeleted(
+      const rive::ArtboardHandle handle, uint64_t requestId) override;
 
-    /**
-     * Called when state machine names are listed for an artboard.
-     *
-     * This method is invoked by the C++ command queue when a state machine
-     * names request completes. It converts the C++ data to Objective-C objects
-     * and forwards the event to the registered observer.
-     *
-     * @param handle The artboard handle that was queried.
-     * @param requestId The unique identifier for the request that completed.
-     * @param stateMachineNames Vector of state machine names from the C++
-     * runtime.
-     */
-    virtual void onStateMachinesListed(
-        const rive::ArtboardHandle handle,
-        uint64_t requestId,
-        std::vector<std::string> stateMachineNames) override;
+  /**
+   * Called when state machine names are listed for an artboard.
+   *
+   * This method is invoked by the C++ command queue when a state machine
+   * names request completes. It converts the C++ data to Objective-C objects
+   * and forwards the event to the registered observer.
+   *
+   * @param handle The artboard handle that was queried.
+   * @param requestId The unique identifier for the request that completed.
+   * @param stateMachineNames Vector of state machine names from the C++
+   * runtime.
+   */
+  virtual void onStateMachinesListed(
+      const rive::ArtboardHandle handle,
+      uint64_t requestId,
+      std::vector<std::string> stateMachineNames) override;
 
-    /**
-     * Called when a state machine has been successfully instantiated from an
-     * artboard.
-     *
-     * @param handle The artboard handle the state machine was instantiated
-     *               from.
-     * @param requestId The identifier of the instantiation request.
-     * @param stateMachineHandle The handle of the newly instantiated state
-     *                           machine.
-     */
-    virtual void onStateMachineInstantiated(
-        const rive::ArtboardHandle handle,
-        uint64_t requestId,
-        rive::StateMachineHandle stateMachineHandle) override;
+  /**
+   * Called when a state machine has been successfully instantiated from an
+   * artboard.
+   *
+   * @param handle The artboard handle the state machine was instantiated
+   *               from.
+   * @param requestId The identifier of the instantiation request.
+   * @param stateMachineHandle The handle of the newly instantiated state
+   *                           machine.
+   */
+  virtual void onStateMachineInstantiated(
+      const rive::ArtboardHandle handle,
+      uint64_t requestId,
+      rive::StateMachineHandle stateMachineHandle) override;
 
-    /**
-     * Called when default view model information is received for an artboard.
-     *
-     * This method is invoked by the C++ command queue when a default view model
-     * info request completes. It converts the C++ data to Objective-C objects
-     * and forwards the event to the registered observer.
-     *
-     * @param handle The artboard handle that was queried.
-     * @param requestId The unique identifier for the request that completed.
-     * @param viewModelName The name of the default view model from the C++
-     * runtime.
-     * @param instanceName The name of the default view model instance from the
-     * C++ runtime.
-     */
-    virtual void onDefaultViewModelInfoReceived(
-        const rive::ArtboardHandle handle,
-        uint64_t requestId,
-        std::string viewModelName,
-        std::string instanceName) override;
+  /**
+   * Called when default view model information is received for an artboard.
+   *
+   * This method is invoked by the C++ command queue when a default view model
+   * info request completes. It converts the C++ data to Objective-C objects
+   * and forwards the event to the registered observer.
+   *
+   * @param handle The artboard handle that was queried.
+   * @param requestId The unique identifier for the request that completed.
+   * @param viewModelName The name of the default view model from the C++
+   * runtime.
+   * @param instanceName The name of the default view model instance from the
+   * C++ runtime.
+   */
+  virtual void onDefaultViewModelInfoReceived(
+      const rive::ArtboardHandle handle,
+      uint64_t requestId,
+      std::string viewModelName,
+      std::string instanceName) override;
 
-    virtual void onArtboardVolumeReceived(const rive::ArtboardHandle handle,
-                                          uint64_t requestId,
-                                          float volume) override;
+  virtual void onArtboardVolumeReceived(
+      const rive::ArtboardHandle handle,
+      uint64_t requestId,
+      float volume) override;
 
 private:
-    __weak id<RiveArtboardListener> _observer;
+  __weak id<RiveArtboardListener> _observer;
 };
 } // namespace
 
-void _ArtboardListener::onArtboardError(const rive::ArtboardHandle handle,
-                                        uint64_t requestId,
-                                        std::string error)
+void _ArtboardListener::onArtboardError(
+    const rive::ArtboardHandle handle, uint64_t requestId, std::string error)
 {
-    if (_observer)
-    {
-        [_observer
-            onArtboardError:reinterpret_cast<uint64_t>(handle)
-                  requestID:requestId
-                    message:[NSString stringWithUTF8String:error.c_str()]];
-    }
+  if (_observer)
+  {
+    [_observer onArtboardError:reinterpret_cast<uint64_t>(handle)
+                     requestID:requestId
+                       message:[NSString stringWithUTF8String:error.c_str()]];
+  }
 }
 
-void _ArtboardListener::onArtboardDeleted(const rive::ArtboardHandle handle,
-                                          uint64_t requestId)
+void _ArtboardListener::onArtboardDeleted(
+    const rive::ArtboardHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onArtboardDeleted:reinterpret_cast<uint64_t>(handle)
-                           requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onArtboardDeleted:reinterpret_cast<uint64_t>(handle)
+                       requestID:requestId];
+  }
 }
 
 void _ArtboardListener::onStateMachinesListed(
@@ -538,18 +533,18 @@ void _ArtboardListener::onStateMachinesListed(
     uint64_t requestId,
     std::vector<std::string> stateMachineNames)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableArray<NSString*>* names = [NSMutableArray
+        arrayWithCapacity:stateMachineNames.size()];
+    for (const auto& name : stateMachineNames)
     {
-        NSMutableArray<NSString*>* names =
-            [NSMutableArray arrayWithCapacity:stateMachineNames.size()];
-        for (const auto& name : stateMachineNames)
-        {
-            [names addObject:[NSString stringWithUTF8String:name.c_str()]];
-        }
-        [_observer onStateMachineNamesListed:reinterpret_cast<uint64_t>(handle)
-                                       names:names
-                                   requestID:requestId];
+      [names addObject:[NSString stringWithUTF8String:name.c_str()]];
     }
+    [_observer onStateMachineNamesListed:reinterpret_cast<uint64_t>(handle)
+                                   names:names
+                               requestID:requestId];
+  }
 }
 
 void _ArtboardListener::onStateMachineInstantiated(
@@ -557,13 +552,13 @@ void _ArtboardListener::onStateMachineInstantiated(
     uint64_t requestId,
     rive::StateMachineHandle stateMachineHandle)
 {
-    if (_observer)
-    {
-        [_observer onStateMachineInstantiated:reinterpret_cast<uint64_t>(handle)
-                                    requestID:requestId
-                           stateMachineHandle:reinterpret_cast<uint64_t>(
-                                                  stateMachineHandle)];
-    }
+  if (_observer)
+  {
+    [_observer onStateMachineInstantiated:reinterpret_cast<uint64_t>(handle)
+                                requestID:requestId
+                       stateMachineHandle:reinterpret_cast<uint64_t>(
+                                              stateMachineHandle)];
+  }
 }
 
 void _ArtboardListener::onDefaultViewModelInfoReceived(
@@ -572,29 +567,28 @@ void _ArtboardListener::onDefaultViewModelInfoReceived(
     std::string viewModelName,
     std::string instanceName)
 {
-    if (_observer)
-    {
-        NSString* viewModelNameObjC =
-            [NSString stringWithUTF8String:viewModelName.c_str()];
-        NSString* instanceNameObjC =
-            [NSString stringWithUTF8String:instanceName.c_str()];
-        [_observer
-            onDefaultViewModelInfoReceived:reinterpret_cast<uint64_t>(handle)
-                                 requestID:requestId
-                             viewModelName:viewModelNameObjC
-                              instanceName:instanceNameObjC];
-    }
+  if (_observer)
+  {
+    NSString* viewModelNameObjC = [NSString
+        stringWithUTF8String:viewModelName.c_str()];
+    NSString* instanceNameObjC = [NSString
+        stringWithUTF8String:instanceName.c_str()];
+    [_observer onDefaultViewModelInfoReceived:reinterpret_cast<uint64_t>(handle)
+                                    requestID:requestId
+                                viewModelName:viewModelNameObjC
+                                 instanceName:instanceNameObjC];
+  }
 }
 
 void _ArtboardListener::onArtboardVolumeReceived(
     const rive::ArtboardHandle handle, uint64_t requestId, float volume)
 {
-    if (_observer)
-    {
-        [_observer onArtboardVolumeReceived:reinterpret_cast<uint64_t>(handle)
-                                  requestID:requestId
-                                     volume:volume];
-    }
+  if (_observer)
+  {
+    [_observer onArtboardVolumeReceived:reinterpret_cast<uint64_t>(handle)
+                              requestID:requestId
+                                 volume:volume];
+  }
 }
 
 namespace
@@ -602,32 +596,34 @@ namespace
 class _StateMachineListener : public rive::CommandQueue::StateMachineListener
 {
 public:
-    _StateMachineListener(id<RiveStateMachineListener> observer)
-    {
-        _observer = observer;
-    }
+  _StateMachineListener(id<RiveStateMachineListener> observer)
+  {
+    _observer = observer;
+  }
 
-    virtual void onStateMachineError(const rive::StateMachineHandle handle,
-                                     uint64_t requestId,
-                                     std::string error) override;
+  virtual void onStateMachineError(
+      const rive::StateMachineHandle handle,
+      uint64_t requestId,
+      std::string error) override;
 
-    virtual void onStateMachineDeleted(const rive::StateMachineHandle handle,
-                                       uint64_t requestId) override;
+  virtual void onStateMachineDeleted(
+      const rive::StateMachineHandle handle, uint64_t requestId) override;
 
-    virtual void onStateMachineSettled(const rive::StateMachineHandle handle,
-                                       uint64_t requestId) override;
+  virtual void onStateMachineSettled(
+      const rive::StateMachineHandle handle, uint64_t requestId) override;
 
-    virtual void onViewModelInstanceReceived(
-        const rive::StateMachineHandle stateMachineHandle,
-        uint64_t requestId,
-        rive::ViewModelInstanceHandle viewModelInstanceHandle) override;
+  virtual void onViewModelInstanceReceived(
+      const rive::StateMachineHandle stateMachineHandle,
+      uint64_t requestId,
+      rive::ViewModelInstanceHandle viewModelInstanceHandle) override;
 
-    virtual void onSemanticsDiffReceived(const rive::StateMachineHandle handle,
-                                         uint64_t requestId,
-                                         rive::SemanticsDiff diff) override;
+  virtual void onSemanticsDiffReceived(
+      const rive::StateMachineHandle handle,
+      uint64_t requestId,
+      rive::SemanticsDiff diff) override;
 
 private:
-    __weak id<RiveStateMachineListener> _observer;
+  __weak id<RiveStateMachineListener> _observer;
 };
 } // namespace
 
@@ -636,33 +632,33 @@ void _StateMachineListener::onStateMachineError(
     uint64_t requestId,
     std::string error)
 {
-    if (_observer)
-    {
-        [_observer
-            onStateMachineError:reinterpret_cast<uint64_t>(handle)
-                      requestID:requestId
-                        message:[NSString stringWithUTF8String:error.c_str()]];
-    }
+  if (_observer)
+  {
+    [_observer
+        onStateMachineError:reinterpret_cast<uint64_t>(handle)
+                  requestID:requestId
+                    message:[NSString stringWithUTF8String:error.c_str()]];
+  }
 }
 
 void _StateMachineListener::onStateMachineDeleted(
     const rive::StateMachineHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onStateMachineDeleted:reinterpret_cast<uint64_t>(handle)
-                               requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onStateMachineDeleted:reinterpret_cast<uint64_t>(handle)
+                           requestID:requestId];
+  }
 }
 
 void _StateMachineListener::onStateMachineSettled(
     const rive::StateMachineHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onStateMachineSettled:reinterpret_cast<uint64_t>(handle)
-                               requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onStateMachineSettled:reinterpret_cast<uint64_t>(handle)
+                           requestID:requestId];
+  }
 }
 
 void _StateMachineListener::onViewModelInstanceReceived(
@@ -670,14 +666,14 @@ void _StateMachineListener::onViewModelInstanceReceived(
     uint64_t requestId,
     rive::ViewModelInstanceHandle viewModelInstanceHandle)
 {
-    if (_observer)
-    {
-        [_observer onViewModelInstanceReceived:reinterpret_cast<uint64_t>(
-                                                   stateMachineHandle)
-                                     requestID:requestId
-                       viewModelInstanceHandle:reinterpret_cast<uint64_t>(
-                                                   viewModelInstanceHandle)];
-    }
+  if (_observer)
+  {
+    [_observer onViewModelInstanceReceived:reinterpret_cast<uint64_t>(
+                                               stateMachineHandle)
+                                 requestID:requestId
+                   viewModelInstanceHandle:reinterpret_cast<uint64_t>(
+                                               viewModelInstanceHandle)];
+  }
 }
 
 void _StateMachineListener::onSemanticsDiffReceived(
@@ -685,13 +681,13 @@ void _StateMachineListener::onSemanticsDiffReceived(
     uint64_t requestId,
     rive::SemanticsDiff diff)
 {
-    if (_observer)
-    {
-        RiveSemanticsDiff* objcDiff = RiveSemanticsDiffFromCpp(diff);
-        [_observer onSemanticsDiffReceived:reinterpret_cast<uint64_t>(handle)
-                                 requestID:requestId
-                                      diff:objcDiff];
-    }
+  if (_observer)
+  {
+    RiveSemanticsDiff* objcDiff = RiveSemanticsDiffFromCpp(diff);
+    [_observer onSemanticsDiffReceived:reinterpret_cast<uint64_t>(handle)
+                             requestID:requestId
+                                  diff:objcDiff];
+  }
 }
 
 // MARK: - Internal File Listener Implementation
@@ -710,201 +706,202 @@ namespace
 class _FileListener : public rive::CommandQueue::FileListener
 {
 public:
-    /**
-     * Constructs a new file listener with the specified observer.
-     *
-     * @param observer The Objective-C observer that will receive file events.
-     *                 The observer is held as a weak reference to avoid retain
-     *                 cycles.
-     */
-    _FileListener(id<RiveFileListener> observer) { _observer = observer; }
+  /**
+   * Constructs a new file listener with the specified observer.
+   *
+   * @param observer The Objective-C observer that will receive file events.
+   *                 The observer is held as a weak reference to avoid retain
+   *                 cycles.
+   */
+  _FileListener(id<RiveFileListener> observer) { _observer = observer; }
 
-    /**
-     * Called when a file loading operation encounters an error.
-     *
-     * @param handle The file handle that was being loaded
-     * @param requestId The identifier of the failed request
-     * @param error A string describing the error that occurred
-     */
-    virtual void onFileError(const rive::FileHandle handle,
-                             uint64_t requestId,
-                             std::string error) override;
+  /**
+   * Called when a file loading operation encounters an error.
+   *
+   * @param handle The file handle that was being loaded
+   * @param requestId The identifier of the failed request
+   * @param error A string describing the error that occurred
+   */
+  virtual void onFileError(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      std::string error) override;
 
-    /**
-     * Called when a file is successfully loaded by the command server.
-     *
-     * @param handle The unique identifier of the loaded file
-     * @param requestId The identifier of the loading request
-     */
-    virtual void onFileLoaded(const rive::FileHandle handle,
-                              uint64_t requestId) override;
+  /**
+   * Called when a file is successfully loaded by the command server.
+   *
+   * @param handle The unique identifier of the loaded file
+   * @param requestId The identifier of the loading request
+   */
+  virtual void onFileLoaded(
+      const rive::FileHandle handle, uint64_t requestId) override;
 
-    /**
-     * Called when a file is deleted from the command server.
-     *
-     * @param handle The unique identifier of the deleted file
-     * @param requestId The identifier of the deletion request
-     */
-    virtual void onFileDeleted(const rive::FileHandle handle,
-                               uint64_t requestId) override;
+  /**
+   * Called when a file is deleted from the command server.
+   *
+   * @param handle The unique identifier of the deleted file
+   * @param requestId The identifier of the deletion request
+   */
+  virtual void onFileDeleted(
+      const rive::FileHandle handle, uint64_t requestId) override;
 
-    /**
-     * Called when an artboard has been successfully instantiated from a file.
-     *
-     * @param handle The file handle the artboard was instantiated from
-     * @param requestId The identifier of the instantiation request
-     * @param artboardHandle The handle of the newly instantiated artboard
-     */
-    virtual void onArtboardInstantiated(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        rive::ArtboardHandle artboardHandle) override;
+  /**
+   * Called when an artboard has been successfully instantiated from a file.
+   *
+   * @param handle The file handle the artboard was instantiated from
+   * @param requestId The identifier of the instantiation request
+   * @param artboardHandle The handle of the newly instantiated artboard
+   */
+  virtual void onArtboardInstantiated(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      rive::ArtboardHandle artboardHandle) override;
 
-    /**
-     * Called when a view model instance has been successfully instantiated
-     * from a file.
-     *
-     * @param handle The file handle the instance was instantiated from
-     * @param requestId The identifier of the instantiation request
-     * @param viewModelInstanceHandle The handle of the newly instantiated view
-     *                                model instance
-     */
-    virtual void onViewModelInstanceInstantiated(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        rive::ViewModelInstanceHandle viewModelInstanceHandle) override;
+  /**
+   * Called when a view model instance has been successfully instantiated
+   * from a file.
+   *
+   * @param handle The file handle the instance was instantiated from
+   * @param requestId The identifier of the instantiation request
+   * @param viewModelInstanceHandle The handle of the newly instantiated view
+   *                                model instance
+   */
+  virtual void onViewModelInstanceInstantiated(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      rive::ViewModelInstanceHandle viewModelInstanceHandle) override;
 
-    /**
-     * Called when artboard names are listed for a file.
-     *
-     * @param handle The unique identifier of the file
-     * @param requestId The identifier of the listing request
-     * @param artboardNames Vector of artboard names in the file
-     */
-    virtual void onArtboardsListed(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        std::vector<std::string> artboardNames) override;
+  /**
+   * Called when artboard names are listed for a file.
+   *
+   * @param handle The unique identifier of the file
+   * @param requestId The identifier of the listing request
+   * @param artboardNames Vector of artboard names in the file
+   */
+  virtual void onArtboardsListed(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      std::vector<std::string> artboardNames) override;
 
-    /**
-     * Called when view model names are listed for a file.
-     *
-     * @param handle The unique identifier of the file
-     * @param requestId The identifier of the listing request
-     * @param viewModelNames Vector of view model names in the file
-     */
-    virtual void onViewModelsListed(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        std::vector<std::string> viewModelNames) override;
+  /**
+   * Called when view model names are listed for a file.
+   *
+   * @param handle The unique identifier of the file
+   * @param requestId The identifier of the listing request
+   * @param viewModelNames Vector of view model names in the file
+   */
+  virtual void onViewModelsListed(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      std::vector<std::string> viewModelNames) override;
 
-    /**
-     * Called when global view model names are listed for a file.
-     *
-     * @param handle The unique identifier of the file
-     * @param requestId The identifier of the listing request
-     * @param globalViewModelNames Vector of global view model names in the file
-     */
-    virtual void onGlobalViewModelNamesListed(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        std::vector<std::string> globalViewModelNames) override;
+  /**
+   * Called when global view model names are listed for a file.
+   *
+   * @param handle The unique identifier of the file
+   * @param requestId The identifier of the listing request
+   * @param globalViewModelNames Vector of global view model names in the file
+   */
+  virtual void onGlobalViewModelNamesListed(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      std::vector<std::string> globalViewModelNames) override;
 
-    /**
-     * Called when view model instance names are listed for a file.
-     *
-     * @param handle The unique identifier of the file
-     * @param requestId The identifier of the listing request
-     * @param viewModelName The name of the view model
-     * @param instanceNames Vector of view model instance names
-     */
-    virtual void onViewModelInstanceNamesListed(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        std::string viewModelName,
-        std::vector<std::string> instanceNames) override;
+  /**
+   * Called when view model instance names are listed for a file.
+   *
+   * @param handle The unique identifier of the file
+   * @param requestId The identifier of the listing request
+   * @param viewModelName The name of the view model
+   * @param instanceNames Vector of view model instance names
+   */
+  virtual void onViewModelInstanceNamesListed(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      std::string viewModelName,
+      std::vector<std::string> instanceNames) override;
 
-    /**
-     * Called when view model properties are listed for a file.
-     *
-     * @param handle The unique identifier of the file
-     * @param requestId The identifier of the listing request
-     * @param viewModelName The name of the view model
-     * @param properties Vector of view model property data
-     */
-    virtual void onViewModelPropertiesListed(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        std::string viewModelName,
-        std::vector<rive::CommandQueue::FileListener::ViewModelPropertyData>
-            properties) override;
+  /**
+   * Called when view model properties are listed for a file.
+   *
+   * @param handle The unique identifier of the file
+   * @param requestId The identifier of the listing request
+   * @param viewModelName The name of the view model
+   * @param properties Vector of view model property data
+   */
+  virtual void onViewModelPropertiesListed(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      std::string viewModelName,
+      std::vector<rive::CommandQueue::FileListener::ViewModelPropertyData>
+          properties) override;
 
-    /**
-     * Called when view model enums are listed for a file.
-     *
-     * @param handle The unique identifier of the file
-     * @param requestId The identifier of the listing request
-     * @param enums Vector of view model enum data
-     */
-    virtual void onViewModelEnumsListed(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        std::vector<rive::ViewModelEnum> enums) override;
+  /**
+   * Called when view model enums are listed for a file.
+   *
+   * @param handle The unique identifier of the file
+   * @param requestId The identifier of the listing request
+   * @param enums Vector of view model enum data
+   */
+  virtual void onViewModelEnumsListed(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      std::vector<rive::ViewModelEnum> enums) override;
 
-    virtual void onFileAssetsListed(
-        const rive::FileHandle handle,
-        uint64_t requestId,
-        std::vector<rive::CommandQueue::FileListener::FileAssetData> assets)
-        override;
+  virtual void onFileAssetsListed(
+      const rive::FileHandle handle,
+      uint64_t requestId,
+      std::vector<rive::CommandQueue::FileListener::FileAssetData> assets)
+      override;
 
 private:
-    __weak id<RiveFileListener> _observer;
+  __weak id<RiveFileListener> _observer;
 };
 } // namespace
 
-void _FileListener::onFileError(const rive::FileHandle handle,
-                                uint64_t requestId,
-                                std::string error)
+void _FileListener::onFileError(
+    const rive::FileHandle handle, uint64_t requestId, std::string error)
 {
-    if (_observer)
-    {
-        [_observer onFileError:reinterpret_cast<uint64_t>(handle)
+  if (_observer)
+  {
+    [_observer onFileError:reinterpret_cast<uint64_t>(handle)
+                 requestID:requestId
+                   message:[NSString stringWithUTF8String:error.c_str()]];
+  }
+}
+
+void _FileListener::onFileLoaded(
+    const rive::FileHandle handle, uint64_t requestId)
+{
+  if (_observer)
+  {
+    [_observer onFileLoaded:reinterpret_cast<uint64_t>(handle)
+                  requestID:reinterpret_cast<uint64_t>(requestId)];
+  }
+}
+
+void _FileListener::onFileDeleted(
+    const rive::FileHandle handle, uint64_t requestId)
+{
+  if (_observer)
+  {
+    [_observer onFileDeleted:reinterpret_cast<uint64_t>(handle)
+                   requestID:reinterpret_cast<uint64_t>(requestId)];
+  }
+}
+
+void _FileListener::onArtboardInstantiated(
+    const rive::FileHandle handle,
+    uint64_t requestId,
+    rive::ArtboardHandle artboardHandle)
+{
+  if (_observer)
+  {
+    [_observer
+        onArtboardInstantiated:reinterpret_cast<uint64_t>(handle)
                      requestID:requestId
-                       message:[NSString stringWithUTF8String:error.c_str()]];
-    }
-}
-
-void _FileListener::onFileLoaded(const rive::FileHandle handle,
-                                 uint64_t requestId)
-{
-    if (_observer)
-    {
-        [_observer onFileLoaded:reinterpret_cast<uint64_t>(handle)
-                      requestID:reinterpret_cast<uint64_t>(requestId)];
-    }
-}
-
-void _FileListener::onFileDeleted(const rive::FileHandle handle,
-                                  uint64_t requestId)
-{
-    if (_observer)
-    {
-        [_observer onFileDeleted:reinterpret_cast<uint64_t>(handle)
-                       requestID:reinterpret_cast<uint64_t>(requestId)];
-    }
-}
-
-void _FileListener::onArtboardInstantiated(const rive::FileHandle handle,
-                                           uint64_t requestId,
-                                           rive::ArtboardHandle artboardHandle)
-{
-    if (_observer)
-    {
-        [_observer
-            onArtboardInstantiated:reinterpret_cast<uint64_t>(handle)
-                         requestID:requestId
-                    artboardHandle:reinterpret_cast<uint64_t>(artboardHandle)];
-    }
+                artboardHandle:reinterpret_cast<uint64_t>(artboardHandle)];
+  }
 }
 
 void _FileListener::onViewModelInstanceInstantiated(
@@ -912,52 +909,54 @@ void _FileListener::onViewModelInstanceInstantiated(
     uint64_t requestId,
     rive::ViewModelInstanceHandle viewModelInstanceHandle)
 {
-    if (_observer)
-    {
-        [_observer
-            onViewModelInstanceInstantiated:reinterpret_cast<uint64_t>(handle)
-                                  requestID:requestId
-                    viewModelInstanceHandle:reinterpret_cast<uint64_t>(
-                                                viewModelInstanceHandle)];
-    }
+  if (_observer)
+  {
+    [_observer
+        onViewModelInstanceInstantiated:reinterpret_cast<uint64_t>(handle)
+                              requestID:requestId
+                viewModelInstanceHandle:reinterpret_cast<uint64_t>(
+                                            viewModelInstanceHandle)];
+  }
 }
 
-void _FileListener::onArtboardsListed(const rive::FileHandle handle,
-                                      uint64_t requestId,
-                                      std::vector<std::string> artboardNames)
+void _FileListener::onArtboardsListed(
+    const rive::FileHandle handle,
+    uint64_t requestId,
+    std::vector<std::string> artboardNames)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableArray<NSString*>* names = [NSMutableArray
+        arrayWithCapacity:artboardNames.size()];
+    for (const auto& name : artboardNames)
     {
-        NSMutableArray<NSString*>* names =
-            [NSMutableArray arrayWithCapacity:artboardNames.size()];
-        for (const auto& name : artboardNames)
-        {
-            [names addObject:[NSString stringWithUTF8String:name.c_str()]];
-        }
-
-        [_observer onArtboardsListed:reinterpret_cast<uint64_t>(handle)
-                           requestID:requestId
-                               names:names];
+      [names addObject:[NSString stringWithUTF8String:name.c_str()]];
     }
+
+    [_observer onArtboardsListed:reinterpret_cast<uint64_t>(handle)
+                       requestID:requestId
+                           names:names];
+  }
 }
 
-void _FileListener::onViewModelsListed(const rive::FileHandle handle,
-                                       uint64_t requestId,
-                                       std::vector<std::string> viewModelNames)
+void _FileListener::onViewModelsListed(
+    const rive::FileHandle handle,
+    uint64_t requestId,
+    std::vector<std::string> viewModelNames)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableArray<NSString*>* names = [NSMutableArray
+        arrayWithCapacity:viewModelNames.size()];
+    for (const auto& name : viewModelNames)
     {
-        NSMutableArray<NSString*>* names =
-            [NSMutableArray arrayWithCapacity:viewModelNames.size()];
-        for (const auto& name : viewModelNames)
-        {
-            [names addObject:[NSString stringWithUTF8String:name.c_str()]];
-        }
-
-        [_observer onViewModelsListed:reinterpret_cast<uint64_t>(handle)
-                            requestID:requestId
-                                names:names];
+      [names addObject:[NSString stringWithUTF8String:name.c_str()]];
     }
+
+    [_observer onViewModelsListed:reinterpret_cast<uint64_t>(handle)
+                        requestID:requestId
+                            names:names];
+  }
 }
 
 void _FileListener::onGlobalViewModelNamesListed(
@@ -965,19 +964,19 @@ void _FileListener::onGlobalViewModelNamesListed(
     uint64_t requestId,
     std::vector<std::string> globalViewModelNames)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableArray<NSString*>* names = [NSMutableArray
+        arrayWithCapacity:globalViewModelNames.size()];
+    for (const auto& name : globalViewModelNames)
     {
-        NSMutableArray<NSString*>* names =
-            [NSMutableArray arrayWithCapacity:globalViewModelNames.size()];
-        for (const auto& name : globalViewModelNames)
-        {
-            [names addObject:[NSString stringWithUTF8String:name.c_str()]];
-        }
-
-        [_observer onGlobalViewModelsListed:reinterpret_cast<uint64_t>(handle)
-                                  requestID:requestId
-                                      names:names];
+      [names addObject:[NSString stringWithUTF8String:name.c_str()]];
     }
+
+    [_observer onGlobalViewModelsListed:reinterpret_cast<uint64_t>(handle)
+                              requestID:requestId
+                                  names:names];
+  }
 }
 
 void _FileListener::onViewModelInstanceNamesListed(
@@ -986,23 +985,22 @@ void _FileListener::onViewModelInstanceNamesListed(
     std::string viewModelName,
     std::vector<std::string> instanceNames)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableArray<NSString*>* names = [NSMutableArray
+        arrayWithCapacity:instanceNames.size()];
+    for (const auto& name : instanceNames)
     {
-        NSMutableArray<NSString*>* names =
-            [NSMutableArray arrayWithCapacity:instanceNames.size()];
-        for (const auto& name : instanceNames)
-        {
-            [names addObject:[NSString stringWithUTF8String:name.c_str()]];
-        }
-
-        NSString* nsViewModelName =
-            [NSString stringWithUTF8String:viewModelName.c_str()];
-        [_observer
-            onViewModelInstanceNamesListed:reinterpret_cast<uint64_t>(handle)
-                                 requestID:requestId
-                             viewModelName:nsViewModelName
-                                     names:names];
+      [names addObject:[NSString stringWithUTF8String:name.c_str()]];
     }
+
+    NSString* nsViewModelName = [NSString
+        stringWithUTF8String:viewModelName.c_str()];
+    [_observer onViewModelInstanceNamesListed:reinterpret_cast<uint64_t>(handle)
+                                    requestID:requestId
+                                viewModelName:nsViewModelName
+                                        names:names];
+  }
 }
 
 void _FileListener::onViewModelPropertiesListed(
@@ -1012,40 +1010,38 @@ void _FileListener::onViewModelPropertiesListed(
     std::vector<rive::CommandQueue::FileListener::ViewModelPropertyData>
         properties)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableArray<NSDictionary<NSString*, id>*>*
+        propertyArray = [NSMutableArray arrayWithCapacity:properties.size()];
+
+    for (const auto& prop : properties)
     {
-        NSMutableArray<NSDictionary<NSString*, id>*>* propertyArray =
-            [NSMutableArray arrayWithCapacity:properties.size()];
+      NSMutableDictionary<NSString*, id>*
+          propertyDict = [NSMutableDictionary dictionary];
 
-        for (const auto& prop : properties)
-        {
-            NSMutableDictionary<NSString*, id>* propertyDict =
-                [NSMutableDictionary dictionary];
+      // Convert type
+      RiveViewModelInstanceDataType type = RiveViewModelInstanceDataTypeFromCpp(
+          prop.type);
+      propertyDict[@"type"] = @(type);
 
-            // Convert type
-            RiveViewModelInstanceDataType type =
-                RiveViewModelInstanceDataTypeFromCpp(prop.type);
-            propertyDict[@"type"] = @(type);
+      // Convert name
+      propertyDict[@"name"] = [NSString stringWithUTF8String:prop.name.c_str()];
 
-            // Convert name
-            propertyDict[@"name"] =
-                [NSString stringWithUTF8String:prop.name.c_str()];
+      // Convert metaData (may be empty)
+      propertyDict[@"metaData"] = [NSString
+          stringWithUTF8String:prop.metaData.c_str()];
 
-            // Convert metaData (may be empty)
-            propertyDict[@"metaData"] =
-                [NSString stringWithUTF8String:prop.metaData.c_str()];
-
-            [propertyArray addObject:propertyDict];
-        }
-
-        NSString* nsViewModelName =
-            [NSString stringWithUTF8String:viewModelName.c_str()];
-        [_observer
-            onViewModelPropertiesListed:reinterpret_cast<uint64_t>(handle)
-                              requestID:requestId
-                          viewModelName:nsViewModelName
-                             properties:propertyArray];
+      [propertyArray addObject:propertyDict];
     }
+
+    NSString* nsViewModelName = [NSString
+        stringWithUTF8String:viewModelName.c_str()];
+    [_observer onViewModelPropertiesListed:reinterpret_cast<uint64_t>(handle)
+                                 requestID:requestId
+                             viewModelName:nsViewModelName
+                                properties:propertyArray];
+  }
 }
 
 void _FileListener::onViewModelEnumsListed(
@@ -1053,37 +1049,35 @@ void _FileListener::onViewModelEnumsListed(
     uint64_t requestId,
     std::vector<rive::ViewModelEnum> enums)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableArray<NSDictionary<NSString*, id>*>* enumArray = [NSMutableArray
+        arrayWithCapacity:enums.size()];
+
+    for (const auto& enumData : enums)
     {
-        NSMutableArray<NSDictionary<NSString*, id>*>* enumArray =
-            [NSMutableArray arrayWithCapacity:enums.size()];
+      NSMutableDictionary<NSString*, id>*
+          enumDict = [NSMutableDictionary dictionary];
 
-        for (const auto& enumData : enums)
-        {
-            NSMutableDictionary<NSString*, id>* enumDict =
-                [NSMutableDictionary dictionary];
+      // Convert name
+      enumDict[@"name"] = [NSString stringWithUTF8String:enumData.name.c_str()];
 
-            // Convert name
-            enumDict[@"name"] =
-                [NSString stringWithUTF8String:enumData.name.c_str()];
+      // Convert enumerants
+      NSMutableArray<NSString*>* values = [NSMutableArray
+          arrayWithCapacity:enumData.enumerants.size()];
+      for (const auto& enumerant : enumData.enumerants)
+      {
+        [values addObject:[NSString stringWithUTF8String:enumerant.c_str()]];
+      }
+      enumDict[@"values"] = values;
 
-            // Convert enumerants
-            NSMutableArray<NSString*>* values =
-                [NSMutableArray arrayWithCapacity:enumData.enumerants.size()];
-            for (const auto& enumerant : enumData.enumerants)
-            {
-                [values addObject:[NSString
-                                      stringWithUTF8String:enumerant.c_str()]];
-            }
-            enumDict[@"values"] = values;
-
-            [enumArray addObject:enumDict];
-        }
-
-        [_observer onViewModelEnumsListed:reinterpret_cast<uint64_t>(handle)
-                                requestID:requestId
-                                    enums:enumArray];
+      [enumArray addObject:enumDict];
     }
+
+    [_observer onViewModelEnumsListed:reinterpret_cast<uint64_t>(handle)
+                            requestID:requestId
+                                enums:enumArray];
+  }
 }
 
 void _FileListener::onFileAssetsListed(
@@ -1091,37 +1085,36 @@ void _FileListener::onFileAssetsListed(
     uint64_t requestId,
     std::vector<rive::CommandQueue::FileListener::FileAssetData> assets)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableArray<NSDictionary<NSString*, id>*>* assetArray = [NSMutableArray
+        arrayWithCapacity:assets.size()];
+
+    for (const auto& asset : assets)
     {
-        NSMutableArray<NSDictionary<NSString*, id>*>* assetArray =
-            [NSMutableArray arrayWithCapacity:assets.size()];
+      NSMutableDictionary<NSString*, id>*
+          assetDict = [NSMutableDictionary dictionary];
 
-        for (const auto& asset : assets)
-        {
-            NSMutableDictionary<NSString*, id>* assetDict =
-                [NSMutableDictionary dictionary];
+      assetDict[@"name"] = [NSString stringWithUTF8String:asset.name.c_str()];
+      assetDict[@"uniqueName"] = [NSString
+          stringWithUTF8String:asset.uniqueName.c_str()];
+      assetDict[@"assetID"] = @(asset.assetID);
+      assetDict[@"cdnUUID"] = [NSString
+          stringWithUTF8String:asset.cdnUUID.c_str()];
+      assetDict[@"cdnBaseURL"] = [NSString
+          stringWithUTF8String:asset.cdnBaseURL.c_str()];
+      assetDict[@"fileExtension"] = [NSString
+          stringWithUTF8String:asset.fileExtension.c_str()];
+      assetDict[@"type"] = @(RiveFileAssetTypeFromCpp(asset.type));
+      assetDict[@"rawType"] = @(asset.type);
 
-            assetDict[@"name"] =
-                [NSString stringWithUTF8String:asset.name.c_str()];
-            assetDict[@"uniqueName"] =
-                [NSString stringWithUTF8String:asset.uniqueName.c_str()];
-            assetDict[@"assetID"] = @(asset.assetID);
-            assetDict[@"cdnUUID"] =
-                [NSString stringWithUTF8String:asset.cdnUUID.c_str()];
-            assetDict[@"cdnBaseURL"] =
-                [NSString stringWithUTF8String:asset.cdnBaseURL.c_str()];
-            assetDict[@"fileExtension"] =
-                [NSString stringWithUTF8String:asset.fileExtension.c_str()];
-            assetDict[@"type"] = @(RiveFileAssetTypeFromCpp(asset.type));
-            assetDict[@"rawType"] = @(asset.type);
-
-            [assetArray addObject:assetDict];
-        }
-
-        [_observer onFileAssetsListed:reinterpret_cast<uint64_t>(handle)
-                            requestID:requestId
-                               assets:assetArray];
+      [assetArray addObject:assetDict];
     }
+
+    [_observer onFileAssetsListed:reinterpret_cast<uint64_t>(handle)
+                        requestID:requestId
+                           assets:assetArray];
+  }
 }
 
 namespace
@@ -1140,93 +1133,93 @@ class _ViewModelInstanceListener
     : public rive::CommandQueue::ViewModelInstanceListener
 {
 public:
-    /**
-     * Constructs a new view model instance listener with the specified
-     * observer.
-     *
-     * @param observer The Objective-C observer that will receive view model
-     *                 instance events. The observer is held as a weak reference
-     *                 to avoid retain cycles.
-     */
-    _ViewModelInstanceListener(id<RiveViewModelInstanceListener> observer)
-    {
-        _observer = observer;
-    }
+  /**
+   * Constructs a new view model instance listener with the specified
+   * observer.
+   *
+   * @param observer The Objective-C observer that will receive view model
+   *                 instance events. The observer is held as a weak reference
+   *                 to avoid retain cycles.
+   */
+  _ViewModelInstanceListener(id<RiveViewModelInstanceListener> observer)
+  {
+    _observer = observer;
+  }
 
-    /**
-     * Called when a view model instance operation encounters an error.
-     *
-     * @param handle The view model instance handle that encountered the error
-     * @param requestId The identifier of the failed request
-     * @param error A string describing the error that occurred
-     */
-    virtual void onViewModelInstanceError(
-        const rive::ViewModelInstanceHandle handle,
-        uint64_t requestId,
-        std::string error) override;
+  /**
+   * Called when a view model instance operation encounters an error.
+   *
+   * @param handle The view model instance handle that encountered the error
+   * @param requestId The identifier of the failed request
+   * @param error A string describing the error that occurred
+   */
+  virtual void onViewModelInstanceError(
+      const rive::ViewModelInstanceHandle handle,
+      uint64_t requestId,
+      std::string error) override;
 
-    /**
-     * Called when a view model instance is deleted from the command server.
-     *
-     * @param handle The unique identifier of the deleted view model instance
-     * @param requestId The identifier of the deletion request
-     */
-    virtual void onViewModelDeleted(const rive::ViewModelInstanceHandle handle,
-                                    uint64_t requestId) override;
+  /**
+   * Called when a view model instance is deleted from the command server.
+   *
+   * @param handle The unique identifier of the deleted view model instance
+   * @param requestId The identifier of the deletion request
+   */
+  virtual void onViewModelDeleted(
+      const rive::ViewModelInstanceHandle handle, uint64_t requestId) override;
 
-    /**
-     * Called when view model instance data is received.
-     *
-     * @param handle The unique identifier of the view model instance
-     * @param requestId The identifier of the data request
-     * @param data The view model instance data that was received
-     */
-    virtual void onViewModelDataReceived(
-        const rive::ViewModelInstanceHandle handle,
-        uint64_t requestId,
-        rive::CommandQueue::ViewModelInstanceData data) override;
+  /**
+   * Called when view model instance data is received.
+   *
+   * @param handle The unique identifier of the view model instance
+   * @param requestId The identifier of the data request
+   * @param data The view model instance data that was received
+   */
+  virtual void onViewModelDataReceived(
+      const rive::ViewModelInstanceHandle handle,
+      uint64_t requestId,
+      rive::CommandQueue::ViewModelInstanceData data) override;
 
-    /**
-     * Called when a view model instance list size is received.
-     *
-     * @param handle The unique identifier of the view model instance
-     * @param requestId The identifier of the list size request
-     * @param path The path to the list property
-     * @param size The size of the list
-     */
-    virtual void onViewModelListSizeReceived(
-        const rive::ViewModelInstanceHandle handle,
-        uint64_t requestId,
-        std::string path,
-        size_t size) override;
+  /**
+   * Called when a view model instance list size is received.
+   *
+   * @param handle The unique identifier of the view model instance
+   * @param requestId The identifier of the list size request
+   * @param path The path to the list property
+   * @param size The size of the list
+   */
+  virtual void onViewModelListSizeReceived(
+      const rive::ViewModelInstanceHandle handle,
+      uint64_t requestId,
+      std::string path,
+      size_t size) override;
 
-    /**
-     * Called when a view model instance's view model (definition) name is
-     * received.
-     *
-     * @param handle The unique identifier of the view model instance
-     * @param requestId The identifier of the name request
-     * @param viewModelName The name of the view model that defines the instance
-     */
-    virtual void onViewModelInstanceViewModelNameReceived(
-        const rive::ViewModelInstanceHandle handle,
-        uint64_t requestId,
-        std::string viewModelName) override;
+  /**
+   * Called when a view model instance's view model (definition) name is
+   * received.
+   *
+   * @param handle The unique identifier of the view model instance
+   * @param requestId The identifier of the name request
+   * @param viewModelName The name of the view model that defines the instance
+   */
+  virtual void onViewModelInstanceViewModelNameReceived(
+      const rive::ViewModelInstanceHandle handle,
+      uint64_t requestId,
+      std::string viewModelName) override;
 
-    /**
-     * Called when a view model instance's editor-assigned name is received.
-     *
-     * @param handle The unique identifier of the view model instance
-     * @param requestId The identifier of the name request
-     * @param instanceName The editor-assigned name of the instance
-     */
-    virtual void onViewModelInstanceNameReceived(
-        const rive::ViewModelInstanceHandle handle,
-        uint64_t requestId,
-        std::string instanceName) override;
+  /**
+   * Called when a view model instance's editor-assigned name is received.
+   *
+   * @param handle The unique identifier of the view model instance
+   * @param requestId The identifier of the name request
+   * @param instanceName The editor-assigned name of the instance
+   */
+  virtual void onViewModelInstanceNameReceived(
+      const rive::ViewModelInstanceHandle handle,
+      uint64_t requestId,
+      std::string instanceName) override;
 
 private:
-    __weak id<RiveViewModelInstanceListener> _observer;
+  __weak id<RiveViewModelInstanceListener> _observer;
 };
 } // namespace
 
@@ -1235,24 +1228,23 @@ void _ViewModelInstanceListener::onViewModelInstanceError(
     uint64_t requestId,
     std::string error)
 {
-    if (_observer)
-    {
-        [_observer
-            onViewModelInstanceError:reinterpret_cast<uint64_t>(handle)
-                           requestID:requestId
-                             message:[NSString
-                                         stringWithUTF8String:error.c_str()]];
-    }
+  if (_observer)
+  {
+    [_observer
+        onViewModelInstanceError:reinterpret_cast<uint64_t>(handle)
+                       requestID:requestId
+                         message:[NSString stringWithUTF8String:error.c_str()]];
+  }
 }
 
 void _ViewModelInstanceListener::onViewModelDeleted(
     const rive::ViewModelInstanceHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onViewModelDeleted:reinterpret_cast<uint64_t>(handle)
-                            requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onViewModelDeleted:reinterpret_cast<uint64_t>(handle)
+                        requestID:requestId];
+  }
 }
 
 void _ViewModelInstanceListener::onViewModelDataReceived(
@@ -1260,45 +1252,45 @@ void _ViewModelInstanceListener::onViewModelDataReceived(
     uint64_t requestId,
     rive::CommandQueue::ViewModelInstanceData data)
 {
-    if (_observer)
+  if (_observer)
+  {
+    NSMutableDictionary<NSString*, id>*
+        dataDict = [NSMutableDictionary dictionary];
+    RiveViewModelInstanceDataType type = RiveViewModelInstanceDataTypeFromCpp(
+        data.metaData.type);
+    dataDict[@"type"] = @(type);
+    dataDict[@"name"] = [NSString
+        stringWithUTF8String:data.metaData.name.c_str()];
+
+    switch (data.metaData.type)
     {
-        NSMutableDictionary<NSString*, id>* dataDict =
-            [NSMutableDictionary dictionary];
-        RiveViewModelInstanceDataType type =
-            RiveViewModelInstanceDataTypeFromCpp(data.metaData.type);
-        dataDict[@"type"] = @(type);
-        dataDict[@"name"] =
-            [NSString stringWithUTF8String:data.metaData.name.c_str()];
-
-        switch (data.metaData.type)
+      case rive::DataType::boolean:
+        dataDict[@"booleanValue"] = @(data.boolValue);
+        break;
+      case rive::DataType::number:
+        dataDict[@"numberValue"] = @(data.numberValue);
+        break;
+      case rive::DataType::color:
+        dataDict[@"colorValue"] = @(data.colorValue);
+        break;
+      case rive::DataType::string:
+      case rive::DataType::enumType:
+        dataDict[@"stringValue"] = [NSString
+            stringWithUTF8String:data.stringValue.c_str()];
+        break;
+      default:
+        if (!data.stringValue.empty())
         {
-            case rive::DataType::boolean:
-                dataDict[@"booleanValue"] = @(data.boolValue);
-                break;
-            case rive::DataType::number:
-                dataDict[@"numberValue"] = @(data.numberValue);
-                break;
-            case rive::DataType::color:
-                dataDict[@"colorValue"] = @(data.colorValue);
-                break;
-            case rive::DataType::string:
-            case rive::DataType::enumType:
-                dataDict[@"stringValue"] =
-                    [NSString stringWithUTF8String:data.stringValue.c_str()];
-                break;
-            default:
-                if (!data.stringValue.empty())
-                {
-                    dataDict[@"stringValue"] = [NSString
-                        stringWithUTF8String:data.stringValue.c_str()];
-                }
-                break;
+          dataDict[@"stringValue"] = [NSString
+              stringWithUTF8String:data.stringValue.c_str()];
         }
-
-        [_observer onViewModelDataReceived:reinterpret_cast<uint64_t>(handle)
-                                 requestID:requestId
-                                      data:dataDict];
+        break;
     }
+
+    [_observer onViewModelDataReceived:reinterpret_cast<uint64_t>(handle)
+                             requestID:requestId
+                                  data:dataDict];
+  }
 }
 
 void _ViewModelInstanceListener::onViewModelListSizeReceived(
@@ -1307,15 +1299,14 @@ void _ViewModelInstanceListener::onViewModelListSizeReceived(
     std::string path,
     size_t size)
 {
-    if (_observer)
-    {
-        NSString* nsPath = [NSString stringWithUTF8String:path.c_str()];
-        [_observer
-            onViewModelListSizeReceived:reinterpret_cast<uint64_t>(handle)
-                              requestID:requestId
-                                   path:nsPath
-                                   size:static_cast<NSInteger>(size)];
-    }
+  if (_observer)
+  {
+    NSString* nsPath = [NSString stringWithUTF8String:path.c_str()];
+    [_observer onViewModelListSizeReceived:reinterpret_cast<uint64_t>(handle)
+                                 requestID:requestId
+                                      path:nsPath
+                                      size:static_cast<NSInteger>(size)];
+  }
 }
 
 void _ViewModelInstanceListener::onViewModelInstanceViewModelNameReceived(
@@ -1323,16 +1314,15 @@ void _ViewModelInstanceListener::onViewModelInstanceViewModelNameReceived(
     uint64_t requestId,
     std::string viewModelName)
 {
-    if (_observer)
-    {
-        NSString* nsName =
-            [NSString stringWithUTF8String:viewModelName.c_str()];
-        [_observer
-            onViewModelInstanceViewModelNameReceived:reinterpret_cast<uint64_t>(
-                                                         handle)
-                                           requestID:requestId
-                                       viewModelName:nsName];
-    }
+  if (_observer)
+  {
+    NSString* nsName = [NSString stringWithUTF8String:viewModelName.c_str()];
+    [_observer
+        onViewModelInstanceViewModelNameReceived:reinterpret_cast<uint64_t>(
+                                                     handle)
+                                       requestID:requestId
+                                   viewModelName:nsName];
+  }
 }
 
 void _ViewModelInstanceListener::onViewModelInstanceNameReceived(
@@ -1340,14 +1330,14 @@ void _ViewModelInstanceListener::onViewModelInstanceNameReceived(
     uint64_t requestId,
     std::string instanceName)
 {
-    if (_observer)
-    {
-        NSString* nsName = [NSString stringWithUTF8String:instanceName.c_str()];
-        [_observer
-            onViewModelInstanceNameReceived:reinterpret_cast<uint64_t>(handle)
-                                  requestID:requestId
-                                       name:nsName];
-    }
+  if (_observer)
+  {
+    NSString* nsName = [NSString stringWithUTF8String:instanceName.c_str()];
+    [_observer
+        onViewModelInstanceNameReceived:reinterpret_cast<uint64_t>(handle)
+                              requestID:requestId
+                                   name:nsName];
+  }
 }
 
 namespace
@@ -1355,56 +1345,57 @@ namespace
 class _RenderImageListener : public rive::CommandQueue::RenderImageListener
 {
 public:
-    _RenderImageListener(id<RiveRenderImageListener> observer)
-    {
-        _observer = observer;
-    }
+  _RenderImageListener(id<RiveRenderImageListener> observer)
+  {
+    _observer = observer;
+  }
 
-    virtual void onRenderImageDecoded(const rive::RenderImageHandle handle,
-                                      uint64_t requestId) override;
+  virtual void onRenderImageDecoded(
+      const rive::RenderImageHandle handle, uint64_t requestId) override;
 
-    virtual void onRenderImageError(const rive::RenderImageHandle handle,
-                                    uint64_t requestId,
-                                    std::string error) override;
+  virtual void onRenderImageError(
+      const rive::RenderImageHandle handle,
+      uint64_t requestId,
+      std::string error) override;
 
-    virtual void onRenderImageDeleted(const rive::RenderImageHandle handle,
-                                      uint64_t requestId) override;
+  virtual void onRenderImageDeleted(
+      const rive::RenderImageHandle handle, uint64_t requestId) override;
 
 private:
-    __weak id<RiveRenderImageListener> _observer;
+  __weak id<RiveRenderImageListener> _observer;
 };
 } // namespace
 
 void _RenderImageListener::onRenderImageDecoded(
     const rive::RenderImageHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onRenderImageDecoded:reinterpret_cast<uint64_t>(handle)
-                              requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onRenderImageDecoded:reinterpret_cast<uint64_t>(handle)
+                          requestID:requestId];
+  }
 }
 
 void _RenderImageListener::onRenderImageError(
     const rive::RenderImageHandle handle, uint64_t requestId, std::string error)
 {
-    if (_observer)
-    {
-        [_observer
-            onRenderImageError:reinterpret_cast<uint64_t>(handle)
-                     requestID:requestId
-                       message:[NSString stringWithUTF8String:error.c_str()]];
-    }
+  if (_observer)
+  {
+    [_observer
+        onRenderImageError:reinterpret_cast<uint64_t>(handle)
+                 requestID:requestId
+                   message:[NSString stringWithUTF8String:error.c_str()]];
+  }
 }
 
 void _RenderImageListener::onRenderImageDeleted(
     const rive::RenderImageHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onRenderImageDeleted:reinterpret_cast<uint64_t>(handle)
-                              requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onRenderImageDeleted:reinterpret_cast<uint64_t>(handle)
+                          requestID:requestId];
+  }
 }
 
 namespace
@@ -1412,53 +1403,53 @@ namespace
 class _FontListener : public rive::CommandQueue::FontListener
 {
 public:
-    _FontListener(id<RiveFontListener> observer) { _observer = observer; }
+  _FontListener(id<RiveFontListener> observer) { _observer = observer; }
 
-    virtual void onFontDecoded(const rive::FontHandle handle,
-                               uint64_t requestId) override;
+  virtual void onFontDecoded(
+      const rive::FontHandle handle, uint64_t requestId) override;
 
-    virtual void onFontError(const rive::FontHandle handle,
-                             uint64_t requestId,
-                             std::string error) override;
+  virtual void onFontError(
+      const rive::FontHandle handle,
+      uint64_t requestId,
+      std::string error) override;
 
-    virtual void onFontDeleted(const rive::FontHandle handle,
-                               uint64_t requestId) override;
+  virtual void onFontDeleted(
+      const rive::FontHandle handle, uint64_t requestId) override;
 
 private:
-    __weak id<RiveFontListener> _observer;
+  __weak id<RiveFontListener> _observer;
 };
 } // namespace
 
-void _FontListener::onFontDecoded(const rive::FontHandle handle,
-                                  uint64_t requestId)
+void _FontListener::onFontDecoded(
+    const rive::FontHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onFontDecoded:reinterpret_cast<uint64_t>(handle)
-                       requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onFontDecoded:reinterpret_cast<uint64_t>(handle)
+                   requestID:requestId];
+  }
 }
 
-void _FontListener::onFontError(const rive::FontHandle handle,
-                                uint64_t requestId,
-                                std::string error)
+void _FontListener::onFontError(
+    const rive::FontHandle handle, uint64_t requestId, std::string error)
 {
-    if (_observer)
-    {
-        [_observer onFontError:reinterpret_cast<uint64_t>(handle)
-                     requestID:requestId
-                       message:[NSString stringWithUTF8String:error.c_str()]];
-    }
+  if (_observer)
+  {
+    [_observer onFontError:reinterpret_cast<uint64_t>(handle)
+                 requestID:requestId
+                   message:[NSString stringWithUTF8String:error.c_str()]];
+  }
 }
 
-void _FontListener::onFontDeleted(const rive::FontHandle handle,
-                                  uint64_t requestId)
+void _FontListener::onFontDeleted(
+    const rive::FontHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onFontDeleted:reinterpret_cast<uint64_t>(handle)
-                       requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onFontDeleted:reinterpret_cast<uint64_t>(handle)
+                   requestID:requestId];
+  }
 }
 
 namespace
@@ -1466,53 +1457,53 @@ namespace
 class _BlobListener : public rive::CommandQueue::BlobAssetListener
 {
 public:
-    _BlobListener(id<RiveBlobListener> observer) { _observer = observer; }
+  _BlobListener(id<RiveBlobListener> observer) { _observer = observer; }
 
-    virtual void onBlobAssetDecoded(const rive::BlobAssetHandle handle,
-                                    uint64_t requestId) override;
+  virtual void onBlobAssetDecoded(
+      const rive::BlobAssetHandle handle, uint64_t requestId) override;
 
-    virtual void onBlobAssetError(const rive::BlobAssetHandle handle,
-                                  uint64_t requestId,
-                                  std::string error) override;
+  virtual void onBlobAssetError(
+      const rive::BlobAssetHandle handle,
+      uint64_t requestId,
+      std::string error) override;
 
-    virtual void onBlobAssetDeleted(const rive::BlobAssetHandle handle,
-                                    uint64_t requestId) override;
+  virtual void onBlobAssetDeleted(
+      const rive::BlobAssetHandle handle, uint64_t requestId) override;
 
 private:
-    __weak id<RiveBlobListener> _observer;
+  __weak id<RiveBlobListener> _observer;
 };
 } // namespace
 
-void _BlobListener::onBlobAssetDecoded(const rive::BlobAssetHandle handle,
-                                       uint64_t requestId)
+void _BlobListener::onBlobAssetDecoded(
+    const rive::BlobAssetHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onBlobDecoded:reinterpret_cast<uint64_t>(handle)
-                       requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onBlobDecoded:reinterpret_cast<uint64_t>(handle)
+                   requestID:requestId];
+  }
 }
 
-void _BlobListener::onBlobAssetError(const rive::BlobAssetHandle handle,
-                                     uint64_t requestId,
-                                     std::string error)
+void _BlobListener::onBlobAssetError(
+    const rive::BlobAssetHandle handle, uint64_t requestId, std::string error)
 {
-    if (_observer)
-    {
-        [_observer onBlobError:reinterpret_cast<uint64_t>(handle)
-                     requestID:requestId
-                       message:[NSString stringWithUTF8String:error.c_str()]];
-    }
+  if (_observer)
+  {
+    [_observer onBlobError:reinterpret_cast<uint64_t>(handle)
+                 requestID:requestId
+                   message:[NSString stringWithUTF8String:error.c_str()]];
+  }
 }
 
-void _BlobListener::onBlobAssetDeleted(const rive::BlobAssetHandle handle,
-                                       uint64_t requestId)
+void _BlobListener::onBlobAssetDeleted(
+    const rive::BlobAssetHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onBlobDeleted:reinterpret_cast<uint64_t>(handle)
-                       requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onBlobDeleted:reinterpret_cast<uint64_t>(handle)
+                   requestID:requestId];
+  }
 }
 
 namespace
@@ -1520,54 +1511,54 @@ namespace
 class _AudioListener : public rive::CommandQueue::AudioSourceListener
 {
 public:
-    _AudioListener(id<RiveAudioListener> observer) { _observer = observer; }
+  _AudioListener(id<RiveAudioListener> observer) { _observer = observer; }
 
-    virtual void onAudioSourceDecoded(const rive::AudioSourceHandle handle,
-                                      uint64_t requestId) override;
+  virtual void onAudioSourceDecoded(
+      const rive::AudioSourceHandle handle, uint64_t requestId) override;
 
-    virtual void onAudioSourceError(const rive::AudioSourceHandle handle,
-                                    uint64_t requestId,
-                                    std::string error) override;
+  virtual void onAudioSourceError(
+      const rive::AudioSourceHandle handle,
+      uint64_t requestId,
+      std::string error) override;
 
-    virtual void onAudioSourceDeleted(const rive::AudioSourceHandle handle,
-                                      uint64_t requestId) override;
+  virtual void onAudioSourceDeleted(
+      const rive::AudioSourceHandle handle, uint64_t requestId) override;
 
 private:
-    __weak id<RiveAudioListener> _observer;
+  __weak id<RiveAudioListener> _observer;
 };
 } // namespace
 
-void _AudioListener::onAudioSourceDecoded(const rive::AudioSourceHandle handle,
-                                          uint64_t requestId)
+void _AudioListener::onAudioSourceDecoded(
+    const rive::AudioSourceHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onAudioSourceDecoded:reinterpret_cast<uint64_t>(handle)
-                              requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onAudioSourceDecoded:reinterpret_cast<uint64_t>(handle)
+                          requestID:requestId];
+  }
 }
 
-void _AudioListener::onAudioSourceError(const rive::AudioSourceHandle handle,
-                                        uint64_t requestId,
-                                        std::string error)
+void _AudioListener::onAudioSourceError(
+    const rive::AudioSourceHandle handle, uint64_t requestId, std::string error)
 {
-    if (_observer)
-    {
-        [_observer
-            onAudioSourceError:reinterpret_cast<uint64_t>(handle)
-                     requestID:requestId
-                       message:[NSString stringWithUTF8String:error.c_str()]];
-    }
+  if (_observer)
+  {
+    [_observer
+        onAudioSourceError:reinterpret_cast<uint64_t>(handle)
+                 requestID:requestId
+                   message:[NSString stringWithUTF8String:error.c_str()]];
+  }
 }
 
-void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
-                                          uint64_t requestId)
+void _AudioListener::onAudioSourceDeleted(
+    const rive::AudioSourceHandle handle, uint64_t requestId)
 {
-    if (_observer)
-    {
-        [_observer onAudioSourceDeleted:reinterpret_cast<uint64_t>(handle)
-                              requestID:requestId];
-    }
+  if (_observer)
+  {
+    [_observer onAudioSourceDeleted:reinterpret_cast<uint64_t>(handle)
+                          requestID:requestId];
+  }
 }
 
 /**
@@ -1576,35 +1567,35 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 @implementation RiveCommandQueue
 {
-    id<RiveAssetDataCopier> _assetDataCopier;
-    /** The underlying C++ command queue that handles Rive operations */
-    rive::rcp<rive::CommandQueue> _commandQueue;
-    /** Dictionary mapping file handles to their listeners for proper cleanup */
-    NSMutableDictionary<NSNumber*, NSValue*>* _fileListeners;
-    /** Dictionary mapping artboard handles to their listeners for proper
-     * cleanup */
-    NSMutableDictionary<NSNumber*, NSValue*>* _artboardListeners;
-    /** Dictionary mapping state machine handles to their listeners for proper
-     * cleanup */
-    NSMutableDictionary<NSNumber*, NSValue*>* _stateMachineListeners;
-    /** Dictionary mapping view model instance handles to their listeners for
-     * proper cleanup */
-    NSMutableDictionary<NSNumber*, NSValue*>* _viewModelInstanceListeners;
-    /** Dictionary mapping render image handles to their listeners for proper
-     * cleanup */
-    NSMutableDictionary<NSNumber*, NSValue*>* _renderImageListeners;
-    /** Dictionary mapping font handles to their listeners for proper cleanup */
-    NSMutableDictionary<NSNumber*, NSValue*>* _fontListeners;
-    NSMutableDictionary<NSNumber*, NSValue*>* _blobListeners;
-    /** Dictionary mapping audio handles to their listeners for proper cleanup
-     */
-    NSMutableDictionary<NSNumber*, NSValue*>* _audioListeners;
-    /** The next request ID to use when making a request via command queue */
-    uint64_t _nextRequestID;
-    /** High-frequency polling source used for processing queued messages */
-    dispatch_source_t _processTimer;
-    /** Whether the process timer is currently armed and ticking */
-    BOOL _isProcessTimerArmed;
+  id<RiveAssetDataCopier> _assetDataCopier;
+  /** The underlying C++ command queue that handles Rive operations */
+  rive::rcp<rive::CommandQueue> _commandQueue;
+  /** Dictionary mapping file handles to their listeners for proper cleanup */
+  NSMutableDictionary<NSNumber*, NSValue*>* _fileListeners;
+  /** Dictionary mapping artboard handles to their listeners for proper
+   * cleanup */
+  NSMutableDictionary<NSNumber*, NSValue*>* _artboardListeners;
+  /** Dictionary mapping state machine handles to their listeners for proper
+   * cleanup */
+  NSMutableDictionary<NSNumber*, NSValue*>* _stateMachineListeners;
+  /** Dictionary mapping view model instance handles to their listeners for
+   * proper cleanup */
+  NSMutableDictionary<NSNumber*, NSValue*>* _viewModelInstanceListeners;
+  /** Dictionary mapping render image handles to their listeners for proper
+   * cleanup */
+  NSMutableDictionary<NSNumber*, NSValue*>* _renderImageListeners;
+  /** Dictionary mapping font handles to their listeners for proper cleanup */
+  NSMutableDictionary<NSNumber*, NSValue*>* _fontListeners;
+  NSMutableDictionary<NSNumber*, NSValue*>* _blobListeners;
+  /** Dictionary mapping audio handles to their listeners for proper cleanup
+   */
+  NSMutableDictionary<NSNumber*, NSValue*>* _audioListeners;
+  /** The next request ID to use when making a request via command queue */
+  uint64_t _nextRequestID;
+  /** High-frequency polling source used for processing queued messages */
+  dispatch_source_t _processTimer;
+  /** Whether the process timer is currently armed and ticking */
+  BOOL _isProcessTimerArmed;
 }
 
 /**
@@ -1619,30 +1610,30 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (instancetype)init
 {
-    return [self
-        initWithAssetDataCopier:[[RiveCommandQueueAssetDataCopier alloc] init]];
+  return [self
+      initWithAssetDataCopier:[[RiveCommandQueueAssetDataCopier alloc] init]];
 }
 
 - (instancetype)initWithAssetDataCopier:(id<RiveAssetDataCopier>)copier
 {
-    [_RiveMainActor
-        assertIsolated:@"Workers must be initialized on the MainActor."];
-    if (self = [super init])
-    {
-        _assetDataCopier = copier;
-        _commandQueue = rive::make_rcp<rive::CommandQueue>();
-        _fileListeners = [[NSMutableDictionary alloc] init];
-        _artboardListeners = [[NSMutableDictionary alloc] init];
-        _stateMachineListeners = [[NSMutableDictionary alloc] init];
-        _viewModelInstanceListeners = [[NSMutableDictionary alloc] init];
-        _renderImageListeners = [[NSMutableDictionary alloc] init];
-        _fontListeners = [[NSMutableDictionary alloc] init];
-        _blobListeners = [[NSMutableDictionary alloc] init];
-        _audioListeners = [[NSMutableDictionary alloc] init];
-        _nextRequestID = 0;
-        _isProcessTimerArmed = NO;
-    }
-    return self;
+  [_RiveMainActor
+      assertIsolated:@"Workers must be initialized on the MainActor."];
+  if (self = [super init])
+  {
+    _assetDataCopier = copier;
+    _commandQueue = rive::make_rcp<rive::CommandQueue>();
+    _fileListeners = [[NSMutableDictionary alloc] init];
+    _artboardListeners = [[NSMutableDictionary alloc] init];
+    _stateMachineListeners = [[NSMutableDictionary alloc] init];
+    _viewModelInstanceListeners = [[NSMutableDictionary alloc] init];
+    _renderImageListeners = [[NSMutableDictionary alloc] init];
+    _fontListeners = [[NSMutableDictionary alloc] init];
+    _blobListeners = [[NSMutableDictionary alloc] init];
+    _audioListeners = [[NSMutableDictionary alloc] init];
+    _nextRequestID = 0;
+    _isProcessTimerArmed = NO;
+  }
+  return self;
 }
 
 /**
@@ -1650,95 +1641,95 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (void)dealloc
 {
-    if (_processTimer != nil)
-    {
-        dispatch_source_cancel(_processTimer);
-        _processTimer = nil;
-        _isProcessTimerArmed = NO;
-    }
-
-    // Clean up all file listeners
-    for (NSValue* listenerValue in _fileListeners.allValues)
-    {
-        _FileListener* listener =
-            static_cast<_FileListener*>(listenerValue.pointerValue);
-        delete listener;
-    }
-
-    // Clean up all artboard listeners
-    for (NSValue* listenerValue in _artboardListeners.allValues)
-    {
-        _ArtboardListener* listener =
-            static_cast<_ArtboardListener*>(listenerValue.pointerValue);
-        delete listener;
-    }
-
-    // Clean up all state machine listeners
-    for (NSValue* listenerValue in _stateMachineListeners.allValues)
-    {
-        _StateMachineListener* listener =
-            static_cast<_StateMachineListener*>(listenerValue.pointerValue);
-        delete listener;
-    }
-
-    // Clean up all view model instance listeners
-    for (NSValue* listenerValue in _viewModelInstanceListeners.allValues)
-    {
-        _ViewModelInstanceListener* listener =
-            static_cast<_ViewModelInstanceListener*>(
-                listenerValue.pointerValue);
-        delete listener;
-    }
-
-    // Clean up all render image listeners
-    for (NSValue* listenerValue in _renderImageListeners.allValues)
-    {
-        _RenderImageListener* listener =
-            static_cast<_RenderImageListener*>(listenerValue.pointerValue);
-        delete listener;
-    }
-
-    // Clean up all render image listeners
-    for (NSValue* listenerValue in _fontListeners.allValues)
-    {
-        _FontListener* listener =
-            static_cast<_FontListener*>(listenerValue.pointerValue);
-        delete listener;
-    }
-
-    for (NSValue* listenerValue in _blobListeners.allValues)
-    {
-        _BlobListener* listener =
-            static_cast<_BlobListener*>(listenerValue.pointerValue);
-        delete listener;
-    }
-
-    // Clean up all render image listeners
-    for (NSValue* listenerValue in _audioListeners.allValues)
-    {
-        _AudioListener* listener =
-            static_cast<_AudioListener*>(listenerValue.pointerValue);
-        delete listener;
-    }
-
-    _commandQueue = nullptr;
-    _fileListeners = nil;
-    _artboardListeners = nil;
-    _stateMachineListeners = nil;
-    _viewModelInstanceListeners = nil;
-    _renderImageListeners = nil;
-    _fontListeners = nil;
-    _blobListeners = nil;
-    _audioListeners = nil;
+  if (_processTimer != nil)
+  {
+    dispatch_source_cancel(_processTimer);
     _processTimer = nil;
     _isProcessTimerArmed = NO;
+  }
+
+  // Clean up all file listeners
+  for (NSValue* listenerValue in _fileListeners.allValues)
+  {
+    _FileListener* listener = static_cast<_FileListener*>(
+        listenerValue.pointerValue);
+    delete listener;
+  }
+
+  // Clean up all artboard listeners
+  for (NSValue* listenerValue in _artboardListeners.allValues)
+  {
+    _ArtboardListener* listener = static_cast<_ArtboardListener*>(
+        listenerValue.pointerValue);
+    delete listener;
+  }
+
+  // Clean up all state machine listeners
+  for (NSValue* listenerValue in _stateMachineListeners.allValues)
+  {
+    _StateMachineListener* listener = static_cast<_StateMachineListener*>(
+        listenerValue.pointerValue);
+    delete listener;
+  }
+
+  // Clean up all view model instance listeners
+  for (NSValue* listenerValue in _viewModelInstanceListeners.allValues)
+  {
+    _ViewModelInstanceListener*
+        listener = static_cast<_ViewModelInstanceListener*>(
+            listenerValue.pointerValue);
+    delete listener;
+  }
+
+  // Clean up all render image listeners
+  for (NSValue* listenerValue in _renderImageListeners.allValues)
+  {
+    _RenderImageListener* listener = static_cast<_RenderImageListener*>(
+        listenerValue.pointerValue);
+    delete listener;
+  }
+
+  // Clean up all render image listeners
+  for (NSValue* listenerValue in _fontListeners.allValues)
+  {
+    _FontListener* listener = static_cast<_FontListener*>(
+        listenerValue.pointerValue);
+    delete listener;
+  }
+
+  for (NSValue* listenerValue in _blobListeners.allValues)
+  {
+    _BlobListener* listener = static_cast<_BlobListener*>(
+        listenerValue.pointerValue);
+    delete listener;
+  }
+
+  // Clean up all render image listeners
+  for (NSValue* listenerValue in _audioListeners.allValues)
+  {
+    _AudioListener* listener = static_cast<_AudioListener*>(
+        listenerValue.pointerValue);
+    delete listener;
+  }
+
+  _commandQueue = nullptr;
+  _fileListeners = nil;
+  _artboardListeners = nil;
+  _stateMachineListeners = nil;
+  _viewModelInstanceListeners = nil;
+  _renderImageListeners = nil;
+  _fontListeners = nil;
+  _blobListeners = nil;
+  _audioListeners = nil;
+  _processTimer = nil;
+  _isProcessTimerArmed = NO;
 }
 
 - (uint64_t)nextRequestID
 {
-    [_RiveMainActor
-        assertIsolated:@"Worker calls must be made on the MainActor."];
-    return _nextRequestID++;
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
+  return _nextRequestID++;
 }
 
 #pragma mark - Server
@@ -1754,58 +1745,56 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (void)disconnect
 {
-    [_RiveMainActor
-        assertIsolated:@"Worker calls must be made on the MainActor."];
-    _commandQueue->disconnect();
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
+  _commandQueue->disconnect();
 }
 
 - (void)startMessageProcessing
 {
-    [_RiveMainActor
-        assertIsolated:@"Worker calls must be made on the MainActor."];
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
 
-    // Create once; this source is armed/disarmed as demand changes.
-    if (_processTimer == nil)
-    {
-        __weak RiveCommandQueue* weakSelf = self;
-        _processTimer = dispatch_source_create(
-            DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-        dispatch_source_set_event_handler(_processTimer, ^{
-          __strong RiveCommandQueue* strongSelf = weakSelf;
-          if (strongSelf)
-          {
-              [strongSelf processMessages];
-          }
-        });
+  // Create once; this source is armed/disarmed as demand changes.
+  if (_processTimer == nil)
+  {
+    __weak RiveCommandQueue* weakSelf = self;
+    _processTimer = dispatch_source_create(
+        DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    dispatch_source_set_event_handler(_processTimer, ^{
+      __strong RiveCommandQueue* strongSelf = weakSelf;
+      if (strongSelf)
+      {
+        [strongSelf processMessages];
+      }
+    });
 
-        // Start in a disarmed state. We arm below when needed.
-        dispatch_source_set_timer(
-            _processTimer, DISPATCH_TIME_FOREVER, DISPATCH_TIME_FOREVER, 0);
-        dispatch_resume(_processTimer);
-    }
+    // Start in a disarmed state. We arm below when needed.
+    dispatch_source_set_timer(
+        _processTimer, DISPATCH_TIME_FOREVER, DISPATCH_TIME_FOREVER, 0);
+    dispatch_resume(_processTimer);
+  }
 
-    if (_isProcessTimerArmed == NO)
-    {
-        dispatch_source_set_timer(_processTimer,
-                                  dispatch_time(DISPATCH_TIME_NOW, 0),
-                                  NSEC_PER_MSEC,
-                                  0);
-        _isProcessTimerArmed = YES;
-    }
+  if (_isProcessTimerArmed == NO)
+  {
+    dispatch_source_set_timer(
+        _processTimer, dispatch_time(DISPATCH_TIME_NOW, 0), NSEC_PER_MSEC, 0);
+    _isProcessTimerArmed = YES;
+  }
 }
 
 - (void)stopMessageProcessing
 {
-    [_RiveMainActor
-        assertIsolated:@"Worker calls must be made on the MainActor."];
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
 
-    // Disarm but keep the source alive to avoid recreate/cancel churn.
-    if (_processTimer && _isProcessTimerArmed)
-    {
-        dispatch_source_set_timer(
-            _processTimer, DISPATCH_TIME_FOREVER, DISPATCH_TIME_FOREVER, 0);
-        _isProcessTimerArmed = NO;
-    }
+  // Disarm but keep the source alive to avoid recreate/cancel churn.
+  if (_processTimer && _isProcessTimerArmed)
+  {
+    dispatch_source_set_timer(
+        _processTimer, DISPATCH_TIME_FOREVER, DISPATCH_TIME_FOREVER, 0);
+    _isProcessTimerArmed = NO;
+  }
 }
 
 #pragma mark - File
@@ -1830,27 +1819,27 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
             observer:(nonnull id<RiveFileListener>)observer
            requestID:(uint64_t)requestID
 {
-    id<RiveAssetDataCopier> copier = _assetDataCopier;
-    return [self executeCommandWithReturn:^uint64_t {
-      std::vector<uint8_t> fileBytes;
-      if (NSString* error = copyAssetData(copier, data, fileBytes))
-      {
-          [observer onFileError:0 requestID:requestID message:error];
-          return 0;
-      }
+  id<RiveAssetDataCopier> copier = _assetDataCopier;
+  return [self executeCommandWithReturn:^uint64_t {
+    std::vector<uint8_t> fileBytes;
+    if (NSString* error = copyAssetData(copier, data, fileBytes))
+    {
+      [observer onFileError:0 requestID:requestID message:error];
+      return 0;
+    }
 
-      auto listener = std::make_unique<_FileListener>(observer);
+    auto listener = std::make_unique<_FileListener>(observer);
 
-      auto handle = self->_commandQueue->loadFile(
-          std::move(fileBytes), listener.get(), requestID);
+    auto handle = self->_commandQueue->loadFile(
+        std::move(fileBytes), listener.get(), requestID);
 
-      // Store the listener so it doesn't get deallocated
-      uint64_t fileHandleUInt = reinterpret_cast<uint64_t>(handle);
-      self->_fileListeners[@(fileHandleUInt)] =
-          [NSValue valueWithPointer:listener.release()];
+    // Store the listener so it doesn't get deallocated
+    uint64_t fileHandleUInt = reinterpret_cast<uint64_t>(handle);
+    self->_fileListeners[@(fileHandleUInt)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return fileHandleUInt;
-    }];
+    return fileHandleUInt;
+  }];
 }
 
 /**
@@ -1865,111 +1854,111 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (void)deleteFile:(uint64_t)file requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FileHandle>(file);
-      self->_commandQueue->deleteFile(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FileHandle>(file);
+    self->_commandQueue->deleteFile(handle, requestID);
+  }];
 }
 
 - (void)deleteFileListener:(uint64_t)file
 {
-    [self executeCommand:^{
-      NSValue* listenerValue = self->_fileListeners[@(file)];
-      if (listenerValue)
-      {
-          _FileListener* listener =
-              static_cast<_FileListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_fileListeners removeObjectForKey:@(file)];
-      }
-    }];
+  [self executeCommand:^{
+    NSValue* listenerValue = self->_fileListeners[@(file)];
+    if (listenerValue)
+    {
+      _FileListener* listener = static_cast<_FileListener*>(
+          listenerValue.pointerValue);
+      delete listener;
+      [self->_fileListeners removeObjectForKey:@(file)];
+    }
+  }];
 }
 
 - (void)requestArtboardNames:(uint64_t)fileHandle requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      self->_commandQueue->requestArtboardNames(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    self->_commandQueue->requestArtboardNames(handle, requestID);
+  }];
 }
 
 - (void)requestViewModelNames:(uint64_t)fileHandle requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      self->_commandQueue->requestViewModelNames(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    self->_commandQueue->requestViewModelNames(handle, requestID);
+  }];
 }
 
 - (void)requestGlobalViewModelNames:(uint64_t)fileHandle
                           requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      self->_commandQueue->requestGlobalViewModelNames(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    self->_commandQueue->requestGlobalViewModelNames(handle, requestID);
+  }];
 }
 
 - (void)requestViewModelEnums:(uint64_t)fileHandle requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      self->_commandQueue->requestViewModelEnums(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    self->_commandQueue->requestViewModelEnums(handle, requestID);
+  }];
 }
 
 - (void)requestViewModelInstanceNames:(uint64_t)fileHandle
                         viewModelName:(NSString*)viewModelName
                             requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      auto stdName = std::string([viewModelName UTF8String]);
-      self->_commandQueue->requestViewModelInstanceNames(
-          handle, stdName, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    auto stdName = std::string([viewModelName UTF8String]);
+    self->_commandQueue->requestViewModelInstanceNames(
+        handle, stdName, requestID);
+  }];
 }
 
 - (void)requestViewModelPropertyDefinitions:(uint64_t)fileHandle
                               viewModelName:(NSString*)viewModelName
                                   requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      auto stdName = std::string([viewModelName UTF8String]);
-      self->_commandQueue->requestViewModelPropertyDefinitions(
-          handle, stdName, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    auto stdName = std::string([viewModelName UTF8String]);
+    self->_commandQueue->requestViewModelPropertyDefinitions(
+        handle, stdName, requestID);
+  }];
 }
 
 - (void)requestFileAssets:(uint64_t)fileHandle requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      self->_commandQueue->requestFileAssets(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    self->_commandQueue->requestFileAssets(handle, requestID);
+  }];
 }
 
 - (uint64_t)createDefaultArtboardFromFile:(uint64_t)fileHandle
                                  observer:(id<RiveArtboardListener>)observer
                                 requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ArtboardListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    // Create a new listener for this specific observer
+    auto listener = std::make_unique<_ArtboardListener>(observer);
 
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      rive::ArtboardHandle artboardHandle =
-          self->_commandQueue->instantiateDefaultArtboard(
-              handle, listener.get(), requestID);
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    rive::ArtboardHandle
+        artboardHandle = self->_commandQueue->instantiateDefaultArtboard(
+            handle, listener.get(), requestID);
 
-      // Store the listener so it doesn't get deallocated
-      uint64_t artboardHandleUInt = reinterpret_cast<uint64_t>(artboardHandle);
-      self->_artboardListeners[@(artboardHandleUInt)] =
-          [NSValue valueWithPointer:listener.release()];
+    // Store the listener so it doesn't get deallocated
+    uint64_t artboardHandleUInt = reinterpret_cast<uint64_t>(artboardHandle);
+    self->_artboardListeners[@(artboardHandleUInt)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return artboardHandleUInt;
-    }];
+    return artboardHandleUInt;
+  }];
 }
 
 - (uint64_t)createArtboardNamed:(NSString*)name
@@ -1977,47 +1966,47 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                        observer:(id<RiveArtboardListener>)observer
                       requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ArtboardListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    // Create a new listener for this specific observer
+    auto listener = std::make_unique<_ArtboardListener>(observer);
 
-      auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
-      auto stdName = std::string([name UTF8String]);
-      rive::ArtboardHandle artboardHandle =
-          self->_commandQueue->instantiateArtboardNamed(
-              handle, stdName, listener.get(), requestID);
+    auto handle = reinterpret_cast<rive::FileHandle>(fileHandle);
+    auto stdName = std::string([name UTF8String]);
+    rive::ArtboardHandle
+        artboardHandle = self->_commandQueue->instantiateArtboardNamed(
+            handle, stdName, listener.get(), requestID);
 
-      // Store the listener so it doesn't get deallocated
-      uint64_t artboardHandleUInt = reinterpret_cast<uint64_t>(artboardHandle);
-      self->_artboardListeners[@(artboardHandleUInt)] =
-          [NSValue valueWithPointer:listener.release()];
+    // Store the listener so it doesn't get deallocated
+    uint64_t artboardHandleUInt = reinterpret_cast<uint64_t>(artboardHandle);
+    self->_artboardListeners[@(artboardHandleUInt)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return artboardHandleUInt;
-    }];
+    return artboardHandleUInt;
+  }];
 }
 
 #pragma mark - Artboard
 
 - (void)deleteArtboard:(uint64_t)artboard requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboard);
-      self->_commandQueue->deleteArtboard(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboard);
+    self->_commandQueue->deleteArtboard(handle, requestID);
+  }];
 }
 
 - (void)deleteArtboardListener:(uint64_t)artboard
 {
-    [self executeCommand:^{
-      NSValue* listenerValue = self->_artboardListeners[@(artboard)];
-      if (listenerValue)
-      {
-          _ArtboardListener* listener =
-              static_cast<_ArtboardListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_artboardListeners removeObjectForKey:@(artboard)];
-      }
-    }];
+  [self executeCommand:^{
+    NSValue* listenerValue = self->_artboardListeners[@(artboard)];
+    if (listenerValue)
+    {
+      _ArtboardListener* listener = static_cast<_ArtboardListener*>(
+          listenerValue.pointerValue);
+      delete listener;
+      [self->_artboardListeners removeObjectForKey:@(artboard)];
+    }
+  }];
 }
 
 - (void)setArtboardSize:(uint64_t)artboardHandle
@@ -2026,59 +2015,58 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                   scale:(float)scale
               requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
-      self->_commandQueue->setArtboardSize(
-          handle, width, height, scale, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    self->_commandQueue->setArtboardSize(
+        handle, width, height, scale, requestID);
+  }];
 }
 
 - (void)resetArtboardSize:(uint64_t)artboardHandle requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
-      self->_commandQueue->resetArtboardSize(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    self->_commandQueue->resetArtboardSize(handle, requestID);
+  }];
 }
 
 - (void)setArtboardVolume:(uint64_t)artboardHandle
                    volume:(float)volume
                 requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
-      self->_commandQueue->setArtboardVolume(handle, volume, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    self->_commandQueue->setArtboardVolume(handle, volume, requestID);
+  }];
 }
 
 - (void)requestArtboardVolume:(uint64_t)artboardHandle
                     requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
-      self->_commandQueue->requestArtboardVolume(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    self->_commandQueue->requestArtboardVolume(handle, requestID);
+  }];
 }
 
 - (void)requestStateMachineNames:(uint64_t)artboardHandle
                        requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
-      self->_commandQueue->requestStateMachineNames(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    self->_commandQueue->requestStateMachineNames(handle, requestID);
+  }];
 }
 
 - (void)requestDefaultViewModelInfo:(uint64_t)artboardHandle
                            fromFile:(uint64_t)fileHandle
                           requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto artboard = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
-      auto file = reinterpret_cast<rive::FileHandle>(fileHandle);
-      self->_commandQueue->requestDefaultViewModelInfo(
-          artboard, file, requestID);
-    }];
+  [self executeCommand:^{
+    auto artboard = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    auto file = reinterpret_cast<rive::FileHandle>(fileHandle);
+    self->_commandQueue->requestDefaultViewModelInfo(artboard, file, requestID);
+  }];
 }
 
 - (uint64_t)
@@ -2086,20 +2074,21 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                  observer:(id<RiveStateMachineListener>)observer
                                 requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_StateMachineListener>(observer);
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
-      rive::StateMachineHandle stateMachineHandle =
-          self->_commandQueue->instantiateDefaultStateMachine(
-              handle, listener.get(), requestID);
+  return [self executeCommandWithReturn:^uint64_t {
+    auto listener = std::make_unique<_StateMachineListener>(observer);
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    rive::StateMachineHandle
+        stateMachineHandle = self->_commandQueue
+                                 ->instantiateDefaultStateMachine(
+                                     handle, listener.get(), requestID);
 
-      uint64_t stateMachineHandleUInt =
-          reinterpret_cast<uint64_t>(stateMachineHandle);
-      self->_stateMachineListeners[@(stateMachineHandleUInt)] =
-          [NSValue valueWithPointer:listener.release()];
+    uint64_t stateMachineHandleUInt = reinterpret_cast<uint64_t>(
+        stateMachineHandle);
+    self->_stateMachineListeners[@(stateMachineHandleUInt)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return stateMachineHandleUInt;
-    }];
+    return stateMachineHandleUInt;
+  }];
 }
 
 #pragma mark - State Machine
@@ -2109,58 +2098,57 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                            observer:(id<RiveStateMachineListener>)observer
                           requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_StateMachineListener>(observer);
-      auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
-      auto stdName = std::string([name UTF8String]);
-      rive::StateMachineHandle stateMachineHandle =
-          self->_commandQueue->instantiateStateMachineNamed(
-              handle, stdName, listener.get(), requestID);
+  return [self executeCommandWithReturn:^uint64_t {
+    auto listener = std::make_unique<_StateMachineListener>(observer);
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    auto stdName = std::string([name UTF8String]);
+    rive::StateMachineHandle
+        stateMachineHandle = self->_commandQueue->instantiateStateMachineNamed(
+            handle, stdName, listener.get(), requestID);
 
-      uint64_t stateMachineHandleUInt =
-          reinterpret_cast<uint64_t>(stateMachineHandle);
-      self->_stateMachineListeners[@(stateMachineHandleUInt)] =
-          [NSValue valueWithPointer:listener.release()];
+    uint64_t stateMachineHandleUInt = reinterpret_cast<uint64_t>(
+        stateMachineHandle);
+    self->_stateMachineListeners[@(stateMachineHandleUInt)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return stateMachineHandleUInt;
-    }];
+    return stateMachineHandleUInt;
+  }];
 }
 
 - (void)advanceStateMachine:(uint64_t)stateMachineHandle
                          by:(NSTimeInterval)time
                   requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->advanceStateMachine(handle, float(time), requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->advanceStateMachine(handle, float(time), requestID);
+  }];
 }
 
 - (void)deleteStateMachine:(uint64_t)stateMachineHandle
                  requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->deleteStateMachine(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->deleteStateMachine(handle, requestID);
+  }];
 }
 
 - (void)deleteStateMachineListener:(uint64_t)stateMachineHandle
 {
-    [self executeCommand:^{
-      NSValue* listenerValue =
-          self->_stateMachineListeners[@(stateMachineHandle)];
-      if (listenerValue)
-      {
-          _StateMachineListener* listener =
-              static_cast<_StateMachineListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_stateMachineListeners
-              removeObjectForKey:@(stateMachineHandle)];
-      }
-    }];
+  [self executeCommand:^{
+    NSValue*
+        listenerValue = self->_stateMachineListeners[@(stateMachineHandle)];
+    if (listenerValue)
+    {
+      _StateMachineListener* listener = static_cast<_StateMachineListener*>(
+          listenerValue.pointerValue);
+      delete listener;
+      [self->_stateMachineListeners removeObjectForKey:@(stateMachineHandle)];
+    }
+  }];
 }
 
 - (void)pointerMove:(uint64_t)stateMachineHandle
@@ -2172,13 +2160,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         scaleFactor:(float)scaleFactor
           requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          id, position, screenBounds, fit, alignment, scaleFactor);
-      self->_commandQueue->pointerMove(handle, cppEvent, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
+        id, position, screenBounds, fit, alignment, scaleFactor);
+    self->_commandQueue->pointerMove(handle, cppEvent, requestID);
+  }];
 }
 
 - (void)pointerDown:(uint64_t)stateMachineHandle
@@ -2190,13 +2178,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         scaleFactor:(float)scaleFactor
           requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          id, position, screenBounds, fit, alignment, scaleFactor);
-      self->_commandQueue->pointerDown(handle, cppEvent, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
+        id, position, screenBounds, fit, alignment, scaleFactor);
+    self->_commandQueue->pointerDown(handle, cppEvent, requestID);
+  }];
 }
 
 - (void)pointerUp:(uint64_t)stateMachineHandle
@@ -2208,13 +2196,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
       scaleFactor:(float)scaleFactor
         requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          id, position, screenBounds, fit, alignment, scaleFactor);
-      self->_commandQueue->pointerUp(handle, cppEvent, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
+        id, position, screenBounds, fit, alignment, scaleFactor);
+    self->_commandQueue->pointerUp(handle, cppEvent, requestID);
+  }];
 }
 
 - (void)pointerExit:(uint64_t)stateMachineHandle
@@ -2226,60 +2214,59 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
         scaleFactor:(float)scaleFactor
           requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
-          id, position, screenBounds, fit, alignment, scaleFactor);
-      self->_commandQueue->pointerExit(handle, cppEvent, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    rive::CommandQueue::PointerEvent cppEvent = RivePointerEventToCpp(
+        id, position, screenBounds, fit, alignment, scaleFactor);
+    self->_commandQueue->pointerExit(handle, cppEvent, requestID);
+  }];
 }
 
 - (void)bindViewModelInstance:(uint64_t)stateMachineHandle
           toViewModelInstance:(uint64_t)viewModelInstanceHandle
                     requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto smHandle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      self->_commandQueue->bindViewModelInstance(
-          smHandle, vmiHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto smHandle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    self->_commandQueue->bindViewModelInstance(smHandle, vmiHandle, requestID);
+  }];
 }
 
 - (void)setViewModelInstance:(uint64_t)stateMachineHandle
          toViewModelInstance:(uint64_t)viewModelInstanceHandle
                    requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto smHandle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      self->_commandQueue->setViewModelInstance(smHandle, vmiHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto smHandle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    self->_commandQueue->setViewModelInstance(smHandle, vmiHandle, requestID);
+  }];
 }
 
 - (uint64_t)mainViewModelInstance:(uint64_t)stateMachineHandle
                          observer:(id<RiveViewModelInstanceListener>)observer
                         requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
-      auto smHandle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->mainViewModelInstance(
-              smHandle, listener.get(), requestID);
+  return [self executeCommandWithReturn:^uint64_t {
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+    auto smHandle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->mainViewModelInstance(
+            smHandle, listener.get(), requestID);
 
-      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(vmiHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(vmiHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return vmiHandle;
-    }];
+    return vmiHandle;
+  }];
 }
 
 - (void)setGlobalViewModelInstance:(uint64_t)stateMachineHandle
@@ -2287,15 +2274,15 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                toViewModelInstance:(uint64_t)viewModelInstanceHandle
                          requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto smHandle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdName = std::string([name UTF8String]);
-      self->_commandQueue->setGlobalViewModelInstance(
-          smHandle, std::move(stdName), vmiHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto smHandle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdName = std::string([name UTF8String]);
+    self->_commandQueue->setGlobalViewModelInstance(
+        smHandle, std::move(stdName), vmiHandle, requestID);
+  }];
 }
 
 - (uint64_t)globalViewModelInstance:(uint64_t)stateMachineHandle
@@ -2303,30 +2290,30 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                            observer:(id<RiveViewModelInstanceListener>)observer
                           requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
-      auto smHandle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      auto stdName = std::string([name UTF8String]);
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->globalViewModelInstance(
-              smHandle, std::move(stdName), listener.get(), requestID);
+  return [self executeCommandWithReturn:^uint64_t {
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+    auto smHandle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    auto stdName = std::string([name UTF8String]);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->globalViewModelInstance(
+            smHandle, std::move(stdName), listener.get(), requestID);
 
-      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(vmiHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(vmiHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return vmiHandle;
-    }];
+    return vmiHandle;
+  }];
 }
 
 - (void)bind:(uint64_t)stateMachineHandle requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->bind(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->bind(handle, requestID);
+  }];
 }
 
 #pragma mark - Semantics
@@ -2334,11 +2321,11 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
 - (void)enableSemantics:(uint64_t)stateMachineHandle
               requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->enableSemantics(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->enableSemantics(handle, requestID);
+  }];
 }
 
 - (void)drainSemanticsDiff:(uint64_t)stateMachineHandle
@@ -2348,17 +2335,17 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                 viewBounds:(CGSize)viewBounds
                  requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->drainSemanticsDiff(
-          handle,
-          RiveConfigurationFitCppValue(fit),
-          RiveConfigurationAlignmentCppValue(alignment),
-          scaleFactor,
-          rive::Vec2D(viewBounds.width, viewBounds.height),
-          requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->drainSemanticsDiff(
+        handle,
+        RiveConfigurationFitCppValue(fit),
+        RiveConfigurationAlignmentCppValue(alignment),
+        scaleFactor,
+        rive::Vec2D(viewBounds.width, viewBounds.height),
+        requestID);
+  }];
 }
 
 - (void)fireSemanticAction:(uint64_t)stateMachineHandle
@@ -2366,59 +2353,59 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                 actionType:(RiveSemanticActionType)actionType
                  requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      auto cppAction = RiveSemanticActionTypeToCpp(actionType);
-      self->_commandQueue->fireSemanticAction(
-          handle, semanticNodeID, cppAction, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    auto cppAction = RiveSemanticActionTypeToCpp(actionType);
+    self->_commandQueue->fireSemanticAction(
+        handle, semanticNodeID, cppAction, requestID);
+  }];
 }
 
 - (void)requestSemanticFocus:(uint64_t)stateMachineHandle
               semanticNodeID:(uint32_t)semanticNodeID
                    requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->requestSemanticFocus(
-          handle, semanticNodeID, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->requestSemanticFocus(
+        handle, semanticNodeID, requestID);
+  }];
 }
 
 - (void)clearSemanticFocus:(uint64_t)stateMachineHandle
                  requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
-      self->_commandQueue->clearSemanticFocus(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->clearSemanticFocus(handle, requestID);
+  }];
 }
 
 #pragma mark - Drawing
 
 - (uint64_t)createDrawKey
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto key = self->_commandQueue->createDrawKey();
-      return reinterpret_cast<uint64_t>(key);
-    }];
+  return [self executeCommandWithReturn:^uint64_t {
+    auto key = self->_commandQueue->createDrawKey();
+    return reinterpret_cast<uint64_t>(key);
+  }];
 }
 
 - (void)draw:(uint64_t)drawKey callback:(void (^)(void*))callback
 {
-    [self executeCommand:^{
-      auto key = reinterpret_cast<rive::DrawKey>(drawKey);
-      void (^blockCopy)(void*) = [callback copy];
-      self->_commandQueue->draw(
-          key,
-          [key, blockCopy](rive::DrawKey drawKey,
-                           rive::CommandServer* commandServer) {
-              blockCopy(static_cast<void*>(commandServer));
-          });
-    }];
+  [self executeCommand:^{
+    auto key = reinterpret_cast<rive::DrawKey>(drawKey);
+    void (^blockCopy)(void*) = [callback copy];
+    self->_commandQueue->draw(
+        key,
+        [key,
+         blockCopy](rive::DrawKey drawKey, rive::CommandServer* commandServer) {
+          blockCopy(static_cast<void*>(commandServer));
+        });
+  }];
 }
 
 #pragma mark - Data Binding
@@ -2432,24 +2419,24 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                            observer
                                   requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    // Create a new listener for this specific observer
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
 
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->instantiateBlankViewModelInstance(
-              reinterpret_cast<rive::FileHandle>(fileHandle),
-              reinterpret_cast<rive::ArtboardHandle>(artboardHandle),
-              listener.get(),
-              requestID);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->instantiateBlankViewModelInstance(
+            reinterpret_cast<rive::FileHandle>(fileHandle),
+            reinterpret_cast<rive::ArtboardHandle>(artboardHandle),
+            listener.get(),
+            requestID);
 
-      // Store the listener so it doesn't get deallocated
-      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(vmiHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    // Store the listener so it doesn't get deallocated
+    uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(vmiHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return vmiHandle;
-    }];
+    return vmiHandle;
+  }];
 }
 
 - (uint64_t)
@@ -2460,25 +2447,25 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                      observer
                             requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    // Create a new listener for this specific observer
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
 
-      auto stdName = std::string([viewModelName UTF8String]);
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->instantiateBlankViewModelInstance(
-              reinterpret_cast<rive::FileHandle>(fileHandle),
-              stdName,
-              listener.get(),
-              requestID);
+    auto stdName = std::string([viewModelName UTF8String]);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->instantiateBlankViewModelInstance(
+            reinterpret_cast<rive::FileHandle>(fileHandle),
+            stdName,
+            listener.get(),
+            requestID);
 
-      // Store the listener so it doesn't get deallocated
-      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(vmiHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    // Store the listener so it doesn't get deallocated
+    uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(vmiHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return vmiHandle;
-    }];
+    return vmiHandle;
+  }];
 }
 
 - (uint64_t)
@@ -2490,24 +2477,24 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                              observer
                                     requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    // Create a new listener for this specific observer
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
 
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->instantiateDefaultViewModelInstance(
-              reinterpret_cast<rive::FileHandle>(fileHandle),
-              reinterpret_cast<rive::ArtboardHandle>(artboardHandle),
-              listener.get(),
-              requestID);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->instantiateDefaultViewModelInstance(
+            reinterpret_cast<rive::FileHandle>(fileHandle),
+            reinterpret_cast<rive::ArtboardHandle>(artboardHandle),
+            listener.get(),
+            requestID);
 
-      // Store the listener so it doesn't get deallocated
-      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(vmiHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    // Store the listener so it doesn't get deallocated
+    uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(vmiHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return vmiHandle;
-    }];
+    return vmiHandle;
+  }];
 }
 
 - (uint64_t)
@@ -2518,25 +2505,25 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                        observer
                               requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    // Create a new listener for this specific observer
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
 
-      auto stdName = std::string([viewModelName UTF8String]);
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->instantiateDefaultViewModelInstance(
-              reinterpret_cast<rive::FileHandle>(fileHandle),
-              stdName,
-              listener.get(),
-              requestID);
+    auto stdName = std::string([viewModelName UTF8String]);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->instantiateDefaultViewModelInstance(
+            reinterpret_cast<rive::FileHandle>(fileHandle),
+            stdName,
+            listener.get(),
+            requestID);
 
-      // Store the listener so it doesn't get deallocated
-      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(vmiHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    // Store the listener so it doesn't get deallocated
+    uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(vmiHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return vmiHandle;
-    }];
+    return vmiHandle;
+  }];
 }
 
 - (uint64_t)createViewModelInstanceNamed:(NSString*)instanceName
@@ -2547,24 +2534,24 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                         observer
                                requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
 
-      auto stdInstanceName = std::string([instanceName UTF8String]);
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->instantiateViewModelInstanceNamed(
-              reinterpret_cast<rive::FileHandle>(fileHandle),
-              reinterpret_cast<rive::ArtboardHandle>(artboardHandle),
-              stdInstanceName,
-              listener.get(),
-              requestID);
+    auto stdInstanceName = std::string([instanceName UTF8String]);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->instantiateViewModelInstanceNamed(
+            reinterpret_cast<rive::FileHandle>(fileHandle),
+            reinterpret_cast<rive::ArtboardHandle>(artboardHandle),
+            stdInstanceName,
+            listener.get(),
+            requestID);
 
-      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(vmiHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(vmiHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return vmiHandle;
-    }];
+    return vmiHandle;
+  }];
 }
 
 - (uint64_t)createViewModelInstanceNamed:(NSString*)instanceName
@@ -2575,124 +2562,124 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                         observer
                                requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
 
-      auto stdViewModelName = std::string([viewModelName UTF8String]);
-      auto stdInstanceName = std::string([instanceName UTF8String]);
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->instantiateViewModelInstanceNamed(
-              reinterpret_cast<rive::FileHandle>(fileHandle),
-              stdViewModelName,
-              stdInstanceName,
-              listener.get(),
-              requestID);
+    auto stdViewModelName = std::string([viewModelName UTF8String]);
+    auto stdInstanceName = std::string([instanceName UTF8String]);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->instantiateViewModelInstanceNamed(
+            reinterpret_cast<rive::FileHandle>(fileHandle),
+            stdViewModelName,
+            stdInstanceName,
+            listener.get(),
+            requestID);
 
-      uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(vmiHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    uint64_t vmiHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(vmiHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return vmiHandle;
-    }];
+    return vmiHandle;
+  }];
 }
 
 - (void)requestViewModelInstanceString:(uint64_t)viewModelInstanceHandle
                                   path:(NSString*)path
                              requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->requestViewModelInstanceString(
-          handle, stdPath, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->requestViewModelInstanceString(
+        handle, stdPath, requestID);
+  }];
 }
 
 - (void)requestViewModelInstanceNumber:(uint64_t)viewModelInstanceHandle
                                   path:(NSString*)path
                              requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->requestViewModelInstanceNumber(
-          handle, stdPath, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->requestViewModelInstanceNumber(
+        handle, stdPath, requestID);
+  }];
 }
 
 - (void)requestViewModelInstanceBool:(uint64_t)viewModelInstanceHandle
                                 path:(NSString*)path
                            requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->requestViewModelInstanceBool(
-          handle, stdPath, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->requestViewModelInstanceBool(
+        handle, stdPath, requestID);
+  }];
 }
 
 - (void)requestViewModelInstanceColor:(uint64_t)viewModelInstanceHandle
                                  path:(NSString*)path
                             requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->requestViewModelInstanceColor(
-          handle, stdPath, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->requestViewModelInstanceColor(
+        handle, stdPath, requestID);
+  }];
 }
 
 - (void)requestViewModelInstanceEnum:(uint64_t)viewModelInstanceHandle
                                 path:(NSString*)path
                            requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->requestViewModelInstanceEnum(
-          handle, stdPath, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->requestViewModelInstanceEnum(
+        handle, stdPath, requestID);
+  }];
 }
 
 - (void)requestViewModelInstanceListSize:(uint64_t)viewModelInstanceHandle
                                     path:(NSString*)path
                                requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->requestViewModelInstanceListSize(
-          handle, stdPath, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->requestViewModelInstanceListSize(
+        handle, stdPath, requestID);
+  }];
 }
 
 - (void)requestViewModelInstanceViewModelName:(uint64_t)viewModelInstanceHandle
                                     requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      self->_commandQueue->requestViewModelInstanceViewModelName(handle,
-                                                                 requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    self->_commandQueue->requestViewModelInstanceViewModelName(
+        handle, requestID);
+  }];
 }
 
 - (void)requestViewModelInstanceName:(uint64_t)viewModelInstanceHandle
                            requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      self->_commandQueue->requestViewModelInstanceName(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    self->_commandQueue->requestViewModelInstanceName(handle, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceString:(uint64_t)viewModelInstanceHandle
@@ -2700,14 +2687,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                              value:(NSString*)value
                          requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto stdValue = std::string([value UTF8String]);
-      self->_commandQueue->setViewModelInstanceString(
-          handle, stdPath, stdValue, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto stdValue = std::string([value UTF8String]);
+    self->_commandQueue->setViewModelInstanceString(
+        handle, stdPath, stdValue, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceNumber:(uint64_t)viewModelInstanceHandle
@@ -2715,13 +2702,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                              value:(float)value
                          requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->setViewModelInstanceNumber(
-          handle, stdPath, value, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->setViewModelInstanceNumber(
+        handle, stdPath, value, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceBool:(uint64_t)viewModelInstanceHandle
@@ -2729,13 +2716,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                            value:(BOOL)value
                        requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->setViewModelInstanceBool(
-          handle, stdPath, value, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->setViewModelInstanceBool(
+        handle, stdPath, value, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceColor:(uint64_t)viewModelInstanceHandle
@@ -2743,14 +2730,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                             value:(uint32_t)value
                         requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      rive::ColorInt colorValue = static_cast<rive::ColorInt>(value);
-      self->_commandQueue->setViewModelInstanceColor(
-          handle, stdPath, colorValue, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    rive::ColorInt colorValue = static_cast<rive::ColorInt>(value);
+    self->_commandQueue->setViewModelInstanceColor(
+        handle, stdPath, colorValue, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceEnum:(uint64_t)viewModelInstanceHandle
@@ -2758,14 +2745,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                            value:(NSString*)value
                        requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto stdValue = std::string([value UTF8String]);
-      self->_commandQueue->setViewModelInstanceEnum(
-          handle, stdPath, stdValue, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto stdValue = std::string([value UTF8String]);
+    self->_commandQueue->setViewModelInstanceEnum(
+        handle, stdPath, stdValue, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceImage:(uint64_t)viewModelInstanceHandle
@@ -2773,14 +2760,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                             value:(uint64_t)value
                         requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto renderImageHandle = reinterpret_cast<rive::RenderImageHandle>(value);
-      self->_commandQueue->setViewModelInstanceImage(
-          handle, stdPath, renderImageHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto renderImageHandle = reinterpret_cast<rive::RenderImageHandle>(value);
+    self->_commandQueue->setViewModelInstanceImage(
+        handle, stdPath, renderImageHandle, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceFont:(uint64_t)viewModelInstanceHandle
@@ -2788,14 +2775,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                            value:(uint64_t)value
                        requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto fontHandle = reinterpret_cast<rive::FontHandle>(value);
-      self->_commandQueue->setViewModelInstanceFont(
-          handle, stdPath, fontHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto fontHandle = reinterpret_cast<rive::FontHandle>(value);
+    self->_commandQueue->setViewModelInstanceFont(
+        handle, stdPath, fontHandle, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceBlob:(uint64_t)viewModelInstanceHandle
@@ -2803,14 +2790,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                            value:(uint64_t)value
                        requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto blobHandle = reinterpret_cast<rive::BlobAssetHandle>(value);
-      self->_commandQueue->setViewModelInstanceBlob(
-          handle, stdPath, blobHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto blobHandle = reinterpret_cast<rive::BlobAssetHandle>(value);
+    self->_commandQueue->setViewModelInstanceBlob(
+        handle, stdPath, blobHandle, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceArtboard:(uint64_t)viewModelInstanceHandle
@@ -2818,14 +2805,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                value:(uint64_t)value
                            requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto artboardHandle = reinterpret_cast<rive::ArtboardHandle>(value);
-      self->_commandQueue->setViewModelInstanceArtboard(
-          handle, stdPath, artboardHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto artboardHandle = reinterpret_cast<rive::ArtboardHandle>(value);
+    self->_commandQueue->setViewModelInstanceArtboard(
+        handle, stdPath, artboardHandle, requestID);
+  }];
 }
 
 - (void)setViewModelInstanceNestedViewModel:(uint64_t)viewModelInstanceHandle
@@ -2833,53 +2820,53 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                       value:(uint64_t)value
                                   requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
-      self->_commandQueue->setViewModelInstanceNestedViewModel(
-          handle, stdPath, valueHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
+    self->_commandQueue->setViewModelInstanceNestedViewModel(
+        handle, stdPath, valueHandle, requestID);
+  }];
 }
 
 - (void)fireViewModelTrigger:(uint64_t)viewModelInstanceHandle
                         path:(NSString*)path
                    requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->fireViewModelTrigger(handle, stdPath, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->fireViewModelTrigger(handle, stdPath, requestID);
+  }];
 }
 
 - (void)deleteViewModelInstance:(uint64_t)viewModelInstance
                       requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::ViewModelInstanceHandle>(viewModelInstance);
-      self->_commandQueue->deleteViewModelInstance(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstance);
+    self->_commandQueue->deleteViewModelInstance(handle, requestID);
+  }];
 }
 
 - (void)deleteViewModelInstanceListener:(uint64_t)viewModelInstance
 {
-    [self executeCommand:^{
-      NSValue* listenerValue =
-          self->_viewModelInstanceListeners[@(viewModelInstance)];
-      if (listenerValue)
-      {
-          _ViewModelInstanceListener* listener =
-              static_cast<_ViewModelInstanceListener*>(
-                  listenerValue.pointerValue);
-          delete listener;
-          [self->_viewModelInstanceListeners
-              removeObjectForKey:@(viewModelInstance)];
-      }
-    }];
+  [self executeCommand:^{
+    NSValue*
+        listenerValue = self->_viewModelInstanceListeners[@(viewModelInstance)];
+    if (listenerValue)
+    {
+      _ViewModelInstanceListener*
+          listener = static_cast<_ViewModelInstanceListener*>(
+              listenerValue.pointerValue);
+      delete listener;
+      [self->_viewModelInstanceListeners
+          removeObjectForKey:@(viewModelInstance)];
+    }
+  }];
 }
 
 - (void)subscribeToViewModelProperty:(uint64_t)viewModelInstance
@@ -2887,16 +2874,16 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                 type:(RiveViewModelInstanceDataType)type
                            requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::ViewModelInstanceHandle>(viewModelInstance);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->subscribeToViewModelProperty(
-          handle,
-          stdPath,
-          RiveViewModelInstanceDataTypeToCppType(type),
-          requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstance);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->subscribeToViewModelProperty(
+        handle,
+        stdPath,
+        RiveViewModelInstanceDataTypeToCppType(type),
+        requestID);
+  }];
 }
 
 - (void)unsubscribeToViewModelProperty:(uint64_t)viewModelInstance
@@ -2904,16 +2891,16 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                   type:(RiveViewModelInstanceDataType)type
                              requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle =
-          reinterpret_cast<rive::ViewModelInstanceHandle>(viewModelInstance);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->unsubscribeToViewModelProperty(
-          handle,
-          stdPath,
-          RiveViewModelInstanceDataTypeToCppType(type),
-          requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstance);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->unsubscribeToViewModelProperty(
+        handle,
+        stdPath,
+        RiveViewModelInstanceDataTypeToCppType(type),
+        requestID);
+  }];
 }
 
 #pragma mark - RenderImage
@@ -2922,68 +2909,67 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                listener:(id<RiveRenderImageListener>)listener
               requestID:(uint64_t)requestID
 {
-    id<RiveAssetDataCopier> copier = _assetDataCopier;
-    return [self executeCommandWithReturn:^uint64_t {
-      std::vector<uint8_t> imageBytes;
-      if (NSString* error = copyAssetData(copier, data, imageBytes))
-      {
-          [listener onRenderImageError:0 requestID:requestID message:error];
-          return 0;
-      }
+  id<RiveAssetDataCopier> copier = _assetDataCopier;
+  return [self executeCommandWithReturn:^uint64_t {
+    std::vector<uint8_t> imageBytes;
+    if (NSString* error = copyAssetData(copier, data, imageBytes))
+    {
+      [listener onRenderImageError:0 requestID:requestID message:error];
+      return 0;
+    }
 
-      auto renderImageListener =
-          std::make_unique<_RenderImageListener>(listener);
+    auto renderImageListener = std::make_unique<_RenderImageListener>(listener);
 
-      auto handle = self->_commandQueue->decodeImage(
-          std::move(imageBytes), renderImageListener.get(), requestID);
+    auto handle = self->_commandQueue->decodeImage(
+        std::move(imageBytes), renderImageListener.get(), requestID);
 
-      uint64_t renderImageHandleUInt = reinterpret_cast<uint64_t>(handle);
-      self->_renderImageListeners[@(renderImageHandleUInt)] =
-          [NSValue valueWithPointer:renderImageListener.release()];
+    uint64_t renderImageHandleUInt = reinterpret_cast<uint64_t>(handle);
+    self->_renderImageListeners[@(renderImageHandleUInt)] = [NSValue
+        valueWithPointer:renderImageListener.release()];
 
-      return renderImageHandleUInt;
-    }];
+    return renderImageHandleUInt;
+  }];
 }
 
 - (void)deleteImage:(uint64_t)renderImage requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::RenderImageHandle>(renderImage);
-      self->_commandQueue->deleteImage(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::RenderImageHandle>(renderImage);
+    self->_commandQueue->deleteImage(handle, requestID);
+  }];
 }
 
 - (void)deleteImageListener:(uint64_t)renderImage
 {
-    [self executeCommand:^{
-      NSValue* listenerValue = self->_renderImageListeners[@(renderImage)];
-      if (listenerValue)
-      {
-          _RenderImageListener* listener =
-              static_cast<_RenderImageListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_renderImageListeners removeObjectForKey:@(renderImage)];
-      }
-    }];
+  [self executeCommand:^{
+    NSValue* listenerValue = self->_renderImageListeners[@(renderImage)];
+    if (listenerValue)
+    {
+      _RenderImageListener* listener = static_cast<_RenderImageListener*>(
+          listenerValue.pointerValue);
+      delete listener;
+      [self->_renderImageListeners removeObjectForKey:@(renderImage)];
+    }
+  }];
 }
 
 - (void)addGlobalImageAsset:(NSString*)name
                 imageHandle:(uint64_t)imageHandle
                   requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto stdName = std::string([name UTF8String]);
-      auto handle = reinterpret_cast<rive::RenderImageHandle>(imageHandle);
-      self->_commandQueue->addGlobalImageAsset(stdName, handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto stdName = std::string([name UTF8String]);
+    auto handle = reinterpret_cast<rive::RenderImageHandle>(imageHandle);
+    self->_commandQueue->addGlobalImageAsset(stdName, handle, requestID);
+  }];
 }
 
 - (void)removeGlobalImageAsset:(NSString*)name requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto stdName = std::string([name UTF8String]);
-      self->_commandQueue->removeGlobalImageAsset(stdName, requestID);
-    }];
+  [self executeCommand:^{
+    auto stdName = std::string([name UTF8String]);
+    self->_commandQueue->removeGlobalImageAsset(stdName, requestID);
+  }];
 }
 
 #pragma mark - Blob
@@ -2992,48 +2978,48 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
               listener:(id<RiveBlobListener>)listener
              requestID:(uint64_t)requestID
 {
-    id<RiveAssetDataCopier> copier = _assetDataCopier;
-    return [self executeCommandWithReturn:^uint64_t {
-      std::vector<uint8_t> blobBytes;
-      if (NSString* error = copyAssetData(copier, data, blobBytes))
-      {
-          [listener onBlobError:0 requestID:requestID message:error];
-          return 0;
-      }
+  id<RiveAssetDataCopier> copier = _assetDataCopier;
+  return [self executeCommandWithReturn:^uint64_t {
+    std::vector<uint8_t> blobBytes;
+    if (NSString* error = copyAssetData(copier, data, blobBytes))
+    {
+      [listener onBlobError:0 requestID:requestID message:error];
+      return 0;
+    }
 
-      auto blobListener = std::make_unique<_BlobListener>(listener);
+    auto blobListener = std::make_unique<_BlobListener>(listener);
 
-      auto handle = self->_commandQueue->decodeBlob(
-          std::move(blobBytes), blobListener.get(), requestID);
+    auto handle = self->_commandQueue->decodeBlob(
+        std::move(blobBytes), blobListener.get(), requestID);
 
-      uint64_t blobHandle = reinterpret_cast<uint64_t>(handle);
-      self->_blobListeners[@(blobHandle)] =
-          [NSValue valueWithPointer:blobListener.release()];
+    uint64_t blobHandle = reinterpret_cast<uint64_t>(handle);
+    self->_blobListeners[@(blobHandle)] = [NSValue
+        valueWithPointer:blobListener.release()];
 
-      return blobHandle;
-    }];
+    return blobHandle;
+  }];
 }
 
 - (void)deleteBlob:(uint64_t)blob requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::BlobAssetHandle>(blob);
-      self->_commandQueue->deleteBlob(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::BlobAssetHandle>(blob);
+    self->_commandQueue->deleteBlob(handle, requestID);
+  }];
 }
 
 - (void)deleteBlobListener:(uint64_t)blob
 {
-    [self executeCommand:^{
-      NSValue* listenerValue = self->_blobListeners[@(blob)];
-      if (listenerValue)
-      {
-          _BlobListener* listener =
-              static_cast<_BlobListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_blobListeners removeObjectForKey:@(blob)];
-      }
-    }];
+  [self executeCommand:^{
+    NSValue* listenerValue = self->_blobListeners[@(blob)];
+    if (listenerValue)
+    {
+      _BlobListener* listener = static_cast<_BlobListener*>(
+          listenerValue.pointerValue);
+      delete listener;
+      [self->_blobListeners removeObjectForKey:@(blob)];
+    }
+  }];
 }
 
 #pragma mark - Font
@@ -3042,27 +3028,27 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
               listener:(id<RiveFontListener>)listener
              requestID:(uint64_t)requestID
 {
-    id<RiveAssetDataCopier> copier = _assetDataCopier;
-    return [self executeCommandWithReturn:^uint64_t {
-      std::vector<uint8_t> fontBytes;
-      if (NSString* error = copyAssetData(copier, data, fontBytes))
-      {
-          [listener onFontError:0 requestID:requestID message:error];
-          return 0;
-      }
+  id<RiveAssetDataCopier> copier = _assetDataCopier;
+  return [self executeCommandWithReturn:^uint64_t {
+    std::vector<uint8_t> fontBytes;
+    if (NSString* error = copyAssetData(copier, data, fontBytes))
+    {
+      [listener onFontError:0 requestID:requestID message:error];
+      return 0;
+    }
 
-      auto fontListener = std::make_unique<_FontListener>(listener);
+    auto fontListener = std::make_unique<_FontListener>(listener);
 
-      // Submission mutates the queue and cannot safely be rolled back here.
-      auto handle = self->_commandQueue->decodeFont(
-          std::move(fontBytes), fontListener.get(), requestID);
+    // Submission mutates the queue and cannot safely be rolled back here.
+    auto handle = self->_commandQueue->decodeFont(
+        std::move(fontBytes), fontListener.get(), requestID);
 
-      uint64_t fontHandle = reinterpret_cast<uint64_t>(handle);
-      self->_fontListeners[@(fontHandle)] =
-          [NSValue valueWithPointer:fontListener.release()];
+    uint64_t fontHandle = reinterpret_cast<uint64_t>(handle);
+    self->_fontListeners[@(fontHandle)] = [NSValue
+        valueWithPointer:fontListener.release()];
 
-      return fontHandle;
-    }];
+    return fontHandle;
+  }];
 }
 
 #if !TARGET_OS_OSX || RIVE_MAC_CATALYST
@@ -3073,60 +3059,60 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                 listener:(id<RiveFontListener>)listener
                requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto fontListener = std::make_unique<_FontListener>(listener);
-      auto riveFont = [RiveFont fontFromNativeFont:font useSystemShaper:YES];
+  return [self executeCommandWithReturn:^uint64_t {
+    auto fontListener = std::make_unique<_FontListener>(listener);
+    auto riveFont = [RiveFont fontFromNativeFont:font useSystemShaper:YES];
 
-      auto handle = self->_commandQueue->addExternalFont(
-          std::move(riveFont), fontListener.get(), requestID);
+    auto handle = self->_commandQueue->addExternalFont(
+        std::move(riveFont), fontListener.get(), requestID);
 
-      uint64_t fontHandle = reinterpret_cast<uint64_t>(handle);
-      self->_fontListeners[@(fontHandle)] =
-          [NSValue valueWithPointer:fontListener.release()];
+    uint64_t fontHandle = reinterpret_cast<uint64_t>(handle);
+    self->_fontListeners[@(fontHandle)] = [NSValue
+        valueWithPointer:fontListener.release()];
 
-      return fontHandle;
-    }];
+    return fontHandle;
+  }];
 }
 
 - (void)deleteFont:(uint64_t)font requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::FontHandle>(font);
-      self->_commandQueue->deleteFont(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::FontHandle>(font);
+    self->_commandQueue->deleteFont(handle, requestID);
+  }];
 }
 
 - (void)deleteFontListener:(uint64_t)font
 {
-    [self executeCommand:^{
-      NSValue* listenerValue = self->_fontListeners[@(font)];
-      if (listenerValue)
-      {
-          _FontListener* listener =
-              static_cast<_FontListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_fontListeners removeObjectForKey:@(font)];
-      }
-    }];
+  [self executeCommand:^{
+    NSValue* listenerValue = self->_fontListeners[@(font)];
+    if (listenerValue)
+    {
+      _FontListener* listener = static_cast<_FontListener*>(
+          listenerValue.pointerValue);
+      delete listener;
+      [self->_fontListeners removeObjectForKey:@(font)];
+    }
+  }];
 }
 
 - (void)addGlobalFontAsset:(NSString*)name
                 fontHandle:(uint64_t)fontHandle
                  requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto stdName = std::string([name UTF8String]);
-      auto handle = reinterpret_cast<rive::FontHandle>(fontHandle);
-      self->_commandQueue->addGlobalFontAsset(stdName, handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto stdName = std::string([name UTF8String]);
+    auto handle = reinterpret_cast<rive::FontHandle>(fontHandle);
+    self->_commandQueue->addGlobalFontAsset(stdName, handle, requestID);
+  }];
 }
 
 - (void)removeGlobalFontAsset:(NSString*)name requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto stdName = std::string([name UTF8String]);
-      self->_commandQueue->removeGlobalFontAsset(stdName, requestID);
-    }];
+  [self executeCommand:^{
+    auto stdName = std::string([name UTF8String]);
+    self->_commandQueue->removeGlobalFontAsset(stdName, requestID);
+  }];
 }
 
 #pragma mark - Audio
@@ -3135,67 +3121,67 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                listener:(id<RiveAudioListener>)listener
               requestID:(uint64_t)requestID
 {
-    id<RiveAssetDataCopier> copier = _assetDataCopier;
-    return [self executeCommandWithReturn:^uint64_t {
-      std::vector<uint8_t> audioBytes;
-      if (NSString* error = copyAssetData(copier, data, audioBytes))
-      {
-          [listener onAudioSourceError:0 requestID:requestID message:error];
-          return 0;
-      }
+  id<RiveAssetDataCopier> copier = _assetDataCopier;
+  return [self executeCommandWithReturn:^uint64_t {
+    std::vector<uint8_t> audioBytes;
+    if (NSString* error = copyAssetData(copier, data, audioBytes))
+    {
+      [listener onAudioSourceError:0 requestID:requestID message:error];
+      return 0;
+    }
 
-      auto audioListener = std::make_unique<_AudioListener>(listener);
+    auto audioListener = std::make_unique<_AudioListener>(listener);
 
-      auto handle = self->_commandQueue->decodeAudio(
-          std::move(audioBytes), audioListener.get(), requestID);
+    auto handle = self->_commandQueue->decodeAudio(
+        std::move(audioBytes), audioListener.get(), requestID);
 
-      uint64_t audioHandleUInt = reinterpret_cast<uint64_t>(handle);
-      self->_audioListeners[@(audioHandleUInt)] =
-          [NSValue valueWithPointer:audioListener.release()];
+    uint64_t audioHandleUInt = reinterpret_cast<uint64_t>(handle);
+    self->_audioListeners[@(audioHandleUInt)] = [NSValue
+        valueWithPointer:audioListener.release()];
 
-      return audioHandleUInt;
-    }];
+    return audioHandleUInt;
+  }];
 }
 
 - (void)deleteAudio:(uint64_t)audio requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::AudioSourceHandle>(audio);
-      self->_commandQueue->deleteAudio(handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::AudioSourceHandle>(audio);
+    self->_commandQueue->deleteAudio(handle, requestID);
+  }];
 }
 
 - (void)deleteAudioListener:(uint64_t)audio
 {
-    [self executeCommand:^{
-      NSValue* listenerValue = self->_audioListeners[@(audio)];
-      if (listenerValue)
-      {
-          _AudioListener* listener =
-              static_cast<_AudioListener*>(listenerValue.pointerValue);
-          delete listener;
-          [self->_audioListeners removeObjectForKey:@(audio)];
-      }
-    }];
+  [self executeCommand:^{
+    NSValue* listenerValue = self->_audioListeners[@(audio)];
+    if (listenerValue)
+    {
+      _AudioListener* listener = static_cast<_AudioListener*>(
+          listenerValue.pointerValue);
+      delete listener;
+      [self->_audioListeners removeObjectForKey:@(audio)];
+    }
+  }];
 }
 
 - (void)addGlobalAudioAsset:(NSString*)name
                 audioHandle:(uint64_t)audioHandle
                   requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto stdName = std::string([name UTF8String]);
-      auto handle = reinterpret_cast<rive::AudioSourceHandle>(audioHandle);
-      self->_commandQueue->addGlobalAudioAsset(stdName, handle, requestID);
-    }];
+  [self executeCommand:^{
+    auto stdName = std::string([name UTF8String]);
+    auto handle = reinterpret_cast<rive::AudioSourceHandle>(audioHandle);
+    self->_commandQueue->addGlobalAudioAsset(stdName, handle, requestID);
+  }];
 }
 
 - (void)removeGlobalAudioAsset:(NSString*)name requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto stdName = std::string([name UTF8String]);
-      self->_commandQueue->removeGlobalAudioAsset(stdName, requestID);
-    }];
+  [self executeCommand:^{
+    auto stdName = std::string([name UTF8String]);
+    self->_commandQueue->removeGlobalAudioAsset(stdName, requestID);
+  }];
 }
 
 - (uint64_t)
@@ -3204,24 +3190,24 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                             observer:(id<RiveViewModelInstanceListener>)observer
                            requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      // Create a new listener for this specific observer
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    // Create a new listener for this specific observer
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
 
-      auto stdPath = std::string([path UTF8String]);
-      auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->referenceNestedViewModelInstance(
-              vmiHandle, stdPath, listener.get(), requestID);
+    auto stdPath = std::string([path UTF8String]);
+    auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->referenceNestedViewModelInstance(
+            vmiHandle, stdPath, listener.get(), requestID);
 
-      // Store the listener so it doesn't get deallocated
-      uint64_t returnHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(returnHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    // Store the listener so it doesn't get deallocated
+    uint64_t returnHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(returnHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return returnHandle;
-    }];
+    return returnHandle;
+  }];
 }
 
 - (uint64_t)
@@ -3231,22 +3217,22 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                           observer:(id<RiveViewModelInstanceListener>)observer
                          requestID:(uint64_t)requestID
 {
-    return [self executeCommandWithReturn:^uint64_t {
-      auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
+  return [self executeCommandWithReturn:^uint64_t {
+    auto listener = std::make_unique<_ViewModelInstanceListener>(observer);
 
-      auto stdPath = std::string([path UTF8String]);
-      auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      rive::ViewModelInstanceHandle handle =
-          self->_commandQueue->referenceListViewModelInstance(
-              vmiHandle, stdPath, index, listener.get(), requestID);
+    auto stdPath = std::string([path UTF8String]);
+    auto vmiHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    rive::ViewModelInstanceHandle
+        handle = self->_commandQueue->referenceListViewModelInstance(
+            vmiHandle, stdPath, index, listener.get(), requestID);
 
-      uint64_t returnHandle = reinterpret_cast<uint64_t>(handle);
-      self->_viewModelInstanceListeners[@(returnHandle)] =
-          [NSValue valueWithPointer:listener.release()];
+    uint64_t returnHandle = reinterpret_cast<uint64_t>(handle);
+    self->_viewModelInstanceListeners[@(returnHandle)] = [NSValue
+        valueWithPointer:listener.release()];
 
-      return returnHandle;
-    }];
+    return returnHandle;
+  }];
 }
 
 - (void)appendViewModelInstanceListViewModel:(uint64_t)viewModelInstanceHandle
@@ -3254,14 +3240,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                        value:(uint64_t)value
                                    requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
-      self->_commandQueue->appendViewModelInstanceListViewModel(
-          handle, stdPath, valueHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
+    self->_commandQueue->appendViewModelInstanceListViewModel(
+        handle, stdPath, valueHandle, requestID);
+  }];
 }
 
 - (void)insertViewModelInstanceListViewModel:(uint64_t)viewModelInstanceHandle
@@ -3270,14 +3256,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                        index:(int)index
                                    requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
-      self->_commandQueue->insertViewModelInstanceListViewModel(
-          handle, stdPath, valueHandle, index, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
+    self->_commandQueue->insertViewModelInstanceListViewModel(
+        handle, stdPath, valueHandle, index, requestID);
+  }];
 }
 
 - (void)removeViewModelInstanceListViewModelAtIndex:
@@ -3287,14 +3273,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                               value:(uint64_t)value
                                           requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
-      self->_commandQueue->removeViewModelInstanceListViewModel(
-          handle, stdPath, index, valueHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
+    self->_commandQueue->removeViewModelInstanceListViewModel(
+        handle, stdPath, index, valueHandle, requestID);
+  }];
 }
 
 - (void)removeViewModelInstanceListViewModelByValue:
@@ -3303,14 +3289,14 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                                               value:(uint64_t)value
                                           requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
-      self->_commandQueue->removeViewModelInstanceListViewModel(
-          handle, stdPath, valueHandle, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    auto valueHandle = reinterpret_cast<rive::ViewModelInstanceHandle>(value);
+    self->_commandQueue->removeViewModelInstanceListViewModel(
+        handle, stdPath, valueHandle, requestID);
+  }];
 }
 
 - (void)swapViewModelInstanceListValues:(uint64_t)viewModelInstanceHandle
@@ -3319,13 +3305,13 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
                               withIndex:(int)withIndex
                               requestID:(uint64_t)requestID
 {
-    [self executeCommand:^{
-      auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
-          viewModelInstanceHandle);
-      auto stdPath = std::string([path UTF8String]);
-      self->_commandQueue->swapViewModelInstanceListValues(
-          handle, stdPath, atIndex, withIndex, requestID);
-    }];
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ViewModelInstanceHandle>(
+        viewModelInstanceHandle);
+    auto stdPath = std::string([path UTF8String]);
+    self->_commandQueue->swapViewModelInstanceListValues(
+        handle, stdPath, atIndex, withIndex, requestID);
+  }];
 }
 
 #pragma mark - Private
@@ -3340,7 +3326,7 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (rive::rcp<rive::CommandQueue>)commandQueue
 {
-    return _commandQueue;
+  return _commandQueue;
 }
 
 /**
@@ -3355,10 +3341,10 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (void)executeCommand:(void (^)(void))commandBlock
 {
-    [_RiveMainActor
-        assertIsolated:@"Worker calls must be made on the MainActor."];
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
 
-    commandBlock();
+  commandBlock();
 }
 
 /**
@@ -3375,12 +3361,12 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (uint64_t)executeCommandWithReturn:(uint64_t (^)(void))commandBlock
 {
-    [_RiveMainActor
-        assertIsolated:@"Worker calls must be made on the MainActor."];
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
 
-    uint64_t result = commandBlock();
+  uint64_t result = commandBlock();
 
-    return result;
+  return result;
 }
 
 /**
@@ -3395,8 +3381,8 @@ void _AudioListener::onAudioSourceDeleted(const rive::AudioSourceHandle handle,
  */
 - (void)processMessages
 {
-    // Process messages directly since we're already on the main queue
-    _commandQueue->processMessages();
+  // Process messages directly since we're already on the main queue
+  _commandQueue->processMessages();
 }
 
 @end

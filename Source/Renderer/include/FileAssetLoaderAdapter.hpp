@@ -20,14 +20,15 @@ namespace rive
 class FileAssetLoaderAdapter : public FileAssetLoader
 {
 private:
-    RiveFileAssetLoader* loader;
+  RiveFileAssetLoader* loader;
 
 public:
-    FileAssetLoaderAdapter(RiveFileAssetLoader*);
+  FileAssetLoaderAdapter(RiveFileAssetLoader*);
 
-    bool loadContents(rive::FileAsset& asset,
-                      rive::Span<const uint8_t> bytes,
-                      rive::Factory* factory) override;
+  bool loadContents(
+      rive::FileAsset& asset,
+      rive::Span<const uint8_t> bytes,
+      rive::Factory* factory) override;
 };
 
 } // namespace rive

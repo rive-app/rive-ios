@@ -18,7 +18,7 @@ using namespace rive;
                       andData:(NSData*)data
                    andFactory:(RiveFactory*)factory
 {
-    return false;
+  return false;
 }
 
 - (void)cancel

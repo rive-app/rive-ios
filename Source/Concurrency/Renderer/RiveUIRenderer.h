@@ -34,37 +34,37 @@ NS_ASSUME_NONNULL_BEGIN
 /// mapping pointer events so input agrees with the rendered geometry.
 typedef struct
 {
-    /// The handle of the artboard to render. Must be a valid, nonzero handle
-    /// owned by the command queue that backs the renderer.
-    uint64_t artboardHandle;
+  /// The handle of the artboard to render. Must be a valid, nonzero handle
+  /// owned by the command queue that backs the renderer.
+  uint64_t artboardHandle;
 
-    /// The state-machine instance associated with the artboard. Must be a
-    /// valid, nonzero handle created from the artboard and owned by the same
-    /// command queue as the renderer.
-    uint64_t stateMachineHandle;
+  /// The state-machine instance associated with the artboard. Must be a
+  /// valid, nonzero handle created from the artboard and owned by the same
+  /// command queue as the renderer.
+  uint64_t stateMachineHandle;
 
-    /// How the artboard should be fitted within the target size.
-    RiveConfigurationFit fit;
+  /// How the artboard should be fitted within the target size.
+  RiveConfigurationFit fit;
 
-    /// How the artboard should be aligned when there's extra space.
-    RiveConfigurationAlignment alignment;
+  /// How the artboard should be aligned when there's extra space.
+  RiveConfigurationAlignment alignment;
 
-    /// The target texture dimensions in pixels. Width and height must be
-    /// positive whole-pixel values, must match the supplied texture, and must
-    /// not exceed `CGSizeMaximum2DTextureSize` for the supplied device.
-    CGSize size;
+  /// The target texture dimensions in pixels. Width and height must be
+  /// positive whole-pixel values, must match the supplied texture, and must
+  /// not exceed `CGSizeMaximum2DTextureSize` for the supplied device.
+  CGSize size;
 
-    /// The Metal pixel format for the target texture. Must match the format
-    /// of the texture passed to the renderer.
-    MTLPixelFormat pixelFormat;
+  /// The Metal pixel format for the target texture. Must match the format
+  /// of the texture passed to the renderer.
+  MTLPixelFormat pixelFormat;
 
-    /// The scale used by `RiveConfigurationFitLayout` to map layout
-    /// coordinates to target pixels. This does not change `size` and is
-    /// ignored by other fit modes.
-    CGFloat layoutScale;
+  /// The scale used by `RiveConfigurationFitLayout` to map layout
+  /// coordinates to target pixels. This does not change `size` and is
+  /// ignored by other fit modes.
+  CGFloat layoutScale;
 
-    /// The background color in ARGB format (32-bit unsigned integer).
-    uint32_t color;
+  /// The background color in ARGB format (32-bit unsigned integer).
+  uint32_t color;
 } RiveUIRendererConfiguration;
 
 /// An interface for drawing Rive artboards to Metal textures.

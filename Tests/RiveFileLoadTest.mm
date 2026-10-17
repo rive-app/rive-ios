@@ -21,14 +21,14 @@
  */
 - (void)testLoadFile
 {
-    NSError* error = nil;
-    RiveFile* file = [Util loadTestFile:@"junk" error:&error];
+  NSError* error = nil;
+  RiveFile* file = [Util loadTestFile:@"junk" error:&error];
 
-    XCTAssertNil(file);
-    XCTAssertNotNil(error);
-    XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
-    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"Malformed");
-    XCTAssertEqual([error code], 600);
+  XCTAssertNil(file);
+  XCTAssertNotNil(error);
+  XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
+  XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"], @"Malformed");
+  XCTAssertEqual([error code], 600);
 }
 
 /*
@@ -36,15 +36,15 @@
  */
 - (void)testLoadFormat6
 {
-    NSError* error = nil;
-    RiveFile* file = [Util loadTestFile:@"sample6" error:&error];
+  NSError* error = nil;
+  RiveFile* file = [Util loadTestFile:@"sample6" error:&error];
 
-    XCTAssertNil(file);
-    XCTAssertNotNil(error);
-    XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
-    XCTAssertEqualObjects([[error userInfo] valueForKey:@"name"],
-                          @"UnsupportedVersion");
-    XCTAssertEqual([error code], 500);
+  XCTAssertNil(file);
+  XCTAssertNotNil(error);
+  XCTAssertEqualObjects([error domain], @"rive.app.ios.runtime");
+  XCTAssertEqualObjects(
+      [[error userInfo] valueForKey:@"name"], @"UnsupportedVersion");
+  XCTAssertEqual([error code], 500);
 }
 
 /*
@@ -52,10 +52,10 @@
  */
 - (void)testLoadFlux
 {
-    NSError* error = nil;
-    RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];
-    RiveArtboard* artboard = [file artboard:&error];
-    XCTAssertEqual(artboard.animationCount, 1);
+  NSError* error = nil;
+  RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];
+  RiveArtboard* artboard = [file artboard:&error];
+  XCTAssertEqual(artboard.animationCount, 1);
 }
 
 /*
@@ -63,12 +63,11 @@
  */
 - (void)testLoadFluxWithPLS
 {
-    [[RenderContextManager shared]
-        setDefaultRenderer:RendererType::riveRenderer];
-    NSError* error = nil;
-    RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];
-    RiveArtboard* artboard = [file artboard:&error];
-    XCTAssertEqual(artboard.animationCount, 1);
+  [[RenderContextManager shared] setDefaultRenderer:RendererType::riveRenderer];
+  NSError* error = nil;
+  RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];
+  RiveArtboard* artboard = [file artboard:&error];
+  XCTAssertEqual(artboard.animationCount, 1);
 }
 
 /*
@@ -76,10 +75,10 @@
  */
 - (void)testLoadBuggy
 {
-    NSError* error = nil;
-    RiveFile* file = [Util loadTestFile:@"off_road_car_blog" error:&error];
-    RiveArtboard* artboard = [file artboard:&error];
-    XCTAssertEqual(artboard.animationCount, 5);
+  NSError* error = nil;
+  RiveFile* file = [Util loadTestFile:@"off_road_car_blog" error:&error];
+  RiveArtboard* artboard = [file artboard:&error];
+  XCTAssertEqual(artboard.animationCount, 5);
 }
 
 @end

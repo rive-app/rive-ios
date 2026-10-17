@@ -15,44 +15,45 @@ NS_ASSUME_NONNULL_BEGIN
 rive::FileAssetLoaderAdapter::FileAssetLoaderAdapter(
     RiveFileAssetLoader* myLoader)
 {
-    loader = myLoader;
+  loader = myLoader;
 }
 
-bool rive::FileAssetLoaderAdapter::loadContents(rive::FileAsset& asset,
-                                                rive::Span<const uint8_t> bytes,
-                                                rive::Factory* factory)
+bool rive::FileAssetLoaderAdapter::loadContents(
+    rive::FileAsset& asset,
+    rive::Span<const uint8_t> bytes,
+    rive::Factory* factory)
 {
-    NSData* data = [NSData dataWithBytes:bytes.data() length:bytes.size()];
-    RiveFactory* myFactory = [[RiveFactory alloc] initWithFactory:factory];
+  NSData* data = [NSData dataWithBytes:bytes.data() length:bytes.size()];
+  RiveFactory* myFactory = [[RiveFactory alloc] initWithFactory:factory];
 #ifdef WITH_RIVE_TEXT
-    if (asset.is<rive::FontAsset>())
-    {
-        RiveFontAsset* fontAsset = [[RiveFontAsset alloc]
-            initWithFileAsset:asset.as<rive::FontAsset>()];
-        return [loader loadContentsWithAsset:fontAsset
-                                     andData:data
-                                  andFactory:myFactory];
-    }
+  if (asset.is<rive::FontAsset>())
+  {
+    RiveFontAsset* fontAsset = [[RiveFontAsset alloc]
+        initWithFileAsset:asset.as<rive::FontAsset>()];
+    return [loader loadContentsWithAsset:fontAsset
+                                 andData:data
+                              andFactory:myFactory];
+  }
 #endif
-    if (asset.is<rive::ImageAsset>())
-    {
-        RiveImageAsset* imageAsset = [[RiveImageAsset alloc]
-            initWithFileAsset:asset.as<rive::ImageAsset>()];
-        return [loader loadContentsWithAsset:imageAsset
-                                     andData:data
-                                  andFactory:myFactory];
-    }
+  if (asset.is<rive::ImageAsset>())
+  {
+    RiveImageAsset* imageAsset = [[RiveImageAsset alloc]
+        initWithFileAsset:asset.as<rive::ImageAsset>()];
+    return [loader loadContentsWithAsset:imageAsset
+                                 andData:data
+                              andFactory:myFactory];
+  }
 #ifdef WITH_RIVE_AUDIO
-    if (asset.is<rive::AudioAsset>())
-    {
-        RiveAudioAsset* audioAsset = [[RiveAudioAsset alloc]
-            initWithFileAsset:asset.as<rive::AudioAsset>()];
-        return [loader loadContentsWithAsset:audioAsset
-                                     andData:data
-                                  andFactory:myFactory];
-    }
+  if (asset.is<rive::AudioAsset>())
+  {
+    RiveAudioAsset* audioAsset = [[RiveAudioAsset alloc]
+        initWithFileAsset:asset.as<rive::AudioAsset>()];
+    return [loader loadContentsWithAsset:audioAsset
+                                 andData:data
+                              andFactory:myFactory];
+  }
 #endif
-    return false;
+  return false;
 }
 
 NS_ASSUME_NONNULL_END

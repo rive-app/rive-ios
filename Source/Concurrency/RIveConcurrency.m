@@ -12,57 +12,57 @@
 
 CGSize CGSizeMaximum2DTextureSize(id<MTLDevice> device)
 {
-    CGSize size = CGSizeZero;
-    // Fall back in reverse order of the table in the above linked document.
-    // See Page 1 for additional details on GPUs in each family.
-    if ([device supportsFamily:MTLGPUFamilyMac2])
-    {
-        size = CGSizeMake(16384, 16384);
-    }
+  CGSize size = CGSizeZero;
+  // Fall back in reverse order of the table in the above linked document.
+  // See Page 1 for additional details on GPUs in each family.
+  if ([device supportsFamily:MTLGPUFamilyMac2])
+  {
+    size = CGSizeMake(16384, 16384);
+  }
 #if !TARGET_OS_VISION && !TARGET_OS_TV
-    else if ([device supportsFamily:MTLGPUFamilyApple9])
-    {
-        size = CGSizeMake(16384, 16384);
-    }
+  else if ([device supportsFamily:MTLGPUFamilyApple9])
+  {
+    size = CGSizeMake(16384, 16384);
+  }
 #endif
-    else if ([device supportsFamily:MTLGPUFamilyApple8])
-    {
-        size = CGSizeMake(16384, 16384);
-    }
-    else if ([device supportsFamily:MTLGPUFamilyApple7])
-    {
-        size = CGSizeMake(16384, 16384);
-    }
-    else if ([device supportsFamily:MTLGPUFamilyApple6])
-    {
-        size = CGSizeMake(16384, 16384);
-    }
-    else if ([device supportsFamily:MTLGPUFamilyApple5])
-    {
-        size = CGSizeMake(16384, 16384);
-    }
-    else if ([device supportsFamily:MTLGPUFamilyApple4])
-    {
-        size = CGSizeMake(16384, 16384);
-    }
-    else if ([device supportsFamily:MTLGPUFamilyApple3])
-    {
-        size = CGSizeMake(16384, 16384);
-    }
-    else if ([device supportsFamily:MTLGPUFamilyApple2])
-    {
-        size = CGSizeMake(8192, 8192);
-    }
-    else
-    {
-        // Anything not noted in the linked table above, assume the lowest
-        // Wayback Machine shows that MTLGPUFamilyApple1 was 8192x8192
-        size = CGSizeMake(8192, 8192);
-    }
-    return size;
+  else if ([device supportsFamily:MTLGPUFamilyApple8])
+  {
+    size = CGSizeMake(16384, 16384);
+  }
+  else if ([device supportsFamily:MTLGPUFamilyApple7])
+  {
+    size = CGSizeMake(16384, 16384);
+  }
+  else if ([device supportsFamily:MTLGPUFamilyApple6])
+  {
+    size = CGSizeMake(16384, 16384);
+  }
+  else if ([device supportsFamily:MTLGPUFamilyApple5])
+  {
+    size = CGSizeMake(16384, 16384);
+  }
+  else if ([device supportsFamily:MTLGPUFamilyApple4])
+  {
+    size = CGSizeMake(16384, 16384);
+  }
+  else if ([device supportsFamily:MTLGPUFamilyApple3])
+  {
+    size = CGSizeMake(16384, 16384);
+  }
+  else if ([device supportsFamily:MTLGPUFamilyApple2])
+  {
+    size = CGSizeMake(8192, 8192);
+  }
+  else
+  {
+    // Anything not noted in the linked table above, assume the lowest
+    // Wayback Machine shows that MTLGPUFamilyApple1 was 8192x8192
+    size = CGSizeMake(8192, 8192);
+  }
+  return size;
 }
 
 MTLPixelFormat MTLRiveColorPixelFormat(void)
 {
-    return MTLPixelFormatBGRA8Unorm;
+  return MTLPixelFormatBGRA8Unorm;
 }

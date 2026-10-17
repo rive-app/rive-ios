@@ -18,24 +18,24 @@
 
 - (void)test_legacyFinalizeWithNil_commitsCommandBuffer
 {
-    id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-    XCTAssertNotNil(device);
-    if (!device)
-    {
-        return;
-    }
-    id<MTLCommandQueue> commandQueue = [device newCommandQueue];
-    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
-    XCTestExpectation* completed =
-        [self expectationWithDescription:@"Command buffer completed"];
-    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
-      XCTAssertEqual(buffer.status, MTLCommandBufferStatusCompleted);
-      [completed fulfill];
-    }];
+  id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+  XCTAssertNotNil(device);
+  if (!device)
+  {
+    return;
+  }
+  id<MTLCommandQueue> commandQueue = [device newCommandQueue];
+  id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+  XCTestExpectation* completed = [self
+      expectationWithDescription:@"Command buffer completed"];
+  [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
+    XCTAssertEqual(buffer.status, MTLCommandBufferStatusCompleted);
+    [completed fulfill];
+  }];
 
-    RiveUIRendererInvokeLegacyFinalize(nil, commandBuffer);
+  RiveUIRendererInvokeLegacyFinalize(nil, commandBuffer);
 
-    [self waitForExpectations:@[ completed ] timeout:2];
+  [self waitForExpectations:@[ completed ] timeout:2];
 }
 
 @end

@@ -17,236 +17,235 @@
 
 - (void)testHostedAssetsProvideCallbacks
 {
-    NSError* error = nil;
-    NSData* data = [Util loadTestData:@"hosted_assets"];
-    __block RiveImageAsset* image;
-    __block RiveFontAsset* font;
+  NSError* error = nil;
+  NSData* data = [Util loadTestData:@"hosted_assets"];
+  __block RiveImageAsset* image;
+  __block RiveFontAsset* font;
 
-    __block NSData* imageData;
-    __block NSData* fontData;
+  __block NSData* imageData;
+  __block NSData* fontData;
 
-    RiveFile* file = [[RiveFile alloc]
-             initWithData:data
-                  loadCdn:false
-        customAssetLoader:^bool(
-            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
-          if ([asset isKindOfClass:[RiveImageAsset class]])
-          {
-              image = (RiveImageAsset*)asset;
-              imageData = data;
-          }
-          if ([asset isKindOfClass:[RiveFontAsset class]])
-          {
-              font = (RiveFontAsset*)asset;
-              fontData = data;
-          }
-          return false;
+  RiveFile* file = [[RiveFile alloc]
+           initWithData:data
+                loadCdn:false
+      customAssetLoader:^bool(
+          RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        if ([asset isKindOfClass:[RiveImageAsset class]])
+        {
+          image = (RiveImageAsset*)asset;
+          imageData = data;
         }
-                    error:&error];
+        if ([asset isKindOfClass:[RiveFontAsset class]])
+        {
+          font = (RiveFontAsset*)asset;
+          fontData = data;
+        }
+        return false;
+      }
+                  error:&error];
 
-    XCTAssertNotNil(file);
-    XCTAssertNil(error);
+  XCTAssertNotNil(file);
+  XCTAssertNil(error);
 
-    XCTAssertNotNil(image);
-    XCTAssertEqual(imageData.length, 0);
-    XCTAssertEqualObjects([image name], @"image.png");
-    XCTAssertEqualObjects([image uniqueName], @"image-49934");
-    XCTAssertEqualObjects([image uniqueFilename], @"image-49934.png");
-    XCTAssertEqualObjects([image fileExtension], @"png");
-    XCTAssertEqualObjects([image cdnBaseUrl],
-                          @"https://public.uat.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([image cdnUuid],
-                          @"eadb7ed8-6d71-4b6c-bbc2-f0f5e9c5dd92");
+  XCTAssertNotNil(image);
+  XCTAssertEqual(imageData.length, 0);
+  XCTAssertEqualObjects([image name], @"image.png");
+  XCTAssertEqualObjects([image uniqueName], @"image-49934");
+  XCTAssertEqualObjects([image uniqueFilename], @"image-49934.png");
+  XCTAssertEqualObjects([image fileExtension], @"png");
+  XCTAssertEqualObjects(
+      [image cdnBaseUrl], @"https://public.uat.rive.app/cdn/uuid");
+  XCTAssertEqualObjects(
+      [image cdnUuid], @"eadb7ed8-6d71-4b6c-bbc2-f0f5e9c5dd92");
 
-    XCTAssertNotNil(font);
-    XCTAssertEqual(fontData.length, 0);
-    XCTAssertEqualObjects([font name], @"Inter");
-    XCTAssertEqualObjects([font uniqueName], @"Inter-45562");
-    XCTAssertEqualObjects([font uniqueFilename], @"Inter-45562.ttf");
-    XCTAssertEqualObjects([font fileExtension], @"ttf");
-    XCTAssertEqualObjects([font cdnBaseUrl],
-                          @"https://public.uat.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([font cdnUuid],
-                          @"60ad5ede-993c-4e03-9a80-e56888b2cff3");
+  XCTAssertNotNil(font);
+  XCTAssertEqual(fontData.length, 0);
+  XCTAssertEqualObjects([font name], @"Inter");
+  XCTAssertEqualObjects([font uniqueName], @"Inter-45562");
+  XCTAssertEqualObjects([font uniqueFilename], @"Inter-45562.ttf");
+  XCTAssertEqualObjects([font fileExtension], @"ttf");
+  XCTAssertEqualObjects(
+      [font cdnBaseUrl], @"https://public.uat.rive.app/cdn/uuid");
+  XCTAssertEqualObjects(
+      [font cdnUuid], @"60ad5ede-993c-4e03-9a80-e56888b2cff3");
 }
 
 - (void)testAudioAssetCallbacks
 {
-    NSError* error = nil;
-    NSData* data = [Util loadTestData:@"audio_test"];
-    __block RiveAudioAsset* hosted;
-    __block RiveAudioAsset* embedded;
+  NSError* error = nil;
+  NSData* data = [Util loadTestData:@"audio_test"];
+  __block RiveAudioAsset* hosted;
+  __block RiveAudioAsset* embedded;
 
-    __block NSData* hostedData;
-    __block NSData* embeddedData;
+  __block NSData* hostedData;
+  __block NSData* embeddedData;
 
-    RiveFile* file = [[RiveFile alloc]
-             initWithData:data
-                  loadCdn:false
-        customAssetLoader:^bool(
-            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
-          if ([asset isKindOfClass:[RiveAudioAsset class]])
+  RiveFile* file = [[RiveFile alloc]
+           initWithData:data
+                loadCdn:false
+      customAssetLoader:^bool(
+          RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        if ([asset isKindOfClass:[RiveAudioAsset class]])
+        {
+          if (data.length > 0)
           {
-              if (data.length > 0)
-              {
-                  embedded = (RiveAudioAsset*)asset;
-                  embeddedData = data;
-              }
-              else
-              {
-                  hosted = (RiveAudioAsset*)asset;
-              }
+            embedded = (RiveAudioAsset*)asset;
+            embeddedData = data;
           }
-          return false;
+          else
+          {
+            hosted = (RiveAudioAsset*)asset;
+          }
         }
-                    error:&error];
+        return false;
+      }
+                  error:&error];
 
-    XCTAssertNotNil(file);
-    XCTAssertNil(error);
+  XCTAssertNotNil(file);
+  XCTAssertNil(error);
 
-    XCTAssertNotNil(hosted);
-    XCTAssertEqual(hostedData.length, 0);
-    XCTAssertEqualObjects([hosted name], @"hosted");
-    XCTAssertEqualObjects([hosted uniqueName], @"hosted-55368");
-    XCTAssertEqualObjects([hosted uniqueFilename], @"hosted-55368.wav");
-    XCTAssertEqualObjects([hosted fileExtension], @"wav");
-    XCTAssertEqualObjects([hosted cdnBaseUrl],
-                          @"https://public.uat.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([hosted cdnUuid],
-                          @"79b65f1e-94ea-4191-b5ad-b3d5495b6343");
+  XCTAssertNotNil(hosted);
+  XCTAssertEqual(hostedData.length, 0);
+  XCTAssertEqualObjects([hosted name], @"hosted");
+  XCTAssertEqualObjects([hosted uniqueName], @"hosted-55368");
+  XCTAssertEqualObjects([hosted uniqueFilename], @"hosted-55368.wav");
+  XCTAssertEqualObjects([hosted fileExtension], @"wav");
+  XCTAssertEqualObjects(
+      [hosted cdnBaseUrl], @"https://public.uat.rive.app/cdn/uuid");
+  XCTAssertEqualObjects(
+      [hosted cdnUuid], @"79b65f1e-94ea-4191-b5ad-b3d5495b6343");
 
-    XCTAssertNotNil(embedded);
-    XCTAssertEqual(embeddedData.length, 26095);
-    XCTAssertEqualObjects([embedded name], @"embedded");
-    //    TODO: fix asset export issue and re-export test file
-    XCTAssertEqualObjects([embedded uniqueName], @"embedded-0");
-    XCTAssertEqualObjects([embedded uniqueFilename], @"embedded-0.wav");
-    XCTAssertEqualObjects([embedded fileExtension], @"wav");
-    XCTAssertEqualObjects([embedded cdnBaseUrl],
-                          @"https://public.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([embedded cdnUuid], @"");
+  XCTAssertNotNil(embedded);
+  XCTAssertEqual(embeddedData.length, 26095);
+  XCTAssertEqualObjects([embedded name], @"embedded");
+  //    TODO: fix asset export issue and re-export test file
+  XCTAssertEqualObjects([embedded uniqueName], @"embedded-0");
+  XCTAssertEqualObjects([embedded uniqueFilename], @"embedded-0.wav");
+  XCTAssertEqualObjects([embedded fileExtension], @"wav");
+  XCTAssertEqualObjects(
+      [embedded cdnBaseUrl], @"https://public.rive.app/cdn/uuid");
+  XCTAssertEqualObjects([embedded cdnUuid], @"");
 }
 
 - (void)testImageTypesCallbacks
 {
-    XCTSkip("File extensions are not returning correct values at this point.");
-    NSError* error = nil;
-    NSData* data = [Util loadTestData:@"img_test"];
-    __block RiveImageAsset* png;
-    __block RiveImageAsset* webp;
-    __block RiveImageAsset* jpeg;
+  XCTSkip("File extensions are not returning correct values at this point.");
+  NSError* error = nil;
+  NSData* data = [Util loadTestData:@"img_test"];
+  __block RiveImageAsset* png;
+  __block RiveImageAsset* webp;
+  __block RiveImageAsset* jpeg;
 
-    RiveFile* file = [[RiveFile alloc]
-             initWithData:data
-                  loadCdn:false
-        customAssetLoader:^bool(
-            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
-          if ([asset isKindOfClass:[RiveImageAsset class]])
+  RiveFile* file = [[RiveFile alloc]
+           initWithData:data
+                loadCdn:false
+      customAssetLoader:^bool(
+          RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        if ([asset isKindOfClass:[RiveImageAsset class]])
+        {
+
+          if ([asset.fileExtension isEqual:@"png"])
           {
-
-              if ([asset.fileExtension isEqual:@"png"])
-              {
-                  png = (RiveImageAsset*)asset;
-              }
-              else if ([asset.fileExtension isEqual:@"webp"])
-              {
-                  webp = (RiveImageAsset*)asset;
-              }
-              else if ([asset.fileExtension isEqual:@"jpeg"])
-              {
-                  jpeg = (RiveImageAsset*)asset;
-              }
+            png = (RiveImageAsset*)asset;
           }
-          return false;
+          else if ([asset.fileExtension isEqual:@"webp"])
+          {
+            webp = (RiveImageAsset*)asset;
+          }
+          else if ([asset.fileExtension isEqual:@"jpeg"])
+          {
+            jpeg = (RiveImageAsset*)asset;
+          }
         }
-                    error:&error];
+        return false;
+      }
+                  error:&error];
 
-    XCTAssertNotNil(file);
-    XCTAssertNil(error);
+  XCTAssertNotNil(file);
+  XCTAssertNil(error);
 
-    XCTAssertNotNil(webp);
-    XCTAssertEqualObjects([webp fileExtension], @"webp");
-    XCTAssertNotNil(png);
-    XCTAssertEqualObjects([png fileExtension], @"png");
-    XCTAssertNotNil(jpeg);
-    XCTAssertEqualObjects([jpeg fileExtension], @"jpeg");
-    XCTAssertEqualObjects([jpeg uniqueFilename], @"hosted-55368.wav");
+  XCTAssertNotNil(webp);
+  XCTAssertEqualObjects([webp fileExtension], @"webp");
+  XCTAssertNotNil(png);
+  XCTAssertEqualObjects([png fileExtension], @"png");
+  XCTAssertNotNil(jpeg);
+  XCTAssertEqualObjects([jpeg fileExtension], @"jpeg");
+  XCTAssertEqualObjects([jpeg uniqueFilename], @"hosted-55368.wav");
 }
 
 - (void)testEmbeddedAssetsProvideData
 {
-    NSError* error = nil;
-    NSData* data = [Util loadTestData:@"embedded_assets"];
-    __block RiveImageAsset* image;
-    __block RiveFontAsset* font;
+  NSError* error = nil;
+  NSData* data = [Util loadTestData:@"embedded_assets"];
+  __block RiveImageAsset* image;
+  __block RiveFontAsset* font;
 
-    __block NSData* imageData;
-    __block NSData* fontData;
+  __block NSData* imageData;
+  __block NSData* fontData;
 
-    RiveFile* file = [[RiveFile alloc]
-             initWithData:data
-                  loadCdn:false
-        customAssetLoader:^bool(
-            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
-          if ([asset isKindOfClass:[RiveImageAsset class]])
-          {
-              image = (RiveImageAsset*)asset;
-              imageData = data;
-          }
-          if ([asset isKindOfClass:[RiveFontAsset class]])
-          {
-              font = (RiveFontAsset*)asset;
-              fontData = data;
-          }
-          return false;
+  RiveFile* file = [[RiveFile alloc]
+           initWithData:data
+                loadCdn:false
+      customAssetLoader:^bool(
+          RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        if ([asset isKindOfClass:[RiveImageAsset class]])
+        {
+          image = (RiveImageAsset*)asset;
+          imageData = data;
         }
-                    error:&error];
+        if ([asset isKindOfClass:[RiveFontAsset class]])
+        {
+          font = (RiveFontAsset*)asset;
+          fontData = data;
+        }
+        return false;
+      }
+                  error:&error];
 
-    XCTAssertNotNil(file);
-    XCTAssertNil(error);
+  XCTAssertNotNil(file);
+  XCTAssertNil(error);
 
-    XCTAssertNotNil(image);
-    // data provided in line.
-    XCTAssertEqual(imageData.length, 308);
-    XCTAssertEqualObjects([image name], @"1x1.png");
-    XCTAssertEqualObjects([image uniqueFilename], @"1x1-49935.png");
-    XCTAssertEqualObjects([image fileExtension], @"png");
-    XCTAssertEqualObjects([image cdnBaseUrl],
-                          @"https://public.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([image cdnUuid], @"");
+  XCTAssertNotNil(image);
+  // data provided in line.
+  XCTAssertEqual(imageData.length, 308);
+  XCTAssertEqualObjects([image name], @"1x1.png");
+  XCTAssertEqualObjects([image uniqueFilename], @"1x1-49935.png");
+  XCTAssertEqualObjects([image fileExtension], @"png");
+  XCTAssertEqualObjects(
+      [image cdnBaseUrl], @"https://public.rive.app/cdn/uuid");
+  XCTAssertEqualObjects([image cdnUuid], @"");
 
-    XCTAssertNotNil(font);
-    XCTAssertEqual(fontData.length, 3348);
-    // data provided in line.
-    XCTAssertEqualObjects([font name], @"Inter");
-    XCTAssertEqualObjects([font uniqueFilename], @"Inter-45562.ttf");
-    XCTAssertEqualObjects([font fileExtension], @"ttf");
-    XCTAssertEqualObjects([font cdnBaseUrl],
-                          @"https://public.rive.app/cdn/uuid");
-    XCTAssertEqualObjects([font cdnUuid], @"");
+  XCTAssertNotNil(font);
+  XCTAssertEqual(fontData.length, 3348);
+  // data provided in line.
+  XCTAssertEqualObjects([font name], @"Inter");
+  XCTAssertEqualObjects([font uniqueFilename], @"Inter-45562.ttf");
+  XCTAssertEqualObjects([font fileExtension], @"ttf");
+  XCTAssertEqualObjects([font cdnBaseUrl], @"https://public.rive.app/cdn/uuid");
+  XCTAssertEqualObjects([font cdnUuid], @"");
 }
 
 - (void)testReferencedImageAssetReturnsSize
 {
-    NSError* error = nil;
-    NSData* data = [Util loadTestData:@"referenced_image_asset"];
-    __block RiveImageAsset* image;
+  NSError* error = nil;
+  NSData* data = [Util loadTestData:@"referenced_image_asset"];
+  __block RiveImageAsset* image;
 
-    RiveFile* file = [[RiveFile alloc]
-             initWithData:data
-                  loadCdn:false
-        customAssetLoader:^bool(
-            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
-          if ([asset isKindOfClass:[RiveImageAsset class]])
-          {
-              image = (RiveImageAsset*)asset;
-          }
-          return false;
+  RiveFile* file = [[RiveFile alloc]
+           initWithData:data
+                loadCdn:false
+      customAssetLoader:^bool(
+          RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+        if ([asset isKindOfClass:[RiveImageAsset class]])
+        {
+          image = (RiveImageAsset*)asset;
         }
-                    error:&error];
+        return false;
+      }
+                  error:&error];
 
-    XCTAssertEqual(image.size.width, 320);
-    XCTAssertEqual(image.size.height, 240);
+  XCTAssertEqual(image.size.width, 320);
+  XCTAssertEqual(image.size.height, 240);
 }
 
 @end

@@ -17,22 +17,22 @@
 + (void)start
 {
 #ifdef WITH_RIVE_AUDIO
-    auto engine = rive::AudioEngine::RuntimeEngine(false);
-    if (engine != nil)
-    {
-        engine->start();
-    }
+  auto engine = rive::AudioEngine::RuntimeEngine(false);
+  if (engine != nil)
+  {
+    engine->start();
+  }
 #endif
 }
 
 + (void)stop
 {
 #ifdef WITH_RIVE_AUDIO
-    auto engine = rive::AudioEngine::RuntimeEngine(false);
-    if (engine != nil)
-    {
-        engine->stop();
-    }
+  auto engine = rive::AudioEngine::RuntimeEngine(false);
+  if (engine != nil)
+  {
+    engine->stop();
+  }
 #endif
 }
 

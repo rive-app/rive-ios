@@ -13,15 +13,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// An enumeration of possible weight values, mirroring those of
 /// UIFont/NSFont.Weight
 typedef NS_ENUM(NSInteger, RiveFontStyleWeight) {
-    RiveFontStyleWeightThin = 100,
-    RiveFontStyleWeightUltraLight = 200,
-    RiveFontStyleWeightLight = 300,
-    RiveFontStyleWeightRegular = 400,
-    RiveFontStyleWeightMedium = 500,
-    RiveFontStyleWeightSemibold = 600,
-    RiveFontStyleWeightBold = 700,
-    RiveFontStyleWeightHeavy = 800,
-    RiveFontStyleWeightBlack = 900
+  RiveFontStyleWeightThin = 100,
+  RiveFontStyleWeightUltraLight = 200,
+  RiveFontStyleWeightLight = 300,
+  RiveFontStyleWeightRegular = 400,
+  RiveFontStyleWeightMedium = 500,
+  RiveFontStyleWeightSemibold = 600,
+  RiveFontStyleWeightBold = 700,
+  RiveFontStyleWeightHeavy = 800,
+  RiveFontStyleWeightBlack = 900
 };
 
 /// An object that represents the styling of a font.

@@ -3,8 +3,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, AssetCopyFailure) {
-    AssetCopyFailureBadAlloc,
-    AssetCopyFailureLengthError,
+  AssetCopyFailureBadAlloc,
+  AssetCopyFailureLengthError,
 };
 
 @interface TestAssetDataCopier : NSObject <RiveAssetDataCopier>

@@ -14,49 +14,49 @@
  */
 @implementation RiveSMIInput
 {
-    const rive::SMIInput*
-        instance; // note: we do NOT own this, so don't delete it
+  const rive::SMIInput*
+      instance; // note: we do NOT own this, so don't delete it
 }
 
 - (const rive::SMIInput*)getInstance
 {
-    return instance;
+  return instance;
 }
 
 // Creates a new RiveSMINumber from a cpp SMINumber
 - (instancetype)initWithSMIInput:(const rive::SMIInput*)stateMachineInput
 {
-    if (self = [super init])
-    {
-        instance = stateMachineInput;
-        return self;
-    }
-    else
-    {
-        return nil;
-    }
+  if (self = [super init])
+  {
+    instance = stateMachineInput;
+    return self;
+  }
+  else
+  {
+    return nil;
+  }
 }
 
 - (bool)isBoolean
 {
-    return instance->input()->is<rive::StateMachineBool>();
+  return instance->input()->is<rive::StateMachineBool>();
 }
 
 - (bool)isTrigger
 {
-    return instance->input()->is<rive::StateMachineTrigger>();
+  return instance->input()->is<rive::StateMachineTrigger>();
 }
 
 - (bool)isNumber
 {
-    return instance->input()->is<rive::StateMachineNumber>();
+  return instance->input()->is<rive::StateMachineNumber>();
 };
 
 - (NSString*)name
 {
-    std::string str = ((const rive::SMIInput*)instance)->name();
-    return [NSString stringWithCString:str.c_str()
-                              encoding:[NSString defaultCStringEncoding]];
+  std::string str = ((const rive::SMIInput*)instance)->name();
+  return [NSString stringWithCString:str.c_str()
+                            encoding:[NSString defaultCStringEncoding]];
 }
 
 @end
@@ -68,7 +68,7 @@
 
 - (void)fire
 {
-    ((rive::SMITrigger*)[self getInstance])->fire();
+  ((rive::SMITrigger*)[self getInstance])->fire();
 }
 
 @end
@@ -80,12 +80,12 @@
 
 - (void)setValue:(bool)newValue
 {
-    ((rive::SMIBool*)[self getInstance])->value(newValue);
+  ((rive::SMIBool*)[self getInstance])->value(newValue);
 }
 
 - (bool)value
 {
-    return ((rive::SMIBool*)[self getInstance])->value();
+  return ((rive::SMIBool*)[self getInstance])->value();
 }
 
 @end
@@ -97,11 +97,11 @@
 
 - (void)setValue:(float)newValue
 {
-    ((rive::SMINumber*)[self getInstance])->value(newValue);
+  ((rive::SMINumber*)[self getInstance])->value(newValue);
 }
 - (float)value
 {
-    return ((rive::SMINumber*)[self getInstance])->value();
+  return ((rive::SMINumber*)[self getInstance])->value();
 }
 
 @end

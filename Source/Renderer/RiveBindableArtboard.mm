@@ -11,37 +11,37 @@
 
 @implementation RiveBindableArtboard
 {
-    rive::rcp<rive::BindableArtboard> _bindableArtboard;
-    RenderContext* _renderContext;
+  rive::rcp<rive::BindableArtboard> _bindableArtboard;
+  RenderContext* _renderContext;
 }
 
 - (instancetype)initWithBindableArtboard:
                     (rive::rcp<rive::BindableArtboard>)bindableArtboard
                            renderContext:(RenderContext*)renderContext
 {
-    if (self = [super init])
-    {
-        _bindableArtboard = bindableArtboard;
-        _renderContext = renderContext;
-    }
-    return self;
+  if (self = [super init])
+  {
+    _bindableArtboard = bindableArtboard;
+    _renderContext = renderContext;
+  }
+  return self;
 }
 
 - (rive::rcp<rive::BindableArtboard>)bindableArtboard
 {
-    return _bindableArtboard;
+  return _bindableArtboard;
 }
 
 - (NSString*)name
 {
-    auto name = _bindableArtboard->artboard()->name();
-    return [NSString stringWithCString:name.c_str()
-                              encoding:[NSString defaultCStringEncoding]];
+  auto name = _bindableArtboard->artboard()->name();
+  return [NSString stringWithCString:name.c_str()
+                            encoding:[NSString defaultCStringEncoding]];
 }
 
 - (void)dealloc
 {
-    _bindableArtboard = nullptr;
+  _bindableArtboard = nullptr;
 }
 
 @end
