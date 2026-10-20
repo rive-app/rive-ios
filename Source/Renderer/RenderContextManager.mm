@@ -11,8 +11,6 @@
 #import <rive_renderer_view.hh>
 
 #include "utils/auto_cf.hpp"
-#include "cg_factory.hpp"
-#include "cg_renderer.hpp"
 #include "rive/renderer/gpu.hpp"
 
 // Values taken from Page 7 of
@@ -248,149 +246,6 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
 
 @end
 
-@interface CGRendererContext : RenderContext
-- (rive::Renderer*)beginFrame:(id<RiveMetalDrawableView>)view;
-@end
-
-constexpr static int kBufferRingSize = 3;
-
-@implementation CGRendererContext
-{
-  id<MTLTexture> _renderTargetTexture;
-  id<MTLBuffer> _buffers[kBufferRingSize];
-  int _currentBufferIdx;
-  AutoCF<CGContextRef> _cgContext;
-  std::unique_ptr<rive::CGRenderer> _renderer;
-  CGSize _maximum2DTextureSize;
-}
-
-- (instancetype)init
-{
-  self = [super init];
-
-  _renderTargetTexture = nil;
-  for (int i = 0; i < kBufferRingSize; ++i)
-  {
-    _buffers[i] = nil;
-  }
-  _currentBufferIdx = -1;
-
-  static id<MTLDevice> s_plsGPU = MTLCreateSystemDefaultDevice();
-  self.metalDevice = s_plsGPU;
-  if (!self.metalDevice)
-  {
-    NSLog(@"Metal is not supported on this device");
-    return nil;
-  }
-  self.metalQueue = [self.metalDevice newCommandQueue];
-  self.depthStencilPixelFormat = MTLPixelFormatInvalid;
-  self.framebufferOnly = NO;
-  self.maximum2DTextureSize = Maximum2DTextureSizeFromDevice(self.metalDevice);
-  return self;
-}
-
-- (rive::Factory*)factory
-{
-  static rive::CGFactory factory;
-  return &factory;
-}
-
-- (rive::Renderer*)beginFrame:(id<RiveMetalDrawableView>)view
-{
-  uint32_t cgBitmapInfo;
-  switch (view.colorPixelFormat)
-  {
-    case MTLPixelFormatBGRA8Unorm:
-      cgBitmapInfo = kCGBitmapByteOrder32Little |
-                     kCGImageAlphaPremultipliedFirst;
-      break;
-    case MTLPixelFormatRGBA8Unorm:
-      cgBitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast;
-      break;
-    default:
-      NSLog(@"error: unsupported colorPixelFormat on MTKView");
-      return nullptr;
-  }
-
-  id<CAMetalDrawable> surface = view.currentDrawable;
-  _renderTargetTexture = surface.texture;
-  if (!_renderTargetTexture)
-  {
-    NSLog(@"error: no surface texture on MTKView");
-    return nullptr;
-  }
-
-  _currentBufferIdx = (_currentBufferIdx + 1) % kBufferRingSize;
-  size_t bufferSize = _renderTargetTexture.height * _renderTargetTexture.width *
-                      4;
-  if (_buffers[_currentBufferIdx] == nil ||
-      _buffers[_currentBufferIdx].allocatedSize != bufferSize)
-  {
-    _buffers[_currentBufferIdx] = [self.metalDevice
-        newBufferWithLength:bufferSize
-                    options:MTLResourceStorageModeShared];
-  }
-  AutoCF<CGColorSpaceRef> colorSpace = CGColorSpaceCreateDeviceRGB();
-  _cgContext = AutoCF(CGBitmapContextCreate(
-      _buffers[_currentBufferIdx].contents,
-      _renderTargetTexture.width,
-      _renderTargetTexture.height,
-      8,
-      _renderTargetTexture.width * 4,
-      colorSpace,
-      cgBitmapInfo));
-
-  _renderer = std::make_unique<rive::CGRenderer>(
-      _cgContext, _renderTargetTexture.width, _renderTargetTexture.height);
-  return _renderer.get();
-}
-
-- (void)endFrame:(id<RiveMetalDrawableView>)view
-    withCompletion:(_Nullable MTLCommandBufferHandler)completionHandler;
-{
-  if (_cgContext != nil)
-  {
-    id<MTLCommandBuffer> commandBuffer = [self.metalQueue commandBuffer];
-    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder copyFromBuffer:_buffers[_currentBufferIdx]
-                   sourceOffset:0
-              sourceBytesPerRow:_renderTargetTexture.width * 4
-            sourceBytesPerImage:_renderTargetTexture.height *
-                                _renderTargetTexture.width * 4
-                     sourceSize:MTLSizeMake(
-                                    _renderTargetTexture.width,
-                                    _renderTargetTexture.height,
-                                    1)
-                      toTexture:_renderTargetTexture
-               destinationSlice:0
-               destinationLevel:0
-              destinationOrigin:MTLOriginMake(0, 0, 0)];
-    [blitEncoder endEncoding];
-
-    [commandBuffer presentDrawable:view.currentDrawable];
-    if (completionHandler)
-    {
-      [commandBuffer addCompletedHandler:completionHandler];
-    }
-    [commandBuffer commit];
-  }
-  _renderTargetTexture = nil;
-  _renderer = nullptr;
-  _cgContext = nullptr;
-}
-
-- (void)setMaximum2DTextureSize:(CGSize)maximum2DTextureSize
-{
-  _maximum2DTextureSize = maximum2DTextureSize;
-}
-
-- (CGSize)maximum2DTextureSize;
-{
-  return _maximum2DTextureSize;
-}
-
-@end
-
 @implementation RenderContextManager
 
 // The context manager is a singleton.
@@ -416,18 +271,11 @@ constexpr static int kBufferRingSize = 3;
   {
     case RendererType::riveRenderer:
       return [self newRiveContext];
-    case RendererType::cgRenderer:
-      return [self newCGContext];
   }
   RIVE_UNREACHABLE();
 }
 
 - (RenderContext*)newRiveContext
-{
-  return [[RiveRendererContext alloc] init];
-}
-
-- (RenderContext*)newCGContext
 {
   return [[RiveRendererContext alloc] init];
 }

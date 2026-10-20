@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, RendererType) { riveRenderer, cgRenderer };
+typedef NS_ENUM(NSInteger, RendererType) { riveRenderer };
 
 @class RenderContext;
 @class RiveFactory;
@@ -23,7 +23,6 @@ typedef NS_ENUM(NSInteger, RendererType) { riveRenderer, cgRenderer };
 + (RenderContextManager*)shared;
 - (RenderContext*)newDefaultContext;
 - (RenderContext*)newRiveContext;
-- (RenderContext*)newCGContext;
 @end
 
 #endif

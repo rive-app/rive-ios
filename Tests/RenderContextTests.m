@@ -26,11 +26,6 @@
   XCTAssertTrue([context canDrawInRect:rect
                           drawableSize:drawableSize
                                  scale:scale]);
-
-  context = [[RenderContextManager shared] newCGContext];
-  XCTAssertTrue([context canDrawInRect:rect
-                          drawableSize:drawableSize
-                                 scale:scale]);
 }
 
 - (void)testCanDrawWithValidRectAndScaleAndInvalidDrawableSize
@@ -40,11 +35,6 @@
   CGFloat scale = 1.0f;
 
   RenderContext* context = [[RenderContextManager shared] newRiveContext];
-  XCTAssertFalse([context canDrawInRect:rect
-                           drawableSize:drawableSize
-                                  scale:scale]);
-
-  context = [[RenderContextManager shared] newCGContext];
   XCTAssertFalse([context canDrawInRect:rect
                            drawableSize:drawableSize
                                   scale:scale]);
@@ -60,11 +50,6 @@
   XCTAssertFalse([context canDrawInRect:rect
                            drawableSize:drawableSize
                                   scale:scale]);
-
-  context = [[RenderContextManager shared] newCGContext];
-  XCTAssertFalse([context canDrawInRect:rect
-                           drawableSize:drawableSize
-                                  scale:scale]);
 }
 
 - (void)testCanDrawWithValidRectAndDrawableSizeAndInvalidScale
@@ -77,11 +62,6 @@
   XCTAssertFalse([context canDrawInRect:rect
                            drawableSize:drawableSize
                                   scale:scale]);
-
-  context = [[RenderContextManager shared] newCGContext];
-  XCTAssertFalse([context canDrawInRect:rect
-                           drawableSize:drawableSize
-                                  scale:scale]);
 }
 
 - (void)testCanDrawWithValidRectAndDrawableSizeAndRidiculousScale
@@ -91,11 +71,6 @@
   CGFloat scale = 1000.0f;
 
   RenderContext* context = [[RenderContextManager shared] newRiveContext];
-  XCTAssertFalse([context canDrawInRect:rect
-                           drawableSize:drawableSize
-                                  scale:scale]);
-
-  context = [[RenderContextManager shared] newCGContext];
   XCTAssertFalse([context canDrawInRect:rect
                            drawableSize:drawableSize
                                   scale:scale]);
