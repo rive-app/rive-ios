@@ -9,20 +9,35 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, RendererType) { riveRenderer };
+/// Renderer selection is retained for compatibility and has no effect on
+/// rendering. Only the Rive renderer is currently used.
+typedef NS_ENUM(NSInteger, RendererType) {
+  riveRenderer DEPRECATED_MSG_ATTRIBUTE(
+      "Only the Rive renderer is currently used. Renderer selection is "
+      "retained for compatibility and has no effect on rendering.") = 0,
+  cgRenderer DEPRECATED_MSG_ATTRIBUTE(
+      "Only the Rive renderer is currently used. Renderer selection is "
+      "retained for compatibility and has no effect on rendering.") = 1
+} DEPRECATED_MSG_ATTRIBUTE("Only the Rive renderer is currently used. Renderer "
+                           "selection is retained "
+                           "for compatibility and has no effect on rendering.");
 
 @class RenderContext;
 @class RiveFactory;
 
-/// The RenderContextManager is used to allow us to share contexts (e.g., Skia,
-/// CG, Rive, ...), while there are active view(s). It has weak refs to its
-/// render contexts, which means that when no more RiveRenderViews require
-/// these, they can be freed.
+/// Creates render contexts using the Rive renderer.
 @interface RenderContextManager : NSObject
-@property RendererType defaultRenderer;
+/// Retains the selected value for compatibility without affecting rendering.
+@property RendererType defaultRenderer DEPRECATED_MSG_ATTRIBUTE(
+    "Only the Rive renderer is currently used. Renderer selection is retained "
+    "for compatibility and has no effect on rendering.");
 + (RenderContextManager*)shared;
 - (RenderContext*)newDefaultContext;
 - (RenderContext*)newRiveContext;
+/// Returns a Rive renderer context, regardless of the legacy method name.
+- (RenderContext*)newCGContext DEPRECATED_MSG_ATTRIBUTE(
+    "Only the Rive renderer is currently used. This method returns a Rive "
+    "renderer context. Use newRiveContext instead.");
 @end
 
 #endif

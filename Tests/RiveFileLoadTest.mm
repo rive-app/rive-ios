@@ -63,7 +63,6 @@
  */
 - (void)testLoadFluxWithPLS
 {
-  [[RenderContextManager shared] setDefaultRenderer:RendererType::riveRenderer];
   NSError* error = nil;
   RiveFile* file = [Util loadTestFile:@"flux_capacitor" error:&error];
   RiveArtboard* artboard = [file artboard:&error];

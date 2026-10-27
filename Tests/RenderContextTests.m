@@ -16,6 +16,50 @@
 
 @implementation RenderContextTests
 
+// These tests intentionally exercise the deprecated compatibility API.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+- (void)testLegacyRendererSelectionUsesRiveRenderer
+{
+  XCTAssertEqual(riveRenderer, 0);
+  XCTAssertEqual(cgRenderer, 1);
+
+  RenderContextManager* manager = [[RenderContextManager alloc] init];
+  XCTAssertEqual(manager.defaultRenderer, riveRenderer);
+
+  RenderContext* riveContext = [manager newRiveContext];
+  XCTAssertNotNil(riveContext);
+
+  RendererType rendererTypes[] = {riveRenderer, cgRenderer};
+  for (NSUInteger i = 0; i < 2; ++i)
+  {
+    manager.defaultRenderer = rendererTypes[i];
+    XCTAssertEqual(manager.defaultRenderer, rendererTypes[i]);
+
+    RenderContext* context = [manager newDefaultContext];
+    XCTAssertNotNil(context);
+    XCTAssertEqual([context class], [riveContext class]);
+  }
+}
+
+- (void)testLegacyCGContextUsesRiveRenderer
+{
+  RenderContextManager* manager = [[RenderContextManager alloc] init];
+  manager.defaultRenderer = cgRenderer;
+  RenderContext* riveContext = [manager newRiveContext];
+  RenderContext* context = [manager newCGContext];
+
+  XCTAssertNotNil(riveContext);
+  XCTAssertNotNil(context);
+  XCTAssertEqual([context class], [riveContext class]);
+  XCTAssertTrue([context canDrawInRect:CGRectMake(0, 0, 320, 240)
+                          drawableSize:CGSizeMake(320, 240)
+                                 scale:1.0f]);
+}
+
+#pragma clang diagnostic pop
+
 - (void)testCanDrawWithValidRectAndDrawableSize
 {
   CGRect rect = CGRectMake(0, 0, 320, 240);

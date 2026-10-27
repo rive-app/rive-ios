@@ -259,25 +259,19 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
   return single;
 }
 
-- (instancetype)init
-{
-  self.defaultRenderer = RendererType::riveRenderer;
-  return self;
-}
-
 - (RenderContext*)newDefaultContext
 {
-  switch (self.defaultRenderer)
-  {
-    case RendererType::riveRenderer:
-      return [self newRiveContext];
-  }
-  RIVE_UNREACHABLE();
+  return [self newRiveContext];
 }
 
 - (RenderContext*)newRiveContext
 {
   return [[RiveRendererContext alloc] init];
+}
+
+- (RenderContext*)newCGContext
+{
+  return [self newRiveContext];
 }
 
 @end

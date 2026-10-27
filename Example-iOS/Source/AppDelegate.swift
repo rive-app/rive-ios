@@ -13,7 +13,6 @@ import RiveRuntime
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        RenderContextManager.shared().defaultRenderer = RendererType.riveRenderer
         RiveLogger.isEnabled = true
         RiveLogger.categories = [.viewModel, .model]
         RiveLogger.levels = [.debug]
