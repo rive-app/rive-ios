@@ -9,7 +9,7 @@
 #import <RiveRuntime/RiveUIRenderer.h>
 #import <XCTest/XCTest.h>
 
-#import "../../../Source/Concurrency/Renderer/RiveUIRenderer_Private.hh"
+#import "RiveUIRenderer_Private.hh"
 
 @interface RiveUIRendererCompatibilityTests : XCTestCase
 @end

@@ -114,21 +114,21 @@ extension WorkerService {
         let commandQueue: CommandQueueProtocol
         /// The command server that processes commands from the command queue on a background thread.
         let commandServer: CommandServerProtocol
-        /// The selected per-worker rendering mode. Its context is supplied to
-        /// the command server, and the same mode selects each renderer.
-        let renderingMode: Worker.RenderingMode
+        /// The per-worker context shared by the command server and every
+        /// renderer created for this worker.
+        let renderContext: any _RiveUIRenderContextProtocol
         /// Internal queue lifecycle driver used by the message gate.
         let messagePumpDriver: any _CommandQueueMessagePumpDriver
 
         init(
             commandQueue: CommandQueueProtocol,
             commandServer: CommandServerProtocol,
-            renderingMode: Worker.RenderingMode,
+            renderContext: any _RiveUIRenderContextProtocol,
             messagePumpDriver: any _CommandQueueMessagePumpDriver
         ) {
             self.commandQueue = commandQueue
             self.commandServer = commandServer
-            self.renderingMode = renderingMode
+            self.renderContext = renderContext
             self.messagePumpDriver = messagePumpDriver
         }
     }

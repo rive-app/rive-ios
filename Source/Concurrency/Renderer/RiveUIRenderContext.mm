@@ -10,6 +10,7 @@
 #import <RivePrivateHeaders.h>
 #import <RiveRuntime/_RiveUIRenderContextProtocol.h>
 #import "RiveUIRenderContext.h"
+#import "RiveUIRenderer.h"
 #import <RiveRuntime/RiveConcurrency.h>
 
 #import <CoreGraphics/CoreGraphics.h>
@@ -58,6 +59,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (rive::Factory*)beginCommandProcessing
 {
   return _renderContext.get();
+}
+
+- (id<RiveUIRendererProtocol>)makeRendererWithCommandQueue:
+    (id<RiveCommandQueueProtocol>)commandQueue
+{
+  return [[RiveUIRenderer alloc] initWithCommandQueue:commandQueue
+                                        renderContext:self];
 }
 
 - (void)endCommandProcessing

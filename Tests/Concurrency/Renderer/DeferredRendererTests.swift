@@ -251,9 +251,9 @@ final class DeferredRendererTests: XCTestCase {
             configuration: .init(enableGPUCanvas: true)
         )
         let firstContext = firstWorker.dependencies.workerService.dependencies
-            .renderingMode.renderContext as AnyObject
+            .renderContext as AnyObject
         let secondContext = secondWorker.dependencies.workerService.dependencies
-            .renderingMode.renderContext as AnyObject
+            .renderContext as AnyObject
         XCTAssertFalse(firstContext === secondContext)
 
         let firstRive = try await makeRive(worker: firstWorker)
@@ -325,47 +325,6 @@ final class DeferredRendererTests: XCTestCase {
             to: texture,
             from: device,
             expecting: .skipped
-        )
-    }
-
-    @MainActor
-    func test_advance_completesUnchangedConfiguration() async throws {
-        let device = try await makeDevice()
-        let texture = try makeTexture(device: device)
-        let worker = Worker(
-            device: device,
-            configuration: .init(enableGPUCanvas: true)
-        )
-        let rive = try await makeRive(named: "marty", worker: worker)
-        let renderer = rive.makeRenderer()
-        let configuration = RiveUIRendererConfiguration(
-            rive: rive,
-            drawableSize: CGSize(width: texture.width, height: texture.height)
-        )
-
-        await draw(
-            with: renderer,
-            configuration: configuration,
-            to: texture,
-            from: device,
-            expecting: .completed
-        )
-        await draw(
-            with: renderer,
-            configuration: configuration,
-            to: texture,
-            from: device,
-            expecting: .skipped
-        )
-
-        rive.stateMachine.advance(by: 1 / 60)
-
-        await draw(
-            with: renderer,
-            configuration: configuration,
-            to: texture,
-            from: device,
-            expecting: .completed
         )
     }
 

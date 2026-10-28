@@ -61,7 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-#if defined(RIVE_CANVAS) && defined(RIVE_ORE)
 - (instancetype)initWithRendererError:(NSError*)rendererError
 {
   if (self = [super init])
@@ -70,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
   }
   return self;
 }
-#endif
 
 - (BOOL)reportRendererError:(nullable void (^)(NSError*))onError
 {

@@ -161,30 +161,6 @@ static NSError* _Nullable RiveUIRendererValidateStateMachine(
                       }];
 }
 
-static bool RiveUIRendererResizeRenderTargetIfNeeded(
-    rive::gpu::RenderContext* renderContext,
-    RiveUIRendererConfiguration configuration,
-    rive::rcp<rive::gpu::RenderTargetMetal>& renderTarget)
-{
-  bool renderTargetNeedsResize = renderTarget == nullptr ||
-                                 renderTarget->width() !=
-                                     configuration.size.width ||
-                                 renderTarget->height() !=
-                                     configuration.size.height ||
-                                 renderTarget->pixelFormat() !=
-                                     configuration.pixelFormat;
-  if (renderTargetNeedsResize)
-  {
-    auto metalContext = renderContext->static_impl_cast<
-        rive::gpu::RenderContextMetalImpl>();
-    renderTarget = metalContext->makeRenderTarget(
-        configuration.pixelFormat,
-        (uint32_t)configuration.size.width,
-        (uint32_t)configuration.size.height);
-  }
-  return renderTargetNeedsResize;
-}
-
 static bool RiveUIRendererConfigurationEqualToConfiguration(
     RiveUIRendererConfiguration lhs, RiveUIRendererConfiguration rhs)
 {
@@ -212,7 +188,6 @@ static bool RiveUIRendererConfigurationEqualToConfiguration(
            renderContext:(id<_RiveUIRenderContextProtocol>)renderContext
           hasPendingWork:
               (nullable _RiveUIRendererHasPendingWorkBlock)hasPendingWork
-               drawFrame:(_RiveUIRendererDrawFrameBlock)drawFrame
 {
   if (self = [super init])
   {
@@ -220,6 +195,21 @@ static bool RiveUIRendererConfigurationEqualToConfiguration(
     _renderContext = renderContext;
     _drawKey = [commandQueue createDrawKey];
     _hasPendingWork = [hasPendingWork copy];
+  }
+  return self;
+}
+
+- (instancetype)
+    initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
+           renderContext:(id<_RiveUIRenderContextProtocol>)renderContext
+          hasPendingWork:
+              (nullable _RiveUIRendererHasPendingWorkBlock)hasPendingWork
+               drawFrame:(_RiveUIRendererDrawFrameBlock)drawFrame
+{
+  if (self = [self initWithCommandQueue:commandQueue
+                          renderContext:renderContext
+                         hasPendingWork:hasPendingWork])
+  {
     _drawFrame = [drawFrame copy];
   }
   return self;
@@ -235,6 +225,50 @@ static bool RiveUIRendererConfigurationEqualToConfiguration(
 - (id<_RiveUIRenderContextProtocol>)renderContext
 {
   return _renderContext;
+}
+
+- (BOOL)recreateRenderTarget:(RiveUIRendererConfiguration)configuration
+{
+  bool renderTargetNeedsRecreation = _renderTarget == nullptr ||
+                                     _renderTarget->width() !=
+                                         configuration.size.width ||
+                                     _renderTarget->height() !=
+                                         configuration.size.height ||
+                                     _renderTarget->pixelFormat() !=
+                                         configuration.pixelFormat;
+  if (renderTargetNeedsRecreation)
+  {
+    auto metalContext = [_renderContext renderContext]
+                            ->static_impl_cast<
+                                rive::gpu::RenderContextMetalImpl>();
+    _renderTarget = metalContext->makeRenderTarget(
+        configuration.pixelFormat,
+        (uint32_t)configuration.size.width,
+        (uint32_t)configuration.size.height);
+  }
+  return renderTargetNeedsRecreation;
+}
+
+- (void)clearRenderTarget
+{
+  // The cached target is renderer-scoped, not texture-scoped. Metal retains
+  // resources used by the encoded command buffer.
+  if (_renderTarget != nullptr)
+  {
+    _renderTarget->setTargetTexture(nil);
+  }
+}
+
+- (nullable id<MTLCommandBuffer>)drawArtboard:(rive::ArtboardInstance*)artboard
+                                    toTexture:(id<MTLTexture>)texture
+                                configuration:
+                                    (RiveUIRendererConfiguration)configuration
+{
+  if (_drawFrame == nil || _renderTarget == nullptr)
+  {
+    return nil;
+  }
+  return _drawFrame(artboard, _renderTarget.get(), texture, configuration);
 }
 
 - (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
@@ -327,15 +361,13 @@ static bool RiveUIRendererConfigurationEqualToConfiguration(
             return;
           }
 
-          auto riveContext = [strongSelf->_renderContext renderContext];
-          bool
-              renderTargetWasResized = RiveUIRendererResizeRenderTargetIfNeeded(
-                  riveContext, configuration, strongSelf->_renderTarget);
+          bool renderTargetWasRecreated = [strongSelf
+              recreateRenderTarget:configuration];
           bool configurationDidChange =
               !strongSelf->_lastDrawnConfiguration.has_value() ||
               !RiveUIRendererConfigurationEqualToConfiguration(
                   configuration, *strongSelf->_lastDrawnConfiguration);
-          if (!renderTargetWasResized && !configurationDidChange &&
+          if (!renderTargetWasRecreated && !configurationDidChange &&
               !artboard->didChange() &&
               !(strongSelf->_hasPendingWork && strongSelf->_hasPendingWork()))
           {
@@ -347,16 +379,11 @@ static bool RiveUIRendererConfigurationEqualToConfiguration(
             return;
           }
 
-          id<MTLCommandBuffer> commandBuffer = strongSelf->_drawFrame(
-              artboard,
-              strongSelf->_renderTarget.get(),
-              blockTexture,
-              configuration);
-          // The cached target is renderer-scoped, not texture-scoped.
-          // Detach the submitted drawable after encoding so the renderer
-          // does not retain it across frames; Metal retains resources used
-          // by the encoded command buffer.
-          strongSelf->_renderTarget->setTargetTexture(nil);
+          id<MTLCommandBuffer> commandBuffer = [strongSelf
+               drawArtboard:artboard
+                  toTexture:blockTexture
+              configuration:configuration];
+          [strongSelf clearRenderTarget];
           if (commandBuffer)
           {
             strongSelf->_lastDrawnConfiguration = configuration;

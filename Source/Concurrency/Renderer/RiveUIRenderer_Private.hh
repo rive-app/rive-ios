@@ -56,6 +56,13 @@ typedef id<MTLCommandBuffer> _Nullable (^_RiveUIRendererDrawFrameBlock)(
 /// The worker-scoped context retained by this core.
 @property(nonatomic, readonly) id<_RiveUIRenderContextProtocol> renderContext;
 
+/// For subclasses that implement drawArtboard:toTexture:configuration:.
+- (instancetype)
+    initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
+           renderContext:(id<_RiveUIRenderContextProtocol>)renderContext
+          hasPendingWork:
+              (nullable _RiveUIRendererHasPendingWorkBlock)hasPendingWork;
+
 - (instancetype)
     initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
            renderContext:(id<_RiveUIRenderContextProtocol>)renderContext
@@ -64,6 +71,23 @@ typedef id<MTLCommandBuffer> _Nullable (^_RiveUIRendererDrawFrameBlock)(
                drawFrame:(_RiveUIRendererDrawFrameBlock)drawFrame;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+/// Creates or replaces the cached target when absent or incompatible with the
+/// configuration. Returns YES if a target was created, NO if the existing
+/// target was reused. This is a change indicator, not a success result.
+/// Called on the serialized command-server thread.
+- (BOOL)recreateRenderTarget:(RiveUIRendererConfiguration)configuration;
+
+/// Clears the cached target's texture reference after encoding.
+- (void)clearRenderTarget;
+
+/// Draws on the serialized command-server thread. The default implementation
+/// invokes drawFrame with the cached render target, or returns nil if either
+/// is unavailable.
+- (nullable id<MTLCommandBuffer>)drawArtboard:(rive::ArtboardInstance*)artboard
+                                    toTexture:(id<MTLTexture>)texture
+                                configuration:
+                                    (RiveUIRendererConfiguration)configuration;
 
 /// Validates and queues a draw. An executed submission takes exactly one
 /// success, skip, or error path and invokes that path's block when supplied. A

@@ -24,11 +24,18 @@ class RenderContext;
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol MTLCommandBuffer;
+@protocol RiveCommandQueueProtocol;
+@protocol RiveUIRendererProtocol;
 
 /// Internal worker-scoped rendering strategy shared by the command server and
 /// renderer. A context owns the objects returned by its C++ accessors and must
 /// not serve concurrent command servers.
 @protocol _RiveUIRenderContextProtocol <NSObject>
+
+/// Creates a renderer that uses this context and the worker's command queue.
+- (id<RiveUIRendererProtocol>)makeRendererWithCommandQueue:
+    (id<RiveCommandQueueProtocol>)commandQueue
+    NS_SWIFT_NAME(makeRenderer(commandQueue:)) NS_SWIFT_UI_ACTOR;
 
 /// Creates an uncommitted Metal command buffer on the context's queue.
 /// Worker renderers call this on the serialized command-server thread.

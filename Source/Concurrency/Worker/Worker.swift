@@ -50,26 +50,6 @@ public final class Worker: Sendable {
         #endif
     }
 
-    /// The rendering strategy and concrete context selected for a worker.
-    enum RenderingMode {
-        case immediate(RiveUIRenderContext)
-
-        #if RIVE_CANVAS
-        case deferred(_RiveUIDeferredRenderContext)
-        #endif
-
-        var renderContext: any _RiveUIRenderContextProtocol {
-            switch self {
-            case .immediate(let renderContext):
-                renderContext
-            #if RIVE_CANVAS
-            case .deferred(let renderContext):
-                renderContext
-            #endif
-            }
-        }
-    }
-
     let dependencies: Dependencies
 
     @MainActor
@@ -85,17 +65,17 @@ public final class Worker: Sendable {
     /// Selects the worker's rendering strategy once, before command processing
     /// or file import begins. The selected context is reused by both the command
     /// server and every renderer created for this worker.
-    private static func makeRenderingMode(
+    private static func makeRenderContext(
         device: any MTLDevice,
         configuration: Configuration
-    ) -> RenderingMode {
+    ) -> any _RiveUIRenderContextProtocol {
         #if RIVE_CANVAS
         if configuration.enableGPUCanvas {
-            return .deferred(_RiveUIDeferredRenderContext(device: device))
+            return _RiveUIDeferredRenderContext(device: device)
         }
         #endif
 
-        return .immediate(RiveUIRenderContext(device: device))
+        return RiveUIRenderContext(device: device)
     }
 
     /// Creates a per-surface renderer matching the concrete context already
@@ -104,20 +84,9 @@ public final class Worker: Sendable {
     func makeRenderer() -> any RiveUIRendererProtocol {
         let dependencies = dependencies.workerService.dependencies
 
-        switch dependencies.renderingMode {
-        case .immediate(let renderContext):
-            return RiveUIRenderer(
-                commandQueue: dependencies.commandQueue,
-                renderContext: renderContext
-            )
-        #if RIVE_CANVAS
-        case .deferred(let renderContext):
-            return _RiveUIDeferredRenderer(
-                commandQueue: dependencies.commandQueue,
-                renderContext: renderContext
-            )
-        #endif
-        }
+        return dependencies.renderContext.makeRenderer(
+            commandQueue: dependencies.commandQueue
+        )
     }
 
     /// Creates a worker with the default configuration and system Metal device.
@@ -142,11 +111,11 @@ public final class Worker: Sendable {
         // Context construction is isolated to this detached task, then the
         // completed context is transferred once to the worker. Subsequent C++
         // access is serialized by the command-server processing loop.
-        let renderingMode = await Task.detached(
+        let renderContext = await Task.detached(
             priority: .userInitiated
-        ) { () -> UncheckedSendable<RenderingMode> in
+        ) { () -> UncheckedSendable<any _RiveUIRenderContextProtocol> in
             UncheckedSendable(
-                value: Worker.makeRenderingMode(
+                value: Worker.makeRenderContext(
                     device: device.value,
                     configuration: configuration
                 )
@@ -156,7 +125,7 @@ public final class Worker: Sendable {
         let commandQueue = CommandQueue()
         let commandServer = CommandServer(
             commandQueue: commandQueue,
-            renderContext: renderingMode.value.renderContext
+            renderContext: renderContext.value
         )
 
         self.init(
@@ -165,7 +134,7 @@ public final class Worker: Sendable {
                     dependencies: .init(
                         commandQueue: commandQueue,
                         commandServer: commandServer,
-                        renderingMode: renderingMode.value,
+                        renderContext: renderContext.value,
                         messagePumpDriver: commandQueue
                     )
                 )
@@ -191,14 +160,14 @@ public final class Worker: Sendable {
         configuration: Configuration
     ) {
         RiveLog.debug(tag: .worker, "[Worker] Initializing worker with provided Metal device")
-        let renderingMode = Worker.makeRenderingMode(
+        let renderContext = Worker.makeRenderContext(
             device: device,
             configuration: configuration
         )
         let commandQueue = CommandQueue()
         let commandServer = CommandServer(
             commandQueue: commandQueue,
-            renderContext: renderingMode.renderContext
+            renderContext: renderContext
         )
         self.init(
             dependencies: .init(
@@ -206,7 +175,7 @@ public final class Worker: Sendable {
                     dependencies: .init(
                         commandQueue: commandQueue,
                         commandServer: commandServer,
-                        renderingMode: renderingMode,
+                        renderContext: renderContext,
                         messagePumpDriver: commandQueue
                     )
                 )

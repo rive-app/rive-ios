@@ -167,13 +167,11 @@ typedef struct
 - (instancetype)initWithCommandQueue:(id<RiveCommandQueueProtocol>)commandQueue
                        renderContext:(RiveUIRenderContext*)renderContext;
 
-#if defined(RIVE_CANVAS) && defined(RIVE_ORE)
 /// Creates a disabled renderer that reports `rendererError` from draw calls.
 /// Used internally to preserve deprecated initializer behavior without pairing
 /// an immediate renderer with a deferred context.
 - (instancetype)initWithRendererError:(NSError*)rendererError
     NS_SWIFT_NAME(init(rendererError:));
-#endif
 
 - (void)drawConfiguration:(RiveUIRendererConfiguration)configuration
                 toTexture:(id<MTLTexture>)texture

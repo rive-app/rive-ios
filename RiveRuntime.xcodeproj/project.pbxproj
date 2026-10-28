@@ -1298,7 +1298,11 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					dependencies/includes/rive/include,
+					dependencies/includes/renderer/include,
+					"$(SRCROOT)/Source/Concurrency/Renderer",
+				);
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1328,7 +1332,11 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					dependencies/includes/rive/include,
+					dependencies/includes/renderer/include,
+					"$(SRCROOT)/Source/Concurrency/Renderer",
+				);
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1554,7 +1562,11 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					dependencies/includes/rive/include,
+					dependencies/includes/renderer/include,
+					"$(SRCROOT)/Source/Concurrency/Renderer",
+				);
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1780,7 +1792,11 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					dependencies/includes/rive/include,
+					dependencies/includes/renderer/include,
+					"$(SRCROOT)/Source/Concurrency/Renderer",
+				);
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2008,7 +2024,11 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				"HEADER_SEARCH_PATHS[arch=*]" = dependencies/includes/rive/include;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					dependencies/includes/rive/include,
+					dependencies/includes/renderer/include,
+					"$(SRCROOT)/Source/Concurrency/Renderer",
+				);
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

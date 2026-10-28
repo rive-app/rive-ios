@@ -15,7 +15,7 @@ extension Worker {
         let workerService = WorkerService(dependencies: .init(
             commandQueue: commandQueue,
             commandServer: commandServer,
-            renderingMode: .immediate(renderContext),
+            renderContext: renderContext,
             messagePumpDriver: commandQueue
         ))
         self.init(dependencies: .init(workerService: workerService))

@@ -32,17 +32,17 @@ class WorkerTests: XCTestCase {
         )
 
         XCTAssertTrue(
-            defaultWorker.dependencies.workerService.dependencies.renderingMode
+            defaultWorker.dependencies.workerService.dependencies
                 .renderContext
                 is RiveUIRenderContext
         )
         XCTAssertTrue(
-            immediateWorker.dependencies.workerService.dependencies.renderingMode
+            immediateWorker.dependencies.workerService.dependencies
                 .renderContext
                 is RiveUIRenderContext
         )
         XCTAssertTrue(
-            deferredWorker.dependencies.workerService.dependencies.renderingMode
+            deferredWorker.dependencies.workerService.dependencies
                 .renderContext
                 is _RiveUIDeferredRenderContext
         )
@@ -71,7 +71,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -98,7 +98,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -136,7 +136,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -182,7 +182,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -222,7 +222,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -261,7 +261,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -300,7 +300,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -370,7 +370,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -409,7 +409,7 @@ class WorkerTests: XCTestCase {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )

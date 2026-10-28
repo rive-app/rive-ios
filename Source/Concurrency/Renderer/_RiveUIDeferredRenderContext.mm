@@ -9,6 +9,7 @@
 #import <RivePrivateHeaders.h>
 #import <RiveRuntime/_RiveUIRenderContextProtocol.h>
 #import "_RiveUIDeferredRenderContext.h"
+#import "_RiveUIDeferredRenderer.h"
 
 #if defined(RIVE_CANVAS) && defined(RIVE_ORE)
 
@@ -51,6 +52,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
   assert(_session == nullptr);
   _renderContext->releaseResources();
+}
+
+- (id<RiveUIRendererProtocol>)makeRendererWithCommandQueue:
+    (id<RiveCommandQueueProtocol>)commandQueue
+{
+  return [[_RiveUIDeferredRenderer alloc] initWithCommandQueue:commandQueue
+                                                 renderContext:self];
 }
 
 - (rive::Factory*)beginCommandProcessing

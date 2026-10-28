@@ -22,16 +22,9 @@ public extension RiveUIRenderer {
     @MainActor
     convenience init(worker: Worker) {
         let dependencies = worker.dependencies.workerService.dependencies
-        switch dependencies.renderingMode {
-        case .immediate(let renderContext):
-            self.init(
-                commandQueue: dependencies.commandQueue,
-                renderContext: renderContext
-            )
-        #if RIVE_CANVAS
-        case .deferred:
+        guard let renderContext = dependencies.renderContext as? RiveUIRenderContext else {
             let message =
-                "RiveUIRenderer(worker:) does not support deferred rendering. Create a Rive with this worker, then call rive.makeRenderer()."
+                "RiveUIRenderer(worker:) requires an immediate render context. Create a Rive with this worker, then call rive.makeRenderer()."
             assertionFailure(message)
             RiveLog.error(tag: .worker, message)
             self.init(
@@ -41,8 +34,12 @@ public extension RiveUIRenderer {
                     userInfo: [NSLocalizedDescriptionKey: message]
                 )
             )
-        #endif
+            return
         }
+        self.init(
+            commandQueue: dependencies.commandQueue,
+            renderContext: renderContext
+        )
     }
 
     /// Creates an immediate renderer from the worker backing the given Rive.

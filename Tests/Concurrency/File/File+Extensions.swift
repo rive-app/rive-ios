@@ -25,7 +25,7 @@ extension File {
             dependencies: .init(
                 commandQueue: mockCommandQueue,
                 commandServer: mockCommandServer,
-                renderingMode: .immediate(RiveUIRenderContext(device: device)),
+                renderContext: RiveUIRenderContext(device: device),
                 messagePumpDriver: mockCommandQueue
             )
         )
@@ -53,7 +53,7 @@ extension Artboard {
         let workerService = WorkerService(dependencies: .init(
             commandQueue: commandQueue,
             commandServer: MockCommandServer(),
-            renderingMode: .immediate(RiveUIRenderContext(device: MTLCreateSystemDefaultDevice()!)),
+            renderContext: RiveUIRenderContext(device: MTLCreateSystemDefaultDevice()!),
             messagePumpDriver: commandQueue
         ))
         let file = File(
