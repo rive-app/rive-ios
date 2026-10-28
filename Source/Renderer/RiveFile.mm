@@ -378,7 +378,7 @@
   _fallbackLoader = fallbackLoader;
 
   fileAssetLoader = rive::make_rcp<rive::FileAssetLoaderAdapter>(
-      fallbackLoader);
+      fallbackLoader, _renderContext);
 
   auto file = rive::File::import(
       rive::Span(bytes, length), factory, &result, fileAssetLoader.get());

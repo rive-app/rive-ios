@@ -161,9 +161,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveFileAsset
  */
+@class RenderContext;
+
 @interface RiveFactory ()
-@property(nonatomic, readonly) rive::Factory* factory;
-- (instancetype)initWithFactory:(rive::Factory*)factory;
+- (instancetype)initWithRenderContext:(RenderContext*)renderContext;
 @end
 
 @interface RiveFont ()

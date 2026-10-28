@@ -13,9 +13,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 rive::FileAssetLoaderAdapter::FileAssetLoaderAdapter(
-    RiveFileAssetLoader* myLoader)
+    RiveFileAssetLoader* myLoader, RenderContext* context)
 {
   loader = myLoader;
+  renderContext = context;
 }
 
 bool rive::FileAssetLoaderAdapter::loadContents(
@@ -24,7 +25,8 @@ bool rive::FileAssetLoaderAdapter::loadContents(
     rive::Factory* factory)
 {
   NSData* data = [NSData dataWithBytes:bytes.data() length:bytes.size()];
-  RiveFactory* myFactory = [[RiveFactory alloc] initWithFactory:factory];
+  RiveFactory* myFactory = [[RiveFactory alloc]
+      initWithRenderContext:renderContext];
 #ifdef WITH_RIVE_TEXT
   if (asset.is<rive::FontAsset>())
   {

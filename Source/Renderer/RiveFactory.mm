@@ -34,8 +34,7 @@
 - (instancetype)initWithData:(NSData*)data
 {
   RenderContext* context = [[RenderContextManager shared] newDefaultContext];
-  RiveFactory* factory = [[RiveFactory alloc]
-      initWithFactory:[context factory]];
+  RiveFactory* factory = [[RiveFactory alloc] initWithRenderContext:context];
   auto renderImage = [factory decodeImage:data];
   auto image = [renderImage instance];
   if (image == nullptr || image.get() == nullptr)
@@ -81,15 +80,17 @@
  */
 @implementation RiveFactory
 {
-  rive::Factory* instance; // note: we do NOT own this, so don't delete it
+  // Async asset loaders may retain this factory after their file is released.
+  // Keep the owner of the C++ factory alive for those pending decodes.
+  RenderContext* _renderContext;
 }
 
-// Creates a new RiveFactory from a cpp RiveFactory
-- (instancetype)initWithFactory:(rive::Factory*)factory
+// The render context owns the C++ factory and may outlive the file.
+- (instancetype)initWithRenderContext:(RenderContext*)renderContext
 {
   if (self = [super init])
   {
-    instance = factory;
+    _renderContext = renderContext;
     return self;
   }
   else
@@ -100,17 +101,27 @@
 
 - (RiveRenderImage*)decodeImage:(nonnull NSData*)data
 {
+  rive::Factory* factory = [_renderContext factory];
+  if (factory == nullptr)
+  {
+    return [[RiveRenderImage alloc] initWithImage:nullptr];
+  }
   UInt8* bytes = (UInt8*)[data bytes];
   return [[RiveRenderImage alloc]
-      initWithImage:instance->decodeImage(
+      initWithImage:factory->decodeImage(
                         rive::Span<const uint8_t>(bytes, [data length]))];
 }
 
 - (RiveFont*)decodeFont:(nonnull NSData*)data
 {
+  rive::Factory* factory = [_renderContext factory];
+  if (factory == nullptr)
+  {
+    return [[RiveFont alloc] initWithFont:nullptr];
+  }
   UInt8* bytes = (UInt8*)[data bytes];
   return [[RiveFont alloc]
-      initWithFont:instance->decodeFont(
+      initWithFont:factory->decodeFont(
                        rive::Span<const uint8_t>(bytes, [data length]))];
 }
 
@@ -139,20 +150,18 @@
 - (RiveAudio*)decodeAudio:(nonnull NSData*)data
 {
 #ifdef WITH_RIVE_AUDIO
+  rive::Factory* factory = [_renderContext factory];
+  if (factory == nullptr)
+  {
+    return [[RiveAudio alloc] initWithAudio:nullptr];
+  }
   UInt8* bytes = (UInt8*)[data bytes];
   return [[RiveAudio alloc]
-      initWithAudio:instance->decodeAudio(
+      initWithAudio:factory->decodeAudio(
                         rive::Span<const uint8_t>(bytes, [data length]))];
 #else
   return nil;
 #endif
-}
-
-#pragma mark Private
-
-- (rive::Factory*)factory
-{
-  return instance;
 }
 
 @end

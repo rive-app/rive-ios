@@ -8,12 +8,207 @@
 
 #import <XCTest/XCTest.h>
 #import "Rive.h"
+#import "RivePrivateHeaders.h"
+#import "RenderContext.h"
 #import "util.h"
 
 @interface OutOfBandAssetTest : XCTestCase
 @end
 
 @implementation OutOfBandAssetTest
+
+// Retain only the callback's factory and bytes, as a deferred download would.
+- (RiveFactory*)factoryAfterReleasingFile:(NSString*)fileName
+                               assetClass:(Class)assetClass
+                                     data:(NSData**)assetData
+{
+  __block RiveFactory* retainedFactory = nil;
+  __block NSData* retainedData = nil;
+  __weak RiveFile* weakFile = nil;
+  @autoreleasepool
+  {
+    NSError* error = nil;
+    RiveFile* file = [[RiveFile alloc]
+             initWithData:[Util loadTestData:fileName]
+                  loadCdn:false
+        customAssetLoader:^bool(
+            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+          if ([asset isKindOfClass:assetClass] && data.length > 0)
+          {
+            retainedFactory = factory;
+            retainedData = data;
+          }
+          return true;
+        }
+                    error:&error];
+    XCTAssertNotNil(file);
+    XCTAssertNil(error);
+    weakFile = file;
+  }
+
+  XCTAssertNil(weakFile);
+  XCTAssertNotNil(retainedFactory);
+  XCTAssertGreaterThan(retainedData.length, 0u);
+  *assetData = retainedData;
+  return retainedFactory;
+}
+
+- (void)testDecodeImageAfterFileIsDeallocated
+{
+  NSData* data = nil;
+  RiveFactory* factory = [self factoryAfterReleasingFile:@"embedded_assets"
+                                              assetClass:[RiveImageAsset class]
+                                                    data:&data];
+  RiveRenderImage* image = [factory decodeImage:data];
+  XCTAssertNotNil(image);
+  if (image != nil)
+  {
+    XCTAssertTrue([image instance] != nullptr);
+  }
+}
+
+- (void)testDecodeFontAfterFileIsDeallocated
+{
+  NSData* data = nil;
+  RiveFactory* factory = [self factoryAfterReleasingFile:@"embedded_assets"
+                                              assetClass:[RiveFontAsset class]
+                                                    data:&data];
+  RiveFont* font = [factory decodeFont:data];
+  XCTAssertNotNil(font);
+  if (font != nil)
+  {
+    XCTAssertTrue([font instance] != nullptr);
+  }
+}
+
+- (void)testDecodeAudioAfterFileIsDeallocated
+{
+  NSData* data = nil;
+  RiveFactory* factory = [self factoryAfterReleasingFile:@"audio_test"
+                                              assetClass:[RiveAudioAsset class]
+                                                    data:&data];
+  RiveAudio* audio = [factory decodeAudio:data];
+  XCTAssertNotNil(audio);
+  if (audio != nil)
+  {
+    XCTAssertTrue([audio instance] != nullptr);
+  }
+}
+
+- (void)testDecodeInvalidImageDataReturnsEmptyImage
+{
+  RenderContext* context = [[RenderContextManager shared] newDefaultContext];
+  RiveFactory* factory = [[RiveFactory alloc] initWithRenderContext:context];
+  NSData* data = [@"not an image" dataUsingEncoding:NSUTF8StringEncoding];
+  RiveRenderImage* image = [factory decodeImage:data];
+  XCTAssertNotNil(image);
+  XCTAssertTrue([image instance] == nullptr);
+}
+
+- (void)testDecodeImageWithoutFactoryReturnsEmptyImage
+{
+  RiveRenderImage* image = [[[RiveFactory alloc] init]
+      decodeImage:[NSData data]];
+  XCTAssertNotNil(image);
+  if (image != nil)
+  {
+    XCTAssertTrue([image instance] == nullptr);
+  }
+}
+
+- (void)testDecodeFontWithoutFactoryReturnsEmptyFont
+{
+  RiveFont* font = [[[RiveFactory alloc] init] decodeFont:[NSData data]];
+  XCTAssertNotNil(font);
+  if (font != nil)
+  {
+    XCTAssertTrue([font instance] == nullptr);
+  }
+}
+
+- (void)testDecodeAudioWithoutFactoryReturnsEmptyAudio
+{
+  RiveAudio* audio = [[[RiveFactory alloc] init] decodeAudio:[NSData data]];
+  XCTAssertNotNil(audio);
+  if (audio != nil)
+  {
+    XCTAssertTrue([audio instance] == nullptr);
+  }
+}
+
+- (void)testFactoryOwnsContextUntilFactoryIsReleased
+{
+  __weak RenderContext* weakContext = nil;
+  @autoreleasepool
+  {
+    RiveFactory* factory = nil;
+    @autoreleasepool
+    {
+      RenderContext* context = [[RenderContextManager shared]
+          newDefaultContext];
+      weakContext = context;
+      factory = [[RiveFactory alloc] initWithRenderContext:context];
+    }
+
+    // The factory is now the only owner; decoding still needs the context.
+    XCTAssertNotNil(weakContext);
+    NSBundle* bundle = [NSBundle bundleForClass:[self class]];
+    NSData* data = [NSData
+        dataWithContentsOfFile:[bundle pathForResource:@"1x1_png"
+                                                ofType:@"png"]];
+    XCTAssertGreaterThan(data.length, 0u);
+    RiveRenderImage* image = [factory decodeImage:data];
+    XCTAssertNotNil(image);
+    if (image != nil)
+    {
+      XCTAssertTrue([image instance] != nullptr);
+    }
+  }
+  XCTAssertNil(weakContext);
+}
+
+- (void)testFactoryDecodesEmbeddedAssetsWhileFileIsAlive
+{
+  for (NSString* fileName in @[ @"embedded_assets", @"audio_test" ])
+  {
+    NSError* error = nil;
+    __block NSUInteger decodedCount = 0;
+    RiveFile* file = [[RiveFile alloc]
+             initWithData:[Util loadTestData:fileName]
+                  loadCdn:false
+        customAssetLoader:^bool(
+            RiveFileAsset* asset, NSData* data, RiveFactory* factory) {
+          if (data.length == 0)
+          {
+            return true;
+          }
+          if ([asset isKindOfClass:[RiveImageAsset class]])
+          {
+            auto image = [[factory decodeImage:data] instance];
+            XCTAssertTrue(image != nullptr);
+            decodedCount++;
+          }
+          else if ([asset isKindOfClass:[RiveFontAsset class]])
+          {
+            auto font = [[factory decodeFont:data] instance];
+            XCTAssertTrue(font != nullptr);
+            decodedCount++;
+          }
+          else if ([asset isKindOfClass:[RiveAudioAsset class]])
+          {
+            auto audio = [[factory decodeAudio:data] instance];
+            XCTAssertTrue(audio != nullptr);
+            decodedCount++;
+          }
+          return true;
+        }
+                    error:&error];
+    XCTAssertNotNil(file);
+    XCTAssertNil(error);
+    XCTAssertEqual(
+        decodedCount, [fileName isEqualToString:@"embedded_assets"] ? 2u : 1u);
+  }
+}
 
 - (void)testHostedAssetsProvideCallbacks
 {

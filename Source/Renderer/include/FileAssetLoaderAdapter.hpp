@@ -21,9 +21,10 @@ class FileAssetLoaderAdapter : public FileAssetLoader
 {
 private:
   RiveFileAssetLoader* loader;
+  RenderContext* renderContext;
 
 public:
-  FileAssetLoaderAdapter(RiveFileAssetLoader*);
+  FileAssetLoaderAdapter(RiveFileAssetLoader*, RenderContext*);
 
   bool loadContents(
       rive::FileAsset& asset,
