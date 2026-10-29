@@ -5,11 +5,13 @@
 
 #import <Metal/Metal.h>
 
+DEPRECATED_MSG_ATTRIBUTE("The legacy rendering API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#creating-a-rive-view")
 @interface RiveMTKView : MTKView <RiveMetalDrawableView>
 @end
 
 NS_ASSUME_NONNULL_BEGIN
 
+DEPRECATED_MSG_ATTRIBUTE("The legacy rendering API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#creating-a-rive-view")
 @interface RiveRendererView : RiveMTKView
 
 @property(nullable, nonatomic, strong) id<CAMetalDrawable>currentDrawableOverride;

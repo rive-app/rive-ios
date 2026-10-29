@@ -43,7 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * LoopMode
  */
-typedef NS_ENUM(NSInteger, RiveLoop) { oneShot, loop, pingPong, autoLoop };
+typedef NS_ENUM(NSInteger, RiveLoop) {
+  oneShot,
+  loop,
+  pingPong,
+  autoLoop
+} DEPRECATED_MSG_ATTRIBUTE("The legacy linear animation API is deprecated. Use "
+                           "a state machine to control playback instead. See "
+                           "https://rive.app/docs/runtimes/apple/"
+                           "migrating-from-legacy#linear-animations");
 
 /*
  * Direction
@@ -52,7 +60,10 @@ typedef NS_ENUM(NSInteger, RiveDirection) {
   backwards,
   forwards,
   autoDirection,
-};
+} DEPRECATED_MSG_ATTRIBUTE("The legacy linear animation API is deprecated. Use "
+                           "a state machine to control playback instead. See "
+                           "https://rive.app/docs/runtimes/apple/"
+                           "migrating-from-legacy#linear-animations");
 
 /*
  * Fits
@@ -66,7 +77,11 @@ typedef NS_ENUM(NSInteger, RiveFit) {
   scaleDown,
   noFit,
   layout
-};
+} DEPRECATED_MSG_ATTRIBUTE("The legacy layout configuration API is deprecated. "
+                           "Use Fit and Alignment from the concurrency runtime "
+                           "instead. See "
+                           "https://rive.app/docs/runtimes/apple/"
+                           "migrating-from-legacy#setting-fit-and-alignment");
 
 /*
  * Alignments
@@ -81,9 +96,17 @@ typedef NS_ENUM(NSInteger, RiveAlignment) {
   bottomLeft,
   bottomCenter,
   bottomRight
-};
+} DEPRECATED_MSG_ATTRIBUTE("The legacy layout configuration API is deprecated. "
+                           "Use Fit and Alignment from the concurrency runtime "
+                           "instead. See "
+                           "https://rive.app/docs/runtimes/apple/"
+                           "migrating-from-legacy#setting-fit-and-alignment");
 
-FOUNDATION_EXPORT NSString* const RiveErrorDomain;
+FOUNDATION_EXPORT NSString* const RiveErrorDomain DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy error reporting API is deprecated. Handle errors thrown by the "
+    "concurrency runtime instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#tracking-loading-and-error-state");
 
 typedef NS_ENUM(NSInteger, RiveErrorCode) {
   RiveNoArtboardsFound = 100,
@@ -98,11 +121,20 @@ typedef NS_ENUM(NSInteger, RiveErrorCode) {
   RiveUnsupportedVersion = 500,
   RiveMalformedFile = 600,
   RiveUnknownError = 700,
-};
+} DEPRECATED_MSG_ATTRIBUTE("The legacy error reporting API is deprecated. "
+                           "Handle errors thrown by the concurrency runtime "
+                           "instead. See "
+                           "https://rive.app/docs/runtimes/apple/"
+                           "migrating-from-legacy#tracking-loading-and-error-"
+                           "state");
 
 /*
  * RiveRenderer
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy rendering API is deprecated. Use the "
+                         "concurrency runtime instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#creating-a-rive-view")
 @interface RiveRenderer : NSObject
 
 - (instancetype)initWithContext:(nonnull CGContextRef)context;
@@ -114,7 +146,12 @@ typedef NS_ENUM(NSInteger, RiveErrorCode) {
 @end
 
 typedef bool (^LoadAsset)(
-    RiveFileAsset* asset, NSData* data, RiveFactory* factory);
+    RiveFileAsset* asset, NSData* data, RiveFactory* factory)
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy asset loading API is deprecated. Use File.getAssets() and "
+        "Worker asset APIs instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#loading-referenced-assets");
 
 NS_ASSUME_NONNULL_END
 

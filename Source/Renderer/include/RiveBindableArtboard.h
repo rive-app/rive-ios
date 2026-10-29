@@ -10,6 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+DEPRECATED_MSG_ATTRIBUTE("The legacy bindable artboard API is deprecated. Use "
+                         "Artboard from the concurrency runtime instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#bindable-artboards")
 @interface RiveBindableArtboard : NSObject
 
 @property(nonatomic, readonly) NSString* name;

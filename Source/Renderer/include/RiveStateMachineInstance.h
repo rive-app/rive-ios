@@ -23,11 +23,23 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveDataBindingViewModelInstance;
 
 /// A type mirroring rive::HitResult, but available in both ObjC and Swift.
-typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
+typedef NS_ENUM(NSInteger, RiveHitResult) {
+  none,
+  hit,
+  hitOpaque
+} DEPRECATED_MSG_ATTRIBUTE("The legacy hit result API is deprecated. Use the "
+                           "concurrency runtime instead. See "
+                           "https://rive.app/docs/runtimes/apple/"
+                           "migrating-from-legacy");
 
 /*
  * RiveStateMachineInstance
  */
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy API is deprecated. Use StateMachine from the concurrency "
+    "runtime instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#choosing-an-artboard-and-state-machine")
 @interface RiveStateMachineInstance : NSObject
 
 @property(nonatomic, nullable, readonly)
@@ -35,24 +47,76 @@ typedef NS_ENUM(NSInteger, RiveHitResult) { none, hit, hitOpaque };
 
 - (NSString*)name;
 - (bool)advanceBy:(double)elapsedSeconds;
-- (const RiveSMIBool*)getBool:(NSString*)name;
-- (const RiveSMITrigger*)getTrigger:(NSString*)name;
-- (const RiveSMINumber*)getNumber:(NSString*)name;
-- (NSArray<NSString*>*)inputNames;
-- (NSInteger)inputCount;
+- (const RiveSMIBool*)getBool:(NSString*)name
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state machine input API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#state-machine-inputs");
+- (const RiveSMITrigger*)getTrigger:(NSString*)name
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state machine input API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#state-machine-inputs");
+- (const RiveSMINumber*)getNumber:(NSString*)name
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state machine input API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#state-machine-inputs");
+- (NSArray<NSString*>*)inputNames DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy state machine input API is deprecated. Use Data Binding "
+    "properties instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#state-machine-inputs");
+- (NSInteger)inputCount DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy state machine input API is deprecated. Use Data Binding "
+    "properties instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#state-machine-inputs");
 - (NSInteger)layerCount;
 - (RiveSMIInput* __nullable)inputFromIndex:(NSInteger)index
-                                     error:(NSError**)error;
+                                     error:(NSError**)error
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state machine input API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#state-machine-inputs");
 - (RiveSMIInput* __nullable)inputFromName:(NSString*)name
-                                    error:(NSError**)error;
-- (NSInteger)stateChangedCount;
+                                    error:(NSError**)error
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state machine input API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#state-machine-inputs");
+- (NSInteger)stateChangedCount DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy state observation API is deprecated. Use Data Binding "
+    "properties instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#observing-state-machine-state");
 - (RiveLayerState* __nullable)stateChangedFromIndex:(NSInteger)index
-                                              error:(NSError**)error;
-- (NSArray<NSString*>*)stateChanges;
+                                              error:(NSError**)error
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state observation API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#observing-state-machine-state");
+- (NSArray<NSString*>*)stateChanges DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy state observation API is deprecated. Use Data Binding "
+    "properties instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#observing-state-machine-state");
 /// Returns number of reported events on the state machine since the last frame
-- (NSInteger)reportedEventCount;
+- (NSInteger)reportedEventCount DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Rive event API is deprecated. Use Data Binding instead. See "
+    "https://rive.app/docs/runtimes/apple/migrating-from-legacy#events");
 /// Returns a RiveEvent from the list of reported events at the given index
-- (const RiveEvent*)reportedEventAt:(NSInteger)index;
+- (const RiveEvent*)reportedEventAt:(NSInteger)index
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Rive event API is deprecated. Use Data Binding instead. "
+        "See "
+        "https://rive.app/docs/runtimes/apple/migrating-from-legacy#events");
 
 // MARK: Touch
 

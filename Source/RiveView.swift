@@ -8,6 +8,7 @@
 
 import Foundation
 
+@available(*, deprecated, message: "The legacy API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#creating-a-rive-view")
 open class RiveView: RiveRendererView {
     struct Constants {
         static let layoutScaleFactorAutomatic: Double = -1
@@ -863,6 +864,7 @@ open class RiveView: RiveRendererView {
 }
 
 /// An enum of possible touch or mouse events when interacting with an animation.
+@available(*, deprecated, message: "The legacy pointer event API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy")
 @objc public enum RiveTouchEvent: Int {
     /// The touch event that occurs when a touch or mouse button click occurs.
     case began
@@ -877,6 +879,7 @@ open class RiveView: RiveRendererView {
     case exited
 }
 
+@available(*, deprecated, message: "The legacy state machine delegate API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy")
 @objc public protocol RiveStateMachineDelegate: AnyObject {
     @objc optional func touchBegan(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
     @objc optional func touchMoved(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
@@ -887,12 +890,16 @@ open class RiveView: RiveRendererView {
     /// @param location The location where the touch exited in artboard coordinates
     @objc optional func touchExited(onArtboard artboard: RiveArtboard?, atLocation location: CGPoint)
 
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, receivedInput input: StateMachineInput)
+    @available(*, deprecated, message: "The legacy state observation API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#observing-state-machine-state")
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, didChangeState stateName: String)
     @objc optional func stateMachine(_ stateMachine: RiveStateMachineInstance, didReceiveHitResult hitResult: RiveHitResult, from event: RiveTouchEvent)
+    @available(*, deprecated, message: "The legacy Rive event API is deprecated. Use Data Binding instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#events")
     @objc optional func onRiveEventReceived(onRiveEvent riveEvent: RiveEvent)
 }
 
+@available(*, deprecated, message: "The legacy playback delegate API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy")
 @objc public protocol RivePlayerDelegate: AnyObject {
     func player(playedWithModel riveModel: RiveModel?)
     func player(pausedWithModel riveModel: RiveModel?)

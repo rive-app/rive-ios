@@ -14,6 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveDataBindingViewModelInstancePropertyData;
 
 /// An object that represents a View Model of a Rive file.
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding API is deprecated. Use ViewModelInstance from the "
+    "concurrency runtime instead. See "
+    "https://rive.app/docs/runtimes/apple/migrating-from-legacy#view-models")
 @interface RiveDataBindingViewModel : NSObject
 
 /// The name of the view model.

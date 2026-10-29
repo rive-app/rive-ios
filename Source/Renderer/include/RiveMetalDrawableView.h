@@ -11,6 +11,10 @@
 
 #import <Metal/Metal.h>
 
+DEPRECATED_MSG_ATTRIBUTE("The legacy rendering API is deprecated. Use the "
+                         "concurrency runtime instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#creating-a-rive-view")
 @protocol RiveMetalDrawableView
 @property(nullable, nonatomic, retain) id<MTLDevice> device;
 @property(nonatomic) MTLPixelFormat

@@ -18,6 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveLayerState
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state observation API is deprecated. Use "
+                         "Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#observing-state-machine-state")
 @interface RiveLayerState : NSObject
 
 - (const void*)rive_layer_state;
@@ -32,6 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveExitState
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state observation API is deprecated. Use "
+                         "Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#observing-state-machine-state")
 @interface RiveExitState : RiveLayerState
 - (NSString*)name;
 @end
@@ -39,6 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveEntryState
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state observation API is deprecated. Use "
+                         "Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#observing-state-machine-state")
 @interface RiveEntryState : RiveLayerState
 - (NSString*)name;
 @end
@@ -46,6 +58,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveAnyState
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state observation API is deprecated. Use "
+                         "Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#observing-state-machine-state")
 @interface RiveAnyState : RiveLayerState
 - (NSString*)name;
 @end
@@ -53,6 +69,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveAnimationState
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state observation API is deprecated. Use "
+                         "Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#observing-state-machine-state")
 @interface RiveAnimationState : RiveLayerState
 - (NSString*)name;
 @end
@@ -61,6 +81,10 @@ NS_ASSUME_NONNULL_BEGIN
  * RiveUnknownState
  * This catches new states that haven't been added to iOS runtime yet
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state observation API is deprecated. Use "
+                         "Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#observing-state-machine-state")
 @interface RiveUnknownState : RiveLayerState
 - (NSString*)name;
 @end

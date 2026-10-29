@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * TextValueRun
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy text run API is deprecated. Use Data "
+                         "Binding string properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#view-model-instance-properties")
 @interface RiveTextValueRun : NSObject
 - (NSString*)text;
 - (void)setText:(NSString*)newValue;

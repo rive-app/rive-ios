@@ -20,6 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// An object that represents a property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.Property)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceProperty : NSObject
 
 /// The name of the property.
@@ -46,10 +51,20 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.Property)
 
 typedef void (^RiveDataBindingViewModelInstanceStringPropertyListener)(
     NSString*)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceStringProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceStringProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "Use ViewModelInstance.valueStream(of:) instead. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents a string property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.StringProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceStringProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -70,17 +85,32 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.StringProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceStringPropertyListener)listener;
+    (RiveDataBindingViewModelInstanceStringPropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. Use "
+        "ViewModelInstance.valueStream(of:) instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 
 #pragma mark - Number
 
 typedef void (^RiveDataBindingViewModelInstanceNumberPropertyListener)(float)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceNumberProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceNumberProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "Use ViewModelInstance.valueStream(of:) instead. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents a number property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.NumberProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceNumberProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -101,17 +131,32 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.NumberProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceNumberPropertyListener)listener;
+    (RiveDataBindingViewModelInstanceNumberPropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. Use "
+        "ViewModelInstance.valueStream(of:) instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 
 #pragma mark - Boolean
 
 typedef void (^RiveDataBindingViewModelInstanceBooleanPropertyListener)(BOOL)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceBooleanProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceBooleanProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "Use ViewModelInstance.valueStream(of:) instead. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents a boolean property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.BooleanProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceBooleanProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -132,7 +177,12 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.BooleanProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceBooleanPropertyListener)listener;
+    (RiveDataBindingViewModelInstanceBooleanPropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. Use "
+        "ViewModelInstance.valueStream(of:) instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 
@@ -140,10 +190,20 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.BooleanProperty)
 
 typedef void (^RiveDataBindingViewModelInstanceColorPropertyListener)(
     RiveDataBindingViewModelInstanceColor*)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceColorProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceColorProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "Use ViewModelInstance.valueStream(of:) instead. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents a color property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ColorProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceColorProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -187,17 +247,32 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ColorProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceColorPropertyListener)listener;
+    (RiveDataBindingViewModelInstanceColorPropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. Use "
+        "ViewModelInstance.valueStream(of:) instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 
 #pragma mark - Enum
 
 typedef void (^RiveDataBindingViewModelInstanceEnumPropertyListener)(NSString*)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceEnumProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceEnumProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "Use ViewModelInstance.valueStream(of:) instead. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents an enum property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.EnumProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceEnumProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -228,17 +303,32 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.EnumProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceEnumPropertyListener)listener;
+    (RiveDataBindingViewModelInstanceEnumPropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. Use "
+        "ViewModelInstance.valueStream(of:) instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 
 #pragma mark - Trigger
 
 typedef void (^RiveDataBindingViewModelInstanceTriggerPropertyListener)(void)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceTriggerProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceTriggerProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "Use ViewModelInstance.stream(of:) instead. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents a trigger property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.TriggerProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceTriggerProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -258,17 +348,33 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.TriggerProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceTriggerPropertyListener)listener;
+    (RiveDataBindingViewModelInstanceTriggerPropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. Use "
+        "ViewModelInstance.stream(of:) instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 
 #pragma mark - Image
 
 typedef void (^RiveDataBindingViewModelInstanceImagePropertyListener)(void)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceImageProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceImageProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "Image property observation is not supported in the "
+                "concurrency runtime. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents a trigger property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ImageProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceImageProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -287,17 +393,33 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ImageProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceImagePropertyListener)listener;
+    (RiveDataBindingViewModelInstanceImagePropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. Image "
+        "property observation is not supported in the concurrency runtime. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 
 #pragma mark - List
 
 typedef void (^RiveDataBindingViewModelInstanceListPropertyListener)(void)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceListProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceListProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "List property observation is not supported in the concurrency "
+                "runtime. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents a trigger property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ListProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceListProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -361,7 +483,12 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ListProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceListPropertyListener)listener;
+    (RiveDataBindingViewModelInstanceListPropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. List "
+        "property observation is not supported in the concurrency runtime. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 
@@ -370,10 +497,21 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ListProperty)
 @class RiveBindableArtboard;
 
 typedef void (^RiveDataBindingViewModelInstanceArtboardPropertyListener)(void)
-    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceArtboardProperty.Listener);
+    NS_SWIFT_NAME(RiveDataBindingViewModelInstanceArtboardProperty.Listener)
+            DEPRECATED_MSG_ATTRIBUTE(
+                "The legacy Data Binding property listener API is deprecated. "
+                "Artboard property observation is not supported in the "
+                "concurrency runtime. See "
+                "https://rive.app/docs/runtimes/apple/"
+                "migrating-from-legacy#view-model-instance-properties");
 
 /// An object that represents a trigger property of a view model instance.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ArtboardProperty)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property API is deprecated. Use the property APIs "
+    "on ViewModelInstance instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstanceArtboardProperty
     : RiveDataBindingViewModelInstanceProperty
 
@@ -405,7 +543,12 @@ NS_SWIFT_NAME(RiveDataBindingViewModelInstance.ArtboardProperty)
 /// - Returns: A UUID for the listener, used in conjunction with
 /// `removeListener`.
 - (NSUUID*)addListener:
-    (RiveDataBindingViewModelInstanceArtboardPropertyListener)listener;
+    (RiveDataBindingViewModelInstanceArtboardPropertyListener)listener
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy Data Binding property listener API is deprecated. Artboard "
+        "property observation is not supported in the concurrency runtime. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 @end
 

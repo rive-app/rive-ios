@@ -13,6 +13,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Rive event API is deprecated. Use Data Binding instead. See "
+    "https://rive.app/docs/runtimes/apple/migrating-from-legacy#events")
 @interface RiveEventReport : NSObject
 - (float)secondsDelay;
 @end
@@ -20,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveEvent
  */
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Rive event API is deprecated. Use Data Binding instead. See "
+    "https://rive.app/docs/runtimes/apple/migrating-from-legacy#events")
 @interface RiveEvent : NSObject
 /// Name of the RiveEvent
 - (NSString*)name;
@@ -35,12 +41,18 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveGeneralEvent
  */
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Rive event API is deprecated. Use Data Binding instead. See "
+    "https://rive.app/docs/runtimes/apple/migrating-from-legacy#events")
 @interface RiveGeneralEvent : RiveEvent
 @end
 
 /*
  * RiveOpenUrlEvent
  */
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Rive event API is deprecated. Use Data Binding instead. See "
+    "https://rive.app/docs/runtimes/apple/migrating-from-legacy#events")
 @interface RiveOpenUrlEvent : RiveEvent
 /// URL of a link to open
 - (NSString*)url;

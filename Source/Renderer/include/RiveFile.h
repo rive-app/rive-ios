@@ -20,11 +20,20 @@ NS_ASSUME_NONNULL_BEGIN
 @class RiveDataBindingViewModel;
 @class RiveBindableArtboard;
 typedef bool (^LoadAsset)(
-    RiveFileAsset* asset, NSData* data, RiveFactory* factory);
+    RiveFileAsset* asset, NSData* data, RiveFactory* factory)
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy asset loading API is deprecated. Use File.getAssets() and "
+        "Worker asset APIs instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#loading-referenced-assets");
 
 /*
  * RiveFile
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy API is deprecated. Use File from the "
+                         "concurrency runtime instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#loading-a-file-from-disk")
 @interface RiveFile : NSObject
 
 @property(class, readonly) uint majorVersion;
@@ -183,6 +192,10 @@ typedef bool (^LoadAsset)(
 /*
  * Delegate to inform when a rive file is loaded
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy file loading delegate API is deprecated. "
+                         "Use async File initialization instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#asynchronous-apis")
 @protocol RiveFileDelegate <NSObject>
 - (BOOL)riveFileDidLoad:(RiveFile*)riveFile error:(NSError**)error;
 - (void)riveFileDidError:(NSError*)error;

@@ -26,12 +26,23 @@ typedef NS_ENUM(NSInteger, RiveDataBindingViewModelInstancePropertyDataType) {
   RiveDataBindingViewModelInstancePropertyDataTypeArtboard,
   RiveDataBindingViewModelInstancePropertyDataTypeInput,
   RiveDataBindingViewModelInstancePropertyDataTypeAny,
-} NS_SWIFT_NAME(RiveDataBindingViewModelInstancePropertyData.DataType);
+} NS_SWIFT_NAME(RiveDataBindingViewModelInstancePropertyData.DataType)
+                    DEPRECATED_MSG_ATTRIBUTE(
+                        "The legacy Data Binding property type API is "
+                        "deprecated. Use ViewModelProperty.DataType from the "
+                        "concurrency runtime instead. See "
+                        "https://rive.app/docs/runtimes/apple/"
+                        "migrating-from-legacy#view-model-instance-properties");
 
 NS_ASSUME_NONNULL_BEGIN
 
 /// An object that represents the metadata of a view model instance property.
 NS_SWIFT_NAME(RiveDataBindingViewModelInstanceProperty.Data)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding property metadata API is deprecated. Use "
+    "ViewModelProperty from the concurrency runtime instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#view-model-instance-properties")
 @interface RiveDataBindingViewModelInstancePropertyData : NSObject
 
 /// The type of property within the view model instance.

@@ -16,6 +16,7 @@ enum RiveLoggerStateMachineEvent {
     case instanceBind(String)
 }
 
+@available(*, deprecated, message: "The legacy logging API is deprecated. Use RiveLog instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#logging")
 extension RiveLogger {
     private static let stateMachine = Logger(subsystem: subsystem, category: "rive-state-machine")
 

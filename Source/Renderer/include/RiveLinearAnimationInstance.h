@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveLinearAnimationInstance
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy linear animation API is deprecated. Use a "
+                         "state machine to control playback instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#linear-animations")
 @interface RiveLinearAnimationInstance : NSObject
 
 - (float)time;

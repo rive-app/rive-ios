@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * SMIInput
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state machine input API is deprecated. "
+                         "Use Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#state-machine-inputs")
 @interface RiveSMIInput : NSObject
 - (NSString*)name;
 - (bool)isBoolean;
@@ -26,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * SMITrigger
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state machine input API is deprecated. "
+                         "Use Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#state-machine-inputs")
 @interface RiveSMITrigger : RiveSMIInput
 - (void)fire;
 @end
@@ -33,6 +41,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * SMIBool
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state machine input API is deprecated. "
+                         "Use Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#state-machine-inputs")
 @interface RiveSMIBool : RiveSMIInput
 - (bool)value;
 - (void)setValue:(bool)newValue;
@@ -41,6 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * SMINumber
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy state machine input API is deprecated. "
+                         "Use Data Binding properties instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#state-machine-inputs")
 @interface RiveSMINumber : RiveSMIInput
 - (float)value;
 - (void)setValue:(float)newValue;

@@ -37,6 +37,7 @@ enum RiveLoggerDataBindingEvent {
     }
 }
 
+@available(*, deprecated, message: "The legacy logging API is deprecated. Use RiveLog instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#logging")
 extension RiveLogger {
     private static let dataBinding = Logger(subsystem: subsystem, category: "rive-data-binding")
 

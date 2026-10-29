@@ -30,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// property is fetched from an instance different to that bound to an artboard
 /// or state machine, its value or trigger will not be updated.
 NS_SWIFT_NAME(RiveDataBindingViewModel.Instance)
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy Data Binding API is deprecated. Use ViewModelInstance from the "
+    "concurrency runtime instead. See "
+    "https://rive.app/docs/runtimes/apple/migrating-from-legacy#data-binding")
 @interface RiveDataBindingViewModelInstance : NSObject
 
 /// The name of the view model instance.

@@ -9,6 +9,7 @@
 import Foundation
 
  extension RiveStateMachineInstance {
+     @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
      @objc public var inputs: [StateMachineInput] {
          var inputs: [StateMachineInput] = []
 
@@ -30,10 +31,12 @@ import Foundation
  }
 
  /// State machine input types
+ @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
  @objc public enum StateMachineInputType: IntegerLiteralType {
      case trigger, number, boolean
  }
  /// Simple data type for passing state machine input names and their types
+ @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
  @objc public class StateMachineInput: NSObject {
      public let name: String
      public let type: StateMachineInputType

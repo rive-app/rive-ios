@@ -38,6 +38,7 @@ import Combine
 ///    }
 /// }
 /// ```
+@available(*, deprecated, message: "The legacy API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#riveviewmodel-to-rive")
 @objc open class RiveViewModel: NSObject, ObservableObject, RiveFileDelegate, RiveStateMachineDelegate, RivePlayerDelegate{
     /// The default layout scale factor that allows for the scale factor to be determined by Rive.
     @objc public static let layoutScaleFactorAutomatic: Double = RiveView.Constants.layoutScaleFactorAutomatic
@@ -362,6 +363,7 @@ import Combine
     
     /// Provide the active StateMachine a `Trigger` input
     /// - Parameter inputName: The name of a `Trigger` input on the active StateMachine
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc open func triggerInput(_ inputName: String) {
         RiveLogger.log(viewModel: self, event: .triggerInput(inputName, nil))
         riveModel?.stateMachine?.getTrigger(inputName).fire()
@@ -372,6 +374,7 @@ import Combine
     /// - Parameters:
     ///   - inputName: The name of a `Boolean` input on the active StateMachine
     ///   - value: A Bool value for the input
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc(setBooleanInput::) open func setInput(_ inputName: String, value: Bool) {
         RiveLogger.log(viewModel: self, event: .booleanInput(inputName, nil, value))
         riveModel?.stateMachine?.getBool(inputName).setValue(value)
@@ -381,6 +384,7 @@ import Combine
     /// Returns the current boolean input by name. Get its value by calling `.value` on the returned object.
     /// - Parameter name: The name of the input
     /// - Returns: The boolean input if it exists. Returns `nil` if the input cannot be found.
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc open func boolInput(named name: String) -> RiveSMIBool?
     {
         guard let input = riveModel?.stateMachine?.getBool(name) else {
@@ -394,6 +398,7 @@ import Combine
     /// - Parameters:
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Float value for the input.
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc(setFloatInput::) open func setInput(_ inputName: String, value: Float) {
         RiveLogger.log(viewModel: self, event: .floatInput(inputName, nil, value))
         riveModel?.stateMachine?.getNumber(inputName).setValue(value)
@@ -404,6 +409,7 @@ import Combine
     /// - Parameters:
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Double value for the input
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc(setDoubleInput::) open func setInput(_ inputName: String, value: Double) {
         RiveLogger.log(viewModel: self, event: .doubleInput(inputName, nil, value))
         setInput(inputName, value: Float(value))
@@ -412,6 +418,7 @@ import Combine
     /// Returns the current number input by name. Get its value by calling `.value` on the returned object.
     /// - Parameter name: The name of the input
     /// - Returns: The number input if it exists. Returns `nil` if the input cannot be found.
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc open func numberInput(named name: String) -> RiveSMINumber?
     {
         guard let input = riveModel?.stateMachine?.getNumber(name) else {
@@ -425,6 +432,7 @@ import Combine
     /// - Parameters:
     ///   - inputName: The name of a `Trigger` input on the active StateMachine
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc open func triggerInput(_ inputName: String, path: String) {
         RiveLogger.log(viewModel: self, event: .triggerInput(inputName, path))
         riveModel?.artboard?.getTrigger(inputName, path: path).fire()
@@ -436,6 +444,7 @@ import Combine
     ///   - inputName: The name of a `Boolean` input on the active StateMachine
     ///   - value: A Bool value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc(setBooleanInput:value:atPath:)
     open func setInput(_ inputName: String, value: Bool, path: String) {
         RiveLogger.log(viewModel: self, event: .booleanInput(inputName, path, value))
@@ -448,6 +457,7 @@ import Combine
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Float value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc(setFloatInput:value:atPath:)
     open func setInput(_ inputName: String, value: Float, path: String) {
         RiveLogger.log(viewModel: self, event: .floatInput(inputName, path, value))
@@ -460,6 +470,7 @@ import Combine
     ///   - inputName: The name of a `Number` input on the active StateMachine
     ///   - value: A Double value for the input
     ///   - path: A String representing the path to the nested artboard delimited by "/" (ie. "Nested" or "Level1/Level2/Level3")
+    @available(*, deprecated, message: "The legacy state machine input API is deprecated. Use Data Binding properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#state-machine-inputs")
     @objc(setDoubleInput:value:atPath:)
     open func setInput(_ inputName: String, value: Double, path: String) {
         RiveLogger.log(viewModel: self, event: .doubleInput(inputName, path, value))
@@ -470,6 +481,7 @@ import Combine
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
     /// - Returns: String text value of the specified text run if applicable
+    @available(*, deprecated, message: "The legacy text run API is deprecated. Use Data Binding string properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#view-model-instance-properties")
     @objc open func getTextRunValue(_ textRunName: String) -> String? {
         #if WITH_RIVE_TEXT
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
@@ -484,6 +496,7 @@ import Combine
     ///   - textRunName: The name of a `Text Run` on the active Artboard
     ///   - path: The path to the nested text run.
     /// - Returns: String text value of the specified text run if applicable
+    @available(*, deprecated, message: "The legacy text run API is deprecated. Use Data Binding string properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#view-model-instance-properties")
     @objc open func getTextRunValue(_ textRunName: String, path: String) -> String? {
         #if WITH_RIVE_TEXT
         if let textRun = riveModel?.artboard?.textRun(textRunName, path: path) {
@@ -497,6 +510,7 @@ import Combine
     /// - Parameters:
     ///   - textRunName: The name of a `Text Run` on the active Artboard
     ///   - textValue: A String value for the text run
+    @available(*, deprecated, message: "The legacy text run API is deprecated. Use Data Binding string properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#view-model-instance-properties")
     @objc open func setTextRunValue(_ textRunName: String, textValue: String) throws {
         #if WITH_RIVE_TEXT
         if let textRun = riveModel?.artboard?.textRun(textRunName) {
@@ -520,6 +534,7 @@ import Combine
     ///   - path: The path to the nested text run.
     ///   - textValue: A String value for the text run
     /// - Note: If the specified path is empty, the parent artboard will be used to find the text run.
+    @available(*, deprecated, message: "The legacy text run API is deprecated. Use Data Binding string properties instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#view-model-instance-properties")
     @objc open func setTextRunValue(_ textRunName: String, path: String, textValue: String) throws {
         #if WITH_RIVE_TEXT
         if let textRun = riveModel?.artboard?.textRun(textRunName, path: path) {
@@ -653,6 +668,7 @@ import Combine
 
 #if os(iOS) || os(visionOS) || os(tvOS)
     /// This makes a SwiftUI digestable view from an `RiveViewModel` and its `RiveView`
+    @available(*, deprecated, message: "The legacy API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#creating-a-rive-view")
     public struct RiveViewRepresentable: UIViewRepresentable {
         let viewModel: RiveViewModel
         
@@ -690,6 +706,7 @@ import Combine
         }
     }
 #else
+    @available(*, deprecated, message: "The legacy API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#creating-a-rive-view")
     public struct RiveViewRepresentable: NSViewRepresentable {
         let viewModel: RiveViewModel
 

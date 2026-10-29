@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: - RiveArtboard
 //
+DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy API is deprecated. Use Artboard from the concurrency runtime "
+    "instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#choosing-an-artboard-and-state-machine")
 @interface RiveArtboard : NSObject
 
 @property(nonatomic, assign) float volume NS_REFINED_FOR_SWIFT;
@@ -36,16 +41,52 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setHeight:(double)value;
 - (void)resetArtboardSize;
 
-- (const RiveSMIBool*)getBool:(NSString*)name path:(NSString*)path;
-- (const RiveSMITrigger*)getTrigger:(NSString*)name path:(NSString*)path;
-- (const RiveSMINumber*)getNumber:(NSString*)name path:(NSString*)path;
+- (const RiveSMIBool*)getBool:(NSString*)name
+                         path:(NSString*)path
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state machine input API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#state-machine-inputs");
+- (const RiveSMITrigger*)getTrigger:(NSString*)name
+                               path:(NSString*)path
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state machine input API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#state-machine-inputs");
+- (const RiveSMINumber*)getNumber:(NSString*)name
+                             path:(NSString*)path
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy state machine input API is deprecated. Use Data Binding "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#state-machine-inputs");
 
-- (NSInteger)animationCount;
-- (NSArray<NSString*>*)animationNames;
+- (NSInteger)animationCount DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy linear animation API is deprecated. Use a state machine to "
+    "control playback instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#linear-animations");
+- (NSArray<NSString*>*)animationNames DEPRECATED_MSG_ATTRIBUTE(
+    "The legacy linear animation API is deprecated. Use a state machine to "
+    "control playback instead. See "
+    "https://rive.app/docs/runtimes/apple/"
+    "migrating-from-legacy#linear-animations");
 - (RiveLinearAnimationInstance* __nullable)animationFromIndex:(NSInteger)index
-                                                        error:(NSError**)error;
+                                                        error:(NSError**)error
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy linear animation API is deprecated. Use a state machine to "
+        "control playback instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#linear-animations");
 - (RiveLinearAnimationInstance* __nullable)animationFromName:(NSString*)name
-                                                       error:(NSError**)error;
+                                                       error:(NSError**)error
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy linear animation API is deprecated. Use a state machine to "
+        "control playback instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#linear-animations");
 
 - (NSInteger)stateMachineCount;
 - (NSArray<NSString*>*)stateMachineNames;
@@ -55,8 +96,19 @@ NS_ASSUME_NONNULL_BEGIN
                                                        error:(NSError**)error;
 - (RiveStateMachineInstance* __nullable)defaultStateMachine;
 
-- (RiveTextValueRun* __nullable)textRun:(NSString*)name;
-- (RiveTextValueRun* __nullable)textRun:(NSString*)name path:(NSString*)path;
+- (RiveTextValueRun* __nullable)textRun:(NSString*)name
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy text run API is deprecated. Use Data Binding string "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
+- (RiveTextValueRun* __nullable)textRun:(NSString*)name
+                                   path:(NSString*)path
+    DEPRECATED_MSG_ATTRIBUTE(
+        "The legacy text run API is deprecated. Use Data Binding string "
+        "properties instead. See "
+        "https://rive.app/docs/runtimes/apple/"
+        "migrating-from-legacy#view-model-instance-properties");
 
 - (void)advanceBy:(double)elapsedSeconds;
 - (void)draw:(RiveRenderer*)renderer;

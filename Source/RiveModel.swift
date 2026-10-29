@@ -9,11 +9,13 @@
 import Foundation
 import Combine
 
+@available(*, deprecated, message: "The legacy API is deprecated. Use the concurrency runtime instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#riveviewmodel-to-rive")
 @objc open class RiveModel: NSObject, ObservableObject {
     public typealias AutoBindCallback = (RiveDataBindingViewModel.Instance) -> Void
 
     // NOTE: the order here determines the order in which memory garbage collected
     public internal(set) var stateMachine: RiveStateMachineInstance?
+    @available(*, deprecated, message: "The legacy linear animation API is deprecated. Use a state machine to control playback instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#linear-animations")
     public internal(set) var animation: RiveLinearAnimationInstance?
     public private(set) var artboard: RiveArtboard!
     public private(set) var riveFile: RiveFile
@@ -143,6 +145,7 @@ import Combine
         }
     }
     
+    @available(*, deprecated, message: "The legacy linear animation API is deprecated. Use a state machine to control playback instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#linear-animations")
     @objc open func setAnimation(_ name: String) throws {
         guard animation?.name() != name else { return }
         do {
@@ -156,6 +159,7 @@ import Combine
         }
     }
     
+    @available(*, deprecated, message: "The legacy linear animation API is deprecated. Use a state machine to control playback instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#linear-animations")
     open func setAnimation(_ index: Int? = nil) throws {
         // Defaults to 0 as it's assumed to be the first element in the collection
         let index = index ?? 0

@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveFileAsset
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy asset loading API is deprecated. Use "
+                         "File.getAssets() and Worker asset APIs instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#loading-referenced-assets")
 @interface RiveFileAsset : NSObject
 // TODO: add an asset type?
 - (NSString*)name;
@@ -33,6 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveImageAsset
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy asset loading API is deprecated. Use "
+                         "File.getAssets() and Worker asset APIs instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#loading-referenced-assets")
 @interface RiveImageAsset : RiveFileAsset
 @property(nonatomic, readonly) CGSize size;
 - (void)renderImage:(RiveRenderImage*)image;
@@ -41,6 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveFontAsset
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy asset loading API is deprecated. Use "
+                         "File.getAssets() and Worker asset APIs instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#loading-referenced-assets")
 @interface RiveFontAsset : RiveFileAsset
 - (void)font:(RiveFont*)font;
 @end
@@ -48,6 +60,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * RiveAudioAsset
  */
+DEPRECATED_MSG_ATTRIBUTE("The legacy asset loading API is deprecated. Use "
+                         "File.getAssets() and Worker asset APIs instead. See "
+                         "https://rive.app/docs/runtimes/apple/"
+                         "migrating-from-legacy#loading-referenced-assets")
 @interface RiveAudioAsset : RiveFileAsset
 - (void)audio:(RiveAudio*)audio;
 @end

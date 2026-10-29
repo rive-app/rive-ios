@@ -12,6 +12,7 @@ import OSLog
 // MARK: - RiveLogLevel
 
 /// An option set of possible log levels, checked when attempting to log.
+@available(*, deprecated, message: "The legacy log level API is deprecated. Use RiveLog.Level instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#logging")
 @objc public class RiveLogLevel: NSObject, OptionSet {
     public var rawValue: Int
 
@@ -47,6 +48,7 @@ import OSLog
 
 // MARK: - RiveLogCategory
 
+@available(*, deprecated, message: "The legacy log category API is deprecated. Use RiveLog.Tag with a custom logger instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#logging")
 @objc public class RiveLogCategory: NSObject, OptionSet {
     public var rawValue: Int
 
@@ -86,6 +88,7 @@ import OSLog
 
 // MARK: - RiveLogger
 
+@available(*, deprecated, message: "The legacy logging API is deprecated. Use RiveLog instead. See https://rive.app/docs/runtimes/apple/migrating-from-legacy#logging")
 @objc public final class RiveLogger: NSObject {
     static let subsystem = Bundle(for: RiveLogger.self).bundleIdentifier!
     
