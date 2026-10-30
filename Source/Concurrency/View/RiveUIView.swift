@@ -53,7 +53,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         }
     }
 
-    private final class MetalView: MTKView {
+    class MetalView: MTKView {
         /// Uses this view's layer capacity to coordinate drawable acquisition and retirement.
         private(set) lazy var drawableCoordinator: DrawableCoordinator? = {
             guard let metalLayer = layer as? CAMetalLayer else {
@@ -98,6 +98,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     private var contentsScaleObservation: NSKeyValueObservation?
     #endif
     private var renderer: (any RiveUIRendererProtocol)?
+    private var pendingConfiguration: RiveUIRendererConfiguration?
 
     private var controller: RiveController?
     private var setupTask: Task<Void, Never>?
@@ -164,6 +165,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             displayLink?.isPaused = newValue
             #else
             if #unavailable(macOS 14) {
+                mtkView?.enableSetNeedsDisplay = newValue
                 mtkView?.isPaused = newValue
             } else {
                 displayLink?.isPaused = newValue
@@ -413,6 +415,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
 
     private func setupRive() {
+        pendingConfiguration = nil
         if let rive {
             RiveLog.debug(tag: .view, "[RiveUIView] Setting up Rive renderer and controller")
             renderer = rive.makeRenderer()
@@ -469,13 +472,18 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         }
 
         let now = displayLink?.timestamp ?? CACurrentMediaTime()
+        #if TESTING
+        let isOnscreenValue = isOnscreenForTesting ?? isOnscreen()
+        #else
         let isOnscreenValue = isOnscreen()
+        #endif
+        // Prefer fresh work; only reuse a pending configuration while onscreen.
         let configuration = controller.advance(
             now: now,
             isOnscreen: isOnscreenValue,
             drawableSize: view.drawableSize,
             scaleProvider: self
-        )
+        ) ?? (isOnscreenValue ? pendingConfiguration : nil)
 
         guard let configuration else {
             return
@@ -505,6 +513,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 }
                 return drawable
             }) else {
+                // Error handling may have replaced the graphic during acquisition.
+                if self.controller === controller {
+                    requestRedraw(configuration)
+                }
                 return
             }
             guard let currentDrawable = frame.drawable else {
@@ -513,6 +525,8 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 return
             }
 
+            // This submission replaces any pending redraw.
+            pendingConfiguration = nil
             renderer.draw(
                 configuration,
                 to: currentDrawable.texture,
@@ -539,6 +553,22 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
 
     #if TESTING
+    var isOnscreenForTesting: Bool?
+
+    func configureDrawingForTesting(
+        controller: RiveController,
+        metalView: MetalView,
+        renderer: any RiveUIRendererProtocol
+    ) async {
+        // Let normal setup finish before installing controlled drawing dependencies.
+        await setupTask?.value
+        mtkView?.removeFromSuperview()
+        mtkView = metalView
+        self.controller = controller
+        self.renderer = renderer
+        controller.isPaused = isPaused
+    }
+
     nonisolated func notifyDelegateOfRendererErrorForTesting(_ error: Error) {
         notifyDelegateOfRendererError(error)
     }
@@ -694,6 +724,17 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
     // MARK: - Private
 
+    private func requestRedraw(_ configuration: RiveUIRendererConfiguration) {
+        pendingConfiguration = configuration
+        // Invalidate after MetalKit finishes the current draw. A successful
+        // intervening submission clears pending work and makes this a no-op.
+        DispatchQueue.main.async { [weak self] in
+            if let _ = self?.pendingConfiguration {
+                self?.tick()
+            }
+        }
+    }
+
     private func updateDisplayLink() {
         guard window != nil else {
             RiveLog.debug(tag: .view, "[RiveUIView] Clearing display link; view is off-window")
@@ -721,19 +762,18 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             RiveLog.debug(tag: .view, "[RiveUIView] Configuring MTKView-backed display link fallback")
             // On macOS 13 or older, fall back to mtkView as the display-link adapter.
             displayLink = self
-            // mtkView?.isPaused is implicitly set by displayLink.isPaused below
-            // enableSetNeedsDisplay is set to false since this "display link" needs to
-            // tick and draw based on mtkView's isPaused state, contrary to a CADisplayLink-backed
-            // display link that controls ticking and requesting to draw (via setNeedsDisplay)
-            // This overrides the setting in setup()
-            mtkView?.enableSetNeedsDisplay = false
+            // The pause setter selects timed updates while playing and native
+            // invalidation while paused, including pending redraws.
         }
         #endif
 
         // Re-apply current configuration whenever the display-link instance changes.
+        self.displayLink = displayLink
         displayLink.frameRate = frameRate
         displayLink.isPaused = isPaused
-        self.displayLink = displayLink
+        if pendingConfiguration != nil {
+            tick()
+        }
     }
 
     private func tick() {
