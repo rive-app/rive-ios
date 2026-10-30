@@ -1,0 +1,5 @@
+// Match the framework's generated feature flags, including RIVE_CANVAS.
+#include "../Config/Base.xcconfig"
+
+// The framework's symbol-export restrictions do not apply to this executable.
+UNEXPORTED_SYMBOLS_FILE =

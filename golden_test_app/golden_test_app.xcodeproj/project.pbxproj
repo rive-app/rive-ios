@@ -7,11 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3E1500942BF7E017004A721C /* SingleDrawRiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E1500932BF7E017004A721C /* SingleDrawRiveView.swift */; };
+		3E1500942BF7E017004A721C /* GoldenTestRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E1500932BF7E017004A721C /* GoldenTestRunner.swift */; };
 		3E3DB3532BF5449D000EAA9E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3DB3522BF5449D000EAA9E /* ContentView.swift */; };
 		3E3DB3552BF5449D000EAA9E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E3DB3542BF5449D000EAA9E /* Assets.xcassets */; };
 		3E3DB3592BF5449D000EAA9E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E3DB3582BF5449D000EAA9E /* Preview Assets.xcassets */; };
-		3E409FE52BF6B481002DD778 /* RiveRendererTestViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E409FE42BF6B481002DD778 /* RiveRendererTestViews.swift */; };
 		3E82044C2C13969D00D9BEA1 /* dwarf.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3E8204482C13969D00D9BEA1 /* dwarf.riv */; };
 		3E82044D2C13969D00D9BEA1 /* text.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3E8204492C13969D00D9BEA1 /* text.riv */; };
 		3E82044E2C13969D00D9BEA1 /* vector.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3E82044A2C13969D00D9BEA1 /* vector.riv */; };
@@ -36,13 +35,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3E1500932BF7E017004A721C /* SingleDrawRiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleDrawRiveView.swift; sourceTree = "<group>"; };
+		3E1500932BF7E017004A721C /* GoldenTestRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoldenTestRunner.swift; sourceTree = "<group>"; };
 		3E3DB34D2BF5449D000EAA9E /* golden_test_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = golden_test_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E3DB3522BF5449D000EAA9E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3E3DB3542BF5449D000EAA9E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3E3DB3562BF5449D000EAA9E /* golden_test_app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = golden_test_app.entitlements; sourceTree = "<group>"; };
 		3E3DB3582BF5449D000EAA9E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		3E409FE42BF6B481002DD778 /* RiveRendererTestViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiveRendererTestViews.swift; sourceTree = "<group>"; };
+		DA2F980C2EF3E86000579A10 /* GoldenTestApp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = GoldenTestApp.xcconfig; sourceTree = "<group>"; };
 		3E7419B02C01ADA9000EA71B /* golden-test-app-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "golden-test-app-Info.plist"; sourceTree = SOURCE_ROOT; };
 		3E8204482C13969D00D9BEA1 /* dwarf.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = dwarf.riv; sourceTree = "<group>"; };
 		3E8204492C13969D00D9BEA1 /* text.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = text.riv; sourceTree = "<group>"; };
@@ -67,6 +66,7 @@
 		3E3DB3442BF5449D000EAA9E = {
 			isa = PBXGroup;
 			children = (
+				DA2F980C2EF3E86000579A10 /* GoldenTestApp.xcconfig */,
 				3E3DB34F2BF5449D000EAA9E /* golden_test_app */,
 				3E3DB34E2BF5449D000EAA9E /* Products */,
 				3EF6A8C12BF6911300CAC54A /* Frameworks */,
@@ -86,12 +86,11 @@
 			children = (
 				3E82044B2C13969D00D9BEA1 /* raws */,
 				3E7419B02C01ADA9000EA71B /* golden-test-app-Info.plist */,
-				3E409FE42BF6B481002DD778 /* RiveRendererTestViews.swift */,
 				3E3DB3522BF5449D000EAA9E /* ContentView.swift */,
 				3E3DB3542BF5449D000EAA9E /* Assets.xcassets */,
 				3E3DB3562BF5449D000EAA9E /* golden_test_app.entitlements */,
 				3E3DB3572BF5449D000EAA9E /* Preview Content */,
-				3E1500932BF7E017004A721C /* SingleDrawRiveView.swift */,
+				3E1500932BF7E017004A721C /* GoldenTestRunner.swift */,
 				3E82044F2C13F37400D9BEA1 /* AppDelegate.swift */,
 				3E8204512C13F38200D9BEA1 /* SceneDelegate.swift */,
 			);
@@ -198,8 +197,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3E1500942BF7E017004A721C /* SingleDrawRiveView.swift in Sources */,
-				3E409FE52BF6B481002DD778 /* RiveRendererTestViews.swift in Sources */,
+				3E1500942BF7E017004A721C /* GoldenTestRunner.swift in Sources */,
 				3E3DB3532BF5449D000EAA9E /* ContentView.swift in Sources */,
 				3E8204502C13F37400D9BEA1 /* AppDelegate.swift in Sources */,
 				3E8204522C13F38200D9BEA1 /* SceneDelegate.swift in Sources */,
@@ -325,6 +323,7 @@
 		};
 		3E3DB35D2BF5449D000EAA9E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA2F980C2EF3E86000579A10 /* GoldenTestApp.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -367,6 +366,7 @@
 		};
 		3E3DB35E2BF5449D000EAA9E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA2F980C2EF3E86000579A10 /* GoldenTestApp.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

@@ -8,10 +8,14 @@
 import SwiftUI
 import RiveRuntime
 
+@MainActor
 struct ContentView: View {
+    @StateObject private var runner = GoldenTestRunner()
+
     var body: some View {
-//        RiveViewRepresentable(viewModel: RiveViewModel(fileName: "dwarf"))
-        GoldenTestViewRepresentable()
-            .frame(width: 860, height: 540, alignment: .center)
+        RiveUIViewRepresentable(rive: runner.rive)
+            .paused(true)
+            .onAppear { runner.start() }
+            .onDisappear { runner.cancel() }
     }
 }
