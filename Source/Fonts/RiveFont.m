@@ -262,6 +262,8 @@ static rive::rcp<rive::Font> findFallbackFont(
 
   // "Reset" fallback fonts callback so that array can take priority
   _fallbackFontsCallback = nil;
+  // Text shaped with the old fallbacks shapes again.
+  rive::Font::fallbackFontsChanged();
 #endif
 }
 
@@ -273,6 +275,8 @@ static rive::rcp<rive::Font> findFallbackFont(
 
   // "Reset" fallback fonts array so that callback can take priority
   _fallbackFonts = nil;
+  // Text shaped with the old fallbacks shapes again.
+  rive::Font::fallbackFontsChanged();
 #endif
 }
 
