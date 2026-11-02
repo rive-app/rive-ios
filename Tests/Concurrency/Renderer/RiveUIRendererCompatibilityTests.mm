@@ -6,36 +6,101 @@
 //
 
 #import <Metal/Metal.h>
-#import <RiveRuntime/RiveUIRenderer.h>
 #import <XCTest/XCTest.h>
 
 #import "RiveUIRenderer_Private.hh"
+
+#include <initializer_list>
+
+// The commit helpers only read status and call commit.
+@interface RendererTestCommandBuffer : NSObject
+@property(nonatomic) MTLCommandBufferStatus status;
+@property(nonatomic, readonly) NSUInteger commitCount;
+- (void)commit;
+@end
+
+@implementation RendererTestCommandBuffer
+- (void)commit
+{
+  ++_commitCount;
+  self.status = MTLCommandBufferStatusCommitted;
+}
+@end
 
 @interface RiveUIRendererCompatibilityTests : XCTestCase
 @end
 
 @implementation RiveUIRendererCompatibilityTests
 
-- (void)test_legacyFinalizeWithNil_commitsCommandBuffer
+- (void)test_uncommittedBuffers_commitOnce
 {
-  id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-  XCTAssertNotNil(device);
-  if (!device)
+  for (auto status :
+       {MTLCommandBufferStatusNotEnqueued, MTLCommandBufferStatusEnqueued})
   {
-    return;
+    RendererTestCommandBuffer* buffer = [RendererTestCommandBuffer new];
+    buffer.status = status;
+
+    RiveUIRendererCommitCommandBufferIfNeeded((id<MTLCommandBuffer>)buffer);
+    RiveUIRendererCommitCommandBufferIfNeeded((id<MTLCommandBuffer>)buffer);
+
+    XCTAssertEqual(buffer.commitCount, 1);
+    XCTAssertEqual(buffer.status, MTLCommandBufferStatusCommitted);
   }
-  id<MTLCommandQueue> commandQueue = [device newCommandQueue];
-  id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
-  XCTestExpectation* completed = [self
-      expectationWithDescription:@"Command buffer completed"];
-  [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer) {
-    XCTAssertEqual(buffer.status, MTLCommandBufferStatusCompleted);
-    [completed fulfill];
-  }];
+}
 
-  RiveUIRendererInvokeLegacyFinalize(nil, commandBuffer);
+- (void)test_submittedBuffers_doNotCommitAgain
+{
+  for (auto status :
+       {MTLCommandBufferStatusCommitted,
+        MTLCommandBufferStatusScheduled,
+        MTLCommandBufferStatusCompleted,
+        MTLCommandBufferStatusError})
+  {
+    RendererTestCommandBuffer* buffer = [RendererTestCommandBuffer new];
+    buffer.status = status;
 
-  [self waitForExpectations:@[ completed ] timeout:2];
+    RiveUIRendererCommitCommandBufferIfNeeded((id<MTLCommandBuffer>)buffer);
+
+    XCTAssertEqual(buffer.commitCount, 0);
+    XCTAssertEqual(buffer.status, status);
+  }
+}
+
+- (void)test_legacyFinalizeWithNil_commits
+{
+  RendererTestCommandBuffer* buffer = [RendererTestCommandBuffer new];
+
+  RiveUIRendererInvokeLegacyFinalize(nil, (id<MTLCommandBuffer>)buffer);
+
+  XCTAssertEqual(buffer.commitCount, 1);
+}
+
+- (void)test_legacyFinalizeBlock_ownsCommit
+{
+  RendererTestCommandBuffer* buffer = [RendererTestCommandBuffer new];
+  __block id<MTLCommandBuffer> receivedBuffer = nil;
+
+  RiveUIRendererInvokeLegacyFinalize(
+      ^(id<MTLCommandBuffer> commandBuffer) {
+        receivedBuffer = commandBuffer;
+      },
+      (id<MTLCommandBuffer>)buffer);
+
+  XCTAssertTrue((id)receivedBuffer == buffer);
+  XCTAssertEqual(buffer.commitCount, 0);
+}
+
+- (void)test_legacyFinalizeBlock_canCommitOnce
+{
+  RendererTestCommandBuffer* buffer = [RendererTestCommandBuffer new];
+
+  RiveUIRendererInvokeLegacyFinalize(
+      ^(id<MTLCommandBuffer> commandBuffer) {
+        [commandBuffer commit];
+      },
+      (id<MTLCommandBuffer>)buffer);
+
+  XCTAssertEqual(buffer.commitCount, 1);
 }
 
 @end

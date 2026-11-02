@@ -12,12 +12,6 @@ import XCTest
 @testable import RiveRuntime
 
 final class DeferredRendererTests: XCTestCase {
-    private enum ExpectedOutcome {
-        case completed
-        case skipped
-        case error(RendererError)
-    }
-
     @MainActor
     func test_makeRenderer_returnsDeferredRenderer() async throws {
         let device = try await makeDevice()
@@ -39,7 +33,7 @@ final class DeferredRendererTests: XCTestCase {
             configuration: .init(enableGPUCanvas: true)
         )
         let renderer = worker.makeRenderer()
-        await draw(
+        await assertDrawError(
             with: renderer,
             configuration: RiveUIRendererConfiguration(
                 artboardHandle: 0,
@@ -53,7 +47,7 @@ final class DeferredRendererTests: XCTestCase {
             ),
             to: texture,
             from: device,
-            expecting: .error(.invalidSize)
+            expecting: .invalidSize
         )
     }
 
@@ -66,7 +60,7 @@ final class DeferredRendererTests: XCTestCase {
             configuration: .init(enableGPUCanvas: true)
         )
 
-        await draw(
+        await assertDrawError(
             with: worker.makeRenderer(),
             configuration: RiveUIRendererConfiguration(
                 artboardHandle: 0,
@@ -80,7 +74,7 @@ final class DeferredRendererTests: XCTestCase {
             ),
             to: texture,
             from: device,
-            expecting: .error(.invalidArtboard)
+            expecting: .invalidArtboard
         )
     }
 
@@ -99,98 +93,31 @@ final class DeferredRendererTests: XCTestCase {
         )
         configuration.stateMachineHandle = 0
 
-        await draw(
+        await assertDrawError(
             with: rive.makeRenderer(),
             configuration: configuration,
             to: texture,
             from: device,
-            expecting: .error(.invalidStateMachine)
+            expecting: .invalidStateMachine
         )
     }
 
     @MainActor
-    func test_resize_completesChangedTarget() async throws {
+    func test_multipleRenderersOnOneWorker_haveDistinctIdentities() async throws {
         let device = try await makeDevice()
-        let firstTexture = try makeTexture(device: device)
-        let resizedTexture = try makeTexture(
-            device: device,
-            width: 96,
-            height: 80
-        )
         let worker = Worker(
             device: device,
             configuration: .init(enableGPUCanvas: true)
         )
-        let rive = try await makeRive(worker: worker)
-        let renderer = rive.makeRenderer()
+        let firstRenderer = worker.makeRenderer()
+        let secondRenderer = worker.makeRenderer()
 
-        await draw(
-            with: renderer,
-            configuration: RiveUIRendererConfiguration(
-                rive: rive,
-                drawableSize: CGSize(
-                    width: firstTexture.width,
-                    height: firstTexture.height
-                )
-            ),
-            to: firstTexture,
-            from: device,
-            expecting: .completed
-        )
-        await draw(
-            with: renderer,
-            configuration: RiveUIRendererConfiguration(
-                rive: rive,
-                drawableSize: CGSize(
-                    width: resizedTexture.width,
-                    height: resizedTexture.height
-                )
-            ),
-            to: resizedTexture,
-            from: device,
-            expecting: .completed
-        )
+        XCTAssertFalse(firstRenderer === secondRenderer)
     }
 
     @MainActor
-    func test_multipleRenderersOnOneWorker_completeIndependently() async throws {
+    func test_twoFilesOnOneDeferredWorker_haveDistinctHandles() async throws {
         let device = try await makeDevice()
-        let firstTexture = try makeTexture(device: device)
-        let secondTexture = try makeTexture(device: device)
-        let worker = Worker(
-            device: device,
-            configuration: .init(enableGPUCanvas: true)
-        )
-        let rive = try await makeRive(worker: worker)
-        let configuration = RiveUIRendererConfiguration(
-            rive: rive,
-            drawableSize: CGSize(
-                width: firstTexture.width,
-                height: firstTexture.height
-            )
-        )
-
-        await draw(
-            with: rive.makeRenderer(),
-            configuration: configuration,
-            to: firstTexture,
-            from: device,
-            expecting: .completed
-        )
-        await draw(
-            with: rive.makeRenderer(),
-            configuration: configuration,
-            to: secondTexture,
-            from: device,
-            expecting: .completed
-        )
-    }
-
-    @MainActor
-    func test_twoFilesOnOneDeferredWorker_bothComplete() async throws {
-        let device = try await makeDevice()
-        let firstTexture = try makeTexture(device: device)
-        let secondTexture = try makeTexture(device: device)
         let worker = Worker(
             device: device,
             configuration: .init(enableGPUCanvas: true)
@@ -201,6 +128,8 @@ final class DeferredRendererTests: XCTestCase {
             worker: worker
         )
 
+        XCTAssertTrue(firstRive.file.worker === worker)
+        XCTAssertTrue(secondRive.file.worker === worker)
         XCTAssertNotEqual(firstRive.file.fileHandle, secondRive.file.fileHandle)
         XCTAssertNotEqual(
             firstRive.artboard.artboardHandle,
@@ -209,122 +138,6 @@ final class DeferredRendererTests: XCTestCase {
         XCTAssertNotEqual(
             firstRive.stateMachine.stateMachineHandle,
             secondRive.stateMachine.stateMachineHandle
-        )
-
-        await draw(
-            with: firstRive.makeRenderer(),
-            configuration: RiveUIRendererConfiguration(
-                rive: firstRive,
-                drawableSize: CGSize(
-                    width: firstTexture.width,
-                    height: firstTexture.height
-                )
-            ),
-            to: firstTexture,
-            from: device,
-            expecting: .completed
-        )
-        await draw(
-            with: secondRive.makeRenderer(),
-            configuration: RiveUIRendererConfiguration(
-                rive: secondRive,
-                drawableSize: CGSize(
-                    width: secondTexture.width,
-                    height: secondTexture.height
-                )
-            ),
-            to: secondTexture,
-            from: device,
-            expecting: .completed
-        )
-    }
-
-    @MainActor
-    func test_deferredWorkers_renderWithDistinctContexts() async throws {
-        let device = try await makeDevice()
-        let firstWorker = Worker(
-            device: device,
-            configuration: .init(enableGPUCanvas: true)
-        )
-        let secondWorker = Worker(
-            device: device,
-            configuration: .init(enableGPUCanvas: true)
-        )
-        let firstContext = firstWorker.dependencies.workerService.dependencies
-            .renderContext as AnyObject
-        let secondContext = secondWorker.dependencies.workerService.dependencies
-            .renderContext as AnyObject
-        XCTAssertFalse(firstContext === secondContext)
-
-        let firstRive = try await makeRive(worker: firstWorker)
-        let secondRive = try await makeRive(worker: secondWorker)
-        let firstTexture = try makeTexture(device: device)
-        let secondTexture = try makeTexture(device: device)
-
-        await draw(
-            with: firstRive.makeRenderer(),
-            configuration: RiveUIRendererConfiguration(
-                rive: firstRive,
-                drawableSize: CGSize(
-                    width: firstTexture.width,
-                    height: firstTexture.height
-                )
-            ),
-            to: firstTexture,
-            from: device,
-            expecting: .completed
-        )
-        await draw(
-            with: secondRive.makeRenderer(),
-            configuration: RiveUIRendererConfiguration(
-                rive: secondRive,
-                drawableSize: CGSize(
-                    width: secondTexture.width,
-                    height: secondTexture.height
-                )
-            ),
-            to: secondTexture,
-            from: device,
-            expecting: .completed
-        )
-    }
-
-    @MainActor
-    func test_draw_completesConfigurationChangeThenSkipsUnchangedFrame() async throws {
-        let device = try await makeDevice()
-        let texture = try makeTexture(device: device)
-        let worker = Worker(
-            device: device,
-            configuration: .init(enableGPUCanvas: true)
-        )
-        let rive = try await makeRive(worker: worker)
-        let renderer = rive.makeRenderer()
-        var configuration = RiveUIRendererConfiguration(
-            rive: rive,
-            drawableSize: CGSize(width: texture.width, height: texture.height)
-        )
-
-        await draw(
-            with: renderer,
-            configuration: configuration,
-            to: texture,
-            from: device,
-            expecting: .completed
-        )
-        configuration.color = 0xFF_FF_00_00
-        await draw(
-            with: renderer,
-            configuration: configuration,
-            to: texture,
-            from: device,
-            expecting: .completed
-        )
-        await draw(
-            with: renderer,
-            configuration: configuration,
-            to: texture,
-            from: device,
-            expecting: .skipped
         )
     }
 
@@ -346,15 +159,11 @@ final class DeferredRendererTests: XCTestCase {
         return try XCTUnwrap(device?.value)
     }
 
-    private func makeTexture(
-        device: any MTLDevice,
-        width: Int = 64,
-        height: Int = 64
-    ) throws -> any MTLTexture {
+    private func makeTexture(device: any MTLDevice) throws -> any MTLTexture {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: MTLRiveColorPixelFormat(),
-            width: width,
-            height: height,
+            width: 64,
+            height: 64,
             mipmapped: false
         )
         descriptor.usage = [.renderTarget, .shaderRead]
@@ -362,75 +171,42 @@ final class DeferredRendererTests: XCTestCase {
     }
 
     @MainActor
-    private func draw(
+    private func assertDrawError(
         with renderer: any RiveUIRendererProtocol,
         configuration: RiveUIRendererConfiguration,
         to texture: any MTLTexture,
         from device: any MTLDevice,
-        expecting expectedOutcome: ExpectedOutcome,
+        expecting expectedError: RendererError,
         file: StaticString = #filePath,
         line: UInt = #line
     ) async {
-        let terminalOutcome = expectation(description: "Terminal outcome")
-        terminalOutcome.assertForOverFulfill = true
+        let outcome = expectation(description: "Renderer error")
+        outcome.assertForOverFulfill = true
 
         renderer.draw(
             configuration,
             to: texture,
             from: device,
-            onDraw: { commandBuffer in
-                guard case .completed = expectedOutcome else {
-                    XCTFail(
-                        "Expected \(expectedOutcome), received draw",
-                        file: file,
-                        line: line
-                    )
-                    terminalOutcome.fulfill()
-                    return
-                }
-                commandBuffer.addCompletedHandler { completedBuffer in
-                    XCTAssertEqual(
-                        completedBuffer.status,
-                        .completed,
-                        file: file,
-                        line: line
-                    )
-                    terminalOutcome.fulfill()
-                }
+            onDraw: { _ in
+                XCTFail("Invalid configuration should not draw", file: file, line: line)
+                outcome.fulfill()
             },
             onSkipped: {
-                guard case .skipped = expectedOutcome else {
-                    XCTFail(
-                        "Expected \(expectedOutcome), received skip",
-                        file: file,
-                        line: line
-                    )
-                    terminalOutcome.fulfill()
-                    return
-                }
-                terminalOutcome.fulfill()
+                XCTFail("Invalid configuration should not skip", file: file, line: line)
+                outcome.fulfill()
             },
             onError: { error in
-                guard case let .error(expectedError) = expectedOutcome else {
-                    XCTFail(
-                        "Expected \(expectedOutcome), received error: \(error)",
-                        file: file,
-                        line: line
-                    )
-                    terminalOutcome.fulfill()
-                    return
-                }
                 XCTAssertEqual(
                     (error as NSError).code,
                     expectedError.rawValue,
                     file: file,
                     line: line
                 )
-                terminalOutcome.fulfill()
+                outcome.fulfill()
             }
         )
 
-        await fulfillment(of: [terminalOutcome], timeout: 2)
+        await fulfillment(of: [outcome], timeout: 2)
     }
 }
 

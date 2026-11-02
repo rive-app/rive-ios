@@ -49,6 +49,26 @@ class WorkerTests: XCTestCase {
     }
 
     @MainActor
+    func test_deferredWorkers_haveDistinctRenderContexts() async throws {
+        let defaultDevice = await MetalDevice.shared.defaultDevice()
+        let device = try XCTUnwrap(defaultDevice?.value)
+        let firstWorker = Worker(
+            device: device,
+            configuration: .init(enableGPUCanvas: true)
+        )
+        let secondWorker = Worker(
+            device: device,
+            configuration: .init(enableGPUCanvas: true)
+        )
+        let firstContext = firstWorker.dependencies.workerService.dependencies
+            .renderContext
+        let secondContext = secondWorker.dependencies.workerService.dependencies
+            .renderContext
+
+        XCTAssertFalse(firstContext === secondContext)
+    }
+
+    @MainActor
     func test_makeRenderer_returnsDeferredRenderer() async throws {
         let defaultDevice = await MetalDevice.shared.defaultDevice()
         let device = try XCTUnwrap(defaultDevice?.value)
