@@ -1,0 +1,58 @@
+name: Ensure Metal toolchain
+description: >
+  Xcode 26's Metal toolchain is a cryptex asset whose mount point flaps mid job
+  on WarpBuild VMs, breaking xcrun resolution at random. Copy it to a stable path
+  and shadow xcrun so metal and metallib always resolve there.
+  Mirrors the step in the rive repo's pr_ios_tests.yaml.
+
+runs:
+  using: composite
+  steps:
+    - name: Ensure Metal toolchain
+      shell: bash
+      run: |
+        tc() { ls -d /var/run/com.apple.security.cryptexd/mnt/com.apple.MobileAsset.MetalToolchain-*/Metal.xctoolchain 2>/dev/null | head -1; }
+        if [ -z "$(tc)" ]; then
+          xcodebuild -downloadComponent MetalToolchain || true
+          for _ in $(seq 1 30); do [ -n "$(tc)" ] && break; sleep 2; done
+        fi
+        t=$(tc)
+        if [ -z "$t" ]; then
+          echo "::error::Metal toolchain cryptex never mounted"
+          exit 1
+        fi
+        dest=/Library/Developer/Toolchains/RiveMetal.xctoolchain
+        sudo mkdir -p /Library/Developer/Toolchains
+        sudo ditto "$t" "$dest" || { sleep 5; sudo ditto "$t" "$dest"; }
+        # Shadow xcrun: route metal and metallib to the pinned copy, pass
+        # everything else through untouched.
+        sudo tee /usr/local/bin/xcrun <<'WRAP' >/dev/null
+        #!/bin/bash
+        sdk=""
+        tool=""
+        rest=()
+        seen=0
+        prev=""
+        for a in "$@"; do
+          if [ "$seen" = 1 ]; then rest+=("$a"); continue; fi
+          if [ "$prev" = "-sdk" ]; then sdk="$a"; prev=""; continue; fi
+          if [ "$a" = "-sdk" ]; then prev="-sdk"; continue; fi
+          case "$a" in
+            metal|metallib) tool="$a"; seen=1;;
+            -*) ;;
+            *) break;;
+          esac
+        done
+        if [ -n "$tool" ]; then
+          if [ -n "$sdk" ]; then
+            SDKROOT="$(/usr/bin/xcrun -sdk "$sdk" --show-sdk-path)"
+            export SDKROOT
+          fi
+          exec "/Library/Developer/Toolchains/RiveMetal.xctoolchain/usr/bin/$tool" "${rest[@]}"
+        fi
+        exec /usr/bin/xcrun "$@"
+        WRAP
+        sudo chmod +x /usr/local/bin/xcrun
+        echo 'kernel void k(){}' | /usr/local/bin/xcrun -sdk macosx metal -x metal -c -o "$RUNNER_TEMP/probe.air" -
+        /usr/local/bin/xcrun -sdk macosx metallib "$RUNNER_TEMP/probe.air" -o "$RUNNER_TEMP/probe.metallib"
+        echo "metal toolchain pinned"

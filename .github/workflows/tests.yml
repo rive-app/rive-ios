@@ -9,7 +9,7 @@ on:
 jobs:
   run_tests:
     name: Run Rive tests
-    runs-on: [self-hosted, macOS, ARM64, tart]
+    runs-on: warp-macos-26-arm64-12x
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -52,13 +52,21 @@ jobs:
           fi
           xcodebuild -version
 
+      - name: Ensure Metal toolchain
+        uses: ./.github/actions/ensure-metal-toolchain
+
       - name: Build for iOS Simulator (using the cache, we should make an archive of course)
         run: |
           ./scripts/build.sh ios_sim release
 
+      # test.sh pipes through xcpretty, which the runner image doesn't ship.
+      # Pinned to the version the rive repo's iossim test job uses.
+      - name: Install xcpretty
+        run: sudo gem install xcpretty -v 0.4.1 --no-document
+
       - name: Test iOS runtime
         # xcpretty parses xcodebuild output through a Ruby regex that throws on
-        # non-ASCII bytes when the locale is US-ASCII; the tart image doesn't set a
+        # non-ASCII bytes when the locale is US-ASCII; the runner image doesn't set a
         # UTF-8 LANG, so set it here (matches the rive repo's iossim test job).
         env:
           LANG: en_US.UTF-8
