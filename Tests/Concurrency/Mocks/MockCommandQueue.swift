@@ -139,6 +139,21 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private var bindStub: ((UInt64, UInt64) -> Void)?
     private(set) var bindCalls: [BindCall] = []
 
+    private var keyInputSynchronizedStub: ((KeyInputCall) -> Bool)?
+    private(set) var keyInputSynchronizedCalls: [KeyInputCall] = []
+    private var focusInDirectionSynchronizedStub: ((DirectionalFocusCall) -> Bool)?
+    private(set) var focusInDirectionSynchronizedCalls: [DirectionalFocusCall] = []
+    private var focusNextWithResultSynchronizedStub: ((UInt64) -> CommandQueueFocusTraversalResult)?
+    private(set) var focusNextWithResultSynchronizedCalls: [FocusTraversalCall] = []
+    private var focusPreviousWithResultSynchronizedStub: ((UInt64) -> CommandQueueFocusTraversalResult)?
+    private(set) var focusPreviousWithResultSynchronizedCalls: [FocusTraversalCall] = []
+    private var requestHasFocusNodesStub: ((UInt64, UInt64) -> Void)?
+    private(set) var requestHasFocusNodesCalls: [FocusCall] = []
+    private var requestFocusStateStub: ((UInt64, UInt64) -> Void)?
+    private(set) var requestFocusStateCalls: [FocusCall] = []
+    private var clearFocusStub: ((UInt64, UInt64) -> Void)?
+    private(set) var clearFocusCalls: [FocusCall] = []
+
     private var enableSemanticsStub: ((UInt64, UInt64) -> Void)?
     private(set) var enableSemanticsCalls: [EnableSemanticsCall] = []
     private var drainSemanticsDiffStub: ((UInt64, RiveConfigurationFit, RiveConfigurationAlignment, Float, CGSize, UInt64) -> Void)?
@@ -432,6 +447,34 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
 
     func stubBind(_ stub: @escaping (UInt64, UInt64) -> Void) {
         bindStub = stub
+    }
+
+    func stubKeyInputSynchronized(_ stub: @escaping (KeyInputCall) -> Bool) {
+        keyInputSynchronizedStub = stub
+    }
+
+    func stubFocusInDirectionSynchronized(_ stub: @escaping (DirectionalFocusCall) -> Bool) {
+        focusInDirectionSynchronizedStub = stub
+    }
+
+    func stubRequestHasFocusNodes(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        requestHasFocusNodesStub = stub
+    }
+
+    func stubFocusNextWithResultSynchronized(_ stub: @escaping (UInt64) -> CommandQueueFocusTraversalResult) {
+        focusNextWithResultSynchronizedStub = stub
+    }
+
+    func stubFocusPreviousWithResultSynchronized(_ stub: @escaping (UInt64) -> CommandQueueFocusTraversalResult) {
+        focusPreviousWithResultSynchronizedStub = stub
+    }
+
+    func stubRequestFocusState(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        requestFocusStateStub = stub
+    }
+
+    func stubClearFocus(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        clearFocusStub = stub
     }
 
     func stubEnableSemantics(_ stub: @escaping (UInt64, UInt64) -> Void) {
@@ -775,6 +818,52 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
             )
         )
         bindStub?(stateMachineHandle, requestID)
+    }
+
+    func keyInputSynchronized(
+        _ stateMachineHandle: UInt64,
+        key: CommandQueueKey,
+        modifiers: CommandQueueKeyModifiers,
+        isPressed: Bool,
+        isRepeat: Bool
+    ) -> Bool {
+        let call = KeyInputCall(stateMachineHandle: stateMachineHandle, key: key,
+                                modifiers: modifiers, isPressed: isPressed, isRepeat: isRepeat)
+        keyInputSynchronizedCalls.append(call)
+        return keyInputSynchronizedStub?(call) ?? false
+    }
+
+    func focusInDirectionSynchronized(_ stateMachineHandle: UInt64, direction: CommandQueueFocusDirection) -> Bool {
+        let call = DirectionalFocusCall(stateMachineHandle: stateMachineHandle, direction: direction)
+        focusInDirectionSynchronizedCalls.append(call)
+        return focusInDirectionSynchronizedStub?(call) ?? false
+    }
+
+    func requestHasFocusNodes(_ stateMachineHandle: UInt64, requestID: UInt64) {
+        requestHasFocusNodesCalls.append(FocusCall(stateMachineHandle: stateMachineHandle, requestID: requestID))
+        requestHasFocusNodesStub?(stateMachineHandle, requestID)
+    }
+
+    func focusNextWithResultSynchronized(_ stateMachineHandle: UInt64) -> CommandQueueFocusTraversalResult {
+        focusNextWithResultSynchronizedCalls.append(.init(stateMachineHandle: stateMachineHandle))
+        return focusNextWithResultSynchronizedStub?(stateMachineHandle)
+            ?? .init(moved: false, focusState: .init(hasFocus: false, expectsKeyboardInput: false))
+    }
+
+    func focusPreviousWithResultSynchronized(_ stateMachineHandle: UInt64) -> CommandQueueFocusTraversalResult {
+        focusPreviousWithResultSynchronizedCalls.append(.init(stateMachineHandle: stateMachineHandle))
+        return focusPreviousWithResultSynchronizedStub?(stateMachineHandle)
+            ?? .init(moved: false, focusState: .init(hasFocus: false, expectsKeyboardInput: false))
+    }
+
+    func requestFocusState(_ stateMachineHandle: UInt64, requestID: UInt64) {
+        requestFocusStateCalls.append(FocusCall(stateMachineHandle: stateMachineHandle, requestID: requestID))
+        requestFocusStateStub?(stateMachineHandle, requestID)
+    }
+
+    func clearFocus(_ stateMachineHandle: UInt64, requestID: UInt64) {
+        clearFocusCalls.append(FocusCall(stateMachineHandle: stateMachineHandle, requestID: requestID))
+        clearFocusStub?(stateMachineHandle, requestID)
     }
 
     func enableSemantics(_ stateMachineHandle: UInt64, requestID: UInt64) {
@@ -1527,6 +1616,28 @@ extension MockCommandQueue {
     struct BindCall {
         let stateMachineHandle: UInt64
         let requestID: UInt64
+    }
+
+    struct FocusCall {
+        let stateMachineHandle: UInt64
+        let requestID: UInt64
+    }
+
+    struct FocusTraversalCall {
+        let stateMachineHandle: UInt64
+    }
+
+    struct KeyInputCall: Equatable {
+        let stateMachineHandle: UInt64
+        let key: CommandQueueKey
+        let modifiers: CommandQueueKeyModifiers
+        let isPressed: Bool
+        let isRepeat: Bool
+    }
+
+    struct DirectionalFocusCall: Equatable {
+        let stateMachineHandle: UInt64
+        let direction: CommandQueueFocusDirection
     }
 
     struct EnableSemanticsCall {

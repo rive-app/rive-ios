@@ -23,6 +23,37 @@ public final class StateMachine: Equatable, Sendable {
     /// `StateMachine` instance is deallocated via `StateMachineService.deleteStateMachine`.
     typealias StateMachineHandle = UInt64
 
+    /// Key codes accepted by authored keyboard listeners.
+    typealias Key = CommandQueueKey
+
+    /// Modifier flags supplied with a keyboard event.
+    typealias KeyModifiers = CommandQueueKeyModifiers
+
+    /// Spatial traversal direction in root artboard coordinates.
+    typealias FocusDirection = CommandQueueFocusDirection
+
+    /// A snapshot of the state machine's authored focus state.
+    struct FocusState: Sendable, Equatable {
+        /// Whether an authored focus node currently has focus.
+        let hasFocus: Bool
+
+        /// Whether the focused node expects keyboard input.
+        let expectsKeyboardInput: Bool
+    }
+
+    /// Movement and focus state observed together during synchronous traversal.
+    struct FocusTraversalResult: Sendable, Equatable {
+        /// Whether traversal selected a different node, including initial entry.
+        let moved: Bool
+
+        /// The snapshot captured immediately after traversal.
+        let focusState: FocusState
+
+        /// Whether sequential traversal moved within Rive or retained focus
+        /// at an authored boundary, so native traversal should not continue.
+        var consumed: Bool { moved || focusState.hasFocus }
+    }
+
     let stateMachineHandle: StateMachineHandle
     let sourceArtboard: Artboard
     private let dependencies: Dependencies
@@ -264,6 +295,71 @@ public final class StateMachine: Equatable, Sendable {
     @MainActor
     private func bind() {
         dependencies.stateMachineService.bind(stateMachineHandle)
+    }
+
+    /// Traverses forward and returns movement and the resulting focus state.
+    ///
+    /// Blocks the main thread until the worker completes earlier work and this
+    /// operation. The immediate result lets native input handling
+    /// decide whether to consume or forward the event.
+    @MainActor
+    func focusNextWithResultSynchronized() -> FocusTraversalResult {
+        dependencies.stateMachineService.focusNextWithResultSynchronized(stateMachineHandle)
+    }
+
+    /// Traverses backward and returns movement and the resulting focus state.
+    ///
+    /// Blocks the main thread until the worker completes earlier work and this
+    /// operation. The immediate result lets native input handling
+    /// decide whether to consume or forward the event.
+    @MainActor
+    func focusPreviousWithResultSynchronized() -> FocusTraversalResult {
+        dependencies.stateMachineService.focusPreviousWithResultSynchronized(stateMachineHandle)
+    }
+
+    /// Delivers a keyboard event and returns whether Rive handled it.
+    ///
+    /// Blocks the main thread until the worker completes earlier work and this
+    /// operation. The immediate result lets native input handling
+    /// decide whether to consume or forward the event.
+    @MainActor
+    func keyInputSynchronized(
+        _ key: Key,
+        modifiers: KeyModifiers,
+        isPressed: Bool,
+        isRepeat: Bool
+    ) -> Bool {
+        dependencies.stateMachineService.keyInputSynchronized(
+            stateMachineHandle, key: key, modifiers: modifiers,
+            isPressed: isPressed, isRepeat: isRepeat
+        )
+    }
+
+    /// Attempts spatial traversal and returns whether Rive moved focus.
+    ///
+    /// Blocks the main thread until the worker completes earlier work and this
+    /// operation. The immediate result lets native input handling
+    /// decide whether to consume or forward the event.
+    @MainActor
+    func focusInDirectionSynchronized(_ direction: FocusDirection) -> Bool {
+        dependencies.stateMachineService.focusInDirectionSynchronized(
+            stateMachineHandle, direction: direction
+        )
+    }
+
+    @MainActor
+    func hasFocusNodes() async throws -> Bool {
+        try await dependencies.stateMachineService.hasFocusNodes(stateMachineHandle)
+    }
+
+    @MainActor
+    func focusState() async throws -> FocusState {
+        try await dependencies.stateMachineService.requestFocusState(stateMachineHandle)
+    }
+
+    @MainActor
+    func clearFocus() {
+        dependencies.stateMachineService.clearFocus(stateMachineHandle)
     }
 }
 

@@ -20,6 +20,146 @@
 #import <AppKit/NSFont.h>
 #endif
 
+/// Key codes understood by Rive, independent of the native keyboard API.
+typedef NS_ENUM(uint16_t, RiveCommandQueueKey) {
+  RiveCommandQueueKeySpace,
+  RiveCommandQueueKeyApostrophe,
+  RiveCommandQueueKeyComma,
+  RiveCommandQueueKeyMinus,
+  RiveCommandQueueKeyPeriod,
+  RiveCommandQueueKeySlash,
+  RiveCommandQueueKeyKey0,
+  RiveCommandQueueKeyKey1,
+  RiveCommandQueueKeyKey2,
+  RiveCommandQueueKeyKey3,
+  RiveCommandQueueKeyKey4,
+  RiveCommandQueueKeyKey5,
+  RiveCommandQueueKeyKey6,
+  RiveCommandQueueKeyKey7,
+  RiveCommandQueueKeyKey8,
+  RiveCommandQueueKeyKey9,
+  RiveCommandQueueKeySemicolon,
+  RiveCommandQueueKeyEqual,
+  RiveCommandQueueKeyA,
+  RiveCommandQueueKeyB,
+  RiveCommandQueueKeyC,
+  RiveCommandQueueKeyD,
+  RiveCommandQueueKeyE,
+  RiveCommandQueueKeyF,
+  RiveCommandQueueKeyG,
+  RiveCommandQueueKeyH,
+  RiveCommandQueueKeyI,
+  RiveCommandQueueKeyJ,
+  RiveCommandQueueKeyK,
+  RiveCommandQueueKeyL,
+  RiveCommandQueueKeyM,
+  RiveCommandQueueKeyN,
+  RiveCommandQueueKeyO,
+  RiveCommandQueueKeyP,
+  RiveCommandQueueKeyQ,
+  RiveCommandQueueKeyR,
+  RiveCommandQueueKeyS,
+  RiveCommandQueueKeyT,
+  RiveCommandQueueKeyU,
+  RiveCommandQueueKeyV,
+  RiveCommandQueueKeyW,
+  RiveCommandQueueKeyX,
+  RiveCommandQueueKeyY,
+  RiveCommandQueueKeyZ,
+  RiveCommandQueueKeyLeftBracket,
+  RiveCommandQueueKeyBackslash,
+  RiveCommandQueueKeyRightBracket,
+  RiveCommandQueueKeyGraveAccent,
+  RiveCommandQueueKeyWorld1,
+  RiveCommandQueueKeyWorld2,
+  RiveCommandQueueKeyEscape,
+  RiveCommandQueueKeyEnter,
+  RiveCommandQueueKeyTab,
+  RiveCommandQueueKeyBackspace,
+  RiveCommandQueueKeyInsert,
+  RiveCommandQueueKeyDeleteKey,
+  RiveCommandQueueKeyRight,
+  RiveCommandQueueKeyLeft,
+  RiveCommandQueueKeyDown,
+  RiveCommandQueueKeyUp,
+  RiveCommandQueueKeyPageUp,
+  RiveCommandQueueKeyPageDown,
+  RiveCommandQueueKeyHome,
+  RiveCommandQueueKeyEnd,
+  RiveCommandQueueKeyCapsLock,
+  RiveCommandQueueKeyScrollLock,
+  RiveCommandQueueKeyNumLock,
+  RiveCommandQueueKeyPrintScreen,
+  RiveCommandQueueKeyPause,
+  RiveCommandQueueKeyF1,
+  RiveCommandQueueKeyF2,
+  RiveCommandQueueKeyF3,
+  RiveCommandQueueKeyF4,
+  RiveCommandQueueKeyF5,
+  RiveCommandQueueKeyF6,
+  RiveCommandQueueKeyF7,
+  RiveCommandQueueKeyF8,
+  RiveCommandQueueKeyF9,
+  RiveCommandQueueKeyF10,
+  RiveCommandQueueKeyF11,
+  RiveCommandQueueKeyF12,
+  RiveCommandQueueKeyF13,
+  RiveCommandQueueKeyF14,
+  RiveCommandQueueKeyF15,
+  RiveCommandQueueKeyF16,
+  RiveCommandQueueKeyF17,
+  RiveCommandQueueKeyF18,
+  RiveCommandQueueKeyF19,
+  RiveCommandQueueKeyF20,
+  RiveCommandQueueKeyF21,
+  RiveCommandQueueKeyF22,
+  RiveCommandQueueKeyF23,
+  RiveCommandQueueKeyF24,
+  RiveCommandQueueKeyF25,
+  RiveCommandQueueKeyKp0,
+  RiveCommandQueueKeyKp1,
+  RiveCommandQueueKeyKp2,
+  RiveCommandQueueKeyKp3,
+  RiveCommandQueueKeyKp4,
+  RiveCommandQueueKeyKp5,
+  RiveCommandQueueKeyKp6,
+  RiveCommandQueueKeyKp7,
+  RiveCommandQueueKeyKp8,
+  RiveCommandQueueKeyKp9,
+  RiveCommandQueueKeyKpDecimal,
+  RiveCommandQueueKeyKpDivide,
+  RiveCommandQueueKeyKpMultiply,
+  RiveCommandQueueKeyKpSubtract,
+  RiveCommandQueueKeyKpAdd,
+  RiveCommandQueueKeyKpEnter,
+  RiveCommandQueueKeyKpEqual,
+  RiveCommandQueueKeyLeftShift,
+  RiveCommandQueueKeyLeftControl,
+  RiveCommandQueueKeyLeftAlt,
+  RiveCommandQueueKeyLeftSuper,
+  RiveCommandQueueKeyRightShift,
+  RiveCommandQueueKeyRightControl,
+  RiveCommandQueueKeyRightAlt,
+  RiveCommandQueueKeyRightSuper,
+  RiveCommandQueueKeyMenu,
+} NS_SWIFT_NAME(CommandQueueKey);
+
+/// Modifier flags understood by Rive keyboard listeners.
+typedef NS_OPTIONS(uint8_t, RiveCommandQueueKeyModifiers) {
+  RiveCommandQueueKeyModifiersShift = 1 << 0,
+  RiveCommandQueueKeyModifiersControl = 1 << 1,
+  RiveCommandQueueKeyModifiersAlt = 1 << 2,
+  RiveCommandQueueKeyModifiersMeta = 1 << 3,
+} NS_SWIFT_NAME(CommandQueueKeyModifiers);
+
+/// Spatial direction in the Rive artboard's coordinate system.
+typedef NS_ENUM(uint8_t, RiveCommandQueueFocusDirection) {
+  RiveCommandQueueFocusDirectionLeft,
+  RiveCommandQueueFocusDirectionRight,
+  RiveCommandQueueFocusDirectionUp,
+  RiveCommandQueueFocusDirectionDown,
+} NS_SWIFT_NAME(CommandQueueFocusDirection);
+
 @protocol RiveCommandServerProtocol;
 @protocol RiveFileListener;
 @protocol RiveArtboardListener;
@@ -31,6 +171,45 @@
 @protocol RiveAudioListener;
 
 NS_ASSUME_NONNULL_BEGIN
+
+/// A snapshot of focus state returned by the command queue.
+NS_SWIFT_NAME(CommandQueueFocusState)
+@interface RiveCommandQueueFocusState : NSObject
+
+/// Whether an authored Rive focus node currently holds focus.
+@property(nonatomic, readonly) BOOL hasFocus;
+
+/// Whether the focused node accepts keyboard input.
+@property(nonatomic, readonly) BOOL expectsKeyboardInput;
+
+/// Creates a focus-state snapshot.
+- (instancetype)initWithHasFocus:(BOOL)hasFocus
+            expectsKeyboardInput:(BOOL)expectsKeyboardInput
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+/// The movement and resulting focus state from one synchronized traversal.
+NS_SWIFT_NAME(CommandQueueFocusTraversalResult)
+@interface RiveCommandQueueFocusTraversalResult : NSObject
+
+/// Whether traversal selected a different Rive node, including initial entry.
+/// A false value does not imply that the previously focused node was cleared.
+@property(nonatomic, readonly) BOOL moved;
+
+/// The state observed under the same server lock immediately after traversal.
+@property(nonatomic, readonly, strong) RiveCommandQueueFocusState* focusState;
+
+/// Creates a traversal result from its movement and post-traversal snapshot.
+- (instancetype)initWithMoved:(BOOL)moved
+                   focusState:(RiveCommandQueueFocusState*)focusState
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
 
 /**
  * @protocol RiveCommandQueueProtocol
@@ -50,6 +229,8 @@ NS_ASSUME_NONNULL_BEGIN
  * the corresponding work is processed. Handles (`uint64_t`) reference files,
  * artboards, state machines, and other resources created through this queue.
  * They are scoped to this queue and must not be used with another queue.
+ * Explicitly synchronized methods block until their queued operation
+ * completes.
  *
  * To use the command queue:
  * 1. Create a RiveCommandQueue instance
@@ -485,6 +666,39 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * @param requestID The request ID for this operation
  */
 - (void)bind:(uint64_t)stateMachineHandle requestID:(uint64_t)requestID;
+
+#pragma mark - Focus
+
+- (void)requestHasFocusNodes:(uint64_t)stateMachineHandle
+                   requestID:(uint64_t)requestID;
+
+- (void)clearFocus:(uint64_t)stateMachineHandle requestID:(uint64_t)requestID;
+
+- (void)requestFocusState:(uint64_t)stateMachineHandle
+                requestID:(uint64_t)requestID;
+
+/// Traverses forward and synchronously returns movement and resulting state.
+- (RiveCommandQueueFocusTraversalResult*)focusNextWithResultSynchronized:
+    (uint64_t)stateMachineHandle
+    NS_SWIFT_NAME(focusNextWithResultSynchronized(_:));
+
+/// Traverses backward and synchronously returns movement and resulting state.
+- (RiveCommandQueueFocusTraversalResult*)focusPreviousWithResultSynchronized:
+    (uint64_t)stateMachineHandle
+    NS_SWIFT_NAME(focusPreviousWithResultSynchronized(_:));
+
+/// Delivers a key synchronously and returns whether Rive handled it.
+- (BOOL)keyInputSynchronized:(uint64_t)stateMachineHandle
+                         key:(RiveCommandQueueKey)key
+                   modifiers:(RiveCommandQueueKeyModifiers)modifiers
+                   isPressed:(BOOL)isPressed
+                    isRepeat:(BOOL)isRepeat
+    NS_SWIFT_NAME(keyInputSynchronized(_:key:modifiers:isPressed:isRepeat:));
+
+/// Attempts directional traversal and returns whether focus moved.
+- (BOOL)focusInDirectionSynchronized:(uint64_t)stateMachineHandle
+                           direction:(RiveCommandQueueFocusDirection)direction
+    NS_SWIFT_NAME(focusInDirectionSynchronized(_:direction:));
 
 #pragma mark - Semantics
 
@@ -1516,7 +1730,8 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * The queue maintains handles for all resources (files, artboards, state
  * machines, etc.) and ensures proper cleanup when resources are deleted.
  * Resource operations use request IDs where an asynchronous response must be
- * correlated with its request.
+ * correlated with its request. Explicitly synchronized operations return their
+ * result directly.
  */
 NS_SWIFT_UI_ACTOR
 NS_SWIFT_NAME(CommandQueue)

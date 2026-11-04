@@ -21,7 +21,7 @@ import Foundation
 final class StateMachineService: NSObject, StateMachineListener {
     let dependencies: Dependencies
     private struct PendingRequest {
-        let continuation: CheckedContinuation<UInt64, Error>
+        let continuation: AnyContinuation
         var handle: UInt64?
     }
 
@@ -31,6 +31,9 @@ final class StateMachineService: NSObject, StateMachineListener {
 
     #if TESTING
     var onContinuationRemoved: (() -> Void)?
+    var onRequestCancelled: ((UInt64) -> Void)?
+    /// Signals that a late focus response was discarded after its request ended.
+    var onFocusResponseDiscarded: ((UInt64) -> Void)?
     #endif
 
     private static func context(_ stateMachine: StateMachine.StateMachineHandle) -> String {
@@ -52,18 +55,22 @@ final class StateMachineService: NSObject, StateMachineListener {
     }
 
     /// Wraps a continuation-based command queue operation with cancellation support.
-    private func withCancellableContinuation(
+    ///
+    /// Checked continuations are not resumed automatically when their task is
+    /// cancelled. The cancellation handler removes and resumes the stored
+    /// continuation so it cannot remain suspended indefinitely.
+    private func withCancellableContinuation<T: Sendable>(
         cancelledError: Error,
         operation: @escaping (UInt64) -> UInt64?
-    ) async throws -> UInt64 {
+    ) async throws -> T {
         let requestID = dependencies.commandQueue.nextRequestID
         return try await withTaskCancellationHandler {
             guard Task.isCancelled == false else {
                 throw cancelledError
             }
-            return try await withCheckedThrowingContinuation { continuation in
+            return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<T, Error>) in
                 requests[requestID] = PendingRequest(
-                    continuation: continuation,
+                    continuation: AnyContinuation(continuation),
                     handle: nil
                 )
                 beginImmediateRequest(requestID)
@@ -80,6 +87,9 @@ final class StateMachineService: NSObject, StateMachineListener {
                         self.dependencies.commandQueue.deleteViewModelInstanceListener(handle)
                     }
                     request.continuation.resume(throwing: cancelledError)
+                    #if TESTING
+                    self.onRequestCancelled?(requestID)
+                    #endif
                 }
             }
         }
@@ -289,6 +299,69 @@ final class StateMachineService: NSObject, StateMachineListener {
         dependencies.commandQueue.bind(stateMachine, requestID: requestID)
     }
 
+    /// Returns movement and post-traversal state from the command queue.
+    func focusNextWithResultSynchronized(
+        _ stateMachine: StateMachine.StateMachineHandle
+    ) -> StateMachine.FocusTraversalResult {
+        let result = dependencies.commandQueue.focusNextWithResultSynchronized(stateMachine)
+        return .init(moved: result.moved, focusState: .init(
+            hasFocus: result.focusState.hasFocus,
+            expectsKeyboardInput: result.focusState.expectsKeyboardInput
+        ))
+    }
+
+    /// Returns movement and post-traversal state from the command queue.
+    func focusPreviousWithResultSynchronized(
+        _ stateMachine: StateMachine.StateMachineHandle
+    ) -> StateMachine.FocusTraversalResult {
+        let result = dependencies.commandQueue.focusPreviousWithResultSynchronized(stateMachine)
+        return .init(moved: result.moved, focusState: .init(
+            hasFocus: result.focusState.hasFocus,
+            expectsKeyboardInput: result.focusState.expectsKeyboardInput
+        ))
+    }
+
+    /// Forwards a keyboard event and returns its synchronous consumption result.
+    func keyInputSynchronized(
+        _ stateMachine: StateMachine.StateMachineHandle,
+        key: StateMachine.Key,
+        modifiers: StateMachine.KeyModifiers,
+        isPressed: Bool,
+        isRepeat: Bool
+    ) -> Bool {
+        dependencies.commandQueue.keyInputSynchronized(
+            stateMachine, key: key, modifiers: modifiers,
+            isPressed: isPressed, isRepeat: isRepeat
+        )
+    }
+
+    /// Forwards a spatial direction and returns its synchronous movement result.
+    func focusInDirectionSynchronized(
+        _ stateMachine: StateMachine.StateMachineHandle,
+        direction: StateMachine.FocusDirection
+    ) -> Bool {
+        dependencies.commandQueue.focusInDirectionSynchronized(stateMachine, direction: direction)
+    }
+
+    func hasFocusNodes(_ stateMachine: StateMachine.StateMachineHandle) async throws -> Bool {
+        try await withCancellableContinuation(cancelledError: StateMachineError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestHasFocusNodes(stateMachine, requestID: requestID)
+            return nil
+        }
+    }
+
+    func requestFocusState(_ stateMachine: StateMachine.StateMachineHandle) async throws -> StateMachine.FocusState {
+        try await withCancellableContinuation(cancelledError: StateMachineError.cancelled) { requestID in
+            self.dependencies.commandQueue.requestFocusState(stateMachine, requestID: requestID)
+            return nil
+        }
+    }
+
+    func clearFocus(_ stateMachine: StateMachine.StateMachineHandle) {
+        let requestID = dependencies.commandQueue.nextRequestID
+        dependencies.commandQueue.clearFocus(stateMachine, requestID: requestID)
+    }
+
     nonisolated func onStateMachineError(_ stateMachineHandle: UInt64, requestID: UInt64, message: String) {
         Task { @MainActor in
             RiveLog.error(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Operation failed: \(message)")
@@ -312,7 +385,13 @@ final class StateMachineService: NSObject, StateMachineListener {
 
             finishImmediateRequest(requestID)
             RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Deleted state machine")
-            request.continuation.resume(returning: stateMachineHandle)
+            do {
+                try request.continuation.resume(returning: stateMachineHandle)
+            } catch {
+                request.continuation.resume(
+                    throwing: StateMachineError.error(error.localizedDescription)
+                )
+            }
         }
     }
 
@@ -335,7 +414,11 @@ final class StateMachineService: NSObject, StateMachineListener {
 
             finishImmediateRequest(requestID)
             RiveLog.debug(tag: .stateMachine, "\(Self.context(stateMachineHandle)) Received view model instance (\(viewModelInstanceHandle))")
-            request.continuation.resume(returning: viewModelInstanceHandle)
+            do {
+                try request.continuation.resume(returning: viewModelInstanceHandle)
+            } catch {
+                request.continuation.resume(throwing: StateMachineError.error(error.localizedDescription))
+            }
         }
     }
 
@@ -346,8 +429,53 @@ final class StateMachineService: NSObject, StateMachineListener {
             semanticsDiffContinuations[stateMachineHandle]?.values.forEach { $0.yield(sendableDiff.value) }
         }
     }
-}
 
+    nonisolated func onHasFocusNodesReceived(_ stateMachineHandle: UInt64, requestID: UInt64, hasFocusNodes: Bool) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let request = requests.removeValue(forKey: requestID) else {
+                #if TESTING
+                onFocusResponseDiscarded?(requestID)
+                #endif
+                return
+            }
+            do {
+                try request.continuation.resume(returning: hasFocusNodes)
+            } catch {
+                request.continuation.resume(
+                    throwing: StateMachineError.error(error.localizedDescription)
+                )
+            }
+        }
+    }
+
+    nonisolated func onFocusStateReceived(
+        _ stateMachineHandle: UInt64,
+        requestID: UInt64,
+        focusState: CommandQueueFocusState
+    ) {
+        let focusState = StateMachine.FocusState(
+            hasFocus: focusState.hasFocus,
+            expectsKeyboardInput: focusState.expectsKeyboardInput
+        )
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let request = requests.removeValue(forKey: requestID) else {
+                #if TESTING
+                onFocusResponseDiscarded?(requestID)
+                #endif
+                return
+            }
+            do {
+                try request.continuation.resume(returning: focusState)
+            } catch {
+                request.continuation.resume(
+                    throwing: StateMachineError.error(error.localizedDescription)
+                )
+            }
+        }
+    }
+}
 
 extension StateMachineService {
     /// Container for all dependencies required by the state machine service.

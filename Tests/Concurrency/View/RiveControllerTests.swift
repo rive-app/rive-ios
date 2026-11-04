@@ -6,9 +6,143 @@
 //
 
 import XCTest
+import UIKit
 @preconcurrency @testable import RiveRuntime
 
 final class RiveControllerTests: XCTestCase {
+    @MainActor
+    func test_advance_updatesFocusability() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        defer { fixture.controller.invalidate() }
+        let updated = expectation(description: "focusability updated")
+        fixture.focusSystem.onIsFocusableChanged = { isFocusable in
+            guard isFocusable else { return }
+            updated.fulfill()
+        }
+        fixture.commandQueue.stubRequestHasFocusNodes { [weak service = fixture.stateMachineService] handle, requestID in
+            service?.onHasFocusNodesReceived(handle, requestID: requestID, hasFocusNodes: true)
+        }
+        fixture.commandQueue.stubRequestFocusState { [weak service = fixture.stateMachineService] handle, requestID in
+            service?.onFocusStateReceived(handle, requestID: requestID, focusState: .init(
+                hasFocus: false, expectsKeyboardInput: false
+            ))
+        }
+
+        _ = fixture.controller.advance(
+            now: 0,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 100),
+            scaleProvider: MockScaleProvider()
+        )
+
+        await fulfillment(of: [updated], timeout: 1)
+        XCTAssertTrue(fixture.focusSystem.isFocusable)
+    }
+
+    @MainActor
+    func test_isPaused_preservesOnlyNativeFocusPresentAtAttachment() async throws {
+        for hasNativeFocus in [false, true] {
+            let fixture = try await makeController(hasNativeFocus: hasNativeFocus)
+            defer { fixture.controller.invalidate() }
+            XCTAssertFalse(fixture.focusSystem.isFocusable)
+            let updated = expectation(description: "focusability updated")
+            fixture.focusSystem.onIsFocusableChanged = { isFocusable in
+                guard isFocusable else { return }
+                updated.fulfill()
+            }
+            fixture.commandQueue.stubRequestHasFocusNodes { [weak service = fixture.stateMachineService] handle, requestID in
+                service?.onHasFocusNodesReceived(handle, requestID: requestID, hasFocusNodes: true)
+            }
+            fixture.commandQueue.stubRequestFocusState { [weak service = fixture.stateMachineService] handle, requestID in
+                service?.onFocusStateReceived(handle, requestID: requestID, focusState: .init(
+                    hasFocus: false, expectsKeyboardInput: false
+                ))
+            }
+            _ = fixture.controller.advance(
+                now: 0,
+                isOnscreen: true,
+                drawableSize: CGSize(width: 100, height: 100),
+                scaleProvider: MockScaleProvider()
+            )
+            await fulfillment(of: [updated], timeout: 1)
+
+            // A replacement may already own native focus without a new entry callback.
+            fixture.controller.isPaused = true
+
+            XCTAssertEqual(fixture.focusSystem.isFocusable, hasNativeFocus)
+            XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.clearFocusCalls.isEmpty)
+        }
+    }
+
+    @MainActor
+    func test_invalidate_invalidatesFocusSystem() async throws {
+        let fixture = try await makeController(dataBind: .none)
+
+        fixture.controller.invalidate()
+        fixture.controller.invalidate()
+
+        XCTAssertNil(fixture.focusSystem.delegate)
+        XCTAssertEqual(fixture.focusSystem.invalidateCallCount, 1)
+        XCTAssertEqual(fixture.commandQueue.clearFocusCalls.count, 1)
+    }
+
+    @MainActor
+    func test_deinit_clearsFocusOnRetainedStateMachineAndInvalidatesFocusSystem() async throws {
+        var fixture: ControllerFixture? = try await makeController(dataBind: .none)
+        let stateMachine = try XCTUnwrap(fixture?.stateMachine)
+        let commandQueue = try XCTUnwrap(fixture?.commandQueue)
+        let focusSystem = try XCTUnwrap(fixture?.focusSystem)
+        weak var controller = fixture?.controller
+        focusSystem.isFocusable = true
+        commandQueue.stubFocusNextWithResultSynchronized { _ in
+            .init(moved: true, focusState: .init(hasFocus: true, expectsKeyboardInput: false))
+        }
+        XCTAssertEqual(fixture?.controller.handleKeyInput(
+            .tab, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true
+        ), true)
+        let focusedMachineHandle = try XCTUnwrap(commandQueue.focusNextWithResultSynchronizedCalls.last).stateMachineHandle
+        let cleared = expectation(description: "retained state machine focus cleared")
+        commandQueue.stubClearFocus { handle, _ in
+            XCTAssertEqual(handle, focusedMachineHandle)
+            cleared.fulfill()
+        }
+
+        fixture = nil
+
+        XCTAssertNil(controller)
+        await fulfillment(of: [cleared], timeout: 1)
+        withExtendedLifetime(stateMachine) {
+            XCTAssertFalse(focusSystem.isFocusable)
+            XCTAssertNil(focusSystem.delegate)
+            XCTAssertEqual(focusSystem.invalidateCallCount, 1)
+            XCTAssertEqual(commandQueue.clearFocusCalls.count, 1)
+        }
+    }
+
+    @MainActor
+    func test_focusTraversal_unsettlesController() async throws {
+        let fixture = try await makeController(dataBind: .none)
+        await expectSettled(within: fixture)
+        fixture.focusSystem.isFocusable = true
+        fixture.commandQueue.stubFocusNextWithResultSynchronized { _ in
+            .init(moved: true, focusState: .init(hasFocus: true, expectsKeyboardInput: false))
+        }
+        let unsettled = expectation(description: "controller unsettled")
+        fixture.controller.onIsSettledChangedForTesting = { isSettled in
+            guard !isSettled else { return }
+            unsettled.fulfill()
+        }
+
+        XCTAssertTrue(fixture.controller.handleKeyInput(
+            .tab, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true
+        ))
+
+        await fulfillment(of: [unsettled], timeout: 1)
+        XCTAssertFalse(fixture.controller.isSettled)
+    }
+
     @MainActor
     func test_init_startsUnsettled() async throws {
         let fixture = try await makeController(dataBind: .none)
@@ -804,6 +938,63 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
+    func test_resumeAfterSettling_advancesAndRefreshesFocus() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        fixture.commandQueue.stubRequestHasFocusNodes { [weak service = fixture.stateMachineService] handle, requestID in
+            service?.onHasFocusNodesReceived(handle, requestID: requestID, hasFocusNodes: true)
+        }
+        fixture.commandQueue.stubRequestFocusState { [weak service = fixture.stateMachineService] handle, requestID in
+            service?.onFocusStateReceived(handle, requestID: requestID, focusState: .init(
+                hasFocus: false, expectsKeyboardInput: false
+            ))
+        }
+        let initiallyFocusable = expectation(description: "initial focus eligibility")
+        fixture.focusSystem.onIsFocusableChanged = { if $0 { initiallyFocusable.fulfill() } }
+        _ = fixture.controller.advance(
+            now: 0, isOnscreen: true,
+            drawableSize: fixture.delegate.drawableSize, scaleProvider: fixture.delegate
+        )
+        await fulfillment(of: [initiallyFocusable], timeout: 1)
+        fixture.focusSystem.onIsFocusableChanged = nil
+        await expectSettled(within: fixture)
+
+        fixture.controller.isPaused = true
+        XCTAssertFalse(fixture.focusSystem.isFocusable)
+        let advancesBeforeResume = fixture.commandQueue.advanceStateMachineCalls.count
+        let availabilityBeforeResume = fixture.commandQueue.requestHasFocusNodesCalls.count
+        let snapshotsBeforeResume = fixture.commandQueue.requestFocusStateCalls.count
+        let availabilityRequested = expectation(description: "fresh availability requested after resume")
+        let stateRequested = expectation(description: "fresh focus state requested after resume")
+        fixture.commandQueue.stubRequestHasFocusNodes { [weak service = fixture.stateMachineService] handle, requestID in
+            availabilityRequested.fulfill()
+            service?.onHasFocusNodesReceived(handle, requestID: requestID, hasFocusNodes: true)
+        }
+        fixture.commandQueue.stubRequestFocusState { [weak service = fixture.stateMachineService] handle, requestID in
+            stateRequested.fulfill()
+            service?.onFocusStateReceived(handle, requestID: requestID, focusState: .init(
+                hasFocus: false, expectsKeyboardInput: false
+            ))
+        }
+
+        fixture.controller.isPaused = false
+        XCTAssertTrue(fixture.focusSystem.isFocusable)
+        _ = fixture.controller.advance(
+            now: 10, isOnscreen: true,
+            drawableSize: fixture.delegate.drawableSize, scaleProvider: fixture.delegate
+        )
+        await fulfillment(of: [availabilityRequested, stateRequested], timeout: 1)
+
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, advancesBeforeResume + 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.last?.time, 0)
+        XCTAssertEqual(fixture.commandQueue.requestHasFocusNodesCalls.count, availabilityBeforeResume + 1)
+        XCTAssertEqual(fixture.commandQueue.requestFocusStateCalls.count, snapshotsBeforeResume + 1)
+        XCTAssertTrue(fixture.focusSystem.isFocusable)
+        XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+        XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+    }
+
+    @MainActor
     func test_advance_whenResumedAfterPausedBlock_usesZeroDeltaFirstFrame_withoutResetTiming() async throws {
         let fixture = try await makeController(dataBind: .none)
         fixture.controller.isPaused = true
@@ -1244,6 +1435,592 @@ final class RiveControllerTests: XCTestCase {
         XCTAssertNotNil(configuration)
     }
 
+    // MARK: - Keyboard coordination
+
+    @MainActor
+    func test_keyPress_controllerReplacementPreservesNativeOwnershipWithoutReplayingInput() async throws {
+        for handled in [false, true] {
+            for cancelled in [false, true] {
+                let original = try await makeController()
+                let replacement = try await makeController()
+                defer {
+                    original.controller.invalidate()
+                    replacement.controller.invalidate()
+                }
+                original.commandQueue.stubKeyInputSynchronized { _ in handled }
+                replacement.commandQueue.stubKeyInputSynchronized { _ in !handled }
+                let view = KeyboardTestMetalView(frame: .zero, device: nil)
+                let press = MockKeyboardPress()
+                view.controller = original.controller
+                view.pressesBegan([press], with: nil)
+
+                view.controller = nil
+                view.controller = replacement.controller
+                view.pressesChanged([press], with: nil)
+                if cancelled {
+                    view.pressesCancelled([press], with: nil)
+                } else {
+                    view.pressesEnded([press], with: nil)
+                }
+
+                XCTAssertEqual(original.commandQueue.keyInputSynchronizedCalls.count, 1)
+                XCTAssertTrue(replacement.commandQueue.keyInputSynchronizedCalls.isEmpty)
+                XCTAssertEqual(view.nativeResponder.calls, handled ? [] : [
+                    .init(phase: .began, presses: [press]),
+                    .init(phase: .changed, presses: [press]),
+                    .init(phase: cancelled ? .cancelled : .ended, presses: [press])
+                ])
+
+                // A fresh press of the same key now belongs to the replacement.
+                let nextPress = MockKeyboardPress()
+                view.pressesBegan([nextPress], with: nil)
+                view.pressesEnded([nextPress], with: nil)
+                XCTAssertEqual(replacement.commandQueue.keyInputSynchronizedCalls, [
+                    .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                    .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+                ])
+            }
+        }
+    }
+
+    @MainActor
+    func test_keyPress_lateReleaseAfterControllerReplacementDoesNotEndFreshPress() async throws {
+        for handled in [false, true] {
+            for cancelled in [false, true] {
+                let original = try await makeController()
+                let replacement = try await makeController()
+                defer {
+                    original.controller.invalidate()
+                    replacement.controller.invalidate()
+                }
+                original.commandQueue.stubKeyInputSynchronized { _ in handled }
+                replacement.commandQueue.stubKeyInputSynchronized { _ in !handled }
+                let view = KeyboardTestMetalView(frame: .zero, device: nil)
+                let oldPress = MockKeyboardPress()
+                let newPress = MockKeyboardPress()
+                view.controller = original.controller
+                view.pressesBegan([oldPress], with: nil)
+
+                view.controller = replacement.controller
+                view.pressesBegan([newPress], with: nil)
+                view.pressesChanged([oldPress], with: nil)
+                if cancelled {
+                    view.pressesCancelled([oldPress], with: nil)
+                } else {
+                    view.pressesEnded([oldPress], with: nil)
+                }
+
+                // The old press cannot release the new controller's same-key press.
+                XCTAssertEqual(replacement.commandQueue.keyInputSynchronizedCalls, [
+                    .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false)
+                ])
+                let nativeCalls: [MockKeyboardResponder.Call] = handled ? [
+                    .init(phase: .began, presses: [newPress])
+                ] : [
+                    .init(phase: .began, presses: [oldPress]),
+                    .init(phase: .changed, presses: [oldPress]),
+                    .init(phase: cancelled ? .cancelled : .ended, presses: [oldPress])
+                ]
+                XCTAssertEqual(view.nativeResponder.calls, nativeCalls)
+
+                // The new press still owns its own changes and release.
+                view.pressesChanged([newPress], with: nil)
+                view.pressesEnded([newPress], with: nil)
+                XCTAssertEqual(original.commandQueue.keyInputSynchronizedCalls, [
+                    .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false)
+                ])
+                XCTAssertEqual(replacement.commandQueue.keyInputSynchronizedCalls, [
+                    .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                    .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+                ])
+                XCTAssertEqual(view.nativeResponder.calls, nativeCalls + (handled ? [
+                    .init(phase: .changed, presses: [newPress]),
+                    .init(phase: .ended, presses: [newPress])
+                ] : []))
+            }
+        }
+    }
+
+    @MainActor
+    func test_keyPress_resetDoesNotResumePressWhenControllerReturns() async throws {
+        for handled in [false, true] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            fixture.commandQueue.stubKeyInputSynchronized { _ in handled }
+            let view = KeyboardTestMetalView(frame: .zero, device: nil)
+            let press = MockKeyboardPress()
+            view.controller = fixture.controller
+            view.pressesBegan([press], with: nil)
+
+            view.controller = nil
+            view.controller = fixture.controller
+            view.pressesEnded([press], with: nil)
+
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false)
+            ])
+            XCTAssertEqual(view.nativeResponder.calls, handled ? [] : [
+                .init(phase: .began, presses: [press]),
+                .init(phase: .ended, presses: [press])
+            ])
+        }
+    }
+
+    @MainActor
+    func test_keyPress_assigningSameControllerPreservesActivePress() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        fixture.commandQueue.stubKeyInputSynchronized { _ in true }
+        let view = KeyboardTestMetalView(frame: .zero, device: nil)
+        let press = MockKeyboardPress()
+        view.controller = fixture.controller
+        view.pressesBegan([press], with: nil)
+
+        view.controller = fixture.controller
+        view.pressesEnded([press], with: nil)
+
+        XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+            .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+            .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+        ])
+        XCTAssertTrue(view.nativeResponder.calls.isEmpty)
+    }
+
+    @MainActor
+    func test_keyPress_missedReleaseDoesNotRetainPress() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        fixture.commandQueue.stubKeyInputSynchronized { _ in true }
+        let view = KeyboardTestMetalView(frame: .zero, device: nil)
+        view.controller = fixture.controller
+        weak var releasedPress: UIPress?
+
+        autoreleasepool {
+            let press = MockKeyboardPress()
+            releasedPress = press
+            view.pressesBegan([press], with: nil)
+        }
+
+        XCTAssertNil(releasedPress)
+        XCTAssertTrue(view.nativeResponder.calls.isEmpty)
+    }
+
+    @MainActor
+    func test_keyPress_changesDoNotRepeatInputOrChangeNativeOwnership() async throws {
+        for handled in [false, true] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            let view = KeyboardTestMetalView(frame: .zero, device: nil)
+            let press = MockKeyboardPress()
+            view.controller = fixture.controller
+            fixture.commandQueue.stubKeyInputSynchronized { _ in handled }
+            view.pressesBegan([press], with: nil)
+
+            fixture.commandQueue.stubKeyInputSynchronized { _ in !handled }
+            view.pressesChanged([press], with: nil)
+            view.pressesChanged([press], with: nil)
+            view.pressesEnded([press], with: nil)
+
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+            ])
+            XCTAssertEqual(view.nativeResponder.calls, handled ? [] : [
+                .init(phase: .began, presses: [press]),
+                .init(phase: .changed, presses: [press]),
+                .init(phase: .changed, presses: [press]),
+                .init(phase: .ended, presses: [press])
+            ])
+        }
+    }
+
+    @MainActor
+    func test_keyPress_freshPressAfterMissedReleaseResetsNativeOwnership() async throws {
+        for handled in [false, true] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            let view = KeyboardTestMetalView(frame: .zero, device: nil)
+            let previousPress = MockKeyboardPress()
+            let nextPress = MockKeyboardPress()
+            view.controller = fixture.controller
+            fixture.commandQueue.stubKeyInputSynchronized { _ in !handled }
+            view.pressesBegan([previousPress], with: nil)
+
+            // No release arrives for the previous press of the same key.
+            fixture.commandQueue.stubKeyInputSynchronized { _ in handled }
+            view.pressesBegan([nextPress], with: nil)
+            view.pressesChanged([nextPress], with: nil)
+            view.pressesEnded([nextPress], with: nil)
+
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+            ])
+            XCTAssertEqual(view.nativeResponder.calls, handled ? [
+                .init(phase: .began, presses: [previousPress])
+            ] : [
+                .init(phase: .began, presses: [nextPress]),
+                .init(phase: .changed, presses: [nextPress]),
+                .init(phase: .ended, presses: [nextPress])
+            ])
+        }
+    }
+
+    @MainActor
+    func test_keyPress_freshPressAfterMissedReleaseUsesReplacementController() async throws {
+        for handled in [false, true] {
+            let original = try await makeController()
+            let replacement = try await makeController()
+            defer {
+                original.controller.invalidate()
+                replacement.controller.invalidate()
+            }
+            original.commandQueue.stubKeyInputSynchronized { _ in !handled }
+            replacement.commandQueue.stubKeyInputSynchronized { _ in handled }
+            let view = KeyboardTestMetalView(frame: .zero, device: nil)
+            let previousPress = MockKeyboardPress()
+            let nextPress = MockKeyboardPress()
+            view.controller = original.controller
+            view.pressesBegan([previousPress], with: nil)
+
+            // Replacement must not turn a fresh press into a continuation of the old one.
+            view.controller = replacement.controller
+            view.pressesBegan([nextPress], with: nil)
+            view.pressesChanged([nextPress], with: nil)
+            view.pressesEnded([nextPress], with: nil)
+
+            XCTAssertEqual(original.commandQueue.keyInputSynchronizedCalls.count, 1)
+            XCTAssertEqual(replacement.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+            ])
+            XCTAssertEqual(view.nativeResponder.calls, handled ? [
+                .init(phase: .began, presses: [previousPress])
+            ] : [
+                .init(phase: .began, presses: [nextPress]),
+                .init(phase: .changed, presses: [nextPress]),
+                .init(phase: .ended, presses: [nextPress])
+            ])
+        }
+    }
+
+    @MainActor
+    func test_keyPress_deallocatedControllerDoesNotBlockFreshPress() async throws {
+        var fixture: ControllerFixture? = try await makeController()
+        weak var controller = fixture?.controller
+        let view = KeyboardTestMetalView(frame: .zero, device: nil)
+        let press = MockKeyboardPress()
+        fixture?.commandQueue.stubKeyInputSynchronized { _ in true }
+        view.controller = fixture?.controller
+        view.pressesBegan([press], with: nil)
+
+        view.controller = nil
+        fixture?.controller.invalidate()
+        fixture = nil
+        XCTAssertNil(controller)
+        view.pressesChanged([press], with: nil)
+        XCTAssertTrue(view.nativeResponder.calls.isEmpty)
+
+        let nextPress = MockKeyboardPress()
+        view.pressesBegan([nextPress], with: nil)
+        view.pressesEnded([nextPress], with: nil)
+        XCTAssertEqual(view.nativeResponder.calls, [
+            .init(phase: .began, presses: [nextPress]),
+            .init(phase: .ended, presses: [nextPress])
+        ])
+    }
+
+    @MainActor
+    func test_keyPress_untrackedReleaseIsForwardedWithoutSendingToRive() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        let view = KeyboardTestMetalView(frame: .zero, device: nil)
+        let press = MockKeyboardPress()
+        view.controller = fixture.controller
+        view.pressesEnded([press], with: nil)
+
+        XCTAssertTrue(fixture.commandQueue.keyInputSynchronizedCalls.isEmpty)
+        XCTAssertEqual(view.nativeResponder.calls, [.init(phase: .ended, presses: [press])])
+    }
+
+    @MainActor
+    func test_keyInput_handledArrowDoesNotTraverseAndWakesRendering() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        await expectSettled(within: fixture)
+        fixture.focusSystem.isFocusable = true
+        fixture.commandQueue.stubKeyInputSynchronized { _ in true }
+
+        XCTAssertTrue(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
+
+        XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+            .init(stateMachineHandle: fixture.stateMachine.stateMachineHandle, key: .right, modifiers: [], isPressed: true, isRepeat: false)
+        ])
+        XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+        XCTAssertFalse(fixture.controller.isSettled)
+    }
+
+    @MainActor
+    func test_keyInput_unhandledArrowsTraverseAfterKeyDelivery() async throws {
+        for isRepeat in [false, true] {
+            // Every case starts settled so its own traversal must wake rendering.
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            fixture.focusSystem.isFocusable = true
+            await expectSettled(within: fixture)
+            fixture.commandQueue.stubKeyInputSynchronized { _ in false }
+            fixture.commandQueue.stubFocusInDirectionSynchronized { [weak queue = fixture.commandQueue] _ in
+                XCTAssertEqual(queue?.keyInputSynchronizedCalls.count, 1)
+                return true
+            }
+
+            XCTAssertTrue(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: isRepeat, hasNativeFocus: true))
+
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: fixture.stateMachine.stateMachineHandle, key: .right, modifiers: [], isPressed: true, isRepeat: isRepeat)
+            ])
+            XCTAssertEqual(fixture.commandQueue.focusInDirectionSynchronizedCalls, [
+                .init(stateMachineHandle: fixture.stateMachine.stateMachineHandle, direction: .right)
+            ])
+            XCTAssertFalse(fixture.controller.isSettled)
+        }
+    }
+
+    @MainActor
+    func test_keyInput_failedDirectionalTraversalWakesWithoutClearingFocus() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        await expectSettled(within: fixture)
+        fixture.focusSystem.isFocusable = true
+        fixture.commandQueue.stubKeyInputSynchronized { _ in false }
+        fixture.commandQueue.stubFocusInDirectionSynchronized { _ in false }
+
+        XCTAssertFalse(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
+
+        XCTAssertEqual(fixture.commandQueue.focusInDirectionSynchronizedCalls.count, 1)
+        XCTAssertTrue(fixture.commandQueue.clearFocusCalls.isEmpty)
+        XCTAssertFalse(fixture.controller.isSettled)
+    }
+
+    @MainActor
+    func test_keyInput_withoutNativeFocusDoesNotDeliverOrWake() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        await expectSettled(within: fixture)
+        fixture.focusSystem.isFocusable = true
+        fixture.commandQueue.stubKeyInputSynchronized { _ in true }
+
+        XCTAssertFalse(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: false))
+        XCTAssertTrue(fixture.commandQueue.keyInputSynchronizedCalls.isEmpty)
+        XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+        XCTAssertTrue(fixture.controller.isSettled)
+    }
+
+    @MainActor
+    func test_keyInput_handledTabDoesNotTraverse() async throws {
+        for modifiers: StateMachine.KeyModifiers in [[], [.shift]] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            await expectSettled(within: fixture)
+            fixture.focusSystem.isFocusable = true
+            fixture.commandQueue.stubKeyInputSynchronized { _ in true }
+
+            // Authored key handling takes priority over focus traversal.
+            XCTAssertTrue(fixture.controller.handleKeyInput(.tab, modifiers: modifiers, isPressed: true, isRepeat: false, hasNativeFocus: true))
+
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: fixture.stateMachine.stateMachineHandle, key: .tab, modifiers: modifiers, isPressed: true, isRepeat: false)
+            ])
+            XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.clearFocusCalls.isEmpty)
+            XCTAssertFalse(fixture.controller.isSettled)
+        }
+    }
+
+    @MainActor
+    func test_keyInput_unhandledTabTraversesAndReturnsConsumption() async throws {
+        let results = [
+            (moved: true, hasFocus: true, consumed: true),
+            (moved: false, hasFocus: false, consumed: false),
+        ]
+        for modifiers: StateMachine.KeyModifiers in [[], [.shift]] {
+            for result in results {
+                let fixture = try await makeController()
+                defer { fixture.controller.invalidate() }
+                fixture.focusSystem.isFocusable = true
+                fixture.commandQueue.stubKeyInputSynchronized { _ in false }
+                fixture.commandQueue.stubFocusNextWithResultSynchronized { [weak queue = fixture.commandQueue] _ in
+                    XCTAssertEqual(queue?.keyInputSynchronizedCalls.count, 1)
+                    return .init(moved: result.moved, focusState: .init(hasFocus: result.hasFocus, expectsKeyboardInput: false))
+                }
+                fixture.commandQueue.stubFocusPreviousWithResultSynchronized { [weak queue = fixture.commandQueue] _ in
+                    XCTAssertEqual(queue?.keyInputSynchronizedCalls.count, 1)
+                    return .init(moved: result.moved, focusState: .init(hasFocus: result.hasFocus, expectsKeyboardInput: false))
+                }
+
+                XCTAssertEqual(fixture.controller.handleKeyInput(.tab, modifiers: modifiers, isPressed: true, isRepeat: false, hasNativeFocus: true), result.consumed)
+                XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 1)
+                XCTAssertEqual(fixture.commandQueue.focusNextWithResultSynchronizedCalls.count, modifiers.isEmpty ? 1 : 0)
+                XCTAssertEqual(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.count, modifiers.isEmpty ? 0 : 1)
+                XCTAssertTrue(fixture.commandQueue.clearFocusCalls.isEmpty)
+            }
+        }
+    }
+
+    @MainActor
+    func test_keyInput_repeatedTabTraversesOncePerDelivery() async throws {
+        for modifiers: StateMachine.KeyModifiers in [[], [.shift]] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            fixture.focusSystem.isFocusable = true
+            fixture.commandQueue.stubKeyInputSynchronized { _ in false }
+            fixture.commandQueue.stubFocusNextWithResultSynchronized { _ in
+                .init(moved: true, focusState: .init(hasFocus: true, expectsKeyboardInput: false))
+            }
+            fixture.commandQueue.stubFocusPreviousWithResultSynchronized { _ in
+                .init(moved: true, focusState: .init(hasFocus: true, expectsKeyboardInput: false))
+            }
+            for (index, isRepeat) in [false, true, true].enumerated() {
+                XCTAssertTrue(fixture.controller.handleKeyInput(.tab, modifiers: modifiers, isPressed: true, isRepeat: isRepeat, hasNativeFocus: true))
+                XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, index + 1)
+                XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.last?.isRepeat, isRepeat)
+                XCTAssertEqual(fixture.commandQueue.focusNextWithResultSynchronizedCalls.count, modifiers.isEmpty ? index + 1 : 0)
+                XCTAssertEqual(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.count, modifiers.isEmpty ? 0 : index + 1)
+            }
+        }
+    }
+
+    @MainActor
+    func test_keyInput_pausedAndInvalidatedControllersIgnoreInput() async throws {
+        let fixture = try await makeController()
+        fixture.commandQueue.stubKeyInputSynchronized { _ in true }
+        fixture.controller.isPaused = true
+        XCTAssertFalse(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
+        XCTAssertTrue(fixture.commandQueue.keyInputSynchronizedCalls.isEmpty)
+
+        fixture.controller.isPaused = false
+        XCTAssertTrue(fixture.controller.handleKeyInput(.enter, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
+        fixture.controller.invalidate()
+        XCTAssertFalse(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
+        XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 1)
+        XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_keyInput_beforeFocusabilityIsKnownDeliversKeysButDoesNotTraverse() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        XCTAssertFalse(fixture.focusSystem.isFocusable)
+        fixture.commandQueue.stubKeyInputSynchronized { _ in false }
+
+        XCTAssertFalse(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
+
+        XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 1)
+        XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_keyInput_handledKeyCancelsPendingFocusSnapshotWithoutTraversal() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        let requested = expectation(description: "focus state requested")
+        let cancelled = expectation(description: "focus state request cancelled")
+        fixture.commandQueue.stubRequestHasFocusNodes { [weak service = fixture.stateMachineService] handle, requestID in
+            service?.onHasFocusNodesReceived(handle, requestID: requestID, hasFocusNodes: true)
+        }
+        fixture.commandQueue.stubRequestFocusState { _, _ in requested.fulfill() }
+
+        _ = fixture.controller.advance(
+            now: 0,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 100),
+            scaleProvider: MockScaleProvider()
+        )
+        await fulfillment(of: [requested], timeout: 1)
+        let request = try XCTUnwrap(fixture.commandQueue.requestFocusStateCalls.last)
+        fixture.stateMachineService.onRequestCancelled = { requestID in
+            if requestID == request.requestID { cancelled.fulfill() }
+        }
+        fixture.commandQueue.stubKeyInputSynchronized { _ in true }
+
+        // A handled non-arrow cannot rely on directional fallback to cancel the snapshot.
+        XCTAssertTrue(fixture.controller.handleKeyInput(.enter, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
+        await fulfillment(of: [cancelled], timeout: 1)
+
+        XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 1)
+        XCTAssertEqual(fixture.commandQueue.requestFocusStateCalls.count, 1)
+        XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_keyInput_unhandledKeyWakesAndReplacesPendingFocusSnapshot() async throws {
+        let fixture = try await makeController()
+        defer { fixture.controller.invalidate() }
+        let requested = expectation(description: "focus state requested")
+        let updated = expectation(description: "post-input snapshot makes view focusable")
+        fixture.commandQueue.stubRequestHasFocusNodes { [weak service = fixture.stateMachineService] handle, requestID in
+            service?.onHasFocusNodesReceived(handle, requestID: requestID, hasFocusNodes: true)
+        }
+        fixture.commandQueue.stubRequestFocusState { _, _ in requested.fulfill() }
+        fixture.focusSystem.onIsFocusableChanged = { isFocusable in
+            if isFocusable { updated.fulfill() }
+        }
+
+        _ = fixture.controller.advance(
+            now: 0,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 100),
+            scaleProvider: MockScaleProvider()
+        )
+        await fulfillment(of: [requested], timeout: 1)
+        let request = try XCTUnwrap(fixture.commandQueue.requestFocusStateCalls.last)
+        await expectSettled(within: fixture)
+        fixture.commandQueue.stubKeyInputSynchronized { _ in false }
+        let cancelled = expectation(description: "pre-input snapshot cancelled")
+        fixture.stateMachineService.onRequestCancelled = { requestID in
+            if requestID == request.requestID { cancelled.fulfill() }
+        }
+
+        XCTAssertFalse(fixture.controller.handleKeyInput(.X, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
+        XCTAssertFalse(fixture.controller.isSettled)
+        XCTAssertFalse(fixture.focusSystem.isFocusable)
+        await fulfillment(of: [cancelled], timeout: 1)
+
+        let discarded = expectation(description: "pre-input response discarded")
+        fixture.stateMachineService.onFocusResponseDiscarded = { requestID in
+            XCTAssertEqual(requestID, request.requestID)
+            discarded.fulfill()
+        }
+        fixture.stateMachineService.onFocusStateReceived(
+            request.stateMachineHandle,
+            requestID: request.requestID,
+            focusState: .init(hasFocus: false, expectsKeyboardInput: false)
+        )
+        await fulfillment(of: [discarded], timeout: 1)
+        XCTAssertFalse(fixture.focusSystem.isFocusable)
+
+        fixture.commandQueue.stubRequestFocusState { [weak service = fixture.stateMachineService] handle, requestID in
+            service?.onFocusStateReceived(handle, requestID: requestID, focusState: .init(
+                hasFocus: true, expectsKeyboardInput: false
+            ))
+        }
+        _ = fixture.controller.advance(
+            now: 1,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 100),
+            scaleProvider: MockScaleProvider()
+        )
+        await fulfillment(of: [updated], timeout: 1)
+
+        XCTAssertTrue(fixture.focusSystem.isFocusable)
+        XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 1)
+        XCTAssertEqual(fixture.commandQueue.requestFocusStateCalls.count, 2)
+        XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+    }
+
     // MARK: - Helpers
 
     @MainActor
@@ -1251,6 +2028,7 @@ final class RiveControllerTests: XCTestCase {
         dataBind: DataBind = .none,
         fit: Fit = .contain(alignment: .center),
         delegate: MockControllerDelegate? = nil,
+        hasNativeFocus: Bool = false,
         prepareStateMachine: (@MainActor (StateMachine, MockCommandQueue) async throws -> Void)? = nil
     ) async throws -> ControllerFixture {
         let delegate = delegate ?? MockControllerDelegate()
@@ -1293,7 +2071,13 @@ final class RiveControllerTests: XCTestCase {
             fit: fit
         )
 
-        let controller = RiveController(rive: rive, delegate: delegate)
+        let focusSystem = MockFocusSystem()
+        let controller = RiveController(
+            rive: rive,
+            delegate: delegate,
+            focusSystem: focusSystem,
+            hasNativeFocus: hasNativeFocus
+        )
 
         return ControllerFixture(
             controller: controller,
@@ -1302,7 +2086,8 @@ final class RiveControllerTests: XCTestCase {
             stateMachine: stateMachine,
             stateMachineService: stateMachineService,
             viewModelInstance: rive.stateMachine.mainBinding,
-            commandQueue: commandQueue
+            commandQueue: commandQueue,
+            focusSystem: focusSystem
         )
     }
 
@@ -1353,9 +2138,11 @@ final class RiveControllerTests: XCTestCase {
 
         let delegate = MockControllerDelegate(drawableSize: drawableSize)
         let mockNotificationCenter = MockNotificationCenter()
+        let focusSystem = MockFocusSystem()
         let controller = RiveController(
             rive: rive,
             delegate: delegate,
+            focusSystem: focusSystem,
             accessibility: MockUIAccessibility.self,
             notificationCenter: mockNotificationCenter
         )
@@ -1483,6 +2270,45 @@ final class RiveControllerTests: XCTestCase {
     }
 }
 
+/// Exercises event routing without a window, focus engine, or physical keyboard.
+@MainActor
+private final class KeyboardTestMetalView: UIKitMetalView {
+    let nativeResponder = MockKeyboardResponder()
+    override var isFocused: Bool { true }
+    override var next: UIResponder? { nativeResponder }
+}
+
+@MainActor
+private final class MockKeyboardResponder: UIResponder {
+    struct Call: Equatable {
+        let phase: UIPress.Phase
+        let presses: Set<UIPress>
+    }
+    private(set) var calls: [Call] = []
+
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        calls.append(.init(phase: .began, presses: presses))
+    }
+    override func pressesChanged(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        calls.append(.init(phase: .changed, presses: presses))
+    }
+    override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        calls.append(.init(phase: .ended, presses: presses))
+    }
+    override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        calls.append(.init(phase: .cancelled, presses: presses))
+    }
+}
+
+private final class MockKeyboardPress: UIPress {
+    override var key: UIKey? { MockKeyboardKey() }
+}
+
+private final class MockKeyboardKey: UIKey {
+    override var keyCode: UIKeyboardHIDUsage { .keyboardA }
+    override var modifierFlags: UIKeyModifierFlags { [] }
+}
+
 private struct ControllerFixture {
     let controller: RiveController
     let delegate: MockControllerDelegate
@@ -1491,6 +2317,7 @@ private struct ControllerFixture {
     let stateMachineService: StateMachineService
     let viewModelInstance: ViewModelInstance?
     let commandQueue: MockCommandQueue
+    let focusSystem: MockFocusSystem
 }
 
 private struct MockScaleProvider: ScaleProvider {

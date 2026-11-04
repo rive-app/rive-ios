@@ -11,6 +11,7 @@
 #import <Foundation/Foundation.h>
 
 @class RiveSemanticsDiff;
+@class RiveCommandQueueFocusState;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,6 +35,14 @@ NS_SWIFT_NAME(StateMachineListener)
 - (void)onSemanticsDiffReceived:(uint64_t)stateMachineHandle
                       requestID:(uint64_t)requestID
                            diff:(RiveSemanticsDiff*)diff;
+
+- (void)onHasFocusNodesReceived:(uint64_t)stateMachineHandle
+                      requestID:(uint64_t)requestID
+                  hasFocusNodes:(BOOL)hasFocusNodes;
+
+- (void)onFocusStateReceived:(uint64_t)stateMachineHandle
+                   requestID:(uint64_t)requestID
+                  focusState:(RiveCommandQueueFocusState*)focusState;
 
 @end
 

@@ -24,6 +24,7 @@
 #import "RiveConcurrency_Private.hh"
 #import "RiveSemanticsDiff.h"
 #include "../Utilities/RiveConfiguration_Private.hh"
+#include <optional>
 #include "rive/animation/semantic_listener_group.hpp"
 #include "rive/semantic/semantic_snapshot.hpp"
 #include "rive/semantic/semantic_role.hpp"
@@ -31,6 +32,7 @@
 #include "rive/semantic/semantic_state.hpp"
 #include <new>
 #include <stdexcept>
+#include "rive/input/focus_manager.hpp"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,6 +62,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@implementation RiveCommandQueueFocusState
+
+- (instancetype)initWithHasFocus:(BOOL)hasFocus
+            expectsKeyboardInput:(BOOL)expectsKeyboardInput
+{
+  self = [super init];
+  if (self)
+  {
+    _hasFocus = hasFocus;
+    _expectsKeyboardInput = expectsKeyboardInput;
+  }
+  return self;
+}
+
+@end
+
 /// With uint8_t elements and the default allocator, the vector's expected
 /// exceptions are length_error and bad_alloc (including its subclasses).
 /// Invalid memory access is not recoverable through these catches.
@@ -80,6 +98,22 @@ static NSString* _Nullable copyAssetData(
     return @"Data exceeds the maximum supported size";
   }
 }
+
+@implementation RiveCommandQueueFocusTraversalResult
+
+- (instancetype)initWithMoved:(BOOL)moved
+                   focusState:(RiveCommandQueueFocusState*)focusState
+{
+  self = [super init];
+  if (self)
+  {
+    _moved = moved;
+    _focusState = focusState;
+  }
+  return self;
+}
+
+@end
 
 rive::DataType RiveViewModelInstanceDataTypeToCppType(
     RiveViewModelInstanceDataType type)
@@ -211,6 +245,323 @@ static rive::SemanticActionType RiveSemanticActionTypeToCpp(
       return rive::SemanticActionType::tap;
   }
 }
+
+/// Converts a bridge key to its named C++ counterpart.
+static std::optional<rive::Key> RiveCommandQueueKeyToCpp(
+    RiveCommandQueueKey key)
+{
+  switch (key)
+  {
+    case RiveCommandQueueKeySpace:
+      return rive::Key::space;
+    case RiveCommandQueueKeyApostrophe:
+      return rive::Key::apostrophe;
+    case RiveCommandQueueKeyComma:
+      return rive::Key::comma;
+    case RiveCommandQueueKeyMinus:
+      return rive::Key::minus;
+    case RiveCommandQueueKeyPeriod:
+      return rive::Key::period;
+    case RiveCommandQueueKeySlash:
+      return rive::Key::slash;
+    case RiveCommandQueueKeyKey0:
+      return rive::Key::key0;
+    case RiveCommandQueueKeyKey1:
+      return rive::Key::key1;
+    case RiveCommandQueueKeyKey2:
+      return rive::Key::key2;
+    case RiveCommandQueueKeyKey3:
+      return rive::Key::key3;
+    case RiveCommandQueueKeyKey4:
+      return rive::Key::key4;
+    case RiveCommandQueueKeyKey5:
+      return rive::Key::key5;
+    case RiveCommandQueueKeyKey6:
+      return rive::Key::key6;
+    case RiveCommandQueueKeyKey7:
+      return rive::Key::key7;
+    case RiveCommandQueueKeyKey8:
+      return rive::Key::key8;
+    case RiveCommandQueueKeyKey9:
+      return rive::Key::key9;
+    case RiveCommandQueueKeySemicolon:
+      return rive::Key::semicolon;
+    case RiveCommandQueueKeyEqual:
+      return rive::Key::equal;
+    case RiveCommandQueueKeyA:
+      return rive::Key::a;
+    case RiveCommandQueueKeyB:
+      return rive::Key::b;
+    case RiveCommandQueueKeyC:
+      return rive::Key::c;
+    case RiveCommandQueueKeyD:
+      return rive::Key::d;
+    case RiveCommandQueueKeyE:
+      return rive::Key::e;
+    case RiveCommandQueueKeyF:
+      return rive::Key::f;
+    case RiveCommandQueueKeyG:
+      return rive::Key::g;
+    case RiveCommandQueueKeyH:
+      return rive::Key::h;
+    case RiveCommandQueueKeyI:
+      return rive::Key::i;
+    case RiveCommandQueueKeyJ:
+      return rive::Key::j;
+    case RiveCommandQueueKeyK:
+      return rive::Key::k;
+    case RiveCommandQueueKeyL:
+      return rive::Key::l;
+    case RiveCommandQueueKeyM:
+      return rive::Key::m;
+    case RiveCommandQueueKeyN:
+      return rive::Key::n;
+    case RiveCommandQueueKeyO:
+      return rive::Key::o;
+    case RiveCommandQueueKeyP:
+      return rive::Key::p;
+    case RiveCommandQueueKeyQ:
+      return rive::Key::q;
+    case RiveCommandQueueKeyR:
+      return rive::Key::r;
+    case RiveCommandQueueKeyS:
+      return rive::Key::s;
+    case RiveCommandQueueKeyT:
+      return rive::Key::t;
+    case RiveCommandQueueKeyU:
+      return rive::Key::u;
+    case RiveCommandQueueKeyV:
+      return rive::Key::v;
+    case RiveCommandQueueKeyW:
+      return rive::Key::w;
+    case RiveCommandQueueKeyX:
+      return rive::Key::x;
+    case RiveCommandQueueKeyY:
+      return rive::Key::y;
+    case RiveCommandQueueKeyZ:
+      return rive::Key::z;
+    case RiveCommandQueueKeyLeftBracket:
+      return rive::Key::leftBracket;
+    case RiveCommandQueueKeyBackslash:
+      return rive::Key::backslash;
+    case RiveCommandQueueKeyRightBracket:
+      return rive::Key::rightBracket;
+    case RiveCommandQueueKeyGraveAccent:
+      return rive::Key::graveAccent;
+    case RiveCommandQueueKeyWorld1:
+      return rive::Key::world1;
+    case RiveCommandQueueKeyWorld2:
+      return rive::Key::world2;
+    case RiveCommandQueueKeyEscape:
+      return rive::Key::escape;
+    case RiveCommandQueueKeyEnter:
+      return rive::Key::enter;
+    case RiveCommandQueueKeyTab:
+      return rive::Key::tab;
+    case RiveCommandQueueKeyBackspace:
+      return rive::Key::backspace;
+    case RiveCommandQueueKeyInsert:
+      return rive::Key::insert;
+    case RiveCommandQueueKeyDeleteKey:
+      return rive::Key::deleteKey;
+    case RiveCommandQueueKeyRight:
+      return rive::Key::right;
+    case RiveCommandQueueKeyLeft:
+      return rive::Key::left;
+    case RiveCommandQueueKeyDown:
+      return rive::Key::down;
+    case RiveCommandQueueKeyUp:
+      return rive::Key::up;
+    case RiveCommandQueueKeyPageUp:
+      return rive::Key::pageUp;
+    case RiveCommandQueueKeyPageDown:
+      return rive::Key::pageDown;
+    case RiveCommandQueueKeyHome:
+      return rive::Key::home;
+    case RiveCommandQueueKeyEnd:
+      return rive::Key::end;
+    case RiveCommandQueueKeyCapsLock:
+      return rive::Key::capsLock;
+    case RiveCommandQueueKeyScrollLock:
+      return rive::Key::scrollLock;
+    case RiveCommandQueueKeyNumLock:
+      return rive::Key::numLock;
+    case RiveCommandQueueKeyPrintScreen:
+      return rive::Key::printScreen;
+    case RiveCommandQueueKeyPause:
+      return rive::Key::pause;
+    case RiveCommandQueueKeyF1:
+      return rive::Key::f1;
+    case RiveCommandQueueKeyF2:
+      return rive::Key::f2;
+    case RiveCommandQueueKeyF3:
+      return rive::Key::f3;
+    case RiveCommandQueueKeyF4:
+      return rive::Key::f4;
+    case RiveCommandQueueKeyF5:
+      return rive::Key::f5;
+    case RiveCommandQueueKeyF6:
+      return rive::Key::f6;
+    case RiveCommandQueueKeyF7:
+      return rive::Key::f7;
+    case RiveCommandQueueKeyF8:
+      return rive::Key::f8;
+    case RiveCommandQueueKeyF9:
+      return rive::Key::f9;
+    case RiveCommandQueueKeyF10:
+      return rive::Key::f10;
+    case RiveCommandQueueKeyF11:
+      return rive::Key::f11;
+    case RiveCommandQueueKeyF12:
+      return rive::Key::f12;
+    case RiveCommandQueueKeyF13:
+      return rive::Key::f13;
+    case RiveCommandQueueKeyF14:
+      return rive::Key::f14;
+    case RiveCommandQueueKeyF15:
+      return rive::Key::f15;
+    case RiveCommandQueueKeyF16:
+      return rive::Key::f16;
+    case RiveCommandQueueKeyF17:
+      return rive::Key::f17;
+    case RiveCommandQueueKeyF18:
+      return rive::Key::f18;
+    case RiveCommandQueueKeyF19:
+      return rive::Key::f19;
+    case RiveCommandQueueKeyF20:
+      return rive::Key::f20;
+    case RiveCommandQueueKeyF21:
+      return rive::Key::f21;
+    case RiveCommandQueueKeyF22:
+      return rive::Key::f22;
+    case RiveCommandQueueKeyF23:
+      return rive::Key::f23;
+    case RiveCommandQueueKeyF24:
+      return rive::Key::f24;
+    case RiveCommandQueueKeyF25:
+      return rive::Key::f25;
+    case RiveCommandQueueKeyKp0:
+      return rive::Key::kp0;
+    case RiveCommandQueueKeyKp1:
+      return rive::Key::kp1;
+    case RiveCommandQueueKeyKp2:
+      return rive::Key::kp2;
+    case RiveCommandQueueKeyKp3:
+      return rive::Key::kp3;
+    case RiveCommandQueueKeyKp4:
+      return rive::Key::kp4;
+    case RiveCommandQueueKeyKp5:
+      return rive::Key::kp5;
+    case RiveCommandQueueKeyKp6:
+      return rive::Key::kp6;
+    case RiveCommandQueueKeyKp7:
+      return rive::Key::kp7;
+    case RiveCommandQueueKeyKp8:
+      return rive::Key::kp8;
+    case RiveCommandQueueKeyKp9:
+      return rive::Key::kp9;
+    case RiveCommandQueueKeyKpDecimal:
+      return rive::Key::kpDecimal;
+    case RiveCommandQueueKeyKpDivide:
+      return rive::Key::kpDivide;
+    case RiveCommandQueueKeyKpMultiply:
+      return rive::Key::kpMultiply;
+    case RiveCommandQueueKeyKpSubtract:
+      return rive::Key::kpSubtract;
+    case RiveCommandQueueKeyKpAdd:
+      return rive::Key::kpAdd;
+    case RiveCommandQueueKeyKpEnter:
+      return rive::Key::kpEnter;
+    case RiveCommandQueueKeyKpEqual:
+      return rive::Key::kpEqual;
+    case RiveCommandQueueKeyLeftShift:
+      return rive::Key::leftShift;
+    case RiveCommandQueueKeyLeftControl:
+      return rive::Key::leftControl;
+    case RiveCommandQueueKeyLeftAlt:
+      return rive::Key::leftAlt;
+    case RiveCommandQueueKeyLeftSuper:
+      return rive::Key::leftSuper;
+    case RiveCommandQueueKeyRightShift:
+      return rive::Key::rightShift;
+    case RiveCommandQueueKeyRightControl:
+      return rive::Key::rightControl;
+    case RiveCommandQueueKeyRightAlt:
+      return rive::Key::rightAlt;
+    case RiveCommandQueueKeyRightSuper:
+      return rive::Key::rightSuper;
+    case RiveCommandQueueKeyMenu:
+      return rive::Key::menu;
+  }
+    // There is no C++ unknown key; never substitute a different input
+    // event.
+#if DEBUG
+  NSCAssert(NO, @"Unrecognized command queue key: %u", (unsigned)key);
+#endif
+  return std::nullopt;
+}
+
+/// Converts each modifier independently of its underlying bit position.
+static rive::KeyModifiers RiveCommandQueueKeyModifiersToCpp(
+    RiveCommandQueueKeyModifiers modifiers)
+{
+  auto result = rive::KeyModifiers::none;
+  if (modifiers & RiveCommandQueueKeyModifiersShift)
+    result = result | rive::KeyModifiers::shift;
+  if (modifiers & RiveCommandQueueKeyModifiersControl)
+    result = result | rive::KeyModifiers::ctrl;
+  if (modifiers & RiveCommandQueueKeyModifiersAlt)
+    result = result | rive::KeyModifiers::alt;
+  if (modifiers & RiveCommandQueueKeyModifiersMeta)
+    result = result | rive::KeyModifiers::meta;
+  return result;
+}
+
+/// Converts a bridge direction to its named C++ counterpart.
+static std::optional<rive::Direction> RiveCommandQueueFocusDirectionToCpp(
+    RiveCommandQueueFocusDirection direction)
+{
+  switch (direction)
+  {
+    case RiveCommandQueueFocusDirectionLeft:
+      return rive::Direction::left;
+    case RiveCommandQueueFocusDirectionRight:
+      return rive::Direction::right;
+    case RiveCommandQueueFocusDirectionUp:
+      return rive::Direction::up;
+    case RiveCommandQueueFocusDirectionDown:
+      return rive::Direction::down;
+  }
+#if DEBUG
+  NSCAssert(
+      NO,
+      @"Unrecognized command queue focus direction: %u",
+      (unsigned)direction);
+#endif
+  return std::nullopt;
+}
+
+#if RIVE_APPLE_TESTING
+// Internal test hooks exercise the production conversions without exposing C++
+// types in the Objective-C command queue header.
+std::optional<rive::Key> RiveCommandQueueKeyToCppForTesting(
+    RiveCommandQueueKey key)
+{
+  return RiveCommandQueueKeyToCpp(key);
+}
+
+rive::KeyModifiers RiveCommandQueueKeyModifiersToCppForTesting(
+    RiveCommandQueueKeyModifiers modifiers)
+{
+  return RiveCommandQueueKeyModifiersToCpp(modifiers);
+}
+
+std::optional<rive::Direction> RiveCommandQueueFocusDirectionToCppForTesting(
+    RiveCommandQueueFocusDirection direction)
+{
+  return RiveCommandQueueFocusDirectionToCpp(direction);
+}
+#endif
 
 static RiveSemanticRole RiveSemanticRoleFromCpp(uint32_t role)
 {
@@ -622,6 +973,16 @@ public:
       uint64_t requestId,
       rive::SemanticsDiff diff) override;
 
+  virtual void onHasFocusNodesReceived(
+      const rive::StateMachineHandle handle,
+      uint64_t requestId,
+      bool hasFocusNodes) override;
+
+  virtual void onFocusStateReceived(
+      const rive::StateMachineHandle handle,
+      uint64_t requestId,
+      rive::CommandQueue::FocusState focusState) override;
+
 private:
   __weak id<RiveStateMachineListener> _observer;
 };
@@ -687,6 +1048,35 @@ void _StateMachineListener::onSemanticsDiffReceived(
     [_observer onSemanticsDiffReceived:reinterpret_cast<uint64_t>(handle)
                              requestID:requestId
                                   diff:objcDiff];
+  }
+}
+
+void _StateMachineListener::onHasFocusNodesReceived(
+    const rive::StateMachineHandle handle,
+    uint64_t requestId,
+    bool hasFocusNodes)
+{
+  if (_observer)
+  {
+    [_observer onHasFocusNodesReceived:reinterpret_cast<uint64_t>(handle)
+                             requestID:requestId
+                         hasFocusNodes:hasFocusNodes];
+  }
+}
+
+void _StateMachineListener::onFocusStateReceived(
+    const rive::StateMachineHandle handle,
+    uint64_t requestId,
+    rive::CommandQueue::FocusState focusState)
+{
+  if (_observer)
+  {
+    RiveCommandQueueFocusState* objcFocusState = [[RiveCommandQueueFocusState
+        alloc] initWithHasFocus:focusState.hasFocus
+           expectsKeyboardInput:focusState.expectsKeyboardInput];
+    [_observer onFocusStateReceived:reinterpret_cast<uint64_t>(handle)
+                          requestID:requestId
+                         focusState:objcFocusState];
   }
 }
 
@@ -2314,6 +2704,100 @@ void _AudioListener::onAudioSourceDeleted(
         stateMachineHandle);
     self->_commandQueue->bind(handle, requestID);
   }];
+}
+
+#pragma mark - Focus
+
+- (void)requestHasFocusNodes:(uint64_t)stateMachineHandle
+                   requestID:(uint64_t)requestID
+{
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->requestHasFocusNodes(handle, requestID);
+  }];
+}
+
+- (void)clearFocus:(uint64_t)stateMachineHandle requestID:(uint64_t)requestID
+{
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->clearFocus(handle, requestID);
+  }];
+}
+
+- (void)requestFocusState:(uint64_t)stateMachineHandle
+                requestID:(uint64_t)requestID
+{
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::StateMachineHandle>(
+        stateMachineHandle);
+    self->_commandQueue->requestFocusState(handle, requestID);
+  }];
+}
+
+- (RiveCommandQueueFocusTraversalResult*)focusNextWithResultSynchronized:
+    (uint64_t)stateMachineHandle
+{
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
+  auto handle = reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+  const auto result = _commandQueue->focusNextWithResultSynchronized(handle);
+  RiveCommandQueueFocusState* state = [[RiveCommandQueueFocusState alloc]
+          initWithHasFocus:result.focusState.hasFocus
+      expectsKeyboardInput:result.focusState.expectsKeyboardInput];
+  return
+      [[RiveCommandQueueFocusTraversalResult alloc] initWithMoved:result.moved
+                                                       focusState:state];
+}
+
+- (RiveCommandQueueFocusTraversalResult*)focusPreviousWithResultSynchronized:
+    (uint64_t)stateMachineHandle
+{
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
+  auto handle = reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+  const auto result = _commandQueue->focusPreviousWithResultSynchronized(
+      handle);
+  RiveCommandQueueFocusState* state = [[RiveCommandQueueFocusState alloc]
+          initWithHasFocus:result.focusState.hasFocus
+      expectsKeyboardInput:result.focusState.expectsKeyboardInput];
+  return
+      [[RiveCommandQueueFocusTraversalResult alloc] initWithMoved:result.moved
+                                                       focusState:state];
+}
+
+- (BOOL)keyInputSynchronized:(uint64_t)stateMachineHandle
+                         key:(RiveCommandQueueKey)key
+                   modifiers:(RiveCommandQueueKeyModifiers)modifiers
+                   isPressed:(BOOL)isPressed
+                    isRepeat:(BOOL)isRepeat
+{
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
+  auto cppKey = RiveCommandQueueKeyToCpp(key);
+  if (!cppKey)
+    return NO;
+  auto handle = reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+  return _commandQueue->keyInputSynchronized(
+      handle,
+      *cppKey,
+      RiveCommandQueueKeyModifiersToCpp(modifiers),
+      isPressed,
+      isRepeat);
+}
+
+- (BOOL)focusInDirectionSynchronized:(uint64_t)stateMachineHandle
+                           direction:(RiveCommandQueueFocusDirection)direction
+{
+  [_RiveMainActor
+      assertIsolated:@"Worker calls must be made on the MainActor."];
+  auto cppDirection = RiveCommandQueueFocusDirectionToCpp(direction);
+  if (!cppDirection)
+    return NO;
+  auto handle = reinterpret_cast<rive::StateMachineHandle>(stateMachineHandle);
+  return _commandQueue->focusInDirectionSynchronized(handle, *cppDirection);
 }
 
 #pragma mark - Semantics

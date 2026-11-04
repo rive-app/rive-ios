@@ -197,7 +197,7 @@ private struct RedrawFixture {
         self.view = view
         self.commandQueue = commandQueue
         self.stateMachineService = stateMachineService
-        controller = RiveController(rive: rive, delegate: view)
+        controller = RiveController(rive: rive, delegate: view, focusSystem: MockFocusSystem())
         metalView = RedrawMetalView(frame: .zero, device: device)
 
         metalView.isPaused = true
@@ -231,7 +231,7 @@ private struct RedrawFixture {
 }
 
 @MainActor
-private final class RedrawMetalView: RiveUIView.MetalView {
+private final class RedrawMetalView: RiveUIView.PlatformMetalView {
     var drawable: CAMetalDrawable?
     var acquisitionCount = 0
     var invalidationCount = 0

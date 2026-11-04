@@ -30,8 +30,14 @@ final class RiveController {
     var isPaused = false {
         didSet {
             guard oldValue != isPaused else { return }
+            focusController.isPaused = isPaused
+            keyboardController.isPaused = isPaused
             if isPaused {
                 resetTiming()
+            } else {
+                // Resume with an advance even if settled, so focus state
+                // can be refreshed after polling was paused.
+                markDirty()
             }
         }
     }
@@ -67,6 +73,9 @@ final class RiveController {
     private var wasOnscreen = false
     private var lastDrawnDrawableSize: CGSize?
 
+    private let focusController: FocusController
+    private let keyboardController: KeyboardController
+
     #if !os(macOS) || RIVE_MAC_CATALYST
     let semanticsController: SemanticsController
 
@@ -93,6 +102,8 @@ final class RiveController {
     init(
         rive: Rive,
         delegate: RiveControllerDelegate,
+        focusSystem: any FocusSystem,
+        hasNativeFocus: Bool = false,
         accessibility: UIAccessibilityProtocol.Type = UIAccessibility.self,
         notificationCenter: NotificationCenterProtocol = NotificationCenter.default
     ) {
@@ -105,7 +116,15 @@ final class RiveController {
                 commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue
             )
         )
+        self.focusController = FocusController(
+            dependencies: .init(
+                stateMachine: rive.stateMachine,
+                focusSystem: focusSystem
+            ),
+            hasNativeFocus: hasNativeFocus
+        )
 
+        self.keyboardController = KeyboardController(dependencies: .init(stateMachine: rive.stateMachine))
         self.semanticsController = SemanticsController(
             dependencies: .init(
                 stateMachine: rive.stateMachine,
@@ -115,12 +134,16 @@ final class RiveController {
         )
 
         setupSubscriptions()
+        focusController.delegate = self
+        keyboardController.delegate = self
         semanticsController.delegate = self
     }
     #else
     init(
         rive: Rive,
-        delegate: RiveControllerDelegate
+        delegate: RiveControllerDelegate,
+        focusSystem: any FocusSystem,
+        hasNativeFocus: Bool = false
     ) {
         RiveLog.debug(tag: .view, "[RiveUIView] Initializing controller")
         self.rive = rive
@@ -131,12 +154,28 @@ final class RiveController {
                 commandQueue: rive.file.worker.dependencies.workerService.dependencies.commandQueue
             )
         )
+        self.focusController = FocusController(
+            dependencies: .init(
+                stateMachine: rive.stateMachine,
+                focusSystem: focusSystem
+            ),
+            hasNativeFocus: hasNativeFocus
+        )
 
+        self.keyboardController = KeyboardController(dependencies: .init(stateMachine: rive.stateMachine))
         setupSubscriptions()
+        focusController.delegate = self
+        keyboardController.delegate = self
     }
     #endif
 
     deinit {
+        // Deinitialization is nonisolated; finish focus teardown on the main
+        // actor without retaining this controller after its lifetime ends.
+        Task { @MainActor [focusController, keyboardController] in
+            focusController.invalidate()
+            keyboardController.invalidate()
+        }
         settledStreamTask?.cancel()
         for (handle, task) in dirtyStreamTasks {
             task.cancel()
@@ -156,6 +195,31 @@ final class RiveController {
         RiveLog.trace(tag: .view, "[RiveUIView] Resetting frame timing")
         // This will cause the initial advance on next play to be 0.
         lastTimestamp = nil
+    }
+
+    func invalidate() {
+        focusController.invalidate()
+        keyboardController.invalidate()
+    }
+
+    /// Offers keyboard input to Rive before trying focus navigation.
+    ///
+    /// The native event adapter supplies focus ownership. Authored keyboard
+    /// handling takes priority over the focus controller's navigation fallback.
+    /// A `false` result leaves the event to its platform without assuming that
+    /// native focus actually left Rive.
+    func handleKeyInput(
+        _ key: StateMachine.Key,
+        modifiers: StateMachine.KeyModifiers,
+        isPressed: Bool,
+        isRepeat: Bool,
+        hasNativeFocus: Bool
+    ) -> Bool {
+        guard hasNativeFocus else { return false }
+        if keyboardController.keyInput(key, modifiers: modifiers, isPressed: isPressed, isRepeat: isRepeat) {
+            return true
+        }
+        return focusController.handleNavigationKey(key, modifiers: modifiers, isPressed: isPressed)
     }
 
     func advance(
@@ -229,6 +293,7 @@ final class RiveController {
             isDirty = false
             RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
             rive.stateMachine.advance(by: delta)
+            focusController.didAdvance()
 
             #if !os(macOS) || RIVE_MAC_CATALYST
             let semanticsFitBridge = rive.fit.bridged(from: scaleProvider)
@@ -450,3 +515,18 @@ extension RiveController: SemanticsControllerDelegate {
     }
 }
 #endif
+
+// MARK: - RiveController + FocusControllerDelegate
+
+extension RiveController: FocusControllerDelegate {
+    func focusControllerDidRequestWake(_ controller: FocusController) {
+        markDirty()
+    }
+}
+
+extension RiveController: KeyboardControllerDelegate {
+    func keyboardControllerDidRequestWake(_ controller: KeyboardController) {
+        focusController.prepareForKeyboardInput()
+        markDirty()
+    }
+}

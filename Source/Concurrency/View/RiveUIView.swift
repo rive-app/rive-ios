@@ -93,15 +93,29 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         #endif
     }
 
-    private var mtkView: MTKView?
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    typealias PlatformMetalView = UIKitMetalView
+    #else
+    typealias PlatformMetalView = AppKitMetalView
+    #endif
+    private var mtkView: PlatformMetalView?
     #if os(macOS) && !RIVE_MAC_CATALYST
     private var contentsScaleObservation: NSKeyValueObservation?
     #endif
     private var renderer: (any RiveUIRendererProtocol)?
     private var pendingConfiguration: RiveUIRendererConfiguration?
 
-    private var controller: RiveController?
+    private var controller: RiveController? {
+        didSet {
+            oldValue?.invalidate()
+            mtkView?.controller = controller
+        }
+    }
     private var setupTask: Task<Void, Never>?
+
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    private var focusSystem: UIKitFocusSystem?
+    #endif
 
     // MARK: ScaleProvider
     var nativeScale: CGFloat? {
@@ -318,6 +332,13 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         self.delegate = delegate
         super.init(frame: .zero)
 
+        #if os(iOS) || RIVE_MAC_CATALYST
+        // Give the Rive focus environment its own group so UIKit places its
+        // focusable rendering descendant according to this view's position
+        // among sibling content.
+        focusGroupIdentifier = "app.rive.focus.\(ObjectIdentifier(self))"
+        #endif
+
         #if os(iOS) || os(visionOS) || RIVE_MAC_CATALYST
         self.isMultipleTouchEnabled = true
         #endif
@@ -357,6 +378,25 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         updateDisplayLink()
     }
     #endif
+
+    #if !os(macOS) || RIVE_MAC_CATALYST
+    public override var canBecomeFocused: Bool {
+        false
+    }
+
+    public override func shouldUpdateFocus(in context: UIFocusUpdateContext) -> Bool {
+        guard super.shouldUpdateFocus(in: context) else { return false }
+        return focusSystem?.shouldUpdateFocus(in: context) ?? true
+    }
+
+    public override func didUpdateFocus(
+        in context: UIFocusUpdateContext,
+        with coordinator: UIFocusAnimationCoordinator
+    ) {
+        super.didUpdateFocus(in: context, with: coordinator)
+        focusSystem?.didUpdateFocus(in: context)
+    }
+    #endif
     
     @MainActor
     private func setupView() async {
@@ -365,7 +405,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             RiveLog.error(tag: .view, "[RiveUIView] Failed to set up MTKView: missing Metal device")
             return
         }
-        let mtkView = MetalView(frame: bounds, device: device)
+        let mtkView = PlatformMetalView(frame: bounds, device: device)
         mtkView.delegate = self
         mtkView.isPaused = true
         mtkView.enableSetNeedsDisplay = true
@@ -420,7 +460,21 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             RiveLog.debug(tag: .view, "[RiveUIView] Setting up Rive renderer and controller")
             renderer = rive.makeRenderer()
 
-            controller = RiveController(rive: rive, delegate: self)
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            let focusSystem = UIKitFocusSystem(
+                dependencies: .init(focusEnvironment: self)
+            )
+            self.focusSystem = focusSystem
+            #else
+            let focusSystem = AppKitFocusSystem()
+            #endif
+            mtkView?.focusSystem = focusSystem
+            controller = RiveController(
+                rive: rive,
+                delegate: self,
+                focusSystem: focusSystem,
+                hasNativeFocus: mtkView?.hasNativeFocus ?? false
+            )
             controller?.isPaused = isPaused
             #if !os(macOS) || RIVE_MAC_CATALYST
             controller?.semantics = semantics
@@ -431,6 +485,10 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
             RiveLog.debug(tag: .view, "[RiveUIView] Clearing Rive renderer and controller")
             renderer = nil
             controller = nil
+            #if !os(macOS) || RIVE_MAC_CATALYST
+            mtkView?.focusSystem = nil
+            focusSystem = nil
+            #endif
         }
 
         updateDisplayLink()
@@ -459,10 +517,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         guard let controller else {
             return
         }
-        guard let view = view as? MetalView else {
-            RiveLog.error(tag: .view, "[RiveUIView] Draw failed: unexpected Metal view type")
+        guard let mtkView, view === mtkView else {
+            RiveLog.error(tag: .view, "[RiveUIView] Draw failed: unexpected Metal view")
             return
         }
+        let view = mtkView
 
         // Setup can request a draw before layout sizes the Metal view. Wait for
         // a valid drawable size without consuming the controller's first draw.
@@ -557,7 +616,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
     func configureDrawingForTesting(
         controller: RiveController,
-        metalView: MetalView,
+        metalView: PlatformMetalView,
         renderer: any RiveUIRendererProtocol
     ) async {
         // Let normal setup finish before installing controlled drawing dependencies.
@@ -785,6 +844,302 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
 
 }
+
+/// Remembers the Rive recipient and native ownership until a held press ends.
+/// The weak reference does not keep replaced content alive.
+private struct KeyPress {
+    weak var controller: RiveController?
+    let wasForwarded: Bool
+}
+
+#if !os(macOS) || RIVE_MAC_CATALYST
+/// The native focus item representing a Rive view in UIKit's focus tree.
+@MainActor
+class UIKitMetalView: RiveUIView.MetalView {
+    weak var focusSystem: UIKitFocusSystem?
+    weak var controller: RiveController? {
+        didSet {
+            guard controller !== oldValue else { return }
+            resetKeyPresses()
+        }
+    }
+
+    /// Whether UIKit currently focuses this rendering view, independently of
+    /// the controller attached to it.
+    var hasNativeFocus: Bool { isFocused }
+
+    private var keyPresses: [UIKeyboardHIDUsage: WeakReference<UIPress>] = [:]
+
+    /// Keeps consumed presses out of UIKit after a Rive reset, without retaining
+    /// presses whose release never arrives.
+    private let handledPresses = NSHashTable<UIPress>(options: [.weakMemory, .objectPointerPersonality])
+
+    /// Discards Rive's active presses when its controller changes. Native routing
+    /// remains tied to each press, since UIKit's responder chain has not reset.
+    private func resetKeyPresses() {
+        keyPresses.removeAll()
+        #if os(tvOS)
+        selectPresses.removeAllObjects()
+        #endif
+    }
+
+    /// Whether Rive has made its rendering view eligible for native focus.
+    override var canBecomeFocused: Bool {
+        focusSystem?.isFocusable ?? false
+    }
+
+    /// Allows UIKit to route keyboard events to the focused rendering view.
+    override var canBecomeFirstResponder: Bool { canBecomeFocused }
+
+    #if os(tvOS)
+    /// Balances remote Select events separately from physical Enter keys.
+    private let selectPresses = NSHashTable<UIPress>(options: [.weakMemory, .objectPointerPersonality])
+
+    /// Treats the remote's Select button as Enter for the focused Rive node.
+    private func handleSelect(isPressed: Bool) -> Bool {
+        controller?.handleKeyInput(
+            .enter,
+            modifiers: [],
+            isPressed: isPressed,
+            isRepeat: false,
+            hasNativeFocus: isFocused
+        ) ?? false
+    }
+
+    /// Observes destination-less remote movement only while attached to a window.
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        NotificationCenter.default.removeObserver(self, name: UIFocusSystem.movementDidFailNotification, object: nil)
+        if window != nil {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(focusMovementDidFail(_:)),
+                name: UIFocusSystem.movementDidFailNotification,
+                object: nil
+            )
+        }
+    }
+
+    @objc private func focusMovementDidFail(_ notification: Notification) {
+        guard isFocused,
+              let context = notification.userInfo?[UIFocusSystem.focusUpdateContextUserInfoKey] as? UIFocusUpdateContext else { return }
+        focusSystem?.didFailToMoveFocus(in: context)
+    }
+    #endif
+
+    /// Offers physical key presses to Rive and forwards unhandled presses.
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        var unhandled = Set<UIPress>()
+        for press in presses {
+            #if os(tvOS)
+            if press.key == nil, press.type == .select {
+                selectPresses.add(press)
+                let handled = handleSelect(isPressed: true)
+                if handled { handledPresses.add(press) } else { unhandled.insert(press) }
+                continue
+            }
+            #endif
+            guard let nativeKey = press.key else {
+                unhandled.insert(press)
+                continue
+            }
+            // Each began event starts a fresh press, even if we missed the previous release.
+            keyPresses[nativeKey.keyCode] = WeakReference(press)
+            let handled = handleKey(nativeKey, isPressed: true)
+            if handled { handledPresses.add(press) } else { unhandled.insert(press) }
+        }
+        if !unhandled.isEmpty { super.pressesBegan(unhandled, with: event) }
+    }
+
+    /// Forwards analog changes for presses owned by UIKit, without treating
+    /// pressure changes as repeated keyboard input.
+    override func pressesChanged(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        let unhandled = Set(presses.filter { !handledPresses.contains($0) })
+        if !unhandled.isEmpty { super.pressesChanged(unhandled, with: event) }
+    }
+
+    /// Delivers key releases to Rive and completes presses forwarded to UIKit.
+    override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        let unhandled = finishPresses(presses)
+        if !unhandled.isEmpty { super.pressesEnded(unhandled, with: event) }
+    }
+
+    /// Releases cancelled Rive keys without attempting directional traversal.
+    override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        let unhandled = finishPresses(presses)
+        if !unhandled.isEmpty { super.pressesCancelled(unhandled, with: event) }
+    }
+
+    private func finishPresses(_ presses: Set<UIPress>) -> Set<UIPress> {
+        var unhandled = Set<UIPress>()
+        for press in presses {
+            if !handledPresses.contains(press) { unhandled.insert(press) }
+            handledPresses.remove(press)
+            #if os(tvOS)
+            if press.key == nil, press.type == .select {
+                if selectPresses.contains(press) {
+                    selectPresses.remove(press)
+                    _ = handleSelect(isPressed: false)
+                }
+                continue
+            }
+            #endif
+            guard let nativeKey = press.key,
+                  keyPresses[nativeKey.keyCode]?.value === press else { continue }
+            keyPresses.removeValue(forKey: nativeKey.keyCode)
+            _ = handleKey(nativeKey, isPressed: false)
+        }
+        return unhandled
+    }
+
+    /// Translates a physical key and offers it to Rive without changing press tracking.
+    private func handleKey(_ nativeKey: UIKey, isPressed: Bool) -> Bool {
+        guard let key = StateMachine.Key(keyCode: nativeKey.keyCode) else { return false }
+        return controller?.handleKeyInput(
+            key,
+            modifiers: .init(modifierFlags: nativeKey.modifierFlags),
+            isPressed: isPressed,
+            isRepeat: false,
+            hasNativeFocus: isFocused
+        ) ?? false
+    }
+}
+#else
+/// The native first responder representing a Rive view in AppKit's key-view
+/// loop.
+@MainActor
+class AppKitMetalView: RiveUIView.MetalView {
+    /// The adapter that translates responder changes into Rive focus behavior.
+    weak var focusSystem: AppKitFocusSystem?
+
+    weak var controller: RiveController?
+
+    private var keyPresses: [UInt16: KeyPress] = [:]
+
+    /// Whether this rendering view currently owns AppKit keyboard focus.
+    var hasNativeFocus: Bool {
+        window?.firstResponder === self
+    }
+
+    /// Offers physical keys to Rive, then forwards unhandled input to AppKit.
+    override func keyDown(with event: NSEvent) {
+        // A release may reach another responder. Only repeats continue the old press.
+        let previous = event.isARepeat ? keyPresses[event.keyCode] : nil
+        if let previous, previous.controller == nil || previous.controller !== controller {
+            if previous.wasForwarded { forwardKeyDown(event) }
+            return
+        }
+        let recipient = controller
+        let handled = handleKey(event, isPressed: true)
+        keyPresses[event.keyCode] = KeyPress(
+            controller: recipient, wasForwarded: previous?.wasForwarded == true || !handled
+        )
+        if !handled { forwardKeyDown(event) }
+    }
+
+    /// Preserves native Tab interpretation while forwarding other unhandled
+    /// key-down events to the responder chain, matching their key-up routing.
+    private func forwardKeyDown(_ event: NSEvent) {
+        let modifiers = StateMachine.KeyModifiers(modifierFlags: event.modifierFlags)
+        if StateMachine.Key(keyCode: event.keyCode) == .tab,
+           modifiers.subtracting(.shift).isEmpty {
+            interpretKeyEvents([event])
+        } else {
+            super.keyDown(with: event)
+        }
+    }
+
+    /// Delivers releases and balances key-down events forwarded to AppKit.
+    override func keyUp(with event: NSEvent) {
+        let recorded = keyPresses.removeValue(forKey: event.keyCode)
+        if let recipient = recorded?.controller, recipient === controller {
+            _ = handleKey(event, isPressed: false)
+        }
+        if recorded?.wasForwarded != false { super.keyUp(with: event) }
+    }
+
+    /// Offers modifier transitions to Rive and balances events forwarded to AppKit.
+    override func flagsChanged(with event: NSEvent) {
+        if StateMachine.Key(keyCode: event.keyCode) == .capsLock {
+            // Caps Lock reports toggles, not held-key transitions. Each toggle
+            // delivers a complete press without entering held-key tracking.
+            let handledPress = handleKey(event, isPressed: true)
+            let handledRelease = handleKey(event, isPressed: false)
+            if !handledPress && !handledRelease { super.flagsChanged(with: event) }
+            return
+        }
+        guard let isPressed = event.riveModifierIsPressed else {
+            super.flagsChanged(with: event)
+            return
+        }
+        if isPressed {
+            // Modifier-down transitions start new presses, even if we missed a release.
+            let recipient = controller
+            let handled = handleKey(event, isPressed: true)
+            keyPresses[event.keyCode] = KeyPress(
+                controller: recipient, wasForwarded: !handled
+            )
+            if !handled { super.flagsChanged(with: event) }
+        } else {
+            let recorded = keyPresses.removeValue(forKey: event.keyCode)
+            if let recipient = recorded?.controller, recipient === controller {
+                _ = handleKey(event, isPressed: false)
+            }
+            if recorded?.wasForwarded != false { super.flagsChanged(with: event) }
+        }
+    }
+
+    /// Continues through the native key-view loop after Rive declines Tab.
+    override func insertTab(_ sender: Any?) {
+        guard hasNativeFocus else { return }
+        window?.selectNextKeyView(self)
+    }
+
+    /// Continues backward after Rive declines Shift-Tab.
+    override func insertBacktab(_ sender: Any?) {
+        guard hasNativeFocus else { return }
+        window?.selectPreviousKeyView(self)
+    }
+
+    /// Translates a physical key and offers it to Rive without changing press tracking.
+    private func handleKey(_ event: NSEvent, isPressed: Bool) -> Bool {
+        guard let key = StateMachine.Key(keyCode: event.keyCode) else { return false }
+        return controller?.handleKeyInput(
+            key,
+            modifiers: .init(modifierFlags: event.modifierFlags),
+            isPressed: isPressed,
+            isRepeat: event.type == .keyDown && event.isARepeat,
+            hasNativeFocus: hasNativeFocus
+        ) ?? false
+    }
+
+    /// Whether Rive has made its rendering view eligible to become a key view.
+    override var acceptsFirstResponder: Bool {
+        focusSystem?.isFocusable ?? false
+    }
+
+    /// Forwards the selection direction after becoming first responder so Rive
+    /// can enter its authored focus nodes during sequential navigation.
+    ///
+    /// - Returns: `true` when AppKit makes the view first responder; otherwise,
+    ///   `false`.
+    override func becomeFirstResponder() -> Bool {
+        guard super.becomeFirstResponder() else { return false }
+        focusSystem?.didBecomeFirstResponder(
+            in: self,
+            selectionDirection: window?.keyViewSelectionDirection ?? .directSelection
+        )
+        return true
+    }
+
+    /// Reports successful resignation without performing another traversal.
+    override func resignFirstResponder() -> Bool {
+        guard super.resignFirstResponder() else { return false }
+        focusSystem?.didResignFirstResponder()
+        return true
+    }
+}
+#endif
 
 extension RiveUIView {
     /// Coordinates drawable ownership separately from permission to submit a frame.

@@ -368,6 +368,276 @@ class StateMachineTests: XCTestCase {
     }
 
     @MainActor
+    func test_hasFocusNodes_bridgesCommandQueueResult() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 123
+        )
+
+        mockCommandQueue.stubRequestHasFocusNodes { handle, requestID in
+            stateMachineService.onHasFocusNodesReceived(handle, requestID: requestID, hasFocusNodes: true)
+        }
+
+        let hasFocusNodes = try await stateMachine.hasFocusNodes()
+
+        XCTAssertTrue(hasFocusNodes)
+
+        XCTAssertEqual(mockCommandQueue.requestHasFocusNodesCalls.first?.stateMachineHandle, 123)
+    }
+
+    @MainActor
+    func test_focusState_bridgesCommandQueueResult() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 123
+        )
+
+        mockCommandQueue.stubRequestFocusState { handle, requestID in
+            stateMachineService.onFocusStateReceived(
+                handle,
+                requestID: requestID,
+                focusState: CommandQueueFocusState(
+                    hasFocus: true,
+                    expectsKeyboardInput: true
+                )
+            )
+        }
+
+        let focusState = try await stateMachine.focusState()
+
+        XCTAssertEqual(
+            focusState,
+            StateMachine.FocusState(
+                hasFocus: true,
+                expectsKeyboardInput: true
+            )
+        )
+        XCTAssertEqual(
+            mockCommandQueue.requestFocusStateCalls.first?.stateMachineHandle,
+            123
+        )
+    }
+
+    @MainActor
+    func test_focusState_whenStateMachineErrorReceived_throwsStateMachineError() async {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        mockCommandQueue.stubRequestFocusState { handle, requestID in
+            stateMachineService.onStateMachineError(
+                handle,
+                requestID: requestID,
+                message: "Unable to request focus state"
+            )
+        }
+
+        do {
+            _ = try await stateMachineService.requestFocusState(123)
+            XCTFail("Expected StateMachineError to be thrown")
+        } catch let error as StateMachineError {
+            guard case .error = error else {
+                XCTFail("Expected StateMachineError.error, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected StateMachineError, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_hasFocusNodes_whenDeletionCallbackReceived_throwsStateMachineError() async {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        mockCommandQueue.stubRequestHasFocusNodes { handle, requestID in
+            stateMachineService.onStateMachineDeleted(
+                handle,
+                requestID: requestID
+            )
+        }
+
+        do {
+            _ = try await stateMachineService.hasFocusNodes(123)
+            XCTFail("Expected StateMachineError to be thrown")
+        } catch let error as StateMachineError {
+            guard case .error = error else {
+                XCTFail("Expected StateMachineError.error, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected StateMachineError, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_deleteStateMachine_whenFocusAvailabilityCallbackReceived_throwsStateMachineError() async {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        mockCommandQueue.stubDeleteStateMachine { handle in
+            guard let requestID = mockCommandQueue.deleteStateMachineCalls.last?.requestID else {
+                XCTFail("Expected deleteStateMachine call to be tracked before stub callback")
+                return
+            }
+            stateMachineService.onHasFocusNodesReceived(
+                handle,
+                requestID: requestID,
+                hasFocusNodes: true
+            )
+        }
+
+        do {
+            _ = try await stateMachineService.deleteStateMachine(123)
+            XCTFail("Expected StateMachineError to be thrown")
+        } catch let error as StateMachineError {
+            guard case .error = error else {
+                XCTFail("Expected StateMachineError.error, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected StateMachineError, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_keyInputSynchronized_forwardsArgumentsAndHandledResult() {
+        let commandQueue = MockCommandQueue()
+        let service = StateMachineService(dependencies: .init(
+            commandQueue: commandQueue,
+            messageGate: CommandQueueMessageGate(driver: commandQueue)
+        ))
+        let machine = StateMachine(dependencies: .init(stateMachineService: service), stateMachineHandle: 123)
+        commandQueue.stubKeyInputSynchronized { $0.key == .enter }
+
+        XCTAssertTrue(machine.keyInputSynchronized(.enter, modifiers: [.shift, .control], isPressed: true, isRepeat: false))
+        XCTAssertFalse(machine.keyInputSynchronized(.space, modifiers: [.alt, .meta], isPressed: true, isRepeat: true))
+        XCTAssertFalse(machine.keyInputSynchronized(.right, modifiers: [], isPressed: false, isRepeat: false))
+        XCTAssertEqual(commandQueue.keyInputSynchronizedCalls, [
+            .init(stateMachineHandle: 123, key: .enter, modifiers: [.shift, .control], isPressed: true, isRepeat: false),
+            .init(stateMachineHandle: 123, key: .space, modifiers: [.alt, .meta], isPressed: true, isRepeat: true),
+            .init(stateMachineHandle: 123, key: .right, modifiers: [], isPressed: false, isRepeat: false),
+        ])
+        XCTAssertTrue(commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_focusInDirectionSynchronized_forwardsEachDirectionAndMovementResult() {
+        let commandQueue = MockCommandQueue()
+        let service = StateMachineService(dependencies: .init(
+            commandQueue: commandQueue,
+            messageGate: CommandQueueMessageGate(driver: commandQueue)
+        ))
+        let machine = StateMachine(dependencies: .init(stateMachineService: service), stateMachineHandle: 456)
+        let directions: [StateMachine.FocusDirection] = [.left, .right, .up, .down]
+        for direction in directions {
+            commandQueue.stubFocusInDirectionSynchronized { _ in true }
+            XCTAssertTrue(machine.focusInDirectionSynchronized(direction))
+            commandQueue.stubFocusInDirectionSynchronized { _ in false }
+            XCTAssertFalse(machine.focusInDirectionSynchronized(direction))
+        }
+        XCTAssertEqual(commandQueue.focusInDirectionSynchronizedCalls, directions.flatMap { direction in
+            Array(repeating: .init(stateMachineHandle: 456, direction: direction), count: 2)
+        })
+        XCTAssertTrue(commandQueue.keyInputSynchronizedCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_focusNextWithResultSynchronized_preservesMovementAndFocusState() {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 123
+        )
+        mockCommandQueue.stubFocusNextWithResultSynchronized { _ in
+            .init(moved: true, focusState: .init(hasFocus: true, expectsKeyboardInput: false))
+        }
+
+        XCTAssertEqual(
+            stateMachine.focusNextWithResultSynchronized(),
+            .init(moved: true, focusState: .init(hasFocus: true, expectsKeyboardInput: false))
+        )
+        XCTAssertEqual(mockCommandQueue.focusNextWithResultSynchronizedCalls.map(\.stateMachineHandle), [123])
+        XCTAssertTrue(mockCommandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_focusPreviousWithResultSynchronized_preservesRetainedFocusWithoutMovement() {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 456
+        )
+        mockCommandQueue.stubFocusPreviousWithResultSynchronized { _ in
+            .init(moved: false, focusState: .init(hasFocus: true, expectsKeyboardInput: true))
+        }
+
+        XCTAssertEqual(
+            stateMachine.focusPreviousWithResultSynchronized(),
+            .init(moved: false, focusState: .init(hasFocus: true, expectsKeyboardInput: true))
+        )
+        XCTAssertEqual(mockCommandQueue.focusPreviousWithResultSynchronizedCalls.map(\.stateMachineHandle), [456])
+        XCTAssertTrue(mockCommandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_clearFocus_forwardsToCommandQueue() {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+        let stateMachine = StateMachine(
+            dependencies: .init(stateMachineService: stateMachineService),
+            stateMachineHandle: 123
+        )
+
+        stateMachine.clearFocus()
+
+        XCTAssertEqual(mockCommandQueue.clearFocusCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.clearFocusCalls.first?.stateMachineHandle, 123)
+    }
+
+    @MainActor
     func test_stateMachine_onDeinit_callsDelete() {
         let mockCommandQueue = MockCommandQueue()
         let stateMachineService = StateMachineService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
@@ -425,6 +695,41 @@ class StateMachineTests: XCTestCase {
         }
 
         await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected StateMachineError.cancelled to be thrown")
+        } catch let error as StateMachineError {
+            guard case .cancelled = error else {
+                XCTFail("Expected StateMachineError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected StateMachineError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_focusState_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let stateMachineService = StateMachineService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                messageGate: CommandQueueMessageGate(driver: mockCommandQueue)
+            )
+        )
+
+        let requestedFocusState = expectation(description: "requested focus state")
+        mockCommandQueue.stubRequestFocusState { _, _ in
+            requestedFocusState.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await stateMachineService.requestFocusState(123)
+        }
+
+        await fulfillment(of: [requestedFocusState], timeout: 1)
         task.cancel()
 
         do {
