@@ -15,7 +15,7 @@ The library is distributed both through Swift Package Manager and Cocoapods.
 
 - :star: [Rive Overview](#rive-overview)
 - 🚀 [Getting Started & API docs](#getting-started)
-- :mag: [Supported Devices](#supported-devices)
+- :mag: [Supported Platforms](#supported-platforms)
 - :books: [Examples](#examples)
 - :runner: [Migration Guides](#migration-guides)
 - 👨‍💻 [Contributing](#contributing)
