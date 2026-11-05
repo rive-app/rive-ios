@@ -468,6 +468,34 @@ build_all() {
     build_runtime_maccatalyst $1
 }
 
+# Fail fast if a corrupt build cache produced a librive_yoga.a missing its own symbol
+# definitions (e.g. YGFloatMax from Utils.cpp); otherwise the downstream xcframework
+# link dies with a confusing "Undefined symbols ... rive_YGFloatMax" error.
+verify_yoga_libs() {
+    local dep_dir="$DEV_SCRIPT_DIR/../dependencies/$1"
+    local lib archs arch failed=0 checked=0
+    for lib in "$dep_dir"/librive_yoga*.a; do
+        [ -e "$lib" ] || continue
+        checked=$((checked + 1))
+        archs="$(lipo -archs "$lib" 2>/dev/null)"
+        if [ -z "$archs" ]; then
+            echo "::error::$(basename "$lib"): could not read architectures (corrupt archive?)." >&2
+            failed=1
+            continue
+        fi
+        # Check every slice: plain nm only reads the host-default arch.
+        for arch in $archs; do
+            if ! nm -arch "$arch" "$lib" 2>/dev/null | grep -qE ' T .*YGFloatMaxff$'; then
+                echo "::error::$(basename "$lib") [$arch] is missing YGFloatMax — likely a corrupt build cache (ccache); purge and re-run." >&2
+                failed=1
+            fi
+        done
+    done
+    [ "$checked" -ne 0 ] || { echo "::error::verify_yoga_libs found no librive_yoga*.a in $dep_dir" >&2; exit 1; }
+    [ "$failed" -eq 0 ] || { echo "::error::rive_yoga dependency lib failed symbol verification" >&2; exit 1; }
+    echo "rive_yoga dependency libs verified"
+}
+
 case $PLATFORM in
 all)
     case $CONFIG in
@@ -628,3 +656,8 @@ maccatalyst)
 esac
 
 copy_luau_headers
+
+# `all` with no config builds both; otherwise CONFIG is the one that was built.
+for cfg in ${CONFIG:-debug release}; do
+    verify_yoga_libs "$cfg"
+done
