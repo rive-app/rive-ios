@@ -551,7 +551,7 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
-    func test_advance_whenLayoutFitAndDrawableSizeChanges_reappliesArtboardSize() async throws {
+    func test_advance_whenSettledLayoutResizes_appliesNewArtboardSizeWithoutAdvancingTime() async throws {
         let fixture = try await makeController(
             dataBind: .none,
             fit: .layout(scaleFactor: .explicit(1))
@@ -565,19 +565,61 @@ final class RiveControllerTests: XCTestCase {
             scaleProvider: MockScaleProvider()
         )
         let baseline = fixture.commandQueue.setArtboardSizeCalls.count
+        let baselineAdvances = fixture.commandQueue.advanceStateMachineCalls.count
+        fixture.commandQueue.stubAdvanceStateMachine { [weak commandQueue = fixture.commandQueue] _, _, _ in
+            // The new size must already be queued when the layout is applied.
+            XCTAssertEqual(commandQueue?.setArtboardSizeCalls.last?.width, 300)
+            XCTAssertEqual(commandQueue?.setArtboardSizeCalls.last?.height, 400)
+        }
+
+        let resized = fixture.controller.advance(
+            now: 10.5,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+        let unchanged = fixture.controller.advance(
+            now: 11,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 300, height: 400),
+            scaleProvider: MockScaleProvider()
+        )
+
+        XCTAssertEqual(resized?.size, CGSize(width: 300, height: 400))
+        XCTAssertNil(unchanged)
+        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
+        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
+        XCTAssertEqual(call.width, 300)
+        XCTAssertEqual(call.height, 400)
+        XCTAssertEqual(call.scale, 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, baselineAdvances + 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.last?.time, 0)
+    }
+
+    @MainActor
+    func test_advance_whenPausedSettledLayoutResizes_appliesLayoutWithoutAdvancingTime() async throws {
+        let fixture = try await makeController(fit: .layout(scaleFactor: .explicit(1)))
+        await expectSettled(within: fixture)
+        fixture.controller.isPaused = true
 
         _ = fixture.controller.advance(
+            now: 10,
+            isOnscreen: true,
+            drawableSize: CGSize(width: 100, height: 200),
+            scaleProvider: MockScaleProvider()
+        )
+        let baselineAdvances = fixture.commandQueue.advanceStateMachineCalls.count
+
+        let resized = fixture.controller.advance(
             now: 10.5,
             isOnscreen: true,
             drawableSize: CGSize(width: 300, height: 400),
             scaleProvider: MockScaleProvider()
         )
 
-        XCTAssertEqual(fixture.commandQueue.setArtboardSizeCalls.count, baseline + 1)
-        let call = try XCTUnwrap(fixture.commandQueue.setArtboardSizeCalls.last)
-        XCTAssertEqual(call.width, 300)
-        XCTAssertEqual(call.height, 400)
-        XCTAssertEqual(call.scale, 1)
+        XCTAssertEqual(resized?.size, CGSize(width: 300, height: 400))
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.count, baselineAdvances + 1)
+        XCTAssertEqual(fixture.commandQueue.advanceStateMachineCalls.last?.time, 0)
     }
 
     @MainActor

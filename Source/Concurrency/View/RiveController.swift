@@ -237,8 +237,8 @@ final class RiveController {
          | Unsettled && offscreen && !first frame                | Yes                              | No    |
          | Unsettled && onscreen                                 | Yes                              | Yes   |
          | Settled && becameOnscreen                             | No                               | Yes   |
-         | Paused && drawable size changed                       | No                               | Yes   |
-         | Settled && drawable size changed                      | No                               | Yes   |
+         | Paused && drawable size changed                       | If unsettled or layout, delta 0  | Yes   |
+         | Settled && drawable size changed                      | Layout only, delta 0             | Yes   |
          */
         // Track visibility transitions so settled views can redraw once when they return onscreen.
         let becameOnscreen = wasOnscreen == false && isOnscreen
@@ -250,9 +250,11 @@ final class RiveController {
         // Apply .layout fit's artboard size on first frame and on resize,
         // passing the resolved layout scale so `.automatic` (Retina / backing
         // scale) and explicit non-unit scale factors size the artboard correctly.
+        var needsLayoutUpdate = false
         if case .layout = rive.fit, lastDrawnDrawableSize != drawableSize {
             let fitBridge = rive.fit.bridged(from: scaleProvider)
             rive.artboard.setSize(drawableSize, scale: Float(fitBridge.scaleFactor))
+            needsLayoutUpdate = isOnscreen && drawableSizeChanged
         }
 
         // Once paused and already drawn, we can stop producing render work —
@@ -288,8 +290,11 @@ final class RiveController {
         resolvePendingEvents()
         messageGate.processMessagesForFrame()
 
-        let shouldAdvance = hasProcessedFirstDraw == false || isSettled == false
-        if shouldAdvance {
+        let shouldAdvancePlayback = hasProcessedFirstDraw == false || isSettled == false
+        if shouldAdvancePlayback || needsLayoutUpdate {
+            // Setting the artboard size invalidates layout. A settled machine
+            // must apply it before drawing, without moving animation time.
+            let delta = shouldAdvancePlayback ? delta : 0
             isDirty = false
             RiveLog.trace(tag: .view, "[RiveUIView] Advancing state machine (dt=\(delta))")
             rive.stateMachine.advance(by: delta)
