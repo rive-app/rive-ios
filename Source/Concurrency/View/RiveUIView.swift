@@ -1299,7 +1299,12 @@ extension RiveUIView {
                 // commits the buffer after its onDraw callback returns.
                 withExtendedLifetime(self) {}
             }
-            commandBuffer.present(drawable)
+            // Untimed presentation can leave stale content onscreen when the final
+            // rendered frame is rejected before Core Animation reclaims older queue
+            // entries. Timed presentation avoids this failure. A deadline of now
+            // preserves presentation as soon as possible after GPU completion,
+            // without an intentional wait.
+            commandBuffer.present(drawable, atTime: CACurrentMediaTime())
         }
 
         func presentationHandler() -> MTLDrawablePresentedHandler {

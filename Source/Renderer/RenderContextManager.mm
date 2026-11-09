@@ -9,6 +9,7 @@
 #import <RivePrivateHeaders.h>
 #import <RiveFactory.h>
 #import <rive_renderer_view.hh>
+#import <QuartzCore/QuartzCore.h>
 
 #include "utils/auto_cf.hpp"
 #include "rive/renderer/gpu.hpp"
@@ -226,7 +227,13 @@ static std::unique_ptr<rive::gpu::RenderContext> make_pls_context_native(
       .externalCommandBuffer = (__bridge void*)flushCommandBuffer,
   });
 
-  [flushCommandBuffer presentDrawable:view.currentDrawable];
+  // Untimed presentation can leave stale content onscreen when the final
+  // rendered frame is rejected before Core Animation reclaims older queue
+  // entries. Timed presentation avoids this failure. A deadline of now
+  // preserves presentation as soon as possible after GPU completion,
+  // without an intentional wait.
+  [flushCommandBuffer presentDrawable:view.currentDrawable
+                               atTime:CACurrentMediaTime()];
   if (completionHandler)
   {
     [flushCommandBuffer addCompletedHandler:completionHandler];

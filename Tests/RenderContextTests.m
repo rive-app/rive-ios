@@ -9,6 +9,18 @@
 #import <XCTest/XCTest.h>
 #import <RiveRuntime/RenderContextManager.h>
 #import "RenderContext.h"
+#import "RiveMetalDrawableView.h"
+#import "Concurrency/Renderer/PresentationRecorder.h"
+
+// The context reads only these three view properties during a frame.
+@interface PresentationTestDrawableView : NSObject
+@property(nonatomic, strong) id<CAMetalDrawable> currentDrawable;
+@property(nonatomic) MTLPixelFormat colorPixelFormat;
+@property(nonatomic) CGSize drawableSize;
+@end
+
+@implementation PresentationTestDrawableView
+@end
 
 @interface RenderContextTests : XCTestCase
 
@@ -56,6 +68,55 @@
   XCTAssertTrue([context canDrawInRect:CGRectMake(0, 0, 320, 240)
                           drawableSize:CGSizeMake(320, 240)
                                  scale:1.0f]);
+}
+
+- (void)testEndFramePresentsAtCurrentTimeAndCommitsOnce
+{
+  RenderContext* context = [[RenderContextManager shared] newRiveContext];
+  CAMetalLayer* layer = [CAMetalLayer layer];
+  layer.device = context.metalDevice;
+  layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+  layer.drawableSize = CGSizeMake(1, 1);
+  layer.framebufferOnly = context.framebufferOnly;
+  id<CAMetalDrawable> drawable = [layer nextDrawable];
+  XCTAssertNotNil(drawable);
+  if (drawable == nil)
+  {
+    return;
+  }
+
+  PresentationTestDrawableView* view = [PresentationTestDrawableView new];
+  view.currentDrawable = drawable;
+  view.colorPixelFormat = layer.pixelFormat;
+  view.drawableSize = layer.drawableSize;
+  PresentationCommandQueueRecorder*
+      queueRecorder = [[PresentationCommandQueueRecorder alloc]
+          initWithCommandQueue:context.metalQueue];
+  context.metalQueue = queueRecorder.commandQueue;
+  XCTAssertNotEqual(
+      [context beginFrame:(id<RiveMetalDrawableView>)view], nullptr);
+
+  XCTestExpectation* completed = [self
+      expectationWithDescription:@"Command buffer completed"];
+  CFTimeInterval beforePresentation = CACurrentMediaTime();
+  [context endFrame:(id<RiveMetalDrawableView>)view
+      withCompletion:^(id<MTLCommandBuffer> buffer) {
+        XCTAssertEqual(buffer.status, MTLCommandBufferStatusCompleted);
+        [completed fulfill];
+      }];
+  CFTimeInterval afterPresentation = CACurrentMediaTime();
+
+  PresentationCommandBufferRecorder* recorder = queueRecorder
+                                                    .lastCommandBufferRecorder;
+  XCTAssertNotNil(recorder);
+  // Exercise the real endFrame path, including flush and completion delivery.
+  XCTAssertEqual(recorder.timedPresentationCount, 1u);
+  XCTAssertEqual(recorder.untimedPresentationCount, 0u);
+  XCTAssertEqual(recorder.presentedDrawable, drawable);
+  XCTAssertGreaterThanOrEqual(recorder.presentationTime, beforePresentation);
+  XCTAssertLessThanOrEqual(recorder.presentationTime, afterPresentation);
+  XCTAssertEqual(recorder.commitCount, 1u);
+  [self waitForExpectations:@[ completed ] timeout:5];
 }
 
 #pragma clang diagnostic pop
