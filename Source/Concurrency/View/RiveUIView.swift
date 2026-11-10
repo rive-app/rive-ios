@@ -1144,14 +1144,17 @@ class AppKitMetalView: RiveUIView.MetalView {
 extension RiveUIView {
     /// Coordinates drawable ownership separately from permission to submit a frame.
     ///
-    /// `beginFrame` drains queued main-thread releases, then takes a permit without
-    /// waiting. If no permit is available, it never calls the drawable provider.
+    /// `beginFrame` drains queued main-thread releases, then takes or recovers a
+    /// permit without waiting. Without a permit, it never calls the drawable provider.
     /// A provider returning nil immediately returns its permit.
     ///
     /// Rendering and GPU callbacks keep the frame alive. Its final owner queues
-    /// `endFrame`; `drain` releases our drawable reference on main and sets
-    /// `isReleased`. Presentation independently clears `isAwaitingPresentation`.
-    /// These events may happen in either order; capacity returns only after both.
+    /// `endFrame`; `drain` releases our drawable reference on main and records any
+    /// outstanding presentation. `awaitingPresentation` records whether
+    /// presentation still holds the permit; recovery can clear it without a callback.
+    /// These events may happen in either order; capacity normally waits for both.
+    /// If the budget is exhausted with every frame already retired, allow one
+    /// acquisition to recover from presentation callbacks omitted by Core Animation.
     /// The presentation handler captures storage, not the frame, so it cannot
     /// prevent the frame's deinit from scheduling main-thread release.
     ///
@@ -1161,28 +1164,37 @@ extension RiveUIView {
     /// and main-thread-release path only.
     final class DrawableCoordinator: @unchecked Sendable {
         private let semaphore: DispatchSemaphore
+        private let capacity: Int
         private let lock = NSLock()
-        private var pending: [DrawableFrame.Storage] = []
+        private var pendingReleases: [DrawableFrame.Storage] = []
+        // Our drawable reference is already nil; presentation still holds the permit.
+        private var retired: [DrawableFrame.Storage] = []
 
         @MainActor
         init(layer: CAMetalLayer) {
-            // Each slot stays occupied until both main-thread release and
+            // Each slot normally stays occupied until both main-thread release and
             // presentation complete. Do not subtract a reserved onscreen slot:
             // presentation tracking already holds permits for pending frames.
             // A two-slot budget on a three-drawable layer caused avoidable skips
             // at 60 Hz when presentation took nearly two refresh intervals.
             // This is submission accounting, not a guarantee that Metal's next
             // drawable is immediately available (especially during resizing).
-            semaphore = DispatchSemaphore(value: layer.maximumDrawableCount)
+            capacity = layer.maximumDrawableCount
+            semaphore = DispatchSemaphore(value: capacity)
         }
 
-        /// Drains pending releases before acquiring a drawable. Does not call
-        /// the provider when the budget is exhausted; a failed provider returns
-        /// its permit immediately.
+        deinit {
+            // Discarded presentation handlers may leave permits outstanding at
+            // teardown. Balance them before disposing of the semaphore.
+            for _ in retired { semaphore.signal() }
+        }
+
+        /// Drains pending releases before reserving capacity. A failed provider
+        /// returns its permit immediately.
         @MainActor
         func beginFrame(_ acquireDrawable: () -> CAMetalDrawable?) -> DrawableFrame? {
             drain()
-            guard semaphore.wait(timeout: .now()) == .success else {
+            guard semaphore.wait(timeout: .now()) == .success || recoverPermit() else {
                 RiveLog.debug(tag: .view, "[RiveUIView] Skipping draw: drawable budget exhausted")
                 return nil
             }
@@ -1193,12 +1205,25 @@ extension RiveUIView {
             return DrawableFrame(drawable, coordinator: self)
         }
 
-        /// Ends the frame by queuing drawable release on main. Capacity also waits
+        private func recoverPermit() -> Bool {
+            lock.withLock {
+                // No rendering/GPU owner or retained drawable may remain before
+                // probing a pool whose presentation notifications stopped arriving.
+                guard retired.count == capacity else { return false }
+                let oldest = retired.removeFirst()
+                // The new frame takes responsibility for the eventual semaphore signal.
+                // A late callback from the previous owner must not signal as well.
+                oldest.awaitingPresentation = false
+                return true
+            }
+        }
+
+        /// Ends the frame by queuing drawable release on main. Capacity normally waits
         /// for presentation to finish.
         fileprivate func endFrame(_ storage: DrawableFrame.Storage) {
             let needsDrain = lock.withLock {
-                pending.append(storage)
-                return pending.count == 1
+                pendingReleases.append(storage)
+                return pendingReleases.count == 1
             }
             if needsDrain {
                 DispatchQueue.main.async { self.drain() }
@@ -1206,30 +1231,19 @@ extension RiveUIView {
         }
 
         fileprivate func willPresent(_ storage: DrawableFrame.Storage) {
-            lock.withLock { storage.isAwaitingPresentation = true }
+            lock.withLock { storage.awaitingPresentation = true }
         }
 
-        fileprivate func didPresent(_ storage: DrawableFrame.Storage) {
-            finishPresentation(storage)
-        }
-
-        fileprivate func didFailToPresent(_ storage: DrawableFrame.Storage) {
-            finishPresentation(storage)
-        }
-
-        private func finishPresentation(_ storage: DrawableFrame.Storage) {
+        fileprivate func finishPresentation(_ storage: DrawableFrame.Storage) {
             lock.withLock {
-                // An error and a late presentation callback may both arrive.
-                guard storage.isAwaitingPresentation else { return }
-                storage.isAwaitingPresentation = false
-                signalIfReady(storage)
-            }
-        }
-
-        /// Called under the lock when either retirement or presentation completes.
-        private func signalIfReady(_ storage: DrawableFrame.Storage) {
-            if storage.isReleased && !storage.isAwaitingPresentation {
-                semaphore.signal()
+                // Errors and late callbacks must not return a recovered permit twice.
+                guard storage.awaitingPresentation else { return }
+                storage.awaitingPresentation = false
+                // If retirement is still pending, drain will return the permit.
+                if let index = retired.firstIndex(where: { $0 === storage }) {
+                    retired.remove(at: index)
+                    semaphore.signal()
+                }
             }
         }
 
@@ -1238,16 +1252,19 @@ extension RiveUIView {
         @MainActor
         func drain() {
             let retirements = lock.withLock {
-                let retirements = pending
-                pending.removeAll()
+                let retirements = pendingReleases
+                pendingReleases.removeAll()
                 return retirements
             }
             for storage in retirements {
                 storage.drawable = nil
                 lock.withLock {
                     // Each frame enqueues retirement exactly once, in deinit.
-                    storage.isReleased = true
-                    signalIfReady(storage)
+                    if storage.awaitingPresentation {
+                        retired.append(storage)
+                    } else {
+                        semaphore.signal()
+                    }
                 }
             }
         }
@@ -1260,9 +1277,9 @@ extension RiveUIView {
         // finishes releasing its reference to this storage.
         fileprivate final class Storage: @unchecked Sendable {
             var drawable: CAMetalDrawable?
-            // Protected by the coordinator's lock.
-            var isAwaitingPresentation = false
-            var isReleased = false
+            // Protected by the coordinator's lock. Rendering can still hold the
+            // permit when this is false; this flag tracks only presentation's claim.
+            var awaitingPresentation = false
 
             init(_ drawable: CAMetalDrawable) {
                 self.drawable = drawable
@@ -1312,12 +1329,12 @@ extension RiveUIView {
             // Do not capture the frame: its deinit must remain free to
             // enqueue main-thread release of storage.drawable after GPU completion.
             return { [coordinator, storage] _ in
-                coordinator.didPresent(storage)
+                coordinator.finishPresentation(storage)
             }
         }
 
         func didFailToPresent() {
-            coordinator.didFailToPresent(storage)
+            coordinator.finishPresentation(storage)
         }
 
         deinit {

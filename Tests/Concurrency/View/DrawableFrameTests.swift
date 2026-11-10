@@ -222,6 +222,68 @@ final class DrawableFrameTests: XCTestCase {
     }
 
     @MainActor
+    func test_missingPresentation_recoversOnlyWhenEveryFrameHasRetired() {
+        let layer = CAMetalLayer()
+        layer.maximumDrawableCount = 3
+        let coordinator = RiveUIView.DrawableCoordinator(layer: layer)
+        var frames: [RiveUIView.DrawableFrame?] = []
+        var callbacks: [MTLDrawablePresentedHandler] = []
+        for _ in 0..<3 {
+            let frame = coordinator.beginFrame { FrameTestDrawable {} }!
+            callbacks.append(frame.presentationHandler())
+            frames.append(frame)
+        }
+        assertUnavailable(coordinator)
+        frames[0] = nil
+        frames[1] = nil
+        coordinator.drain()
+        assertUnavailable(coordinator) // The third frame still has a rendering/GPU owner.
+        frames[2] = nil
+        coordinator.drain()
+
+        var requested = false
+        XCTAssertNil(coordinator.beginFrame {
+            requested = true
+            return nil
+        })
+        XCTAssertTrue(requested)
+        let replacement = coordinator.beginFrame { FrameTestDrawable {} }
+        XCTAssertNotNil(replacement, "A failed provider must return the recovered permit")
+        assertUnavailable(coordinator) // A live replacement prevents further recovery.
+        withExtendedLifetime(replacement) {
+            for callback in callbacks { callback(FrameTestDrawable {}) }
+            let second = coordinator.beginFrame { FrameTestDrawable {} }
+            let third = coordinator.beginFrame { FrameTestDrawable {} }
+            XCTAssertNotNil(second)
+            XCTAssertNotNil(third)
+            withExtendedLifetime((second, third)) { assertUnavailable(coordinator) }
+        }
+    }
+
+    @MainActor
+    func test_missingPresentation_discardedHandlersAllowCoordinatorTeardown() async {
+        let layer = CAMetalLayer()
+        layer.maximumDrawableCount = 3
+        var coordinator: RiveUIView.DrawableCoordinator? = .init(layer: layer)
+        weak var weakCoordinator = coordinator
+        var callbacks: [MTLDrawablePresentedHandler] = []
+        for _ in 0..<layer.maximumDrawableCount {
+            var frame = coordinator!.beginFrame { FrameTestDrawable {} }
+            callbacks.append(frame!.presentationHandler())
+            frame = nil
+        }
+        coordinator!.drain()
+        coordinator = nil
+        XCTAssertNotNil(weakCoordinator, "Presentation handlers still own the coordinator")
+        callbacks.removeAll()
+        // endFrame also queued drains; allow those closures to release their owner.
+        let drainsFinished = expectation(description: "Queued main-thread drains finished")
+        DispatchQueue.main.async { drainsFinished.fulfill() }
+        await fulfillment(of: [drainsFinished], timeout: 5)
+        XCTAssertNil(weakCoordinator, "Discarded handlers must permit balanced teardown")
+    }
+
+    @MainActor
     func test_presentationFailure_returnsCapacityWithoutPresentationOnlyOnce() {
         let layer = CAMetalLayer()
         layer.maximumDrawableCount = 2
