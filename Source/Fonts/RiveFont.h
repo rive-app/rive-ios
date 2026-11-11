@@ -32,8 +32,17 @@ typedef NS_ENUM(NSInteger, RiveFontStyleWeight) {
 /// The raw weight of the font. This value is used to generate the `weight` of
 /// the style.
 @property(nonatomic, readonly) CGFloat rawWeight;
+/// The language tags (usually BCP 47) of the text that needs a fallback font,
+/// most preferred first: the text's own language as written in the file when
+/// it has one, then the system's preferred languages. Use these to pick a font
+/// per language, e.g. for Han characters, which Japanese and Chinese draw
+/// differently.
+/// - Note: Empty when no language is known.
+@property(nonatomic, readonly, copy) NSArray<NSString*>* languages;
 - (instancetype)initWithWeight:(RiveFontStyleWeight)weight;
 - (instancetype)initWithRawWeight:(CGFloat)rawWeight;
+- (instancetype)initWithRawWeight:(CGFloat)rawWeight
+                        languages:(NSArray<NSString*>*)languages;
 @end
 
 @protocol RiveFallbackFontProvider;

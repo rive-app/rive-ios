@@ -244,4 +244,40 @@ class RiveFontTests: XCTestCase {
         style = RiveFontStyle(rawWeight: 151)
         XCTAssertEqual(style.weight, .ultraLight)
     }
+
+    func testRiveFontStyleLanguages() {
+        XCTAssertEqual(RiveFontStyle(weight: .regular).languages, [])
+        XCTAssertEqual(RiveFontStyle(rawWeight: 400).languages, [])
+
+        let japanese = RiveFontStyle(rawWeight: 400, languages: ["ja", "en-US"])
+        XCTAssertEqual(japanese.weight, .regular)
+        XCTAssertEqual(japanese.languages, ["ja", "en-US"])
+        XCTAssertEqual((japanese.copy() as? RiveFontStyle)?.languages, ["ja", "en-US"])
+
+        // Same weight, another language: ja and zh-Hans text may want different
+        // fonts for the same Han codepoint, so their styles must not match.
+        XCTAssertEqual(japanese, RiveFontStyle(rawWeight: 400, languages: ["ja", "en-US"]))
+        XCTAssertNotEqual(japanese, RiveFontStyle(rawWeight: 400, languages: ["zh-Hans", "en-US"]))
+        XCTAssertNotEqual(japanese, RiveFontStyle(rawWeight: 400))
+    }
+
+    func testFallbackStyleCarriesSystemLanguages() throws {
+        var requested: [[String]] = []
+        RiveFont.fallbackFontsCallback = { style in
+            requested.append(style.languages)
+            return [RiveFallbackFontDescriptor()]
+        }
+
+        let file = try RiveFile(testfileName: "testtext")
+        let artboard = try file.artboard(fromName: "New Artboard")
+        // testtext embeds Inter, which has no Han glyphs, so this falls back.
+        artboard.textRun("MyRun")?.setText("直")
+        artboard.advance(by: 0)
+
+        // The text has no language of its own, so it falls back with the
+        // system's preferred languages.
+        XCTAssertFalse(requested.isEmpty)
+        XCTAssertEqual(requested.first?.first?.lowercased(),
+                       Locale.preferredLanguages.first?.lowercased())
+    }
 }

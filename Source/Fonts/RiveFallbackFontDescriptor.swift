@@ -76,6 +76,8 @@ import SwiftUI
     /// Whether or not the descriptor can use suggested fonts if necessary
     public let allowsSuggestedFonts: Bool
     /// When using suggested fonts, hint at the language to prioritize.
+    /// - Note: A text's own language (its `language` in Rive) wins over the
+    /// hint; the hint wins over the device's preferred languages.
     public let languageHint: LanguageHint?
 
     /// Initializes a new font descriptor, used to generate a font based on a system font.

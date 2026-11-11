@@ -9,6 +9,7 @@
 #import <Rive.h>
 #import <RivePrivateHeaders.h>
 #import <rive/text/font_hb.hpp>
+#import <rive/text/text_language.hpp>
 #import <rive/text/utf.hpp>
 #import <RiveRuntime/RiveRuntime-Swift.h>
 #import <CoreText/CoreText.h>
@@ -54,6 +55,7 @@ static RiveFontStyleWeight RiveFontStyleWeightFromFloat(float value)
   {
     _weight = weight;
     _rawWeight = CGFloat(weight);
+    _languages = @[];
   }
   return self;
 }
@@ -64,6 +66,17 @@ static RiveFontStyleWeight RiveFontStyleWeightFromFloat(float value)
   {
     _rawWeight = rawWeight;
     _weight = RiveFontStyleWeightFromFloat(rawWeight);
+    _languages = @[];
+  }
+  return self;
+}
+
+- (instancetype)initWithRawWeight:(CGFloat)rawWeight
+                        languages:(NSArray<NSString*>*)languages
+{
+  if (self = [self initWithRawWeight:rawWeight])
+  {
+    _languages = [languages copy];
   }
   return self;
 }
@@ -92,12 +105,17 @@ static RiveFontStyleWeight RiveFontStyleWeightFromFloat(float value)
   }
 
   RiveFontStyle* other = (RiveFontStyle*)object;
-  return self.weight == other.weight;
+  // Languages count, so styles for ja and zh-Hans text, which may want
+  // different fonts for the same Han codepoint, never match.
+  return self.weight == other.weight &&
+         [self.languages isEqualToArray:other.languages];
 }
 
 - (id)copyWithZone:(NSZone*)zone
 {
-  return [[RiveFontStyle alloc] initWithWeight:self.weight];
+  RiveFontStyle* copy = [[RiveFontStyle alloc] initWithWeight:self.weight];
+  copy->_languages = _languages;
+  return copy;
 }
 @end
 
@@ -110,7 +128,9 @@ static RiveFallbackFontsCallback _fallbackFontsCallback = nil;
 static rive::rcp<rive::Font> findFallbackFont(
     const rive::Unichar missing,
     const uint32_t fallbackIndex,
-    const rive::Font* font)
+    const rive::Font* font,
+    NSArray<NSString*>* languages,
+    BOOL hasTextLanguage)
 {
   // We know font is going to come back as an HBFont
   const HBFont* hbFont = static_cast<const HBFont*>(font);
@@ -118,7 +138,8 @@ static rive::rcp<rive::Font> findFallbackFont(
   // Generate a style that will be used to request a cached font, or otherwise
   // user-specified font.
   float value = hbFont->getWeight();
-  RiveFontStyle* style = [[RiveFontStyle alloc] initWithRawWeight:value];
+  RiveFontStyle* style = [[RiveFontStyle alloc] initWithRawWeight:value
+                                                        languages:languages];
 
   // Otherwise, request possible fallback providers based on the missing
   // character and style. fallbackFontsCallback will always be non-nil,
@@ -141,12 +162,19 @@ static rive::rcp<rive::Font> findFallbackFont(
 
       if (string)
       {
-        NSString* languageHint = nil;
-        if (provider.languageHint)
+        // The language decides between fonts that draw the codepoint
+        // differently (Han in ja and zh-Hans): the text's own, else the
+        // provider's hint, else the system's.
+        NSString* language = hasTextLanguage ? languages.firstObject : nil;
+        if (language == nil && provider.languageHint)
         {
-          languageHint = provider.languageHint();
+          language = provider.languageHint();
         }
-        CFStringRef cfLanguageHint = (__bridge CFStringRef)languageHint;
+        if (language == nil)
+        {
+          language = languages.firstObject;
+        }
+        CFStringRef cfLanguage = (__bridge CFStringRef)language;
         CTFontRef baseCTFont = (__bridge CTFontRef)fallbackFont;
 
         // Get Core Text's suggestion for a fallback font
@@ -154,7 +182,7 @@ static rive::rcp<rive::Font> findFallbackFont(
             baseCTFont,
             string,
             CFRangeMake(0, CFStringGetLength(string)),
-            cfLanguageHint);
+            cfLanguage);
         if (ctSuggestedFont)
         {
           // Convert CTFontRef to the native font (UIFont / NSFont)
@@ -178,6 +206,74 @@ static rive::rcp<rive::Font> findFallbackFont(
   }
 
   return nullptr;
+}
+
+// The legacy proc, asked without languages.
+static rive::rcp<rive::Font> fallbackProc(
+    const rive::Unichar missing,
+    const uint32_t fallbackIndex,
+    const rive::Font* font)
+{
+  return findFallbackFont(missing, fallbackIndex, font, @[], NO);
+}
+
+// Preferred by the runtime over the legacy proc: also carries the languages
+// of the text that needs a fallback.
+static rive::rcp<rive::Font> fallbackRequestProc(
+    const rive::Font::FallbackRequest& request)
+{
+  NSMutableArray<NSString*>* languages = [[NSMutableArray alloc]
+      initWithCapacity:request.languages.size()];
+  for (const std::string& language : request.languages)
+  {
+    NSString* tag = [[NSString alloc] initWithBytes:language.data()
+                                             length:language.size()
+                                           encoding:NSUTF8StringEncoding];
+    if (tag != nil)
+    {
+      [languages addObject:tag];
+    }
+  }
+  return findFallbackFont(
+      request.missing,
+      request.fallbackIndex,
+      request.font,
+      languages,
+      request.hasTextLanguage && languages.count > 0);
+}
+
+// Hands the user's preferred languages to the runtime, which shapes text
+// without a language of its own in the first and falls back with all of them.
+static void applySystemLanguages()
+{
+  std::vector<std::string> languages;
+  for (NSString* language in [NSLocale preferredLanguages])
+  {
+    const char* utf8 = language.UTF8String;
+    if (utf8 != nullptr)
+    {
+      languages.emplace_back(utf8);
+    }
+  }
+  rive::TextLanguages::setSystemLanguages(languages);
+}
+
+// Seeds the runtime's system languages once, and again whenever the user's
+// locale changes. Safe to call from any thread, and more than once.
+static void seedSystemLanguages()
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    // Observe first, so a change can't slip in before the first read.
+    [[NSNotificationCenter defaultCenter]
+        addObserverForName:NSCurrentLocaleDidChangeNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification* notification) {
+                  applySystemLanguages();
+                }];
+    applySystemLanguages();
+  });
 }
 #endif
 
@@ -213,7 +309,25 @@ static rive::rcp<rive::Font> findFallbackFont(
 + (void)load
 {
 #ifdef WITH_RIVE_TEXT
-  rive::Font::gFallbackProc = findFallbackFont;
+  rive::Font::gFallbackProc = fallbackProc;
+  rive::Font::gFallbackRequestProc = fallbackRequestProc;
+  // +load runs before this image's C++ statics are constructed, including
+  // the runtime's language list, so seed it once the app is running.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    seedSystemLanguages();
+  });
+#endif
+}
+
++ (void)initialize
+{
+#ifdef WITH_RIVE_TEXT
+  // Fonts or fallbacks set up (or a first fallback asked for) before the
+  // main queue runs seed the system languages right away.
+  if (self == [RiveFont class])
+  {
+    seedSystemLanguages();
+  }
 #endif
 }
 
