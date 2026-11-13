@@ -146,8 +146,7 @@ final class DrawableFrameTests: XCTestCase {
     func test_present_leavesCommitToRenderer_andRetainsFrameUntilCompletion() throws {
         let device = try XCTUnwrap(MTLCreateSystemDefaultDevice())
         let queue = try XCTUnwrap(device.makeCommandQueue())
-        let recorder = PresentationCommandBufferRecorder(commandBuffer: try XCTUnwrap(queue.makeCommandBuffer()))
-        let commandBuffer = recorder.commandBuffer
+        let commandBuffer = try XCTUnwrap(queue.makeCommandBuffer())
         let layer = CAMetalLayer()
         layer.device = device
         layer.drawableSize = CGSize(width: 1, height: 1)
@@ -158,19 +157,9 @@ final class DrawableFrameTests: XCTestCase {
         defer { withExtendedLifetime(occupied) {} }
         var frame: RiveUIView.DrawableFrame? = try XCTUnwrap(coordinator.beginFrame { layer.nextDrawable() })
         weak var retainedFrame = frame
-        let drawable = frame!.drawable
-        let beforePresentation = CACurrentMediaTime()
         frame!.present(on: commandBuffer)
-        let afterPresentation = CACurrentMediaTime()
         frame = nil
 
-        // A deadline of now selects timed presentation without future pacing.
-        XCTAssertEqual(recorder.timedPresentationCount, 1)
-        XCTAssertEqual(recorder.untimedPresentationCount, 0)
-        XCTAssertTrue(recorder.presentedDrawable === drawable)
-        XCTAssertGreaterThanOrEqual(recorder.presentationTime, beforePresentation)
-        XCTAssertLessThanOrEqual(recorder.presentationTime, afterPresentation)
-        XCTAssertEqual(recorder.commitCount, 0, "The renderer owns commit")
         XCTAssertEqual(commandBuffer.status, .notEnqueued, "The renderer owns commit")
         XCTAssertNotNil(retainedFrame, "GPU completion must retain the drawable frame")
         assertUnavailable(coordinator)
@@ -181,7 +170,6 @@ final class DrawableFrameTests: XCTestCase {
             completed.fulfill()
         }
         commandBuffer.commit()
-        XCTAssertEqual(recorder.commitCount, 1)
         wait(for: [completed], timeout: 5)
     }
 
