@@ -422,6 +422,221 @@ class ViewModelInstanceTests: XCTestCase {
         XCTAssertEqual(unsubscribeCall.requestID, requestID)
     }
     
+    @MainActor
+    func test_valueStream_sharesSubscriptionUntilLastStreamTerminates() async throws {
+        let commandQueue = MockCommandQueue()
+        let instance = makeViewModelInstance(mockCommandQueue: commandQueue)
+        let property = NumberProperty(path: "test.path")
+        let streams = (0..<3).map { _ in instance.valueStream(of: property) }
+        let subscriptions = commandQueue.subscribeToViewModelPropertyCalls
+        XCTAssertEqual(subscriptions.count, 1)
+        guard subscriptions.count == 1 else { return }
+        let requestID = try XCTUnwrap(subscriptions.first?.requestID)
+        let observer = try XCTUnwrap(commandQueue.getObserver(for: 99))
+
+        let firstUpdate = expectation(description: "All streams receive the first update")
+        firstUpdate.expectedFulfillmentCount = 3
+        let secondUpdate = expectation(description: "Surviving streams receive the second update")
+        secondUpdate.expectedFulfillmentCount = 2
+        let tasks = streams.map { stream in
+            Task {
+                var values: [Float] = []
+                for try await value in stream {
+                    values.append(value)
+                    if value == 1 {
+                        firstUpdate.fulfill()
+                    } else if value == 2 {
+                        secondUpdate.fulfill()
+                    }
+                }
+                return values
+            }
+        }
+        defer { tasks.forEach { $0.cancel() } }
+
+        observer.onViewModelDataReceived(99, requestID: requestID, data: MockRiveViewModelInstanceData(numberValue: 1))
+        await fulfillment(of: [firstUpdate], timeout: 1)
+        tasks[0].cancel()
+        let cancelledValues = try await tasks[0].value
+        XCTAssertEqual(cancelledValues, [1])
+
+        observer.onViewModelDataReceived(99, requestID: requestID, data: MockRiveViewModelInstanceData(numberValue: 2))
+        await fulfillment(of: [secondUpdate], timeout: 1)
+        XCTAssertTrue(commandQueue.unsubscribeToViewModelPropertyCalls.isEmpty)
+
+        let unsubscribe = expectation(description: "Last stream unsubscribes")
+        commandQueue.stubUnsubscribeToViewModelProperty { _, _, _, id in
+            XCTAssertEqual(id, requestID)
+            unsubscribe.fulfill()
+        }
+        for task in tasks.dropFirst() {
+            task.cancel()
+            let values = try await task.value
+            XCTAssertEqual(values, [1, 2])
+        }
+        await fulfillment(of: [unsubscribe], timeout: 1)
+        XCTAssertEqual(commandQueue.unsubscribeToViewModelPropertyCalls.count, 1)
+    }
+
+    @MainActor
+    func test_valueStream_openingReplacementBeforeTerminationKeepsNativeSubscription() async throws {
+        let commandQueue = MockCommandQueue()
+        let instance = makeViewModelInstance(mockCommandQueue: commandQueue)
+        let property = NumberProperty(path: "test.path")
+        var original: AsyncThrowingStream<Float, Error>? = instance.valueStream(of: property)
+        XCTAssertNotNil(original)
+        let requestID = try XCTUnwrap(commandQueue.subscribeToViewModelPropertyCalls.first?.requestID)
+
+        // Termination schedules cleanup on the main actor. Open the replacement
+        // in this same actor turn, before that cleanup can run.
+        original = nil
+        let replacement = instance.valueStream(of: property)
+        XCTAssertEqual(commandQueue.subscribeToViewModelPropertyCalls.count, 1)
+        guard commandQueue.subscribeToViewModelPropertyCalls.count == 1 else { return }
+
+        let received = expectation(description: "Replacement receives the acknowledgement")
+        let task = Task {
+            for try await value in replacement {
+                XCTAssertEqual(value, 42)
+                received.fulfill()
+            }
+        }
+        defer { task.cancel() }
+        let observer = try XCTUnwrap(commandQueue.getObserver(for: 99))
+        observer.onViewModelDataReceived(99, requestID: requestID, data: MockRiveViewModelInstanceData(numberValue: 42))
+        await fulfillment(of: [received], timeout: 1)
+        XCTAssertTrue(commandQueue.unsubscribeToViewModelPropertyCalls.isEmpty)
+
+        let unsubscribe = expectation(description: "Replacement releases the native subscription")
+        commandQueue.stubUnsubscribeToViewModelProperty { _, _, _, id in
+            XCTAssertEqual(id, requestID)
+            unsubscribe.fulfill()
+        }
+        task.cancel()
+        try await task.value
+        await fulfillment(of: [unsubscribe], timeout: 1)
+        XCTAssertEqual(commandQueue.unsubscribeToViewModelPropertyCalls.count, 1)
+    }
+
+    @MainActor
+    func test_valueStream_whenNativeSubscriptionFails_finishesAllStreamsAndAllowsResubscribe() async throws {
+        let commandQueue = MockCommandQueue()
+        let instance = makeViewModelInstance(mockCommandQueue: commandQueue)
+        let property = NumberProperty(path: "test.path")
+        let observer = try XCTUnwrap(commandQueue.getObserver(for: 99))
+        let streams = (0..<2).map { _ in instance.valueStream(of: property) }
+        let requestID = try XCTUnwrap(commandQueue.subscribeToViewModelPropertyCalls.first?.requestID)
+        let failed = expectation(description: "Both streams receive the subscription error")
+        failed.expectedFulfillmentCount = 2
+        let tasks = streams.map { stream in
+            Task {
+                defer { failed.fulfill() }
+                do {
+                    for try await _ in stream {
+                        XCTFail("Unexpected value")
+                    }
+                    XCTFail("Expected a subscription error")
+                } catch ViewModelInstanceError.message(let message) {
+                    XCTAssertEqual(message, "Subscription failed")
+                } catch {
+                    XCTFail("Unexpected error: \(error)")
+                }
+            }
+        }
+        defer { tasks.forEach { $0.cancel() } }
+
+        observer.onViewModelInstanceError(99, requestID: requestID, message: "Subscription failed")
+        await fulfillment(of: [failed], timeout: 1)
+        XCTAssertEqual(commandQueue.unsubscribeToViewModelPropertyCalls.map(\.requestID), [requestID])
+
+        let reopened = instance.valueStream(of: property)
+        XCTAssertEqual(commandQueue.subscribeToViewModelPropertyCalls.count, 2)
+        let newRequestID = try XCTUnwrap(commandQueue.subscribeToViewModelPropertyCalls.last?.requestID)
+        XCTAssertNotEqual(newRequestID, requestID)
+        let received = expectation(description: "New stream receives only the new subscription's value")
+        let task = Task {
+            for try await value in reopened {
+                XCTAssertEqual(value, 42)
+                received.fulfill()
+            }
+        }
+        defer { task.cancel() }
+        observer.onViewModelDataReceived(99, requestID: requestID, data: MockRiveViewModelInstanceData(numberValue: 1))
+        observer.onViewModelDataReceived(99, requestID: newRequestID, data: MockRiveViewModelInstanceData(numberValue: 42))
+        await fulfillment(of: [received], timeout: 1)
+    }
+
+    @MainActor
+    func test_valueStream_whenInstanceDeinitializes_finishesStreamsAndUnsubscribesBeforeDelete() async throws {
+        let commandQueue = MockCommandQueue()
+        var instance: ViewModelInstance? = makeViewModelInstance(mockCommandQueue: commandQueue)
+        let property = NumberProperty(path: "test.path")
+        let streams = try (0..<2).map { _ in
+            try XCTUnwrap(instance?.valueStream(of: property))
+        }
+        let requestID = try XCTUnwrap(commandQueue.subscribeToViewModelPropertyCalls.first?.requestID)
+        let observer = try XCTUnwrap(commandQueue.getObserver(for: 99))
+        let deleted = expectation(description: "Instance listener removed after deletion")
+        commandQueue.stubDeleteViewModelInstance { handle, deletionRequestID in
+            XCTAssertEqual(commandQueue.unsubscribeToViewModelPropertyCalls.map(\.requestID), [requestID])
+            observer.onViewModelDeleted(handle, requestID: deletionRequestID)
+        }
+        commandQueue.stubDeleteViewModelInstanceListener { _ in
+            deleted.fulfill()
+        }
+
+        let finished = expectation(description: "Both streams finish")
+        finished.expectedFulfillmentCount = 2
+        let tasks = streams.map { stream in
+            Task {
+                for try await _ in stream {
+                    XCTFail("Unexpected value")
+                }
+                finished.fulfill()
+            }
+        }
+        defer { tasks.forEach { $0.cancel() } }
+        instance = nil
+        await fulfillment(of: [deleted, finished], timeout: 1)
+        XCTAssertEqual(commandQueue.unsubscribeToViewModelPropertyCalls.count, 1)
+    }
+
+    @MainActor
+    func test_valueStream_replacementReceivesUpdateThroughNativeQueue() async throws {
+        let worker = try await Worker()
+        let file = try await File(source: .local("data_binding_test", Bundle(for: Self.self)), worker: worker)
+        let instance = try await file.createViewModelInstance(.blank(from: .name("Test")))
+        let property = NumberProperty(path: "Number")
+        var original: AsyncThrowingStream<Float, Error>? = instance.valueStream(of: property)
+        XCTAssertNotNil(original)
+        original = nil
+        let replacement = instance.valueStream(of: property)
+        instance.setValue(of: property, to: 42)
+
+        let acknowledgement = expectation(description: "Replacement receives the native update")
+        let collector = Task {
+            do {
+                for try await value in replacement where value == 42 {
+                    acknowledgement.fulfill()
+                    return
+                }
+            } catch {
+                XCTFail("Unexpected error: \(error)")
+            }
+        }
+        let drain = Task {
+            while !Task.isCancelled {
+                worker.dependencies.workerService.messageGate.processMessagesForFrame()
+                try? await Task.sleep(nanoseconds: 1_000_000)
+            }
+        }
+        defer {
+            collector.cancel()
+            drain.cancel()
+        }
+        await fulfillment(of: [acknowledgement], timeout: 2)
+    }
+
     // MARK: - Bool
     
     @MainActor

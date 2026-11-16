@@ -17,8 +17,8 @@ import Combine
 /// (either marked `@MainActor` or dispatched to the main queue). Listener callbacks are dispatched
 /// to the main actor to safely access continuations.
 ///
-/// The service handles property subscriptions via `subscribe`/`unsubscribe` commands. When a stream
-/// is terminated, the `onTermination` handler automatically unsubscribes and cleans up the stream continuation.
+/// Streams observing the same property share a native subscription. The first stream subscribes,
+/// and the last stream to terminate unsubscribes.
 ///
 /// All continuation-based methods are wrapped with `withTaskCancellationHandler` because
 /// `withCheckedThrowingContinuation` does not auto-resume on task cancellation. Without
@@ -29,15 +29,76 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
         let id: UInt64
     }
 
+    private struct PropertySubscription {
+        struct Key: Hashable {
+            let instance: ViewModelInstance.ViewModelInstanceHandle
+            let path: String
+            let type: ViewModelProperty.DataType
+        }
+
+        let key: Key
+        var continuations: [UInt64: AnyAsyncThrowingStreamContinuation] = [:]
+
+        /// Returns whether the removed stream was the last one in the subscription.
+        mutating func removeStream(_ streamID: UInt64) -> Bool {
+            guard continuations.removeValue(forKey: streamID) != nil else { return false }
+            return continuations.isEmpty
+        }
+    }
+
+    private struct PropertySubscriptions {
+        private var subscriptions: [UInt64: PropertySubscription] = [:]
+        private var requestIDs: [PropertySubscription.Key: UInt64] = [:]
+
+        var isEmpty: Bool {
+            subscriptions.isEmpty
+        }
+
+        /// Returns the request ID to subscribe with when adding the first stream for a property.
+        mutating func addStream(
+            _ continuation: AnyAsyncThrowingStreamContinuation,
+            streamID: UInt64,
+            for property: PropertySubscription.Key
+        ) -> UInt64? {
+            let existingRequestID = requestIDs[property]
+            let requestID = existingRequestID ?? streamID
+            subscriptions[requestID, default: PropertySubscription(key: property)].continuations[streamID] = continuation
+            guard existingRequestID == nil else { return nil }
+            requestIDs[property] = requestID
+            return requestID
+        }
+
+        func subscription(for requestID: UInt64) -> PropertySubscription? {
+            subscriptions[requestID]
+        }
+
+        func subscriptionIDs(for instance: ViewModelInstance.ViewModelInstanceHandle) -> [UInt64] {
+            subscriptions.compactMap { requestID, subscription in
+                subscription.key.instance == instance ? requestID : nil
+            }
+        }
+
+        mutating func removeSubscription(_ requestID: UInt64) -> PropertySubscription? {
+            guard let subscription = subscriptions.removeValue(forKey: requestID) else { return nil }
+            requestIDs.removeValue(forKey: subscription.key)
+            return subscription
+        }
+
+        /// Returns the request ID to unsubscribe when removing the last stream for a property.
+        mutating func removeStream(_ streamID: UInt64, for property: PropertySubscription.Key) -> UInt64? {
+            guard let requestID = requestIDs[property],
+                  subscriptions[requestID]?.removeStream(streamID) == true else { return nil }
+            return requestID
+        }
+    }
+
     private static var nextDirtyEventID: UInt64 = 0
 
     let dependencies: Dependencies
     /// Regular continuations for one-time value requests (e.g., `stringValue`, `numberValue`).
     /// Resumed when `onViewModelDataReceived` is called.
     private var continuations: [UInt64: AnyContinuation] = [:]
-    /// Stream continuations for property subscriptions (e.g., `stringValueStream`, `numberValueStream`).
-    /// Yielded values when `onViewModelDataReceived` is called. Cleaned up when streams terminate.
-    private var streamContinuations: [UInt64: AnyAsyncThrowingStreamContinuation] = [:]
+    private var propertySubscriptions = PropertySubscriptions()
     /// Publishers for per-instance dirty events.
     private var dirtySubjects: [ViewModelInstance.ViewModelInstanceHandle: PassthroughSubject<DirtyEvent, Never>] = [:]
 
@@ -88,7 +149,54 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
 
     @MainActor
     func hasActiveListeners() -> Bool {
-        return !streamContinuations.isEmpty
+        !propertySubscriptions.isEmpty
+    }
+
+    private func propertyStream<Value: Sendable>(
+        for instance: ViewModelInstance.ViewModelInstanceHandle,
+        path: String,
+        type: ViewModelProperty.DataType
+    ) -> AsyncThrowingStream<Value, Error> {
+        AsyncThrowingStream { continuation in
+            let commandQueue = dependencies.commandQueue
+            let streamID = commandQueue.nextRequestID
+            let property = PropertySubscription.Key(instance: instance, path: path, type: type)
+            let requestID = propertySubscriptions.addStream(
+                AnyAsyncThrowingStreamContinuation(continuation),
+                streamID: streamID,
+                for: property
+            )
+
+            continuation.onTermination = { [weak self] _ in
+                Task { @MainActor in
+                    self?.streamDidTerminate(streamID, for: property)
+                }
+            }
+
+            if let requestID {
+                commandQueue.subscribe(toViewModelProperty: instance, path: path, type: type.objcValue, requestID: requestID)
+            }
+        }
+    }
+
+    private func streamDidTerminate(_ streamID: UInt64, for property: PropertySubscription.Key) {
+        if let requestID = propertySubscriptions.removeStream(streamID, for: property) {
+            endPropertySubscription(requestID)
+        }
+    }
+
+    private func endPropertySubscription(_ requestID: UInt64, error: Error? = nil) {
+        guard let subscription = propertySubscriptions.removeSubscription(requestID) else { return }
+        let property = subscription.key
+        dependencies.commandQueue.unsubscribe(
+            toViewModelProperty: property.instance,
+            path: property.path,
+            type: property.type.objcValue,
+            requestID: requestID
+        )
+        for continuation in subscription.continuations.values {
+            continuation.finish(throwing: error)
+        }
     }
 
     @MainActor
@@ -113,6 +221,9 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     func deleteViewModelInstance(_ instance: ViewModelInstance.ViewModelInstanceHandle) async throws -> ViewModelInstance.ViewModelInstanceHandle {
         RiveLog.debug(tag: .viewModelInstance, "\(Self.context(instance)) Deleting instance")
         return try await withCancellableContinuation(cancelledError: ViewModelInstanceError.cancelled) { requestID in
+            for subscriptionID in self.propertySubscriptions.subscriptionIDs(for: instance) {
+                self.endPropertySubscription(subscriptionID)
+            }
             self.dependencies.commandQueue.deleteViewModelInstance(instance, requestID: requestID)
         }
     }
@@ -178,22 +289,10 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// Creates a stream that emits string property values as they change.
     ///
     /// Subscribes to property changes via the command queue. Values are yielded when
-    /// `onViewModelDataReceived` is called. Automatically unsubscribes when the stream terminates.
+    /// `onViewModelDataReceived` is called. The last stream to terminate unsubscribes.
     @MainActor
     func stringValueStream(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) -> AsyncThrowingStream<String, Error> {
-        return AsyncThrowingStream { continuation in
-            let commandQueue = dependencies.commandQueue
-            let requestID = commandQueue.nextRequestID
-            streamContinuations[requestID] = AnyAsyncThrowingStreamContinuation(continuation)
-            commandQueue.subscribe(toViewModelProperty: instance, path: path, type: .string, requestID: requestID)
-            continuation.onTermination = { [weak self] _ in
-                Task { @MainActor in
-                    commandQueue.unsubscribe(toViewModelProperty: instance, path: path, type: .string, requestID: requestID)
-                    guard let self else { return }
-                    self.streamContinuations.removeValue(forKey: requestID)
-                }
-            }
-        }
+        propertyStream(for: instance, path: path, type: .string)
     }
 
     /// Sets a string property value.
@@ -227,22 +326,10 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// Creates a stream that emits number property values as they change.
     ///
     /// Subscribes to property changes via the command queue. Values are yielded when
-    /// `onViewModelDataReceived` is called. Automatically unsubscribes when the stream terminates.
+    /// `onViewModelDataReceived` is called. The last stream to terminate unsubscribes.
     @MainActor
     func numberValueStream(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) -> AsyncThrowingStream<Float, Error> {
-        return AsyncThrowingStream { continuation in
-            let commandQueue = dependencies.commandQueue
-            let requestID = commandQueue.nextRequestID
-            streamContinuations[requestID] = AnyAsyncThrowingStreamContinuation(continuation)
-            commandQueue.subscribe(toViewModelProperty: instance, path: path, type: .number, requestID: requestID)
-            continuation.onTermination = { [weak self] _ in
-                Task { @MainActor in
-                    commandQueue.unsubscribe(toViewModelProperty: instance, path: path, type: .number, requestID: requestID)
-                    guard let self else { return }
-                    self.streamContinuations.removeValue(forKey: requestID)
-                }
-            }
-        }
+        propertyStream(for: instance, path: path, type: .number)
     }
 
     /// Sets a number property value.
@@ -276,22 +363,10 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// Creates a stream that emits boolean property values as they change.
     ///
     /// Subscribes to property changes via the command queue. Values are yielded when
-    /// `onViewModelDataReceived` is called. Automatically unsubscribes when the stream terminates.
+    /// `onViewModelDataReceived` is called. The last stream to terminate unsubscribes.
     @MainActor
     func boolValueStream(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) -> AsyncThrowingStream<Bool, Error> {
-        return AsyncThrowingStream { continuation in
-            let commandQueue = dependencies.commandQueue
-            let requestID = commandQueue.nextRequestID
-            streamContinuations[requestID] = AnyAsyncThrowingStreamContinuation(continuation)
-            commandQueue.subscribe(toViewModelProperty: instance, path: path, type: .boolean, requestID: requestID)
-            continuation.onTermination = { [weak self] _ in
-                Task { @MainActor in
-                    commandQueue.unsubscribe(toViewModelProperty: instance, path: path, type: .boolean, requestID: requestID)
-                    guard let self else { return }
-                    self.streamContinuations.removeValue(forKey: requestID)
-                }
-            }
-        }
+        propertyStream(for: instance, path: path, type: .boolean)
     }
 
     /// Sets a boolean property value.
@@ -325,22 +400,10 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// Creates a stream that emits color property values as they change.
     ///
     /// Subscribes to property changes via the command queue. Values are yielded when
-    /// `onViewModelDataReceived` is called. Automatically unsubscribes when the stream terminates.
+    /// `onViewModelDataReceived` is called. The last stream to terminate unsubscribes.
     @MainActor
     func colorValueStream(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) -> AsyncThrowingStream<Color, Error> {
-        return AsyncThrowingStream { continuation in
-            let commandQueue = dependencies.commandQueue
-            let requestID = commandQueue.nextRequestID
-            streamContinuations[requestID] = AnyAsyncThrowingStreamContinuation(continuation)
-            commandQueue.subscribe(toViewModelProperty: instance, path: path, type: .color, requestID: requestID)
-            continuation.onTermination = { [weak self] _ in
-                Task { @MainActor in
-                    commandQueue.unsubscribe(toViewModelProperty: instance, path: path, type: .color, requestID: requestID)
-                    guard let self else { return }
-                    self.streamContinuations.removeValue(forKey: requestID)
-                }
-            }
-        }
+        propertyStream(for: instance, path: path, type: .color)
     }
 
     /// Sets a color property value.
@@ -374,22 +437,10 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// Creates a stream that emits enum property values as they change.
     ///
     /// Subscribes to property changes via the command queue. Values are yielded when
-    /// `onViewModelDataReceived` is called. Automatically unsubscribes when the stream terminates.
+    /// `onViewModelDataReceived` is called. The last stream to terminate unsubscribes.
     @MainActor
     func enumValueStream(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) -> AsyncThrowingStream<String, Error> {
-        return AsyncThrowingStream { continuation in
-            let commandQueue = dependencies.commandQueue
-            let requestID = commandQueue.nextRequestID
-            streamContinuations[requestID] = AnyAsyncThrowingStreamContinuation(continuation)
-            commandQueue.subscribe(toViewModelProperty: instance, path: path, type: .enum, requestID: requestID)
-            continuation.onTermination = { [weak self] _ in
-                Task { @MainActor in
-                    commandQueue.unsubscribe(toViewModelProperty: instance, path: path, type: .enum, requestID: requestID)
-                    guard let self else { return }
-                    self.streamContinuations.removeValue(forKey: requestID)
-                }
-            }
-        }
+        propertyStream(for: instance, path: path, type: .enum)
     }
 
     /// Sets an enum property value.
@@ -417,22 +468,10 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     /// Creates a stream that emits events when a trigger property is fired.
     ///
     /// Subscribes to trigger events via the command queue. Events are yielded when
-    /// `onViewModelDataReceived` is called with a trigger type. Automatically unsubscribes when the stream terminates.
+    /// `onViewModelDataReceived` is called with a trigger type. The last stream to terminate unsubscribes.
     @MainActor
     func triggerStream(for instance: ViewModelInstance.ViewModelInstanceHandle, path: String) -> AsyncThrowingStream<Void, Error> {
-        return AsyncThrowingStream { continuation in
-            let commandQueue = dependencies.commandQueue
-            let requestID = commandQueue.nextRequestID
-            streamContinuations[requestID] = AnyAsyncThrowingStreamContinuation(continuation)
-            commandQueue.subscribe(toViewModelProperty: instance, path: path, type: .trigger, requestID: requestID)
-            continuation.onTermination = { [weak self] _ in
-                Task { @MainActor in
-                    commandQueue.unsubscribe(toViewModelProperty: instance, path: path, type: .trigger, requestID: requestID)
-                    guard let self else { return }
-                    self.streamContinuations.removeValue(forKey: requestID)
-                }
-            }
-        }
+        propertyStream(for: instance, path: path, type: .trigger)
     }
 
     // MARK: - ImageProperty
@@ -663,6 +702,8 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
                 continuation.resume(
                     throwing: ViewModelInstanceError.message(message)
                 )
+            } else {
+                endPropertySubscription(requestID, error: ViewModelInstanceError.message(message))
             }
         }
     }
@@ -679,60 +720,54 @@ final class ViewModelInstanceService: NSObject, ViewModelInstanceListener {
     ) {
         let viewModelInstanceData = ViewModelInstanceData(from: data)
         Task { @MainActor in
-            if streamContinuations[requestID] == nil {
+            let subscription = propertySubscriptions.subscription(for: requestID)
+            if subscription == nil {
                 finishImmediateRequest(requestID)
             }
-            if let continuation = continuations.removeValue(forKey: requestID) {
-                do {
-                    switch viewModelInstanceData.type {
-                    case .trigger:
-                        continuation.resume(throwing: ViewModelInstanceError.missingData)
-                    case .value(let value):
-                        switch value {
-                        case .string(let stringValue):
-                            try continuation.resume(returning: stringValue)
-                        case .number(let numberValue):
-                            try continuation.resume(returning: numberValue)
-                        case .boolean(let booleanValue):
-                            try continuation.resume(returning: booleanValue)
-                        case .color(let argbValue):
-                            try continuation.resume(returning: Color(argbValue))
-                        case .none:
-                            continuation.resume(throwing: ViewModelInstanceError.missingData)
-                        }
-                    }
-                } catch AnyContinuationError.typeMismatch(expected: let expected, actual: let actual) {
-                    continuation.resume(throwing: ViewModelInstanceError.valueMismatch(expected, actual))
+            let continuation = continuations.removeValue(forKey: requestID)
+            guard continuation != nil || subscription != nil else { return }
+
+            do {
+                let value: any Sendable
+                switch viewModelInstanceData.type {
+                case .trigger:
+                    guard continuation == nil else { throw ViewModelInstanceError.missingData }
+                    value = ()
+                case .value(.string(let stringValue)):
+                    value = stringValue
+                case .value(.number(let numberValue)):
+                    value = numberValue
+                case .value(.boolean(let booleanValue)):
+                    value = booleanValue
+                case .value(.color(let argbValue)):
+                    value = Color(argbValue)
+                case .value(.none):
+                    throw ViewModelInstanceError.missingData
                 }
-                return
-            }
-            
-            if let streamContinuation = streamContinuations[requestID] {
-                do {
-                    switch viewModelInstanceData.type {
-                    case .trigger:
-                        try streamContinuation.yield(())
-                    case .value(let value):
-                        switch value {
-                        case .string(let stringValue):
-                            try streamContinuation.yield(stringValue)
-                        case .number(let numberValue):
-                            try streamContinuation.yield(numberValue)
-                        case .boolean(let booleanValue):
-                            try streamContinuation.yield(booleanValue)
-                        case .color(let argbValue):
-                            try streamContinuation.yield(Color(argbValue))
-                        case .none:
-                            streamContinuation.finish(throwing: ViewModelInstanceError.missingData)
-                            streamContinuations.removeValue(forKey: requestID)
-                        }
+
+                if let continuation {
+                    try continuation.resume(returning: value)
+                } else if let subscription {
+                    for stream in subscription.continuations.values {
+                        try stream.yield(value)
                     }
-                } catch AnyAsyncThrowingStreamContinuationError.typeMismatch(expected: let expected, actual: let actual) {
-                    streamContinuation.finish(throwing: ViewModelInstanceError.valueMismatch(expected, actual))
-                    streamContinuations.removeValue(forKey: requestID)
-                } catch {
-                    streamContinuation.finish(throwing: ViewModelInstanceError.error(error))
-                    streamContinuations.removeValue(forKey: requestID)
+                }
+            } catch {
+                let deliveryError: ViewModelInstanceError
+                switch error {
+                case let error as ViewModelInstanceError:
+                    deliveryError = error
+                case AnyContinuationError.typeMismatch(let expected, let actual),
+                     AnyAsyncThrowingStreamContinuationError.typeMismatch(let expected, let actual):
+                    deliveryError = .valueMismatch(expected, actual)
+                default:
+                    deliveryError = .error(error)
+                }
+
+                if let continuation {
+                    continuation.resume(throwing: deliveryError)
+                } else {
+                    endPropertySubscription(requestID, error: deliveryError)
                 }
             }
         }
