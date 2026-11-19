@@ -14,7 +14,9 @@ protocol KeyboardControllerDelegate: AnyObject {
 
 /// Delivers platform-independent keyboard input to a state machine.
 ///
-/// Native event routing and focus traversal are coordinated by the owner.
+/// Handles authored key input without acquiring native focus or first-responder
+/// ownership. ``RiveController`` decides when platform ownership permits delivery
+/// and whether an unhandled key can fall back to ``FocusController`` navigation.
 @MainActor
 final class KeyboardController {
     /// The object that schedules rendering after keyboard input is delivered.

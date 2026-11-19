@@ -6,14 +6,24 @@
 //  Copyright © 2026 Rive. All rights reserved.
 //
 
-/// Receives wake requests from a ``FocusController``.
+/// Receives focus-readiness changes and wake requests from a ``FocusController``.
 @MainActor
 protocol FocusControllerDelegate: AnyObject {
     /// Requests a frame after a change to Rive focus.
     func focusControllerDidRequestWake(_ controller: FocusController)
+    /// Reports changes to native focus eligibility after asynchronous discovery.
+    func focusControllerDidChangeFocusability(_ controller: FocusController)
 }
 
 /// Coordinates authored Rive focus nodes with a platform focus system.
+///
+/// Tracks authored focus state and availability, preserves or initializes a
+/// focused node on platform entry, and clears it on exit. Platform entry can
+/// represent native navigation focus or confirmed first-responder ownership;
+/// the concrete ``FocusSystem`` manages that ownership.
+///
+/// ``RiveController`` offers navigation here after authored key handling declines
+/// an event, and only while native navigation focus is active.
 @MainActor
 final class FocusController {
     /// The object that schedules rendering after focus traversal attempts.
@@ -26,8 +36,8 @@ final class FocusController {
 
     /// Whether focus handling is temporarily disabled with the owning view.
     ///
-    /// Pausing ignores input and preserves an existing native focus session.
-    /// Once native focus leaves, the view is excluded from traversal until resume.
+    /// Pausing ignores input and preserves an existing platform focus session.
+    /// Once that session ends, the view is excluded from traversal until resume.
     var isPaused = false {
         didSet {
             guard isPaused != oldValue else { return }
@@ -62,8 +72,9 @@ final class FocusController {
     /// focused Rive node.
     private var hasFocusedRiveNode = false
 
-    /// Whether native focus is currently inside the Rive view.
-    private var hasNativeFocus: Bool
+    /// Whether the platform has entered Rive through native focus or confirmed
+    /// first-responder ownership.
+    private var hasPlatformFocus: Bool
 
     /// Defers entry into replacement content until its first focus snapshot,
     /// when the platform requires a starting node for retained native focus.
@@ -79,7 +90,7 @@ final class FocusController {
     /// Any platform-required entry waits for the new graphic's focus snapshot.
     init(dependencies: Dependencies, hasNativeFocus: Bool = false) {
         self.dependencies = dependencies
-        self.hasNativeFocus = hasNativeFocus
+        hasPlatformFocus = hasNativeFocus
         pendingEntryDirection = hasNativeFocus ? dependencies.focusSystem.defaultEntryDirection : nil
         setFocusable(false)
         dependencies.focusSystem.delegate = self
@@ -269,7 +280,7 @@ final class FocusController {
         hasFocusNodes = false
         focusState = nil
         hasFocusedRiveNode = false
-        hasNativeFocus = false
+        hasPlatformFocus = false
         pendingEntryDirection = nil
         setFocusable(false)
         dependencies.stateMachine.clearFocus()
@@ -288,7 +299,7 @@ final class FocusController {
         // later authored blur or replacing a node already chosen by the graphic.
         if let direction = pendingEntryDirection {
             pendingEntryDirection = nil
-            if hasNativeFocus, !hasFocusedRiveNode {
+            if hasPlatformFocus, !hasFocusedRiveNode {
                 _ = traverse(direction)
             }
         }
@@ -299,13 +310,14 @@ final class FocusController {
     }
 
     private func updateFocusability() {
-        setFocusable(!isInvalidated && (!isPaused || hasNativeFocus)
+        setFocusable(!isInvalidated && (!isPaused || hasPlatformFocus)
             && hasFocusNodes && focusState != nil)
     }
 
     private func setFocusable(_ isFocusable: Bool) {
         guard dependencies.focusSystem.isFocusable != isFocusable else { return }
         dependencies.focusSystem.isFocusable = isFocusable
+        delegate?.focusControllerDidChangeFocusability(self)
     }
 }
 
@@ -317,8 +329,9 @@ extension FocusController: FocusSystemDelegate {
     }
     #endif
 
-    /// Preserves a known node on native entry, otherwise enters the Rive tree
-    /// in the platform's sequential direction when one is available.
+    /// Preserves a known node on platform entry, otherwise enters the Rive tree
+    /// in the supplied direction. Directionless entry, such as a click or a
+    /// programmatic responder change, selects no node until sequential navigation.
     /// - Returns: Whether to retain native entry rather than continue traversal.
     @discardableResult
     func focusSystem(
@@ -327,18 +340,18 @@ extension FocusController: FocusSystemDelegate {
     ) -> Bool {
         guard focusSystem === dependencies.focusSystem, !isInvalidated else { return true }
         pendingEntryDirection = nil
-        hasNativeFocus = true
+        hasPlatformFocus = true
         guard !isPaused, !hasFocusedRiveNode, focusSystem.isFocusable, let direction else { return true }
         return traverse(direction)
     }
 
-    /// Clears authored focus on native exit, including while paused.
+    /// Clears authored focus on platform exit, including while paused.
     func focusSystemDidExit(_ focusSystem: any FocusSystem) {
         guard focusSystem === dependencies.focusSystem else { return }
         guard !isInvalidated else { return }
         cancelFocusStateRequest()
         pendingEntryDirection = nil
-        hasNativeFocus = false
+        hasPlatformFocus = false
         hasFocusedRiveNode = false
         updateFocusability()
         dependencies.stateMachine.clearFocus()

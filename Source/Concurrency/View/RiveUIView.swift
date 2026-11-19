@@ -49,6 +49,8 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 return
             }
 
+            if oldValue != nil { keyboardFocusDelegate?.viewDidCancelKeyboardFocusRequest(self) }
+
             setupRive()
         }
     }
@@ -113,6 +115,9 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     }
     private var setupTask: Task<Void, Never>?
 
+    /// The SwiftUI coordinator awaiting initial keyboard-focus readiness.
+    weak var keyboardFocusDelegate: (any RiveUIViewKeyboardFocusDelegate)?
+
     #if !os(macOS) || RIVE_MAC_CATALYST
     private var focusSystem: UIKitFocusSystem?
     #endif
@@ -142,6 +147,11 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
 
     var drawableSize: CGSize {
         mtkView?.drawableSize ?? .zero
+    }
+
+    func controllerDidChangeFocusability(_ controller: RiveController) {
+        guard self.controller === controller else { return }
+        keyboardFocusDelegate?.viewKeyboardFocusReadinessDidChange(self)
     }
 
     #if !os(macOS) || RIVE_MAC_CATALYST
@@ -174,6 +184,9 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     private var _isPaused: Bool = true {
         didSet {
             let newValue = _isPaused
+            if newValue, newValue != oldValue {
+                keyboardFocusDelegate?.viewDidCancelKeyboardFocusRequest(self)
+            }
             controller?.isPaused = newValue
             #if !os(macOS) || RIVE_MAC_CATALYST
             displayLink?.isPaused = newValue
@@ -309,6 +322,7 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
                 self.rive = try await rive()
                 RiveLog.debug(tag: .view, "[RiveUIView] Loaded Rive configuration from async loader")
             } catch {
+                keyboardFocusDelegate?.viewDidCancelKeyboardFocusRequest(self)
                 RiveLog.error(tag: .view, error: error, "[RiveUIView] Failed to load Rive configuration")
                 delegate?.view(self, didReceiveError: .failedToLoad(error))
             }
@@ -366,18 +380,76 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
     #endif
 
     #if !os(macOS) || RIVE_MAC_CATALYST
+    public override func willMove(toWindow newWindow: UIWindow?) {
+        if window != nil, window !== newWindow {
+            keyboardFocusDelegate?.viewDidCancelKeyboardFocusRequest(self)
+        }
+        super.willMove(toWindow: newWindow)
+    }
+
     public override func didMoveToWindow() {
         // This is also called when the view is removed (before deinit), which will
         // implicitly invalidate the display link. 
         updateDisplayLink()
+        keyboardFocusDelegate?.viewKeyboardFocusReadinessDidChange(self)
     }
     #else
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if window != nil, window !== newWindow {
+            keyboardFocusDelegate?.viewDidCancelKeyboardFocusRequest(self)
+        }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
     public override func viewDidMoveToWindow() {
         // This is also called when the view is removed (before deinit), which will
         // implicitly invalidate the display link.
         updateDisplayLink()
+        keyboardFocusDelegate?.viewKeyboardFocusReadinessDidChange(self)
     }
     #endif
+
+    /// Makes the view the keyboard responder, so authored keyboard input works
+    /// without the user first tabbing into the view.
+    ///
+    /// Focuses the graphic's first authored focus node, unless a node is already
+    /// focused. This does not enable text input or present a software
+    /// keyboard. In SwiftUI, use `keyboardFocused(_:onResult:)` to make a request
+    /// once the content is ready.
+    ///
+    /// - Returns: Whether the view became, or already was, the keyboard responder.
+    ///   Returns `false` if the view isn't loaded, playing, in the key window, or
+    ///   ready with authored focus nodes. A `true` result doesn't indicate whether
+    ///   a focus node was entered or will handle a given key.
+    @discardableResult
+    public func becomeKeyboardResponder() -> Bool {
+        guard !isPaused, let mtkView, let focusSystem = mtkView.focusSystem else { return false }
+        return focusSystem.requestKeyboardFocus(in: mtkView)
+    }
+
+    /// Relinquishes the view's keyboard-responder ownership without affecting
+    /// other views.
+    ///
+    /// - Returns: Whether the view is no longer the keyboard responder, including
+    ///   when it wasn't the keyboard responder before the call.
+    @discardableResult
+    public func resignKeyboardResponder() -> Bool {
+        guard let mtkView else { return true }
+        #if !os(macOS) || RIVE_MAC_CATALYST
+        if mtkView.isFirstResponder { mtkView.resignFirstResponder() }
+        return !mtkView.isFirstResponder
+        #else
+        if let window = mtkView.window, window.firstResponder === mtkView {
+            window.makeFirstResponder(nil)
+        }
+        return mtkView.window?.firstResponder !== mtkView
+        #endif
+    }
+
+    /// Whether a pending SwiftUI request can make its single native attempt.
+    var canRequestKeyboardFocus: Bool {
+        !isPaused && window?.isKeyWindow == true && mtkView?.focusSystem?.isFocusable == true
+    }
 
     #if !os(macOS) || RIVE_MAC_CATALYST
     public override var canBecomeFocused: Bool {
@@ -619,13 +691,17 @@ public class RiveUIView: NativeView, MTKViewDelegate, ScaleProvider, DisplayLink
         metalView: PlatformMetalView,
         renderer: any RiveUIRendererProtocol
     ) async {
-        // Let normal setup finish before installing controlled drawing dependencies.
-        await setupTask?.value
-        mtkView?.removeFromSuperview()
-        mtkView = metalView
+        await configureMetalViewForTesting(metalView)
         self.controller = controller
         self.renderer = renderer
         controller.isPaused = isPaused
+    }
+
+    func configureMetalViewForTesting(_ metalView: PlatformMetalView) async {
+        // Let normal setup finish before installing the controlled rendering view.
+        await setupTask?.value
+        mtkView?.removeFromSuperview()
+        mtkView = metalView
     }
 
     nonisolated func notifyDelegateOfRendererErrorForTesting(_ error: Error) {
@@ -854,6 +930,10 @@ private struct KeyPress {
 
 #if !os(macOS) || RIVE_MAC_CATALYST
 /// The native focus item representing a Rive view in UIKit's focus tree.
+///
+/// Also receives keys as a first responder, including through standard SwiftUI
+/// focus, before native focus is active. ``UIKitFocusSystem`` manages ownership;
+/// ``RiveController`` coordinates authored key handling and navigation fallback.
 @MainActor
 class UIKitMetalView: RiveUIView.MetalView {
     weak var focusSystem: UIKitFocusSystem?
@@ -874,8 +954,7 @@ class UIKitMetalView: RiveUIView.MetalView {
     /// presses whose release never arrives.
     private let handledPresses = NSHashTable<UIPress>(options: [.weakMemory, .objectPointerPersonality])
 
-    /// Discards Rive's active presses when its controller changes. Native routing
-    /// remains tied to each press, since UIKit's responder chain has not reset.
+    /// Discards Rive's active presses without changing each press's native routing.
     private func resetKeyPresses() {
         keyPresses.removeAll()
         #if os(tvOS)
@@ -890,6 +969,26 @@ class UIKitMetalView: RiveUIView.MetalView {
 
     /// Allows UIKit to route keyboard events to the focused rendering view.
     override var canBecomeFirstResponder: Bool { canBecomeFocused }
+
+    /// Reports confirmed native acquisition so standard SwiftUI focus can supply
+    /// keyboard input without activating UIKit's navigation focus. Like a direct
+    /// responder change on other platforms, this selects no authored node.
+    override func becomeFirstResponder() -> Bool {
+        let focusSystem = focusSystem
+        let wasFirstResponder = isFirstResponder
+        guard super.becomeFirstResponder() else { return false }
+        focusSystem?.didBecomeFirstResponder(in: self, wasFirstResponder: wasFirstResponder)
+        return isFirstResponder
+    }
+
+    /// Ends keyboard ownership after UIKit accepts responder transfer.
+    /// Native navigation focus can keep the session active for held-key releases.
+    override func resignFirstResponder() -> Bool {
+        guard super.resignFirstResponder() else { return false }
+        if !isFocused { resetKeyPresses() }
+        focusSystem?.didResignKeyboardFocus(in: self)
+        return true
+    }
 
     #if os(tvOS)
     /// Balances remote Select events separately from physical Enter keys.
@@ -1000,7 +1099,8 @@ class UIKitMetalView: RiveUIView.MetalView {
             modifiers: .init(modifierFlags: nativeKey.modifierFlags),
             isPressed: isPressed,
             isRepeat: false,
-            hasNativeFocus: isFocused
+            hasNativeFocus: isFocused,
+            hasExplicitKeyboardFocus: focusSystem?.ownsKeyboardInput(in: self) == true
         ) ?? false
     }
 }

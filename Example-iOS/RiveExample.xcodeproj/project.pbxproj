@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B1F4E9D02F2100000054B001 /* tkl-keyboard.riv in Resources */ = {isa = PBXBuildFile; fileRef = B1F4E9D02F2100000054B002 /* tkl-keyboard.riv */; };
 		04026DC427CE3ED6002B3DBF /* SwiftSimpleAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */; };
 		04026DC827CE3EE6002B3DBF /* SwiftLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */; };
 		04026DCA27CE3EF6002B3DBF /* SwiftMultipleAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */; };
 		04026DCE27CE3F0F002B3DBF /* SwiftStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04026DCD27CE3F0F002B3DBF /* SwiftStateMachine.swift */; };
-		040553842B7A274B008F076A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E51C372A151A1E0075E473 /* ContentView.swift */; };
-		040553862B7A274B008F076A /* Example__macOS_App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E51C352A151A1E0075E473 /* Example__macOS_App.swift */; };
+		040553842B7A274B008F076A /* PreviewMacOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F4E9D02F2100000054B005 /* PreviewMacOSApp.swift */; };
 		0405538C2B7A274B008F076A /* halloween.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074F1284161E400E8EB33 /* halloween.riv */; };
 		0405538D2B7A274B008F076A /* testanimation.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074A7283FC75800E8EB33 /* testanimation.riv */; };
 		0405538E2B7A274B008F076A /* teststatemachine.riv in Resources */ = {isa = PBXBuildFile; fileRef = C3C074AA283FC75900E8EB33 /* teststatemachine.riv */; };
@@ -438,6 +438,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B1F4E9D02F2100000054B002 /* tkl-keyboard.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "tkl-keyboard.riv"; sourceTree = "<group>"; };
 		04026DC327CE3ED6002B3DBF /* SwiftSimpleAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftSimpleAnimation.swift; sourceTree = "<group>"; };
 		04026DC727CE3EE6002B3DBF /* SwiftLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftLayout.swift; sourceTree = "<group>"; };
 		04026DC927CE3EF6002B3DBF /* SwiftMultipleAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMultipleAnimations.swift; sourceTree = "<group>"; };
@@ -491,6 +492,7 @@
 		04E51C332A151A1E0075E473 /* Example (macOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Example (macOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		04E51C352A151A1E0075E473 /* Example__macOS_App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Example__macOS_App.swift; sourceTree = "<group>"; };
 		04E51C372A151A1E0075E473 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B1F4E9D02F2100000054B005 /* PreviewMacOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewMacOSApp.swift; sourceTree = "<group>"; };
 		04E51C392A151A1F0075E473 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		04E51C3C2A151A1F0075E473 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		04E51C3E2A151A1F0075E473 /* Example__macOS_.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example__macOS_.entitlements; sourceTree = "<group>"; };
@@ -666,6 +668,7 @@
 			children = (
 				04E51C352A151A1E0075E473 /* Example__macOS_App.swift */,
 				04E51C372A151A1E0075E473 /* ContentView.swift */,
+				B1F4E9D02F2100000054B005 /* PreviewMacOSApp.swift */,
 				04E51C392A151A1F0075E473 /* Assets.xcassets */,
 				04E51C3E2A151A1F0075E473 /* Example__macOS_.entitlements */,
 				04E51C3B2A151A1F0075E473 /* Preview Content */,
@@ -706,6 +709,7 @@
 		C9696B0E24FC6FD10041502A /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				B1F4E9D02F2100000054B002 /* tkl-keyboard.riv */,
 				F2C2915C2DB6D571009A2918 /* rewards.riv */,
 				F22CF1A92D36BFFF00D35779 /* data_binding_test.riv */,
 				F26E20A92CF0E21000130111 /* streaming.riv */,
@@ -1254,6 +1258,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1F4E9D02F2100000054B001 /* tkl-keyboard.riv in Resources */,
 				04E51C452A151C230075E473 /* halloween.riv in Resources */,
 				04E51C462A151C230075E473 /* testanimation.riv in Resources */,
 				04E51C472A151C230075E473 /* teststatemachine.riv in Resources */,
@@ -1426,8 +1431,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				040553842B7A274B008F076A /* ContentView.swift in Sources */,
-				040553862B7A274B008F076A /* Example__macOS_App.swift in Sources */,
+				040553842B7A274B008F076A /* PreviewMacOSApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,7 +14,7 @@ enum FocusTraversalDirection {
     case previous
 }
 
-/// Receives platform focus events that require Rive behavior.
+/// Receives platform focus-ownership events that require Rive behavior.
 ///
 /// A ``FocusSystem`` translates platform-specific focus callbacks into this
 /// platform-independent contract. The delegate reports whether Rive consumed
@@ -26,14 +26,15 @@ protocol FocusSystemDelegate: AnyObject {
     func focusSystem(_ focusSystem: any FocusSystem, moveIn direction: StateMachine.FocusDirection) -> Bool
     #endif
 
-    /// Notifies the delegate that native focus left the Rive focus environment.
+    /// Reports the end of native focus or first-responder ownership in Rive.
     ///
     /// The delegate should clear any focus retained by the Rive state machine.
     func focusSystemDidExit(_ focusSystem: any FocusSystem)
 
-    /// Reports committed native entry. A missing direction represents entry
-    /// without sequential navigation; the controller preserves existing focus.
-    /// - Returns: `false` only when attempted sequential entry was unconsumed,
+    /// Reports acquired native focus or first-responder ownership. A missing
+    /// direction represents entry without sequential navigation; the controller
+    /// preserves existing focus without selecting a node.
+    /// - Returns: `false` only when entry with a supplied sequential direction was unconsumed,
     ///   allowing platforms that support it to continue native traversal.
     @discardableResult
     func focusSystem(
@@ -47,6 +48,10 @@ protocol FocusSystemDelegate: AnyObject {
 /// Concrete implementations interpret platform focus updates and forward Rive
 /// behavior through a ``FocusSystemDelegate``. Runtime operations remain owned
 /// by the delegate rather than the platform adapter.
+///
+/// A concrete adapter may also support first-responder keyboard ownership
+/// without activating native navigation focus. Both forms of ownership report
+/// entry and exit here; key delivery remains separate from this contract.
 @MainActor
 protocol FocusSystem: AnyObject {
     /// The object that handles Rive focus behavior.

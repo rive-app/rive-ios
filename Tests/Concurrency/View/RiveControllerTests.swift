@@ -37,6 +37,7 @@ final class RiveControllerTests: XCTestCase {
 
         await fulfillment(of: [updated], timeout: 1)
         XCTAssertTrue(fixture.focusSystem.isFocusable)
+        XCTAssertEqual(fixture.delegate.focusabilityChangeCallCount, 1)
     }
 
     @MainActor
@@ -1480,6 +1481,230 @@ final class RiveControllerTests: XCTestCase {
     // MARK: - Keyboard coordination
 
     @MainActor
+    func test_keyInput_explicitKeyboardOwnershipOffersNavigationToAuthoredListenersButDoesNotTraverse() async throws {
+        for handled in [false, true] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            fixture.focusSystem.isFocusable = true
+            fixture.commandQueue.stubKeyInputSynchronized { _ in handled }
+            let keys: [StateMachine.Key] = [.tab, .left, .right, .up, .down]
+            for key in keys {
+                XCTAssertEqual(fixture.controller.handleKeyInput(
+                    key, modifiers: [], isPressed: true, isRepeat: false,
+                    hasNativeFocus: false, hasExplicitKeyboardFocus: true
+                ), handled)
+            }
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, keys.count)
+            XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+        }
+    }
+
+    @MainActor
+    func test_keyPress_explicitFirstResponderOwnershipRoutesKeysWithoutNativeFocus() async throws {
+        for handled in [false, true] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            fixture.commandQueue.stubKeyInputSynchronized { _ in handled }
+            let environment = UIView()
+            let view = KeyboardTestMetalView(frame: .zero, device: nil)
+            environment.addSubview(view)
+            view.stubIsFocused = false
+            view.stubIsFirstResponder = true
+            view.testWindow = KeyboardTestWindow()
+            view.controller = fixture.controller
+            let focusSystem = UIKitFocusSystem(dependencies: .init(focusEnvironment: environment))
+            focusSystem.isFocusable = true
+            view.focusSystem = focusSystem
+
+            // An unconfirmed responder flag does not establish a keyboard session.
+            let incidentalPress = MockKeyboardPress()
+            view.pressesBegan([incidentalPress], with: nil)
+            view.pressesEnded([incidentalPress], with: nil)
+            XCTAssertTrue(fixture.commandQueue.keyInputSynchronizedCalls.isEmpty)
+            var nativeCalls: [MockKeyboardResponder.Call] = [
+                .init(phase: .began, presses: [incidentalPress]),
+                .init(phase: .ended, presses: [incidentalPress])
+            ]
+            XCTAssertEqual(view.nativeResponder.calls, nativeCalls)
+
+            XCTAssertTrue(focusSystem.requestKeyboardFocus(in: view))
+            let ownedPress = MockKeyboardPress()
+            view.pressesBegan([ownedPress], with: nil)
+            view.pressesEnded([ownedPress], with: nil)
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+            ])
+            if !handled {
+                nativeCalls += [
+                    .init(phase: .began, presses: [ownedPress]),
+                    .init(phase: .ended, presses: [ownedPress])
+                ]
+            }
+            XCTAssertEqual(view.nativeResponder.calls, nativeCalls)
+            XCTAssertFalse(view.isFocused)
+
+            view.stubIsFirstResponder = false
+            focusSystem.didResignKeyboardFocus(in: view)
+            let outsidePress = MockKeyboardPress()
+            view.pressesBegan([outsidePress], with: nil)
+            view.pressesEnded([outsidePress], with: nil)
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 2)
+            XCTAssertEqual(view.nativeResponder.calls, nativeCalls + [
+                .init(phase: .began, presses: [outsidePress]),
+                .init(phase: .ended, presses: [outsidePress])
+            ])
+        }
+    }
+
+    @MainActor
+    func test_keyPress_nativeFirstResponderAcquisitionRoutesKeysWithoutNativeFocus() async throws {
+        for handled in [false, true] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            fixture.commandQueue.stubKeyInputSynchronized { _ in handled }
+            let environment = MockKeyboardResponder()
+            let view = KeyboardResponderMetalView(frame: CGRect(x: 0, y: 0, width: 100, height: 100), device: nil)
+            view.stubIsFocused = false
+            environment.addSubview(view)
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+            window.rootViewController = UIViewController()
+            window.rootViewController?.view = environment
+            window.makeKeyAndVisible()
+            defer { window.isHidden = true }
+            view.controller = fixture.controller
+            let focusSystem = UIKitFocusSystem(dependencies: .init(focusEnvironment: environment))
+            focusSystem.isFocusable = true
+            view.focusSystem = focusSystem
+
+            XCTAssertTrue(view.becomeFirstResponder())
+            let confirmed = expectation(description: "Standard responder confirmation finished")
+            DispatchQueue.main.async { confirmed.fulfill() }
+            await fulfillment(of: [confirmed], timeout: 1)
+            XCTAssertTrue(view.isFirstResponder)
+            XCTAssertFalse(view.isFocused)
+            XCTAssertTrue(focusSystem.ownsKeyboardInput(in: view))
+
+            let press = MockKeyboardPress()
+            view.pressesBegan([press], with: nil)
+            view.pressesEnded([press], with: nil)
+
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+            ])
+            let nativeCalls: [MockKeyboardResponder.Call] = handled ? [] : [
+                .init(phase: .began, presses: [press]),
+                .init(phase: .ended, presses: [press])
+            ]
+            XCTAssertEqual(environment.calls, nativeCalls)
+
+            XCTAssertTrue(view.resignFirstResponder())
+            XCTAssertFalse(focusSystem.ownsKeyboardInput(in: view))
+            let outsidePress = MockKeyboardPress()
+            view.pressesBegan([outsidePress], with: nil)
+            view.pressesEnded([outsidePress], with: nil)
+
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 2)
+            XCTAssertEqual(environment.calls, nativeCalls + [
+                .init(phase: .began, presses: [outsidePress]),
+                .init(phase: .ended, presses: [outsidePress])
+            ])
+        }
+    }
+
+    @MainActor
+    func test_keyPress_resigningFirstResponderPreservesReleaseWhileNativeFocusRemains() async throws {
+        for handled in [false, true] {
+            for cancelled in [false, true] {
+                let fixture = try await makeController()
+                defer { fixture.controller.invalidate() }
+                fixture.commandQueue.stubKeyInputSynchronized { _ in handled }
+                let environment = MockKeyboardResponder()
+                let view = KeyboardResponderMetalView(frame: CGRect(x: 0, y: 0, width: 100, height: 100), device: nil)
+                environment.addSubview(view)
+                let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+                window.rootViewController = UIViewController()
+                window.rootViewController?.view = environment
+                window.makeKeyAndVisible()
+                defer { window.isHidden = true }
+                view.controller = fixture.controller
+                let focusSystem = UIKitFocusSystem(dependencies: .init(focusEnvironment: environment))
+                focusSystem.isFocusable = true
+                view.focusSystem = focusSystem
+                XCTAssertTrue(focusSystem.requestKeyboardFocus(in: view))
+                XCTAssertTrue(view.isFirstResponder)
+
+                let press = MockKeyboardPress()
+                view.pressesBegan([press], with: nil)
+                XCTAssertTrue(view.resignFirstResponder())
+                XCTAssertFalse(view.isFirstResponder)
+                XCTAssertFalse(focusSystem.ownsKeyboardInput(in: view))
+                XCTAssertTrue(view.isFocused)
+
+                if cancelled {
+                    view.pressesCancelled([press], with: nil)
+                } else {
+                    view.pressesEnded([press], with: nil)
+                }
+
+                XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                    .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false),
+                    .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: false, isRepeat: false)
+                ])
+                XCTAssertEqual(environment.calls, handled ? [] : [
+                    .init(phase: .began, presses: [press]),
+                    .init(phase: cancelled ? .cancelled : .ended, presses: [press])
+                ])
+            }
+        }
+    }
+
+    @MainActor
+    func test_keyPress_resigningWithoutNativeFocusDiscardsReleaseEvenIfFocusReturns() async throws {
+        for handled in [false, true] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            fixture.commandQueue.stubKeyInputSynchronized { _ in handled }
+            let environment = MockKeyboardResponder()
+            let view = KeyboardResponderMetalView(frame: CGRect(x: 0, y: 0, width: 100, height: 100), device: nil)
+            environment.addSubview(view)
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+            window.rootViewController = UIViewController()
+            window.rootViewController?.view = environment
+            window.makeKeyAndVisible()
+            defer { window.isHidden = true }
+            view.controller = fixture.controller
+            let focusSystem = UIKitFocusSystem(dependencies: .init(focusEnvironment: environment))
+            focusSystem.isFocusable = true
+            view.focusSystem = focusSystem
+            XCTAssertTrue(focusSystem.requestKeyboardFocus(in: view))
+            XCTAssertTrue(view.isFirstResponder)
+
+            let press = MockKeyboardPress()
+            view.pressesBegan([press], with: nil)
+            view.stubIsFocused = false
+            XCTAssertTrue(view.resignFirstResponder())
+            XCTAssertFalse(view.isFirstResponder)
+            XCTAssertFalse(focusSystem.ownsKeyboardInput(in: view))
+
+            // Returning native focus must not revive a press from the ended session.
+            view.stubIsFocused = true
+            view.pressesEnded([press], with: nil)
+
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls, [
+                .init(stateMachineHandle: 123, key: .A, modifiers: [], isPressed: true, isRepeat: false)
+            ])
+            XCTAssertEqual(environment.calls, handled ? [] : [
+                .init(phase: .began, presses: [press]),
+                .init(phase: .ended, presses: [press])
+            ])
+        }
+    }
+
+    @MainActor
     func test_keyPress_controllerReplacementPreservesNativeOwnershipWithoutReplayingInput() async throws {
         for handled in [false, true] {
             for cancelled in [false, true] {
@@ -1846,14 +2071,17 @@ final class RiveControllerTests: XCTestCase {
     }
 
     @MainActor
-    func test_keyInput_withoutNativeFocusDoesNotDeliverOrWake() async throws {
+    func test_keyInput_withoutNativeOrExplicitKeyboardFocusDoesNotDeliverOrWake() async throws {
         let fixture = try await makeController()
         defer { fixture.controller.invalidate() }
         await expectSettled(within: fixture)
         fixture.focusSystem.isFocusable = true
         fixture.commandQueue.stubKeyInputSynchronized { _ in true }
 
-        XCTAssertFalse(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: false))
+        XCTAssertFalse(fixture.controller.handleKeyInput(
+            .right, modifiers: [], isPressed: true, isRepeat: false,
+            hasNativeFocus: false, hasExplicitKeyboardFocus: false
+        ))
         XCTAssertTrue(fixture.commandQueue.keyInputSynchronizedCalls.isEmpty)
         XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
         XCTAssertTrue(fixture.controller.isSettled)
@@ -1937,18 +2165,30 @@ final class RiveControllerTests: XCTestCase {
 
     @MainActor
     func test_keyInput_pausedAndInvalidatedControllersIgnoreInput() async throws {
-        let fixture = try await makeController()
-        fixture.commandQueue.stubKeyInputSynchronized { _ in true }
-        fixture.controller.isPaused = true
-        XCTAssertFalse(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
-        XCTAssertTrue(fixture.commandQueue.keyInputSynchronizedCalls.isEmpty)
+        for ownership in [(native: true, explicit: false), (native: false, explicit: true)] {
+            let fixture = try await makeController()
+            defer { fixture.controller.invalidate() }
+            fixture.commandQueue.stubKeyInputSynchronized { _ in true }
+            fixture.controller.isPaused = true
+            XCTAssertFalse(fixture.controller.handleKeyInput(
+                .right, modifiers: [], isPressed: true, isRepeat: false,
+                hasNativeFocus: ownership.native, hasExplicitKeyboardFocus: ownership.explicit
+            ))
+            XCTAssertTrue(fixture.commandQueue.keyInputSynchronizedCalls.isEmpty)
 
-        fixture.controller.isPaused = false
-        XCTAssertTrue(fixture.controller.handleKeyInput(.enter, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
-        fixture.controller.invalidate()
-        XCTAssertFalse(fixture.controller.handleKeyInput(.right, modifiers: [], isPressed: true, isRepeat: false, hasNativeFocus: true))
-        XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 1)
-        XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+            fixture.controller.isPaused = false
+            XCTAssertTrue(fixture.controller.handleKeyInput(
+                .enter, modifiers: [], isPressed: true, isRepeat: false,
+                hasNativeFocus: ownership.native, hasExplicitKeyboardFocus: ownership.explicit
+            ))
+            fixture.controller.invalidate()
+            XCTAssertFalse(fixture.controller.handleKeyInput(
+                .right, modifiers: [], isPressed: true, isRepeat: false,
+                hasNativeFocus: ownership.native, hasExplicitKeyboardFocus: ownership.explicit
+            ))
+            XCTAssertEqual(fixture.commandQueue.keyInputSynchronizedCalls.count, 1)
+            XCTAssertTrue(fixture.commandQueue.focusInDirectionSynchronizedCalls.isEmpty)
+        }
     }
 
     @MainActor
@@ -2316,12 +2556,29 @@ final class RiveControllerTests: XCTestCase {
 @MainActor
 private final class KeyboardTestMetalView: UIKitMetalView {
     let nativeResponder = MockKeyboardResponder()
-    override var isFocused: Bool { true }
+    var stubIsFocused = true
+    var stubIsFirstResponder = false
+    var testWindow: UIWindow?
+    override var window: UIWindow? { testWindow ?? super.window }
+    override var isFocused: Bool { stubIsFocused }
+    override var isFirstResponder: Bool { stubIsFirstResponder }
     override var next: UIResponder? { nativeResponder }
 }
 
 @MainActor
-private final class MockKeyboardResponder: UIResponder {
+private final class KeyboardTestWindow: UIWindow {
+    override var isKeyWindow: Bool { true }
+}
+
+/// Uses real UIKit responder ownership while controlling navigation focus separately.
+@MainActor
+private final class KeyboardResponderMetalView: UIKitMetalView {
+    var stubIsFocused = true
+    override var isFocused: Bool { stubIsFocused }
+}
+
+@MainActor
+private final class MockKeyboardResponder: UIView {
     struct Call: Equatable {
         let phase: UIPress.Phase
         let presses: Set<UIPress>
@@ -2373,6 +2630,12 @@ private struct MockScaleProvider: ScaleProvider {
 }
 
 private class MockControllerDelegate: RiveControllerDelegate {
+    private(set) var focusabilityChangeCallCount = 0
+
+    func controllerDidChangeFocusability(_ controller: RiveController) {
+        focusabilityChangeCallCount += 1
+    }
+
     var drawableSize: CGSize
     var nativeScale: CGFloat?
     var displayScale: CGFloat

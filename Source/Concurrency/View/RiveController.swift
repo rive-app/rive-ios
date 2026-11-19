@@ -16,6 +16,8 @@ import UIKit
 @MainActor
 protocol RiveControllerDelegate: AnyObject, ScaleProvider {
     var drawableSize: CGSize { get }
+    /// Reports focus discovery changes that may unblock a pending view request.
+    func controllerDidChangeFocusability(_ controller: RiveController)
     #if !os(macOS) || RIVE_MAC_CATALYST
     var accessibilityContainer: AnyObject { get }
     func controller(_ controller: RiveController, didUpdateModalState isModal: Bool) -> Bool
@@ -24,6 +26,12 @@ protocol RiveControllerDelegate: AnyObject, ScaleProvider {
 
 // MARK: - RiveController
 
+/// Coordinates playback, rendering, and input behavior for a Rive view.
+///
+/// Native focus and confirmed first-responder ownership permit authored input through
+/// ``KeyboardController``. Only native focus enables unhandled keys to fall back
+/// to ``FocusController`` navigation. Platform adapters manage acquiring and losing
+/// ownership; this controller coordinates the resulting Rive behavior.
 @MainActor
 final class RiveController {
     let rive: Rive
@@ -204,8 +212,9 @@ final class RiveController {
 
     /// Offers keyboard input to Rive before trying focus navigation.
     ///
-    /// The native event adapter supplies focus ownership. Authored keyboard
-    /// handling takes priority over the focus controller's navigation fallback.
+    /// The native event adapter supplies focus ownership. First-responder
+    /// ownership enables authored input without native navigation. Once native
+    /// focus is active, unhandled keys can fall back to focus traversal.
     /// A `false` result leaves the event to its platform without assuming that
     /// native focus actually left Rive.
     func handleKeyInput(
@@ -213,12 +222,16 @@ final class RiveController {
         modifiers: StateMachine.KeyModifiers,
         isPressed: Bool,
         isRepeat: Bool,
-        hasNativeFocus: Bool
+        hasNativeFocus: Bool,
+        hasExplicitKeyboardFocus: Bool = false
     ) -> Bool {
-        guard hasNativeFocus else { return false }
+        guard hasNativeFocus || hasExplicitKeyboardFocus else { return false }
         if keyboardController.keyInput(key, modifiers: modifiers, isPressed: isPressed, isRepeat: isRepeat) {
             return true
         }
+        // First-responder ownership can precede UIKit keyboard navigation.
+        // Let UIKit establish native focus before attempting navigation fallback.
+        guard hasNativeFocus else { return false }
         return focusController.handleNavigationKey(key, modifiers: modifiers, isPressed: isPressed)
     }
 
@@ -524,6 +537,10 @@ extension RiveController: SemanticsControllerDelegate {
 // MARK: - RiveController + FocusControllerDelegate
 
 extension RiveController: FocusControllerDelegate {
+    func focusControllerDidChangeFocusability(_ controller: FocusController) {
+        delegate?.controllerDidChangeFocusability(self)
+    }
+
     func focusControllerDidRequestWake(_ controller: FocusController) {
         markDirty()
     }

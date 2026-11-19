@@ -8,7 +8,12 @@
 #if os(macOS) && !RIVE_MAC_CATALYST
 import AppKit
 
-/// Coordinates native entry and exit for Rive's AppKit key view.
+/// Coordinates native and explicitly requested entry and exit for Rive's
+/// AppKit key view.
+///
+/// AppKit's first responder owns both keyboard input and native key-view focus.
+/// This adapter reports those transitions to ``FocusController``;
+/// ``RiveController`` coordinates authored input and navigation fallback.
 @MainActor
 final class AppKitFocusSystem: FocusSystem {
     weak var delegate: (any FocusSystemDelegate)?
@@ -21,15 +26,70 @@ final class AppKitFocusSystem: FocusSystem {
 
     private var isInvalidated = false
 
+    /// Defers the native entry callback until an explicit request confirms
+    /// that AppKit installed the requested rendering view as first responder.
+    private weak var keyboardFocusRequest: NSView?
+
+    /// The view whose native entry this adapter reported. A stale request must
+    /// not relinquish ownership already accepted by a replacement adapter.
+    private weak var nativeFocusOwner: NSView?
+
     /// The direction to continue after an unsuccessful entry finishes committing.
     private var pendingEntryContinuation: FocusTraversalDirection?
+
+    /// Requests first-responder ownership and enters authored focus once confirmed.
+    /// Existing authored focus is preserved by the delegate's entry handling.
+    /// Unlike sequential native entry, an unconsumed explicit request does not
+    /// continue through the key-view loop.
+    /// - Returns: Whether an eligible request established or retained first-responder ownership.
+    func requestKeyboardFocus(in view: AppKitMetalView) -> Bool {
+        guard !isInvalidated, isFocusable, keyboardFocusRequest == nil,
+              view.acceptsFirstResponder, let window = view.window,
+              window.isKeyWindow else { return false }
+
+        keyboardFocusRequest = view
+        defer { keyboardFocusRequest = nil }
+
+        let wasFirstResponder = window.firstResponder === view
+        let accepted = wasFirstResponder || window.makeFirstResponder(view)
+        guard !isInvalidated else {
+            // AppKit may commit after invalidation. Undo only this request's
+            // acquisition, not entry already accepted by a replacement adapter.
+            let currentSystem = view.focusSystem
+            let hasCurrentOwner = currentSystem?.keyboardFocusRequest === view
+                || currentSystem?.nativeFocusOwner === view
+            if !wasFirstResponder, window.firstResponder === view, !hasCurrentOwner {
+                window.makeFirstResponder(nil)
+            }
+            return false
+        }
+        // AppKit can accept the transition but make the window first responder
+        // if the requested view declines it. Confirm the actual owner.
+        guard accepted, isFocusable,
+              view.window === window, window.isKeyWindow,
+              window.firstResponder === view else {
+            // Track committed native ownership even if the explicit request
+            // failed. The controller applies the current entry eligibility.
+            if window.firstResponder === view {
+                nativeFocusOwner = view
+                delegate?.focusSystem(self, didEnter: defaultEntryDirection)
+            }
+            return false
+        }
+
+        pendingEntryContinuation = nil
+        nativeFocusOwner = view
+        delegate?.focusSystem(self, didEnter: .next)
+        return true
+    }
 
     /// Reports native entry; the controller preserves an existing node or
     /// traverses into Rive using AppKit's key-view selection direction.
     /// An unconsumed sequential entry continues through the native key-view loop.
     func didBecomeFirstResponder(in view: NSView, selectionDirection: NSWindow.SelectionDirection) {
         pendingEntryContinuation = nil
-        guard !isInvalidated, isFocusable else { return }
+        guard !isInvalidated, isFocusable, keyboardFocusRequest !== view else { return }
+        nativeFocusOwner = view
         let direction: FocusTraversalDirection?
         switch selectionDirection {
         case .selectingNext: direction = .next
@@ -48,6 +108,7 @@ final class AppKitFocusSystem: FocusSystem {
 
     /// Clears Rive focus after the rendering view relinquishes first responder.
     func didResignFirstResponder() {
+        nativeFocusOwner = nil
         pendingEntryContinuation = nil
         guard !isInvalidated else { return }
         delegate?.focusSystemDidExit(self)
@@ -57,6 +118,8 @@ final class AppKitFocusSystem: FocusSystem {
     func invalidate() {
         guard !isInvalidated else { return }
         isInvalidated = true
+        keyboardFocusRequest = nil
+        nativeFocusOwner = nil
         pendingEntryContinuation = nil
         delegate = nil
     }

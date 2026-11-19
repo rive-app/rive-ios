@@ -116,7 +116,9 @@ final class FocusControllerTests: XCTestCase {
 
         assertNavigationIsIgnored()
 
-        await respondToFocusSnapshot(hasFocusNodes: true, in: fixture)
+        await respondToFocusSnapshot(hasFocusNodes: true, focusState: .init(
+            hasFocus: true, expectsKeyboardInput: false
+        ), in: fixture)
         fixture.controller.focusSystem(fixture.focusSystem, didEnter: nil)
         fixture.controller.isPaused = true
         XCTAssertTrue(fixture.focusSystem.isFocusable)
@@ -272,11 +274,19 @@ final class FocusControllerTests: XCTestCase {
 
         await respondToFocusSnapshot(hasFocusNodes: true, in: fixture)
         XCTAssertTrue(fixture.focusSystem.isFocusable)
+        XCTAssertEqual(fixture.delegate.focusabilityChangeCallCount, 1)
+
+        fixture.commandQueue.stubRequestHasFocusNodes { [weak service = fixture.service] handle, requestID in
+            service?.onHasFocusNodesReceived(handle, requestID: requestID, hasFocusNodes: true)
+        }
+        await respondToFocusState(.init(hasFocus: false, expectsKeyboardInput: false), in: fixture)
+        XCTAssertEqual(fixture.delegate.focusabilityChangeCallCount, 1)
 
         await respondToFocusSnapshot(hasFocusNodes: false, in: fixture)
         XCTAssertFalse(fixture.focusSystem.isFocusable)
+        XCTAssertEqual(fixture.delegate.focusabilityChangeCallCount, 2)
         XCTAssertNil(fixture.controller.focusState)
-        XCTAssertEqual(fixture.commandQueue.requestHasFocusNodesCalls.count, 2)
+        XCTAssertEqual(fixture.commandQueue.requestHasFocusNodesCalls.count, 3)
     }
 
     @MainActor
@@ -979,7 +989,9 @@ final class FocusControllerTests: XCTestCase {
     func test_pausePreservesFocusAndIgnoresInputAndPolling() async {
         let fixture = makeFixture()
         defer { fixture.controller.invalidate() }
-        await respondToFocusSnapshot(hasFocusNodes: true, in: fixture)
+        await respondToFocusSnapshot(hasFocusNodes: true, focusState: .init(
+            hasFocus: true, expectsKeyboardInput: false
+        ), in: fixture)
         fixture.controller.focusSystem(fixture.focusSystem, didEnter: nil)
 
         fixture.controller.isPaused = true
@@ -987,7 +999,9 @@ final class FocusControllerTests: XCTestCase {
         fixture.controller.didAdvance()
 
         XCTAssertTrue(fixture.focusSystem.isFocusable)
+        XCTAssertEqual(fixture.controller.focusState?.hasFocus, true)
         XCTAssertTrue(fixture.commandQueue.clearFocusCalls.isEmpty)
+        XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
         XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
         XCTAssertEqual(fixture.commandQueue.requestHasFocusNodesCalls.count, 1)
         XCTAssertEqual(fixture.commandQueue.requestFocusStateCalls.count, 1)
@@ -1230,6 +1244,32 @@ final class FocusControllerTests: XCTestCase {
     }
 
     @MainActor
+    func test_nativeEntry_withoutDirectionRetainsEntryWithoutSelectingNode() async {
+        let fixture = makeFixture()
+        defer { fixture.controller.invalidate() }
+        await respondToFocusSnapshot(hasFocusNodes: true, in: fixture)
+        XCTAssertEqual(fixture.delegate.wakeCallCount, 0)
+
+        // Directionless entry, such as a click, waits for sequential navigation.
+        XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: nil))
+
+        XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+        XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+        XCTAssertEqual(fixture.controller.focusState, .init(hasFocus: false, expectsKeyboardInput: false))
+        XCTAssertEqual(fixture.delegate.wakeCallCount, 0)
+
+        // Later polling does not enter either, but sequential navigation still can.
+        await respondToFocusState(.init(hasFocus: false, expectsKeyboardInput: false), in: fixture)
+        XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+        fixture.commandQueue.stubFocusNextWithResultSynchronized { _ in
+            .init(moved: true, focusState: .init(hasFocus: true, expectsKeyboardInput: false))
+        }
+        XCTAssertTrue(fixture.controller.handleNavigationKey(.tab, modifiers: [], isPressed: true))
+        XCTAssertEqual(fixture.commandQueue.focusNextWithResultSynchronizedCalls.count, 1)
+        XCTAssertTrue(fixture.commandQueue.clearFocusCalls.isEmpty)
+    }
+
+    @MainActor
     func test_nativeEntry_preservesNodeConfirmedBySnapshotOrTraversal() async {
         for direction: FocusTraversalDirection? in [.next, .previous, nil] {
             for acquiredByTraversal in [false, true] {
@@ -1243,8 +1283,11 @@ final class FocusControllerTests: XCTestCase {
                 }
                 if acquiredByTraversal { _ = fixture.controller.traverse(.next) }
                 XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: direction))
+                // Requesting entry again must preserve the same authored node.
+                XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: direction))
                 XCTAssertEqual(fixture.commandQueue.focusNextWithResultSynchronizedCalls.count, acquiredByTraversal ? 1 : 0)
                 XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+                XCTAssertEqual(fixture.delegate.wakeCallCount, acquiredByTraversal ? 1 : 0)
             }
         }
     }
@@ -1281,23 +1324,31 @@ final class FocusControllerTests: XCTestCase {
 
     @MainActor
     func test_nativeEntry_doesNotTraverseWhileUnavailablePausedOrInvalidated() async {
-        let fixture = makeFixture()
-        defer { fixture.controller.invalidate() }
-        XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: .next))
-        XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+        for direction: FocusTraversalDirection? in [.next, .previous, nil] {
+            let fixture = makeFixture()
+            defer { fixture.controller.invalidate() }
+            XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: direction))
+            XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+            XCTAssertEqual(fixture.delegate.wakeCallCount, 0)
 
-        await respondToFocusSnapshot(hasFocusNodes: true, in: fixture)
-        fixture.controller.isPaused = true
-        XCTAssertTrue(fixture.focusSystem.isFocusable)
-        XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: .next))
-        XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+            await respondToFocusSnapshot(hasFocusNodes: true, in: fixture)
+            fixture.controller.isPaused = true
+            XCTAssertTrue(fixture.focusSystem.isFocusable)
+            XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: direction))
+            XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+            XCTAssertEqual(fixture.delegate.wakeCallCount, 0)
 
-        fixture.controller.invalidate()
-        fixture.controller.isPaused = false
-        XCTAssertFalse(fixture.focusSystem.isFocusable)
-        fixture.focusSystem.isFocusable = true
-        XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: .next))
-        XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+            fixture.controller.invalidate()
+            fixture.controller.isPaused = false
+            XCTAssertFalse(fixture.focusSystem.isFocusable)
+            fixture.focusSystem.isFocusable = true
+            XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: direction))
+            XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
+            XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
+            XCTAssertEqual(fixture.delegate.wakeCallCount, 0)
+        }
     }
 
     @MainActor
@@ -1327,6 +1378,7 @@ final class FocusControllerTests: XCTestCase {
         defer { fixture.controller.invalidate() }
         await respondToFocusSnapshot(hasFocusNodes: true, in: fixture)
         XCTAssertTrue(fixture.controller.focusSystem(fixture.focusSystem, didEnter: nil))
+        XCTAssertTrue(fixture.controller.focusSystem(MockFocusSystem(), didEnter: nil))
         XCTAssertTrue(fixture.controller.focusSystem(MockFocusSystem(), didEnter: .next))
         XCTAssertTrue(fixture.commandQueue.focusNextWithResultSynchronizedCalls.isEmpty)
         XCTAssertTrue(fixture.commandQueue.focusPreviousWithResultSynchronizedCalls.isEmpty)
@@ -1405,6 +1457,11 @@ private final class FocusControllerFixture {
 @MainActor
 private final class MockFocusControllerDelegate: FocusControllerDelegate {
     private(set) var wakeCallCount = 0
+    private(set) var focusabilityChangeCallCount = 0
+
+    func focusControllerDidChangeFocusability(_ controller: FocusController) {
+        focusabilityChangeCallCount += 1
+    }
 
     func focusControllerDidRequestWake(_ controller: FocusController) {
         wakeCallCount += 1
