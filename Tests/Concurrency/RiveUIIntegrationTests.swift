@@ -289,4 +289,27 @@ class RiveUIIntegrationTests: XCTestCase {
         XCTAssertEqual(viewModelName, info.viewModelName)
         XCTAssertEqual(name, info.instanceName)
     }
+
+    @MainActor
+    func test_getDefaultViewModelInfo_withNoViewModel_throwsInvalidArtboard() async throws {
+        let worker = try await Worker()
+        let file = try await File(source: .local("no_view_model", Bundle(for: Self.self)), worker: worker)
+        let artboard = try await file.createArtboard()
+
+        do {
+            _ = try await file.getDefaultViewModelInfo(for: artboard)
+            XCTFail("Expected ArtboardError.invalidArtboard to be thrown")
+        } catch let error as ArtboardError {
+            guard case .invalidArtboard(let message) = error else {
+                XCTFail("Expected ArtboardError.invalidArtboard, got \(error)")
+                return
+            }
+            XCTAssertEqual(
+                message,
+                "Could not find default view model for artboard when getting default view model info"
+            )
+        } catch {
+            XCTFail("Expected ArtboardError, got \(type(of: error)): \(error)")
+        }
+    }
 }

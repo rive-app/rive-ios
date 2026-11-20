@@ -837,16 +837,13 @@ public:
    *
    * @param handle The artboard handle that was queried.
    * @param requestId The unique identifier for the request that completed.
-   * @param viewModelName The name of the default view model from the C++
-   * runtime.
-   * @param instanceName The name of the default view model instance from the
-   * C++ runtime.
+   * @param info The default view model and instance names from the C++
+   * runtime, or std::nullopt if the artboard has no default view model.
    */
   virtual void onDefaultViewModelInfoReceived(
       const rive::ArtboardHandle handle,
       uint64_t requestId,
-      std::string viewModelName,
-      std::string instanceName) override;
+      std::optional<rive::CommandQueue::DefaultViewModelInfo> info) override;
 
   virtual void onArtboardVolumeReceived(
       const rive::ArtboardHandle handle,
@@ -915,15 +912,25 @@ void _ArtboardListener::onStateMachineInstantiated(
 void _ArtboardListener::onDefaultViewModelInfoReceived(
     const rive::ArtboardHandle handle,
     uint64_t requestId,
-    std::string viewModelName,
-    std::string instanceName)
+    std::optional<rive::CommandQueue::DefaultViewModelInfo> info)
 {
+  if (!info)
+  {
+    // iOS reports a missing default view model as an error until its public
+    // API returns an optional.
+    onArtboardError(
+        handle,
+        requestId,
+        "Could not find default view model for artboard when getting "
+        "default view model info");
+    return;
+  }
   if (_observer)
   {
     NSString* viewModelNameObjC = [NSString
-        stringWithUTF8String:viewModelName.c_str()];
+        stringWithUTF8String:info->viewModelName.c_str()];
     NSString* instanceNameObjC = [NSString
-        stringWithUTF8String:instanceName.c_str()];
+        stringWithUTF8String:info->instanceName.c_str()];
     [_observer onDefaultViewModelInfoReceived:reinterpret_cast<uint64_t>(handle)
                                     requestID:requestId
                                 viewModelName:viewModelNameObjC
