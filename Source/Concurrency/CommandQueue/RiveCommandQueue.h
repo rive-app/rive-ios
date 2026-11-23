@@ -269,12 +269,15 @@ NS_SWIFT_NAME(CommandQueueProtocol)
  * Loads a Rive file into the command queue.
  *
  * @param data The binary data of the Rive file to load
+ * @param deferDecoding Whether eligible file contents decode on first use
+ * instead of at import
  * @return A unique file handle identifier that can be used for subsequent
  * operations
  * @note The file handle is only valid for the lifetime of the loaded file.
  *       Once the file is deleted using deleteFile:, the handle becomes invalid.
  */
 - (uint64_t)loadFile:(NSData*)data
+       deferDecoding:(BOOL)deferDecoding
             observer:(id<RiveFileListener>)observer
            requestID:(uint64_t)requestID;
 

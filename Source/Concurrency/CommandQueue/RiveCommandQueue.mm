@@ -2205,6 +2205,8 @@ void _AudioListener::onAudioSourceDeleted(
  * is successfully loaded or if an error occurs.
  *
  * @param data The binary data of the Rive file to load
+ * @param deferDecoding Whether eligible file contents decode on first use
+ * instead of at import
  * @param observer The observer that will receive file-related event
  * notifications
  * @param requestID A unique identifier for this loading request
@@ -2213,6 +2215,7 @@ void _AudioListener::onAudioSourceDeleted(
  * @note This method must be called on the MainActor
  */
 - (uint64_t)loadFile:(nonnull NSData*)data
+       deferDecoding:(BOOL)deferDecoding
             observer:(nonnull id<RiveFileListener>)observer
            requestID:(uint64_t)requestID
 {
@@ -2227,8 +2230,16 @@ void _AudioListener::onAudioSourceDeleted(
 
     auto listener = std::make_unique<_FileListener>(observer);
 
+    rive::FileImportOptions importOptions;
+    importOptions.deferDecoding = deferDecoding;
     auto handle = self->_commandQueue->loadFile(
-        std::move(fileBytes), listener.get(), requestID);
+        std::move(fileBytes),
+        listener.get(),
+        requestID,
+#ifdef WITH_RIVE_SCRIPTING
+        nullptr,
+#endif
+        std::move(importOptions));
 
     // Store the listener so it doesn't get deallocated
     uint64_t fileHandleUInt = reinterpret_cast<uint64_t>(handle);

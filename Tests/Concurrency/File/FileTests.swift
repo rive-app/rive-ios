@@ -59,6 +59,64 @@ class FileTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 1)
     }
 
+    // MARK: - Configuration
+
+    func test_configuration_defaultsToEagerDecoding() {
+        XCTAssertFalse(File.Configuration().deferDecoding)
+    }
+
+    @MainActor
+    func test_init_withoutConfiguration_loadsWithEagerDecoding() async throws {
+        let call = try await loadFileCall { source, worker in
+            try await File(source: source, worker: worker)
+        }
+        XCTAssertFalse(call.deferDecoding)
+    }
+
+    @MainActor
+    func test_init_withDeferredConfiguration_loadsWithDeferredDecoding() async throws {
+        let call = try await loadFileCall { source, worker in
+            try await File(source: source, worker: worker, configuration: .init(deferDecoding: true))
+        }
+        XCTAssertTrue(call.deferDecoding)
+    }
+
+    /// Loads a file through the public initializer against a mock command queue and returns the
+    /// single load request it sent, so tests can assert on what reached the queue.
+    @MainActor
+    private func loadFileCall(
+        _ load: (Source, Worker) async throws -> File
+    ) async throws -> MockCommandQueue.LoadFileCall {
+        let mockCommandQueue = MockCommandQueue()
+        let testData = Data([0x52, 0x49, 0x56, 0x45]) // RIVE file header
+        var receivedRequestID: UInt64?
+        mockCommandQueue.stubLoadFile { _, listener, requestID in
+            receivedRequestID = requestID
+            listener.onFileLoaded(42, requestID: requestID)
+            return 42
+        }
+        let workerService = WorkerService(
+            dependencies: .init(
+                commandQueue: mockCommandQueue,
+                commandServer: MockCommandServer(),
+                renderContext: RiveUIRenderContext(
+                    device: await MetalDevice.shared.defaultDevice()!.value
+                ),
+                messagePumpDriver: mockCommandQueue
+            )
+        )
+        let worker = Worker(dependencies: .init(workerService: workerService))
+
+        let file = try await load(.data(testData), worker)
+
+        XCTAssertEqual(file.fileHandle, 42)
+        XCTAssertEqual(mockCommandQueue.loadFileCalls.count, 1)
+        let call = try XCTUnwrap(mockCommandQueue.loadFileCalls.first)
+        XCTAssertEqual(call.data, testData)
+        XCTAssertEqual(call.requestID, receivedRequestID)
+        return call
+    }
+
     @MainActor
     func test_getArtboardNames_withValidFileHandle_returnsArtboardNames() async throws {
         let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 1)
@@ -240,7 +298,76 @@ class FileTests: XCTestCase {
 
         await fulfillment(of: [expectation], timeout: 1)
     }
-    
+
+    @MainActor
+    func test_createArtboardNamed_whenServerReportsError_deletesListener() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+        mockCommandQueue.stubCreateArtboardNamed { _, fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "")
+            return 7
+        }
+
+        _ = try? await file.createArtboard("Invalid Artboard")
+
+        XCTAssertEqual(mockCommandQueue.deleteArtboardListenerCalls.map(\.artboardHandle), [7])
+        // The server created nothing, so there is no artboard to delete.
+        XCTAssertTrue(mockCommandQueue.deleteArtboardCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_createDefaultArtboard_whenServerReportsError_deletesListener() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+        mockCommandQueue.stubCreateDefaultArtboard { fileHandle, _, requestID in
+            fileService.onFileError(fileHandle, requestID: requestID, message: "")
+            return 7
+        }
+
+        _ = try? await file.createArtboard()
+
+        XCTAssertEqual(mockCommandQueue.deleteArtboardListenerCalls.map(\.artboardHandle), [7])
+        // The server created nothing, so there is no artboard to delete.
+        XCTAssertTrue(mockCommandQueue.deleteArtboardCalls.isEmpty)
+    }
+
+    @MainActor
+    func test_createArtboardNamed_whenCancelled_deletesArtboardAndListener() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let requestSent = expectation(description: "createArtboardNamed called")
+        mockCommandQueue.stubCreateArtboardNamed { _, _, _, _ in
+            requestSent.fulfill()
+            return 7
+        }
+
+        let task = Task { @MainActor in
+            try await file.createArtboard("Artboard")
+        }
+        await fulfillment(of: [requestSent], timeout: 1)
+        task.cancel()
+        _ = try? await task.value
+
+        // The server may still create the artboard, so both it and its listener are deleted.
+        XCTAssertEqual(mockCommandQueue.deleteArtboardCalls.map(\.artboardHandle), [7])
+        XCTAssertEqual(mockCommandQueue.deleteArtboardListenerCalls.map(\.artboardHandle), [7])
+    }
+
+    @MainActor
+    func test_createArtboardNamed_whenServerSucceeds_keepsListener() async throws {
+        let (file, mockCommandQueue, _, _) = await File.mock(fileHandle: 123)
+        let fileService = file.dependencies.fileService
+        mockCommandQueue.stubCreateArtboardNamed { _, fileHandle, _, requestID in
+            fileService.onArtboardInstantiated(fileHandle, requestID: requestID, artboardHandle: 7)
+            return 7
+        }
+
+        let artboard = try await file.createArtboard("Artboard")
+
+        // The returned artboard owns the listener until it is deinitialized.
+        XCTAssertEqual(artboard.artboardHandle, 7)
+        XCTAssertTrue(mockCommandQueue.deleteArtboardListenerCalls.isEmpty)
+    }
+
     // MARK: - createViewModelInstance success paths
 
     @MainActor
@@ -869,7 +996,7 @@ class FileTests: XCTestCase {
         }
 
         let task = Task { @MainActor in
-            try await fileService.loadFile(data: testData)
+            try await fileService.loadFile(data: testData, configuration: .init())
         }
 
         await fulfillment(of: [enteredContinuation], timeout: 1)

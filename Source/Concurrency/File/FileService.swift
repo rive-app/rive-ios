@@ -84,14 +84,24 @@ final class FileService: NSObject, FileListener {
     /// Creates a request ID, stores the continuation, and delegates to the command queue.
     /// The continuation is resumed when `onFileLoaded` or `onFileError` is called.
     ///
-    /// - Parameter data: The raw data of the Rive file to load
+    /// - Parameters:
+    ///   - data: The raw data of the Rive file to load
+    ///   - configuration: The options applied when importing the file
     /// - Returns: A `File.FileHandle` that can be used to access the loaded file
     /// - Throws: `FileError.invalidFile` if the file cannot be loaded or parsed
     @MainActor
-    func loadFile(data: Data) async throws -> File.FileHandle {
-        RiveLog.debug(tag: .file, "[File] Loading file (\(data.count) bytes)")
+    func loadFile(data: Data, configuration: File.Configuration) async throws -> File.FileHandle {
+        RiveLog.debug(
+            tag: .file,
+            "[File] Loading file (\(data.count) bytes, deferDecoding: \(configuration.deferDecoding))"
+        )
         return try await withCancellableRequest(mapError: FileError.invalidFile) { requestID in
-            self.dependencies.commandQueue.loadFile(data, observer: self, requestID: requestID)
+            self.dependencies.commandQueue.loadFile(
+                data,
+                deferDecoding: configuration.deferDecoding,
+                observer: self,
+                requestID: requestID
+            )
         }
     }
 
@@ -108,13 +118,31 @@ final class FileService: NSObject, FileListener {
     /// - Throws: `FileError.invalidArtboard` if the server reports an error.
     @MainActor
     func instantiateArtboard(name: String?, fileHandle: File.FileHandle, observer: ArtboardListener) async throws -> Artboard.ArtboardHandle {
-        try await withCancellableRequest(mapError: FileError.invalidArtboard) { requestID in
-            let commandQueue = self.dependencies.commandQueue
-            if let name {
-                _ = commandQueue.createArtboardNamed(name, fromFile: fileHandle, observer: observer, requestID: requestID)
-            } else {
-                _ = commandQueue.createDefaultArtboard(fromFile: fileHandle, observer: observer, requestID: requestID)
+        // The command queue registers the observer's listener under this handle before the
+        // server answers.
+        var provisionalHandle: Artboard.ArtboardHandle?
+        do {
+            return try await withCancellableRequest(mapError: FileError.invalidArtboard) { requestID in
+                let commandQueue = self.dependencies.commandQueue
+                if let name {
+                    provisionalHandle = commandQueue.createArtboardNamed(name, fromFile: fileHandle, observer: observer, requestID: requestID)
+                } else {
+                    provisionalHandle = commandQueue.createDefaultArtboard(fromFile: fileHandle, observer: observer, requestID: requestID)
+                }
             }
+        } catch {
+            // No Artboard is returned when the request fails, so nothing else cleans up after it.
+            if let provisionalHandle {
+                let commandQueue = dependencies.commandQueue
+                // A cancelled request may still succeed on the server, leaving an artboard no one
+                // owns. Commands run in order, so this delete follows its creation. Its reply goes
+                // to the listener deleted below, so nothing waits for it.
+                if case FileError.cancelled = error {
+                    commandQueue.deleteArtboard(provisionalHandle, requestID: commandQueue.nextRequestID)
+                }
+                commandQueue.deleteArtboardListener(provisionalHandle)
+            }
+            throw error
         }
     }
 

@@ -90,6 +90,7 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var stopCalls: [StopCall] = []
     private(set) var disconnectCalls: [DisconnectCall] = []
     private(set) var drawCalls: [DrawCall] = []
+    private(set) var loadFileCalls: [LoadFileCall] = []
     private(set) var deleteFileCalls: [DeleteFileCall] = []
     private(set) var deleteFileListenerCalls: [DeleteFileListenerCall] = []
     private(set) var requestArtboardNamesCalls: [RequestArtboardNamesCall] = []
@@ -565,7 +566,8 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         deleteAudioListenerStub = stub
     }
 
-    func loadFile(_ data: Data, observer: any FileListener, requestID: UInt64) -> UInt64 {
+    func loadFile(_ data: Data, deferDecoding: Bool, observer: any FileListener, requestID: UInt64) -> UInt64 {
+        loadFileCalls.append(LoadFileCall(data: data, deferDecoding: deferDecoding, requestID: requestID))
         if let stub = loadFileStub {
             return stub(data, observer, requestID)
         }
@@ -1445,6 +1447,13 @@ extension MockCommandQueue {
     struct DisconnectCall {
     }
     
+    /// A recorded file load, including the decoding policy sent to the command queue.
+    struct LoadFileCall {
+        let data: Data
+        let deferDecoding: Bool
+        let requestID: UInt64
+    }
+
     struct DeleteFileCall {
         let fileHandle: UInt64
         let requestID: UInt64

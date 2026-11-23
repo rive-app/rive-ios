@@ -78,6 +78,127 @@ class RiveUIIntegrationTests: XCTestCase {
         }
     }
 
+    // MARK: - Deferred Decoding
+    //
+    // Fixture: multipleartboards.riv defines "artboard1" and "artboard2", each with a state
+    // machine named "<artboard>stateMachine1". With deferred decoding, the default artboard still
+    // decodes at import, while other eligible artboards decode when first instantiated. These
+    // tests check that deferred results match eager ones; the malformed-file tests below are the
+    // ones that prove the policy reaches the C++ runtime.
+
+    @MainActor
+    func test_getArtboardNames_withDeferredDecoding_matchesEagerDecoding() async throws {
+        let worker = try await Worker()
+        let source = Source.local("multipleartboards", Bundle(for: Self.self))
+        let eagerFile = try await File(source: source, worker: worker)
+        let deferredFile = try await File(
+            source: source,
+            worker: worker,
+            configuration: .init(deferDecoding: true)
+        )
+
+        let eagerNames = try await eagerFile.getArtboardNames()
+        let deferredNames = try await deferredFile.getArtboardNames()
+
+        XCTAssertEqual(deferredNames, eagerNames)
+    }
+
+    @MainActor
+    func test_createStateMachine_withDeferredDecoding_createsEachArtboardAndStateMachine() async throws {
+        let worker = try await Worker()
+        let file = try await File(
+            source: .local("multipleartboards", Bundle(for: Self.self)),
+            worker: worker,
+            configuration: .init(deferDecoding: true)
+        )
+
+        for name in ["artboard1", "artboard2"] {
+            let artboard = try await file.createArtboard(name)
+            _ = try await artboard.createStateMachine("\(name)stateMachine1")
+        }
+    }
+
+    @MainActor
+    func test_createViewModelInstance_withDeferredDecoding_decodesNamedInstance() async throws {
+        let worker = try await Worker()
+        let file = try await File(
+            source: .local("data_binding_test", Bundle(for: Self.self)),
+            worker: worker,
+            configuration: .init(deferDecoding: true)
+        )
+
+        let instance = try await file.createViewModelInstance(.name("Editor Defaults", from: .name("Test")))
+        let viewModelName = try await instance.viewModelName()
+        let name = try await instance.name()
+
+        XCTAssertEqual(viewModelName, "Test")
+        XCTAssertEqual(name, "Editor Defaults")
+    }
+
+    // Fixture: malformed_deferred_artboard.riv holds the bytes of `meshWithoutIndices()` in
+    // packages/runtime/tests/unit_tests/runtime/malformed_deferred_artboard.hpp. Its default
+    // artboard "first" nests "second", whose mesh has no triangle indices. An eager load fails
+    // the whole file. A deferred load succeeds, "first" loads with its nested artboard empty, and
+    // creating "second" throws. The load outcomes differ only if the decoding policy reaches the
+    // C++ runtime.
+
+    @MainActor
+    func test_init_withMalformedDeferredArtboard_andEagerDecoding_throwsInvalidFile() async throws {
+        let worker = try await Worker()
+
+        do {
+            _ = try await File(
+                source: .local("malformed_deferred_artboard", Bundle(for: Self.self)),
+                worker: worker
+            )
+            XCTFail("Expected FileError.invalidFile to be thrown")
+        } catch let error as FileError {
+            guard case .invalidFile = error else {
+                XCTFail("Expected FileError.invalidFile, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+    }
+
+    @MainActor
+    func test_init_withMalformedDeferredArtboard_andDeferredDecoding_loadsNestingArtboard() async throws {
+        let worker = try await Worker()
+        let file = try await File(
+            source: .local("malformed_deferred_artboard", Bundle(for: Self.self)),
+            worker: worker,
+            configuration: .init(deferDecoding: true)
+        )
+
+        let names = try await file.getArtboardNames()
+        _ = try await file.createArtboard("first")
+
+        XCTAssertEqual(names, ["first", "second"])
+    }
+
+    @MainActor
+    func test_createArtboard_withMalformedDeferredArtboard_throwsInvalidArtboard() async throws {
+        let worker = try await Worker()
+        let file = try await File(
+            source: .local("malformed_deferred_artboard", Bundle(for: Self.self)),
+            worker: worker,
+            configuration: .init(deferDecoding: true)
+        )
+
+        do {
+            _ = try await file.createArtboard("second")
+            XCTFail("Expected FileError.invalidArtboard to be thrown")
+        } catch let error as FileError {
+            guard case .invalidArtboard = error else {
+                XCTFail("Expected FileError.invalidArtboard, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected FileError, got \(type(of: error)): \(error)")
+        }
+    }
+
     // MARK: - State Machine
 
     @MainActor

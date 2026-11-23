@@ -13,6 +13,32 @@ import Foundation
 /// Files can be loaded from local bundles or remote URLs, and provide access to artboards,
 /// state machines, and view models contained within the Rive file.
 public final class File: Equatable, Sendable {
+    /// Options applied when a file is loaded. They are fixed for the file's lifetime.
+    public struct Configuration: Sendable {
+        /// Whether eligible artboards, animations, and view model instances decode the first
+        /// time they are used instead of while the file loads.
+        ///
+        /// Deferring can reduce initial loading time, especially for large files whose contents
+        /// are only partly used, but may increase latency on first use. The file bytes are still
+        /// read upfront, and the first artboard is decoded while loading. Deferred contents
+        /// decode on the worker that owns the file, and a copy of their bytes is kept in memory
+        /// until then.
+        ///
+        /// Malformed deferred contents are not detected while loading. Instead of the load
+        /// throwing, creating a malformed artboard throws `FileError.invalidArtboard`, while an
+        /// artboard that nests it loads with the nested artboard empty. A malformed view model
+        /// instance keeps only the values read before the error. Defaults to `false`.
+        public let deferDecoding: Bool
+
+        /// Creates a file configuration.
+        ///
+        /// - Parameter deferDecoding: Whether eligible file contents decode on first use
+        ///   instead of while loading. Defaults to `false`.
+        public init(deferDecoding: Bool = false) {
+            self.deferDecoding = deferDecoding
+        }
+    }
+
     /// The underlying type for the file handle identifier.
     ///
     /// Handle to a file instance in the C++ runtime. Obtained from the command queue
@@ -51,9 +77,16 @@ public final class File: Equatable, Sendable {
     /// - Parameters:
     ///   - source: The source containing the Rive file data (local bundle or remote URL)
     ///   - worker: The worker that will process this file
-    /// - Throws: `FileError` if the file cannot be loaded or parsed
+    ///   - configuration: The options applied when loading the file. Defaults to eager decoding.
+    /// - Throws: `FileError` if the file cannot be loaded or parsed. With deferred decoding,
+    ///   malformed deferred contents are detected only when first used; see
+    ///   `Configuration.deferDecoding`.
     @MainActor
-    public convenience init(source: Source, worker: Worker) async throws {
+    public convenience init(
+        source: Source,
+        worker: Worker,
+        configuration: Configuration = .init()
+    ) async throws {
         try await self.init(
             dependencies: Dependencies(
                 fileLoader: FileLoader(source: source),
@@ -64,19 +97,27 @@ public final class File: Equatable, Sendable {
                     )
                 ),
             ),
-            worker: worker
+            worker: worker,
+            configuration: configuration
         )
     }
 
     /// Creates a new File instance with custom dependencies
-    /// - Parameter dependencies: The dependencies to use for this file instance
+    /// - Parameters:
+    ///   - dependencies: The dependencies to use for this file instance
+    ///   - worker: The worker that will process this file
+    ///   - configuration: The options applied when loading the file
     /// - Throws: `FileError` if the file cannot be loaded
     /// - Note: This initializer is not public, and should only be used by public initializers or in tests
     @MainActor
-    convenience init(dependencies: Dependencies, worker: Worker) async throws {
+    convenience init(
+        dependencies: Dependencies,
+        worker: Worker,
+        configuration: Configuration = .init()
+    ) async throws {
         RiveLog.debug(tag: .file, "[File] Initializing file")
         let data = try await dependencies.fileLoader.load()
-        let handle = try await dependencies.fileService.loadFile(data: data)
+        let handle = try await dependencies.fileService.loadFile(data: data, configuration: configuration)
         RiveLog.debug(tag: .file, "[File (\(handle))] Initialized file")
         self.init(dependencies: dependencies, fileHandle: handle, worker: worker)
     }

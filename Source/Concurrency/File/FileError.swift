@@ -30,7 +30,7 @@ public enum FileError: LocalizedError {
         case .invalidFile(let message):
             return "Failed to load file: \(message)"
         case .invalidArtboard(let message):
-            return "Artboard not found: \(message)"
+            return "Invalid artboard: \(message)"
         case .invalidViewModel(let message):
             return "View model not found: \(message)"
         case .invalidViewModelInstance(let message):
