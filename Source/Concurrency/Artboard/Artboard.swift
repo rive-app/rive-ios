@@ -85,6 +85,19 @@ public final class Artboard: Equatable, Sendable {
         return try await dependencies.artboardService.getStateMachineNames(from: artboardHandle)
     }
 
+    /// Retrieves the current size of this artboard.
+    ///
+    /// The size is in artboard units. If the artboard has not been resized, this is its
+    /// authored size. If it has been resized, for example by a view using `.layout` fit,
+    /// this is the applied size divided by the layout scale factor, not the drawable size.
+    ///
+    /// - Returns: The current size of the artboard.
+    /// - Throws: `ArtboardError.invalidArtboard` if the artboard handle is invalid.
+    @MainActor
+    public func size() async throws -> CGSize {
+        return try await dependencies.artboardService.getSize(of: artboardHandle)
+    }
+
     /// Creates and binds a state machine from this artboard using its authored defaults.
     ///
     /// If a name is provided, creates the state machine with that specific name. If `nil` is provided,

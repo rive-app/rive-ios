@@ -123,6 +123,19 @@ NS_SWIFT_NAME(ArtboardListener)
                        requestID:(uint64_t)requestID
                           volume:(float)volume;
 
+/**
+ * Called when the artboard size is received.
+ *
+ * @param artboardHandle The handle of the artboard that was queried.
+ * @param requestID The unique identifier for the request that completed.
+ * @param width The current width of the artboard.
+ * @param height The current height of the artboard.
+ */
+- (void)onArtboardSizeReceived:(uint64_t)artboardHandle
+                     requestID:(uint64_t)requestID
+                         width:(float)width
+                        height:(float)height;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -143,6 +143,22 @@ final class ArtboardService: NSObject, ArtboardListener {
         dependencies.commandQueue.setArtboardSize(artboard, width: Float(size.width), height: Float(size.height), scale: scale, requestID: requestID)
     }
 
+    /// Retrieves the current size of an artboard.
+    ///
+    /// The continuation is resumed when `onArtboardSizeReceived` is called, or fails
+    /// via `onArtboardError` if the artboard handle is invalid.
+    ///
+    /// - Parameter artboard: The handle of the artboard to query.
+    /// - Returns: The current size of the artboard.
+    /// - Throws: `ArtboardError.invalidArtboard` if the artboard handle is invalid.
+    @MainActor
+    func getSize(of artboard: Artboard.ArtboardHandle) async throws -> CGSize {
+        RiveLog.debug(tag: .artboard, "\(Self.context(artboard)) Requesting artboard size")
+        return try await withCancellableRequest(mapError: ArtboardError.invalidArtboard) { requestID in
+            self.dependencies.commandQueue.requestArtboardSize(artboard, requestID: requestID)
+        }
+    }
+
     /// Resets the size of an artboard.
     ///
     /// Delegates to the command queue. No listener callback is invoked for this operation.
@@ -263,6 +279,19 @@ final class ArtboardService: NSObject, ArtboardListener {
     @MainActor
     func deleteArtboardListener(_ artboard: Artboard.ArtboardHandle) {
         dependencies.commandQueue.deleteArtboardListener(artboard)
+    }
+
+    /// Called when the artboard size is received.
+    ///
+    /// Listener callback invoked by the command server. Dispatches to main actor to access
+    /// requests dictionary and resume its continuation with the artboard size.
+    nonisolated func onArtboardSizeReceived(_ artboardHandle: UInt64, requestID: UInt64, width: Float, height: Float) {
+        Task { @MainActor in
+            finishImmediateRequest(requestID)
+            guard let request = requests.removeValue(forKey: requestID) else { return }
+            RiveLog.debug(tag: .artboard, "\(Self.context(artboardHandle)) Received size \(width)x\(height)")
+            try request.continuation.resume(returning: CGSize(width: CGFloat(width), height: CGFloat(height)))
+        }
     }
 
     /// Called when an artboard deletion operation completes.

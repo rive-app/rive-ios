@@ -121,6 +121,8 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     private(set) var setArtboardVolumeCalls: [SetArtboardVolumeCall] = []
     private var requestArtboardVolumeStub: ((UInt64, UInt64) -> Void)?
     private(set) var requestArtboardVolumeCalls: [RequestArtboardVolumeCall] = []
+    private var requestArtboardSizeStub: ((UInt64, UInt64) -> Void)?
+    private(set) var requestArtboardSizeCalls: [RequestArtboardSizeCall] = []
     private var advanceStateMachineStub: ((UInt64, TimeInterval, UInt64) -> Void)?
     private(set) var advanceStateMachineCalls: [AdvanceStateMachineCall] = []
     private var deleteStateMachineStub: ((UInt64) -> Void)?
@@ -414,6 +416,10 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
         requestArtboardVolumeStub = stub
     }
 
+    func stubRequestArtboardSize(_ stub: @escaping (UInt64, UInt64) -> Void) {
+        requestArtboardSizeStub = stub
+    }
+
     func stubAdvanceStateMachine(_ stub: @escaping (UInt64, TimeInterval, UInt64) -> Void) {
         advanceStateMachineStub = stub
     }
@@ -671,6 +677,11 @@ class MockCommandQueue: CommandQueueProtocol, _CommandQueueMessagePumpDriver {
     func requestArtboardVolume(_ artboardHandle: UInt64, requestID: UInt64) {
         requestArtboardVolumeCalls.append(RequestArtboardVolumeCall(artboardHandle: artboardHandle, requestID: requestID))
         requestArtboardVolumeStub?(artboardHandle, requestID)
+    }
+
+    func requestArtboardSize(_ artboardHandle: UInt64, requestID: UInt64) {
+        requestArtboardSizeCalls.append(RequestArtboardSizeCall(artboardHandle: artboardHandle, requestID: requestID))
+        requestArtboardSizeStub?(artboardHandle, requestID)
     }
 
     func requestStateMachineNames(_ artboardHandle: UInt64, requestID: UInt64) {
@@ -1540,6 +1551,11 @@ extension MockCommandQueue {
     }
 
     struct RequestArtboardVolumeCall {
+        let artboardHandle: UInt64
+        let requestID: UInt64
+    }
+
+    struct RequestArtboardSizeCall {
         let artboardHandle: UInt64
         let requestID: UInt64
     }

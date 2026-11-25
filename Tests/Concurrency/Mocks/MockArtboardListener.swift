@@ -16,6 +16,8 @@ class MockArtboardListener: NSObject, ArtboardListener {
     private(set) var capturedInstanceName: String?
     private(set) var capturedStateMachineHandle: UInt64?
     private(set) var capturedVolume: Float?
+    private(set) var capturedWidth: Float?
+    private(set) var capturedHeight: Float?
 
     func onStateMachineNamesListed(_ artboardHandle: UInt64, names: [String], requestID: UInt64) {
         capturedArtboardHandle = artboardHandle
@@ -49,5 +51,12 @@ class MockArtboardListener: NSObject, ArtboardListener {
         capturedArtboardHandle = artboardHandle
         capturedRequestID = requestID
         capturedVolume = volume
+    }
+
+    func onArtboardSizeReceived(_ artboardHandle: UInt64, requestID: UInt64, width: Float, height: Float) {
+        capturedArtboardHandle = artboardHandle
+        capturedRequestID = requestID
+        capturedWidth = width
+        capturedHeight = height
     }
 }

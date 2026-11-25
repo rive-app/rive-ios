@@ -644,6 +644,101 @@ class ArtboardTests: XCTestCase {
         XCTAssertEqual(mockCommandQueue.setArtboardSizeCalls.first?.scale, scale)
     }
 
+    // MARK: - Size
+
+    @MainActor
+    func test_size_withValidArtboardHandle_returnsSize() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 1)
+
+        let expectation = expectation(description: "artboard size received")
+        mockCommandQueue.stubRequestArtboardSize { artboardHandle, requestID in
+            XCTAssertEqual(artboardHandle, 1)
+            artboardService.onArtboardSizeReceived(artboardHandle, requestID: requestID, width: 500, height: 300)
+            expectation.fulfill()
+        }
+
+        let size = try await artboard.size()
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(size.width, 500)
+        XCTAssertEqual(size.height, 300)
+    }
+
+    @MainActor
+    func test_size_passesCorrectArtboardHandle() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 42)
+
+        let expectation = expectation(description: "artboard size received")
+        mockCommandQueue.stubRequestArtboardSize { artboardHandle, requestID in
+            XCTAssertEqual(artboardHandle, 42)
+            artboardService.onArtboardSizeReceived(artboardHandle, requestID: requestID, width: 100, height: 200)
+            expectation.fulfill()
+        }
+
+        _ = try await artboard.size()
+        await fulfillment(of: [expectation], timeout: 1)
+        XCTAssertEqual(mockCommandQueue.requestArtboardSizeCalls.count, 1)
+        XCTAssertEqual(mockCommandQueue.requestArtboardSizeCalls.first?.artboardHandle, 42)
+    }
+
+    @MainActor
+    func test_size_whenServerReportsError_throwsInvalidArtboard() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 123)
+
+        let expectation = expectation(description: "artboard size error")
+        mockCommandQueue.stubRequestArtboardSize { artboardHandle, requestID in
+            artboardService.onArtboardError(artboardHandle, requestID: requestID, message: "invalid artboard handle")
+            expectation.fulfill()
+        }
+
+        do {
+            _ = try await artboard.size()
+            XCTFail("Expected ArtboardError.invalidArtboard to be thrown")
+        } catch ArtboardError.invalidArtboard {
+            // Expected
+        } catch {
+            XCTFail("Expected ArtboardError.invalidArtboard, got \(type(of: error)): \(error)")
+        }
+
+        await fulfillment(of: [expectation], timeout: 1)
+    }
+
+    @MainActor
+    func test_size_whenCancelled_throwsCancelledError() async throws {
+        let mockCommandQueue = MockCommandQueue()
+        let artboardService = ArtboardService(dependencies: .init(commandQueue: mockCommandQueue, messageGate: CommandQueueMessageGate(driver: mockCommandQueue)))
+        let artboard = Artboard(dependencies: .init(artboardService: artboardService), artboardHandle: 1)
+
+        let enteredContinuation = expectation(description: "entered continuation")
+        mockCommandQueue.stubRequestArtboardSize { _, _ in
+            enteredContinuation.fulfill()
+        }
+
+        let task = Task { @MainActor in
+            try await artboard.size()
+        }
+
+        await fulfillment(of: [enteredContinuation], timeout: 1)
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected ArtboardError.cancelled to be thrown")
+        } catch let error as ArtboardError {
+            guard case .cancelled = error else {
+                XCTFail("Expected ArtboardError.cancelled, got \(error)")
+                return
+            }
+        } catch {
+            XCTFail("Expected ArtboardError.cancelled, got \(type(of: error)): \(error)")
+        }
+    }
+
     @MainActor
     func test_resetSize_callsResetArtboardSize() {
         let mockCommandQueue = MockCommandQueue()

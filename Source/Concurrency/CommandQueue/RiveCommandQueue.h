@@ -472,6 +472,17 @@ NS_SWIFT_NAME(CommandQueueProtocol)
                     requestID:(uint64_t)requestID;
 
 /**
+ * Requests the current size of an artboard.
+ *
+ * @param artboardHandle The artboard handle of the artboard to query
+ * @param requestID The unique request ID for this operation
+ * @note The response will be delivered via the artboard listener observer's
+ *       onArtboardSizeReceived:requestID:width:height: method.
+ */
+- (void)requestArtboardSize:(uint64_t)artboardHandle
+                  requestID:(uint64_t)requestID;
+
+/**
  * Requests the names of all state machines available on an artboard.
  *
  * This method initiates an asynchronous request to retrieve the names of

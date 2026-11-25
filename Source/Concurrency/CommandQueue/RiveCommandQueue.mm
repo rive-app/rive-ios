@@ -850,6 +850,12 @@ public:
       uint64_t requestId,
       float volume) override;
 
+  virtual void onArtboardSizeReceived(
+      const rive::ArtboardHandle handle,
+      uint64_t requestId,
+      float width,
+      float height) override;
+
 private:
   __weak id<RiveArtboardListener> _observer;
 };
@@ -946,6 +952,21 @@ void _ArtboardListener::onArtboardVolumeReceived(
     [_observer onArtboardVolumeReceived:reinterpret_cast<uint64_t>(handle)
                               requestID:requestId
                                  volume:volume];
+  }
+}
+
+void _ArtboardListener::onArtboardSizeReceived(
+    const rive::ArtboardHandle handle,
+    uint64_t requestId,
+    float width,
+    float height)
+{
+  if (_observer)
+  {
+    [_observer onArtboardSizeReceived:reinterpret_cast<uint64_t>(handle)
+                            requestID:requestId
+                                width:width
+                               height:height];
   }
 }
 
@@ -2454,6 +2475,15 @@ void _AudioListener::onAudioSourceDeleted(
   [self executeCommand:^{
     auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
     self->_commandQueue->requestArtboardVolume(handle, requestID);
+  }];
+}
+
+- (void)requestArtboardSize:(uint64_t)artboardHandle
+                  requestID:(uint64_t)requestID
+{
+  [self executeCommand:^{
+    auto handle = reinterpret_cast<rive::ArtboardHandle>(artboardHandle);
+    self->_commandQueue->requestArtboardSize(handle, requestID);
   }];
 }
 
